@@ -1,10 +1,12 @@
 #include "engine.h"
 #include <iostream>
+#include "pyhelper.h"
 
 
 
 GLFWwindow* window;
 
+namespace py = pybind11;
 
 
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
@@ -20,6 +22,30 @@ void Engine::load(pybind11::object obj) {
 
 
 void Engine::start() {
+	
+	py::object settings = py::module::import("settings");
+	if (settings) {
+	} else {
+		std::cout << " don't know\n";
+	}
+
+	m_title = py_get<std::string>(settings, "title");
+	m_windowSize = py_get<glm::ivec2>(settings.attr("window_size"));
+	m_deviceSize = py_get<glm::ivec2>(settings.attr("device_size"));
+	assert(m_deviceSize[1] > 0);
+	m_deviceAspectRatio = static_cast<double>(m_deviceSize[0]) / m_deviceSize[1];
+	m_roomId = py_get<std::string>(settings, "room");
+	m_frameTime = 1.0 / 60.0;
+	m_timeLastUpdate = 0.0;
+	m_enableMouse = py_get<bool>(settings, "enable_mouse", false);
+	if (pybind11::hasattr(settings, "init")) {
+		settings.attr("init").cast<pybind11::function>()();
+	}
+	
+	exit(1);
+	
+	
+	
     // Initialise GLFW
     if( !glfwInit() )
     {
