@@ -2,7 +2,10 @@
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include "png.h"
+#include "engine.h"
 #include <iostream>
+#include "monkeyfu.h"
+
 
 namespace py = pybind11;
 
@@ -35,4 +38,11 @@ PYBIND11_MODULE(monkey, m) {
     m.doc() = "prova prova2"; // optional module docstring
     m.def("add", &add);
     m.def("read", &read_png);
+    m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
+
+    py::class_<Engine>(m, "Engine")
+        //.def(py::init<>())
+        .def("start", &Engine::start)
+        .def("shutdown", &Engine::shutdown);
+
 }
