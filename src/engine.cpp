@@ -1,7 +1,7 @@
 #include "engine.h"
 #include <iostream>
 #include "pyhelper.h"
-
+#include "shaders/shaders.h"
 
 
 GLFWwindow* window;
@@ -10,15 +10,23 @@ namespace py = pybind11;
 
 
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
+    m_shaderBuilders[0] = [&] () { return create_shader(ShaderType::SHADER_COLOR, color_vs, color_fs, "3f4f"); };
+    m_shaderBuilders[1] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE, tex_vs, tex_fs, "3f2f4f"); };
+    m_shaderBuilders[3] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE_PALETTE, tex_vs, tex_pal_fs, "3f2f4f"); };
 
 }
 
-
-
-void Engine::load(pybind11::object obj) {
-
-
+std::shared_ptr<Shader> Engine::create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
+    auto shader = std::make_shared<Shader>(type, vertex, fragment, vertexFormat);
+    return shader;
 }
+
+
+//
+//void Engine::load(pybind11::object obj) {
+//
+//
+//}
 
 
 void Engine::start() {
@@ -38,14 +46,13 @@ void Engine::start() {
 	m_frameTime = 1.0 / 60.0;
 	m_timeLastUpdate = 0.0;
 	m_enableMouse = py_get<bool>(settings, "enable_mouse", false);
+	m_game = settings;
+	m_clearColor = py_get<glm::vec4>(settings, "clear_color", glm::vec4(0.f, 0.f, 0.4f, 0.f));
 	if (pybind11::hasattr(settings, "init")) {
 		settings.attr("init").cast<pybind11::function>()();
 	}
 	
-	exit(1);
-	
-	
-	
+
     // Initialise GLFW
     if( !glfwInit() )
     {
@@ -99,9 +106,76 @@ void Engine::start() {
     // setupFramebufferRendering();
 
     // Dark blue background
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
     loadShaders();
     m_shutdown = false;
+
+    // main loop
+    while (!m_shutdown) {
+        m_roomId = py_get<std::string>(m_game, "room");
+        std::cout << " loading room: " << m_roomId << std::endl;
+        loadRoom();
+//        // start up all nodes and components
+//        m_room->iterate_dfs([](Node *n) { n->start(); });
+        m_run = true;
+//        m_room->start();
+        do {
+            double currentTime = glfwGetTime();
+            /// note: if I run the update only every frame time CPU goes to 100%. If I run it on
+            /// every iter, it doesn't. Tried move the glfwSwapBuffers call (and successive) out of the loop
+            /// and that seems to work.
+            if (true || currentTime - m_timeLastUpdate >= m_frameTime) {
+                m_timeLastUpdate = currentTime;
+
+                // remove all entities scheduled for removal
+                if (!m_scheduledForRemoval.empty()) {
+                    for (auto & g : m_scheduledForRemoval) {
+                        g->getParent()->removeChild(g->getId());
+                        m_allNodes.erase(g->getId());
+                    }
+                    m_scheduledForRemoval.clear();
+                }
+
+
+
+                // restore if you want framebuffer rendering
+                // glBindFramebuffer(GL_FRAMEBUFFER, _fb);
+                // glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                // Draw nothing, see you in tutorial 2 !
+                m_room->update(m_frameTime);
+
+
+                for (const auto &shader : m_shaders) {
+                    // here it makes sense to
+                    shader->use();
+                    m_room->draw(shader.get());
+                    //shader->done();
+
+                }
+
+
+                glfwSwapBuffers(window);
+                glfwPollEvents();
+
+                // Swap buffers
+            }
+            //m_shutdown = !(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
+            //             glfwWindowShouldClose(window) == 0);
+            m_shutdown = !(glfwWindowShouldClose(window) == 0);
+
+        } // Check if the ESC key was pressed or the window was closed
+        while (m_run && !m_shutdown);
+//        m_room->end();
+//        m_allNodes.clear();
+//        if (m_room) {
+//            m_room->cleanUp();
+//        }
+//        m_room = nullptr;
+    }
+
+
     glfwTerminate();
 }
 
@@ -117,11 +191,24 @@ void Engine::closeRoom() {
 }
 
 void Engine::loadRoom() {
+    // generate current room
+    std::cout << "sucalo\n";
+    m_room = m_game.attr("rooms").attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
+
+
 }
 
 void Engine::loadShaders() {
 
-
+    auto shaders = py_get<std::vector<int>>(m_game, "shaders");
+    for (auto shaderId : shaders) {
+        //auto flags = sh.second.cast<unsigned>();
+        auto shader = m_shaderBuilders[shaderId]();
+        //shader->setFlags(flags);
+        //  modify here
+        //m_shaderTypeToIndex[shader->getShaderType()] = m_shaders.size();
+        m_shaders.push_back(shader);
+    }
 
 }
 
@@ -203,5 +290,20 @@ void Engine::setActualDeviceViewport(glm::vec4 viewport) {
     std::cout << m_actualDeviceViewport[2] << ", " << m_actualDeviceViewport[3] << "\n";
 }
 
+void Engine::addNode(std::shared_ptr<Node> node) {
+    m_allNodes[node->getId()] = node;
+}
 
+std::shared_ptr<Node> Engine::getNode(int id) {
+    auto it = m_allNodes.find(id);
+    if (it != m_allNodes.end()) {
+        if (auto d = it->second.lock()) {
+            return d;
+        }
+    }
+    return nullptr;
+}
 
+void Engine::scheduleForRemoval(Node * node) {
+    m_scheduledForRemoval.push_back(node);
+}

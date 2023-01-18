@@ -7,6 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <pybind11/pybind11.h>
 #include <glm/glm.hpp>
+#include "node.h"
+#include "room.h"
 
 namespace py = pybind11;
 
@@ -22,7 +24,7 @@ public:
     long getNextId();
     void start();
     void closeRoom();
-    void load(pybind11::object obj);
+    //void load(pybind11::object obj);
     void shutdown();
     //std::shared_ptr<Node> getNode(int);
     //void addNode(std::shared_ptr<Node>);
@@ -38,16 +40,24 @@ public:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 
-    pybind11::handle getConfig();
+    // node handling
+    std::shared_ptr<Node> getNode(int);
+    void addNode(std::shared_ptr<Node>);
+    void scheduleForRemoval(Node*);
+
+    pybind11::object getConfig();
     bool isRunning() const;
 
     int getPixelScale() const;
 private:
+    std::shared_ptr<Shader> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) ;
+
+
     //void setupFramebufferRendering();
     Engine();
     void loadRoom();
     void loadShaders();
-    pybind11::handle m_game;
+    pybind11::object m_game;
     //pybind11::object m_game;
     std::string m_title;
     std::string m_roomId;
@@ -55,9 +65,12 @@ private:
     glm::ivec2 m_deviceSize;
     glm::vec4 m_actualDeviceViewport;
     glm::vec4 m_windowViewport;
+    glm::vec4 m_clearColor;
     double m_deviceAspectRatio;
     // the current room
 
+    // the current room
+    std::shared_ptr<Room> m_room;
 
 
 
@@ -75,6 +88,12 @@ private:
     //GLuint _fb, _color, _depth;
     //unsigned int quadVAO, quadVBO;
     int m_pixelScaleFactor;
+
+    // node management
+    std::unordered_map<int, std::weak_ptr<Node>> m_allNodes;
+    std::vector<Node*> m_scheduledForRemoval;
+    std::unordered_map<int, std::function<std::shared_ptr<Shader>()>> m_shaderBuilders;
+    std::vector<std::shared_ptr<Shader>> m_shaders;
 };
 
 inline int Engine::getPixelScale() const {
@@ -87,7 +106,7 @@ inline bool Engine::isRunning() const {
     return m_run;
 }
 
-inline pybind11::handle Engine::getConfig() {
+inline pybind11::object Engine::getConfig() {
     return m_game;
 }
 

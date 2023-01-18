@@ -18,7 +18,7 @@ add_subdirectory(pybind11)
 
 include_directories(${PYBIND_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${MONKEY_INCLUDE} ${PNG_INCLUDE_DIRS})
 
-file(GLOB MONKEY_SOURCE src/*.cpp)
+file(GLOB MONKEY_SOURCE src/*.cpp src/components/*.cpp src/models/*.cpp src/shapes/*.cpp)
 
 pybind11_add_module(monkey ${MONKEY_SOURCE})
 
