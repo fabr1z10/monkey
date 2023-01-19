@@ -4,7 +4,7 @@
 #include <typeindex>
 
 enum class ShapeType {
-    RECT
+    RECT, COMPOUND
 };
 
 

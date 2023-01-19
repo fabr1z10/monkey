@@ -38,7 +38,7 @@ public:
     static void cursor_pos_callback(GLFWwindow*, double xpos, double ypos);
     static void mouse_button_callback(GLFWwindow*, int, int, int);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
+	std::shared_ptr<Room> getRoom();
 
     // node handling
     std::shared_ptr<Node> getNode(int);

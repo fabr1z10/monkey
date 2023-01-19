@@ -11,6 +11,8 @@
 #include "shapes/circle.h"
 #include "model.h"
 #include "models/tiled.h"
+#include "runners/collision_engine.h"
+#include "components/sprite_collider.h"
 
 
 namespace py = pybind11;
@@ -44,6 +46,7 @@ PYBIND11_MODULE(monkey, m) {
     m.doc() = "prova prova2"; // optional module docstring
     m.def("add", &add);
     m.def("read", &read_png);
+	m.def("get_sprite", &getSprite);
     m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
     m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
@@ -58,6 +61,7 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<Room, std::shared_ptr<Room>>(m, "Room")
         .def(py::init<const std::string&>())
+		.def("add_runner", &Room::addRunner)
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
@@ -102,11 +106,31 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Segment, Shape, std::shared_ptr<Segment>>(m, "segment")
         .def(py::init<float, float, float, float>());
 
+    /// --- models ---
     py::module_ mm = m.def_submodule("models");
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def(py::init<int>());
     py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
         .def(py::init<const pybind11::kwargs&>());
+	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
+
+	/// --- runners ---
+	py::class_<Runner, std::shared_ptr<Runner>>(m, "runner");
+	py::class_<CollisionEngine, Runner, std::shared_ptr<CollisionEngine>>(m, "collision_engine")
+		.def("add_response", &CollisionEngine::addResponse)
+		.def(py::init<float, float, float>());
+
+	/// --- components ---
+	py::class_<Component, std::shared_ptr<Component>>(m, "component");
+
+	py::class_<Collider, Component, std::shared_ptr<Collider>>(m, "icollider")
+		.def_property_readonly("bounds", &Collider::bounds)
+		.def("set_collision_flag", &Collider::setCollisionFlag);
+
+	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "collider")
+		.def(py::init<std::shared_ptr<Shape>, int, int, int>());
 
 
+	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "sprite_collider")
+		.def(py::init<int, int, int, const pybind11::kwargs&>());
 }

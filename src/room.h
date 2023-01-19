@@ -15,9 +15,7 @@ public:
     std::string id() const;
     std::shared_ptr<Node> getRoot();
     void iterate_dfs(std::function<void(Node*)> f);
-    void addRunner(std::shared_ptr<Runner> c) {
-        m_runners[c->getType()] = c;
-    }
+    void addRunner(std::shared_ptr<Runner> c);
     void cleanUp();
 
     template <typename T>

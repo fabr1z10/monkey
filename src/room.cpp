@@ -21,6 +21,10 @@ std::shared_ptr<Node> Room::getRoot() {
     return m_root;
 }
 
+void Room::addRunner(std::shared_ptr<Runner> c) {
+	m_runners[c->getType()] = c;
+}
+
 void Room::iterate_dfs(std::function<void(Node*)> f) {
     std::vector<Node*> li;
     li.push_back(m_root.get());

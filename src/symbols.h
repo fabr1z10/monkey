@@ -9,3 +9,8 @@ enum ShaderType {
     SHADER_TEXTURE_LIGHT,
     NONE
 };
+
+enum FillType {
+    OUTLINE = 0,
+    SOLID
+};

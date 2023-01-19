@@ -115,10 +115,10 @@ void Engine::start() {
         m_roomId = py_get<std::string>(m_game, "room");
         std::cout << " loading room: " << m_roomId << std::endl;
         loadRoom();
-//        // start up all nodes and components
-//        m_room->iterate_dfs([](Node *n) { n->start(); });
+        // start up all nodes and components
+        m_room->iterate_dfs([](Node *n) { n->start(); });
         m_run = true;
-//        m_room->start();
+        m_room->start();
         do {
             double currentTime = glfwGetTime();
             /// note: if I run the update only every frame time CPU goes to 100%. If I run it on
@@ -306,4 +306,8 @@ std::shared_ptr<Node> Engine::getNode(int id) {
 
 void Engine::scheduleForRemoval(Node * node) {
     m_scheduledForRemoval.push_back(node);
+}
+
+std::shared_ptr<Room> Engine::getRoom() {
+	return m_room;
 }

@@ -46,7 +46,14 @@ void Node::removeChild(long id) {
 }
 
 void Node::start() {
-    // TODO
+	m_started = true;
+	// update world matrix
+	if (m_parent != nullptr) {
+		m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	}
+	for (auto& c : m_components){
+		c.second->start();
+	}
 }
 
 void Node::update(double dt) {

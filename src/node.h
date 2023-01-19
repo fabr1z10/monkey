@@ -7,7 +7,7 @@
 #include "camera.h"
 #include "component.h"
 #include "model.h"
-
+#include "event.h"
 
 class Node {
 public:
@@ -46,6 +46,11 @@ public:
         }
         return nullptr;
     }
+
+    // --- events ---
+	Event<Node*> onMove;						// fires when this node moves
+	Event<Node*> onRemove;                      // fires when node is deleted
+
 private:
     long _id;
     Node* m_parent;

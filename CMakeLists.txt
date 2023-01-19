@@ -13,15 +13,16 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(PNG REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(pybind11)
 
-include_directories(${PYBIND_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${MONKEY_INCLUDE} ${PNG_INCLUDE_DIRS})
+include_directories(${PYBIND_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${MONKEY_INCLUDE} ${PNG_INCLUDE_DIRS} ${YAML_INCLUDE_DIRS})
 
-file(GLOB MONKEY_SOURCE src/*.cpp src/components/*.cpp src/models/*.cpp src/shapes/*.cpp)
+file(GLOB MONKEY_SOURCE src/*.cpp src/components/*.cpp src/models/*.cpp src/shapes/*.cpp src/shapes3d/*.cpp src/runners/*.cpp)
 
 pybind11_add_module(monkey ${MONKEY_SOURCE})
 
-target_link_libraries(monkey PUBLIC ${OPENGL_LIBRARIES} ${PNG_LIBRARY} glfw GLEW::GLEW)
+target_link_libraries(monkey PUBLIC ${OPENGL_LIBRARIES} ${PNG_LIBRARY} ${YAML_CPP_LIBRARIES} glfw GLEW::GLEW)
 target_compile_definitions(monkey
         PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
