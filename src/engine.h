@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include "node.h"
 #include "room.h"
+#include "keylistener.h"
 
 namespace py = pybind11;
 
@@ -49,6 +50,10 @@ public:
     bool isRunning() const;
 
     int getPixelScale() const;
+
+	void registerToKeyboardEvent(KeyboardListener*);
+	void unregisterToKeyboardEvent(KeyboardListener*);
+
 private:
     std::shared_ptr<Shader> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) ;
 
@@ -94,6 +99,9 @@ private:
     std::vector<Node*> m_scheduledForRemoval;
     std::unordered_map<int, std::function<std::shared_ptr<Shader>()>> m_shaderBuilders;
     std::vector<std::shared_ptr<Shader>> m_shaders;
+
+	std::unordered_set<KeyboardListener*> m_keyboardListeners;
+
 };
 
 inline int Engine::getPixelScale() const {

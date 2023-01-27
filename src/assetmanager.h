@@ -21,7 +21,9 @@ public:
     std::shared_ptr<Palette> getPalette(const std::string&);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<Tex>> m_tex;
+	std::pair<std::string, std::string> splitFileAsset(const std::string&);
+
+	std::unordered_map<std::string, std::shared_ptr<Tex>> m_tex;
     std::unordered_map<std::string, std::shared_ptr<Palette>> m_palettes;
 	std::unordered_map<std::string, std::shared_ptr<Sprite>> m_sprites;
 

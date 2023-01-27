@@ -14,15 +14,22 @@ Model::~Model() {
 }
 
 void Model::draw(Shader* s, int offset, int size) {
-    if (m_texId != GL_INVALID_VALUE) {
-        s->setInt("texture_diffuse1", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, m_texId);
-    }
+
     if (m_paletteId != GL_INVALID_VALUE) {
         s->setInt("texture_palette", 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_1D, m_paletteId);
+		if (m_texId != GL_INVALID_VALUE) {
+			s->setInt("texture_pdiffuse1", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_texId);
+		}
+    } else {
+		if (m_texId != GL_INVALID_VALUE) {
+			s->setInt("texture_diffuse1", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_texId);
+		}
     }
 
     if (size == 0) size = m_size;

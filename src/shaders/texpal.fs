@@ -6,7 +6,7 @@ out vec4 fragColor;
 in vec2 tex;
 in vec4 col;
 
-uniform usampler2D texture_diffuse1;
+uniform usampler2D texture_pdiffuse1;
 uniform sampler1D texture_palette;
 uniform vec4 add_color;
 uniform vec4 mult_color;
@@ -14,7 +14,7 @@ uniform vec4 mult_color;
 void main()
 {
 
-	float index = texture(texture_diffuse1, tex).r / 255.0;
+	float index = texture(texture_pdiffuse1, tex).r / 255.0;
 	vec4 texColor = texture(texture_palette, index);
 
 	//texColor = vec4(1.0, 1.0, 1.0, 1.0);

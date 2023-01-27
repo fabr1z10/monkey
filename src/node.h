@@ -29,13 +29,21 @@ public:
 
     void setActive(bool);
     bool active() const;
+
+	bool getFlipX() const;
+	void setFlipX(bool value);
+
     glm::mat4 getWorldMatrix() const;
-    std::shared_ptr<Camera> getCamera();
+	glm::vec3 getWorldPosition() const;
+
+	std::shared_ptr<Camera> getCamera();
     void setCamera(std::shared_ptr<Camera>);
     pybind11::object getUserData();
     void setUserData(pybind11::object);
     void setPosition(float, float, float);
-    void setModel(std::shared_ptr<Model> model);
+	void move(glm::mat4 m);
+	void move(glm::vec3 delta);
+	void setModel(std::shared_ptr<Model> model);
 
     void addComponent(std::shared_ptr<Component> c) ;
     template <typename T>
@@ -52,6 +60,7 @@ public:
 	Event<Node*> onRemove;                      // fires when node is deleted
 
 private:
+	void notifyMove();
     long _id;
     Node* m_parent;
     std::unordered_map<long, std::shared_ptr<Node>> m_children;

@@ -13,6 +13,13 @@
 #include "models/tiled.h"
 #include "runners/collision_engine.h"
 #include "components/sprite_collider.h"
+#include "components/controller.h"
+#include "components/controller2d.h"
+#include "components/dynamics.h"
+#include "components/statemachine.h"
+#include "states/walk2d.h"
+#include "states/playerwalk2d.h"
+#include "components/follow.h"
 
 
 namespace py = pybind11;
@@ -112,6 +119,8 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<int>());
     py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
         .def(py::init<const pybind11::kwargs&>());
+	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
 
 	/// --- runners ---
@@ -130,7 +139,37 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "collider")
 		.def(py::init<std::shared_ptr<Shape>, int, int, int>());
 
-
 	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "sprite_collider")
 		.def(py::init<int, int, int, const pybind11::kwargs&>());
+
+	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "controller")
+		.def_property_readonly("grounded", &Controller::grounded)
+		.def_property_readonly("size", &Controller::getSize)
+		.def("set_size", &Controller::setSize);
+
+	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "controller_2d")
+		.def(py::init<py::kwargs&>());
+
+	py::class_<Dynamics, Component, std::shared_ptr<Dynamics>>(m, "dynamics")
+		.def_readwrite("velocity", &Dynamics::m_velocity)
+		.def(py::init<const pybind11::kwargs&>());
+
+	py::class_<Follow, Component, std::shared_ptr<Follow>>(m, "follow")
+		.def(py::init<std::shared_ptr<Camera>, pybind11::tuple&, pybind11::tuple&>());
+
+	py::class_<Platform, Component, std::shared_ptr<Platform>>(m, "platform")
+		.def(py::init<>());
+
+	py::class_<StateMachine, Component, std::shared_ptr<StateMachine>>(m, "state_machine")
+		.def("add", &StateMachine::addState)
+		.def("set_initial_state", &StateMachine::setInitialState)
+		.def(py::init<>());
+
+	/// --- states ---
+	py::class_<State, std::shared_ptr<State>>(m, "state");
+	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
+	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
+		.def(py::init<const std::string&, py::kwargs&>());
+
+
 }

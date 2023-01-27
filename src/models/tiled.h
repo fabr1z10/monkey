@@ -13,7 +13,7 @@ struct TiledFrameInfo {
 class TiledModel : public Model {
 public:
     TiledModel();
-    TiledModel(const pybind11::kwargs&);
+    explicit TiledModel(const pybind11::kwargs&);
 protected:
     void readSheet(const pybind11::kwargs&);
     void readTiles(const std::string& inputString, std::vector<GLfloat>& vertices, std::vector<unsigned>& indices);
@@ -21,3 +21,23 @@ protected:
     float m_t1, m_t2;
     unsigned m_i0;
 };
+
+class AnimatedTiledModel : public TiledModel {
+public:
+	explicit AnimatedTiledModel(const pybind11::kwargs&);
+	const TiledFrameInfo& getFrameInfo(int) const;
+	size_t getFrameCount() const;
+	std::shared_ptr<Renderer> getRenderer() const override;
+
+private:
+	std::vector<TiledFrameInfo> m_frameInfo;
+
+};
+
+inline const TiledFrameInfo & AnimatedTiledModel::getFrameInfo(int i) const {
+	return m_frameInfo[i];
+}
+
+inline size_t AnimatedTiledModel::getFrameCount() const {
+	return m_frameInfo.size();
+}

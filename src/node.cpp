@@ -1,6 +1,7 @@
 #include "node.h"
 #include "engine.h"
 #include "components/renderer.h"
+#include "util.h"
 
 Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)) {
@@ -78,6 +79,10 @@ glm::mat4 Node::getWorldMatrix() const {
     return m_worldMatrix;
 }
 
+glm::vec3 Node::getWorldPosition() const {
+	return glm::vec3(m_worldMatrix[3]);
+}
+
 pybind11::object Node::getUserData() {
     return m_userData;
 }
@@ -95,6 +100,28 @@ void Node::setPosition(float x, float y, float z) {
     m_modelMatrix[3][1] = y;
     m_modelMatrix[3][2] = z;
 }
+
+void Node::move(glm::mat4 m) {
+	m_modelMatrix *= m;
+	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	notifyMove();
+}
+
+void Node::move(glm::vec3 delta) {
+	m_modelMatrix[3][0] += sign(m_modelMatrix[0][0]) * delta.x;
+	m_modelMatrix[3][1] += delta.y;
+	m_modelMatrix[3][2] += delta.z;
+	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	notifyMove();
+}
+
+void Node::notifyMove() {
+	onMove.fire(this);
+	for (const auto& child : m_children) {
+		child.second->notifyMove();
+	}
+}
+
 
 void Node::addComponent(std::shared_ptr<Component> c) {
     m_components[c->getType()] = c;
@@ -115,5 +142,15 @@ void Node::setModel(std::shared_ptr<Model> model) {
         }
     }
 
+
+}
+
+bool Node::getFlipX() const {
+	return m_modelMatrix[0][0] < 0.f;
+}
+
+void Node::setFlipX(bool value) {
+	m_modelMatrix[0][0] = (value ? -1.f : 1.f) * abs(m_modelMatrix[0][0]);
+	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
 
 }

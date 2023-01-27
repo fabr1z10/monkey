@@ -13,12 +13,12 @@ uniform vec4 mult_color;
 void main()
 {
 	vec4 texColor = texture(texture_diffuse1, tex);
-	if (texColor.a < 0.5) {
-		discard;
-	}
-	texColor *= col;
-	texColor *= mult_color;
-	texColor += add_color;
+// 	if (texColor.a < 0.5) {
+// 		discard;
+// 	}
+// 	texColor *= col;
+// 	texColor *= mult_color;
+// 	texColor += add_color;
 	fragColor = texColor;
 }
 )"

@@ -4,6 +4,7 @@
 #include "shaders/shaders.h"
 
 
+
 GLFWwindow* window;
 
 namespace py = pybind11;
@@ -213,7 +214,9 @@ void Engine::loadShaders() {
 }
 
 void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
+	for (auto& s : Engine::instance().m_keyboardListeners) {
+		s->keyCallback(window, key, scancode, action, mods);
+	}
 }
 
 void Engine::mouse_button_callback(GLFWwindow* win, int button, int action, int mods) {
@@ -310,4 +313,12 @@ void Engine::scheduleForRemoval(Node * node) {
 
 std::shared_ptr<Room> Engine::getRoom() {
 	return m_room;
+}
+
+void Engine::registerToKeyboardEvent(KeyboardListener * listener) {
+	m_keyboardListeners.insert(listener);
+}
+
+void Engine::unregisterToKeyboardEvent(KeyboardListener * listener) {
+	m_keyboardListeners.erase(listener);
 }

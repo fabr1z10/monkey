@@ -2,6 +2,7 @@
 #include "../engine.h"
 #include "../pyhelper.h"
 #include "../assetmanager.h"
+#include "../components/anim_tiled_renderer.h"
 #include <stack>
 
 TiledModel::TiledModel() : Model(ShaderType::SHADER_TEXTURE), m_i0(0) {
@@ -21,6 +22,26 @@ TiledModel::TiledModel(const pybind11::kwargs& args) : Model(ShaderType::SHADER_
     this->generateBuffers(vertices, indices);
 
 }
+
+AnimatedTiledModel::AnimatedTiledModel(const pybind11::kwargs& args) : TiledModel() {
+	readSheet(args);
+	std::vector<GLfloat> vertices;
+	std::vector<unsigned> indices;
+
+	for (const auto& frame : args["frames"]) {
+		auto d = frame.cast<pybind11::dict>();
+		auto s = py_get_dict<std::string>(d, "desc");
+		int ticks = py_get_dict<int>(d, "ticks");
+		auto offset = indices.size();
+		readTiles(s, vertices, indices);
+		auto count = indices.size() - offset;
+		m_frameInfo.emplace_back(offset, count, ticks);
+	}
+	// generate buffers
+	this->generateBuffers(vertices, indices);
+
+}
+
 
 void TiledModel::readSheet(const pybind11::kwargs& args) {
     auto sheetId = py_get_dict<std::string>(args, "sheet");
@@ -49,6 +70,7 @@ void TiledModel::readSheet(const pybind11::kwargs& args) {
 void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>& vertices, std::vector<unsigned>& indices) {
     std::string u(inputString);
     std::transform(u.begin(), u.end(), u.begin(), ::toupper);
+	u.erase(std::remove_if(u.begin(), u.end(), ::isspace), u.end());
     std::vector<std::string> tokens;
     std::stringstream check1(u);
     std::string intermediate;
@@ -69,6 +91,7 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
     //unsigned i0 = vertices.size();
     bool horizontalFlip = false;
     while (n < tokens.size()) {
+
         if (tokens[n][0] == 'W') {
             width = std::stoi(tokens[n+1]);
             n += 2;
@@ -142,4 +165,10 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
 
 
     }
+}
+
+
+std::shared_ptr<Renderer> AnimatedTiledModel::getRenderer() const {
+	return std::make_shared<AnimatedTiledModelRenderer>();
+
 }

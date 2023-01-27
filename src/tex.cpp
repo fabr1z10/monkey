@@ -231,7 +231,9 @@ void Tex::load_generic(const std::string &file) {
     auto pino = data.depth();
     int channels = data.spectrum();
     data.permute_axes ("cxyz");
-
+	for (int i = 0; i < 100; ++i) {
+		std::cout << (int) data._data[i] << ", ";
+	}
     glGenTextures (1, &m_texId);
     glBindTexture (GL_TEXTURE_2D, m_texId);
     GLint format;
