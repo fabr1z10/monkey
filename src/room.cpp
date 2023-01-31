@@ -4,7 +4,7 @@
 #include "engine.h"
 #include <glm/glm.hpp>
 
-Room::Room(const std::string& id) : m_id(id) {
+Room::Room(const std::string& id) : m_id(id), m_mainCamera(nullptr) {
     m_root = std::make_shared<Node>();
 }
 
@@ -38,22 +38,51 @@ void Room::iterate_dfs(std::function<void(Node*)> f) {
     }
 }
 
+void Room::setMainCam(std::shared_ptr<Camera> cam) {
+	m_mainCamera = cam.get();
+}
+
 void Room::update(double dt) {
+	int m_nUpdates{0};
     //for (const auto& m : m_root->m_children) std::cout << "cane: " << m.second.use_count() << "\n";
     std::vector<Node*> li;
-    li.push_back(m_root.get());
+	li.push_back(m_root.get());
+	std::vector<std::pair<int, std::shared_ptr<Camera>>> camStack;
+	Bounds currentBounds;
     while (!li.empty()) {
         auto current = li.back();
-        li.pop_back();
-        current->update(dt);
-        // update world transform
-        for (auto const & [k, v] : current->getChildren()) {
-            li.push_back(v.get());
-        }
+		int currentIndex = li.size() - 1;
+		li.pop_back();
+		// check if current node has a camera
+		auto cam = current->getCamera();
+		bool changeCam = false;
+		while (!camStack.empty() && currentIndex < camStack.back().first) {
+			// need to pop cam from stack
+			changeCam = true;
+			camStack.pop_back();
+		}
+		if (cam != nullptr) {
+			changeCam = true;
+			camStack.emplace_back(currentIndex, cam);
+		}
+		if (changeCam && !camStack.empty()) {
+			currentBounds = camStack.back().second->getViewingBounds();
+		}
+        auto b = current->getBounds();
+        if (camStack.empty() || currentBounds.intersect2D(b)) {
+			current->update(dt);
+			if (!camStack.empty())
+				m_nUpdates++;
+			// update world transform
+			for (auto const &[k, v] : current->getChildren()) {
+				li.push_back(v.get());
+			}
+		}
     }
     for (const auto& r : m_runners) {
         r.second->update(dt);
     }
+    //std::cout << "# updates: " << m_nUpdates << std::endl;
 }
 
 void Room::draw(Shader* s) {

@@ -4,6 +4,7 @@
 #include <array>
 #include <pybind11/pybind11.h>
 #include "shader.h"
+#include "bounds.h"
 
 namespace py = pybind11;
 
@@ -16,6 +17,7 @@ public:
     void init(Shader*);
     const glm::mat4& getViewMatrix() const;
     bool isInViewport(float, float);
+    virtual Bounds getViewingBounds() const = 0;
 protected:
     glm::vec3 m_fwd;
     glm::vec3 m_up;
@@ -39,9 +41,11 @@ class OrthoCamera : public Camera {
 public:
     OrthoCamera(float width, float height, const py::kwargs& kwargs);
     glm::vec2 getWorldCooridnates(float x, float y);
+	Bounds getViewingBounds() const override;
 private:
     float m_orthoWidth;
     float m_orthoHeight;
+    glm::vec3 m_halfSize;
 
 };
 
@@ -49,6 +53,7 @@ private:
 class PerspectiveCamera : public Camera {
 public:
     PerspectiveCamera(const py::kwargs& kwargs);
+	Bounds getViewingBounds() const override;
 private:
     float m_fov;
     float m_near;

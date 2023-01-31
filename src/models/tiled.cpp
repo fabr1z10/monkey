@@ -29,9 +29,9 @@ AnimatedTiledModel::AnimatedTiledModel(const pybind11::kwargs& args) : TiledMode
 	std::vector<unsigned> indices;
 
 	for (const auto& frame : args["frames"]) {
-		auto d = frame.cast<pybind11::dict>();
-		auto s = py_get_dict<std::string>(d, "desc");
-		int ticks = py_get_dict<int>(d, "ticks");
+		auto d = frame.cast<pybind11::tuple>();
+		auto s = py_get<std::string>(d[0]);
+		int ticks = py_get<int>(d[1]);
 		auto offset = indices.size();
 		readTiles(s, vertices, indices);
 		auto count = indices.size() - offset;
@@ -44,6 +44,9 @@ AnimatedTiledModel::AnimatedTiledModel(const pybind11::kwargs& args) : TiledMode
 
 
 void TiledModel::readSheet(const pybind11::kwargs& args) {
+	auto inf = std::numeric_limits<float>::max();
+	m_modelBounds.min = glm::vec3(inf, inf, -100.f);
+	m_modelBounds.max = glm::vec3(-inf, -inf, 100.f);
     auto sheetId = py_get_dict<std::string>(args, "sheet");
     const auto& game = Engine::instance().getConfig();
     auto tileSets = py_get<pybind11::dict>(game, "tilesets");
@@ -135,21 +138,24 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
                 std::swap(tx0, tx1);
                 horizontalFlip = false;
             }
-            // bottom left
-            vertices.insert(vertices.end(),
-                            {x * m_tileSize[0], y * m_tileSize[1], 0.0f, tx0, (ty + 1.f) * m_t2, 1, 1, 1, 1});
+            float xm = x * m_tileSize[0];
+            float ym = y * m_tileSize[1];
+            float xM = xm + m_tileSize[0];
+			float yM = ym + m_tileSize[1];
+
+			// bottom left
+            vertices.insert(vertices.end(),{xm, ym, 0.0f, tx0, (ty + 1.f) * m_t2, 1, 1, 1, 1});
             // bottom right
-            vertices.insert(vertices.end(),
-                            {x * m_tileSize[0] + m_tileSize[0], y * m_tileSize[1], 0.0f, tx1, (ty + 1) * m_t2, 1, 1,
-                             1, 1});
+            vertices.insert(vertices.end(),{xM, ym, 0.0f, tx1, (ty + 1) * m_t2, 1, 1, 1, 1});
             // top right
-            vertices.insert(vertices.end(),
-                            {x * m_tileSize[0] + m_tileSize[0], y * m_tileSize[1] + m_tileSize[1], 0.0f, tx1,
-                             ty * m_t2, 1, 1, 1, 1});
+            vertices.insert(vertices.end(),{xM, yM, 0.0f, tx1, ty * m_t2, 1, 1, 1, 1});
             // top left
-            vertices.insert(vertices.end(),
-                            {x * m_tileSize[0], y * m_tileSize[1] + m_tileSize[1], 0.0f, tx0, ty * m_t2, 1, 1, 1, 1});
+            vertices.insert(vertices.end(),{xm, yM, 0.0f, tx0, ty * m_t2, 1, 1, 1, 1});
             indices.insert(indices.end(), {m_i0, m_i0 + 1, m_i0 + 2, m_i0 + 3, m_i0, m_i0 + 2});
+			m_modelBounds.min.x = std::min(m_modelBounds.min.x, xm);
+			m_modelBounds.min.y = std::min(m_modelBounds.min.y, ym);
+			m_modelBounds.max.x = std::max(m_modelBounds.max.x, xM);
+			m_modelBounds.max.y = std::max(m_modelBounds.max.y, yM);
             m_i0 += 4;
         }
         x++;

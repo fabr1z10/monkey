@@ -27,7 +27,7 @@ OrthoCamera::OrthoCamera(float width, float height, const py::kwargs& kwargs) : 
     float hw = m_orthoWidth / 2.0f;
     float hh = m_orthoHeight / 2.0f;
     m_projectionMatrix = glm::ortho(-hw, hw, -hh, hh, -100.0f, 100.0f);
-
+	m_halfSize = glm::vec3(hw, hh, 100.f);
 }
 
 glm::vec2 OrthoCamera::getWorldCooridnates(float x, float y) {
@@ -107,4 +107,15 @@ bool Camera::isInViewport(float x, float y) {
     }
     return true;
 
+}
+
+Bounds OrthoCamera::getViewingBounds() const {
+	Bounds b;
+	b.min = m_eye - m_halfSize;
+	b.max = m_eye + m_halfSize;
+	return b;
+}
+
+Bounds PerspectiveCamera::getViewingBounds() const {
+	return Bounds();
 }

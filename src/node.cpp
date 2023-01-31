@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "components/renderer.h"
 #include "util.h"
+#include "components/statemachine.h"
 
 Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)) {
@@ -83,6 +84,10 @@ glm::vec3 Node::getWorldPosition() const {
 	return glm::vec3(m_worldMatrix[3]);
 }
 
+glm::vec3 Node::getLocalPosition() const {
+	return glm::vec3(m_modelMatrix[3]);
+}
+
 pybind11::object Node::getUserData() {
     return m_userData;
 }
@@ -130,20 +135,29 @@ void Node::addComponent(std::shared_ptr<Component> c) {
 
 void Node::setModel(std::shared_ptr<Model> model) {
 
-    auto* r = getComponent<Renderer>();
-    if (r == nullptr) {
-        auto renderer = model->getRenderer();
-        renderer->setModel(model);
-        addComponent(renderer);
-    } else {
-        r->setModel(model);
-        for (auto& c : m_components) {
-            c.second->start();
-        }
-    }
-
-
+	auto *r = getComponent<Renderer>();
+	if (r == nullptr) {
+		auto renderer = model->getRenderer();
+		renderer->setModel(model);
+		addComponent(renderer);
+	} else {
+		r->setModel(model);
+		for (auto &c : m_components) {
+			c.second->start();
+		}
+	}
+	m_model = model;
 }
+
+Bounds Node::getBounds() {
+	if (m_model) {
+		auto bounds = m_model->getBounds();
+		bounds.translate(getWorldPosition());
+		return bounds;
+	}
+	return Bounds::maxBounds();
+}
+
 
 bool Node::getFlipX() const {
 	return m_modelMatrix[0][0] < 0.f;
@@ -153,4 +167,17 @@ void Node::setFlipX(bool value) {
 	m_modelMatrix[0][0] = (value ? -1.f : 1.f) * abs(m_modelMatrix[0][0]);
 	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
 
+}
+
+std::string Node::getState() const {
+	auto sm = getComponent<StateMachine>();
+	auto pino = sm->getState()->getId();
+	return pino;
+}
+
+void Node::setState(const std::string &state, const pybind11::kwargs& kwargs) {
+	auto sm = getComponent<StateMachine>();
+	if (sm != nullptr) {
+		sm->setState(state, kwargs);
+	}
 }

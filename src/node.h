@@ -34,7 +34,8 @@ public:
 	void setFlipX(bool value);
 
     glm::mat4 getWorldMatrix() const;
-	glm::vec3 getWorldPosition() const;
+	glm::vec3 getLocalPosition() const;
+    glm::vec3 getWorldPosition() const;
 
 	std::shared_ptr<Camera> getCamera();
     void setCamera(std::shared_ptr<Camera>);
@@ -44,7 +45,9 @@ public:
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
 	void setModel(std::shared_ptr<Model> model);
-
+	Bounds getBounds();
+	std::string getState() const;
+	void setState (const std::string& state, const pybind11::kwargs&);
     void addComponent(std::shared_ptr<Component> c) ;
     template <typename T>
     T* getComponent() const {
@@ -72,7 +75,7 @@ private:
     bool m_started;
     pybind11::object m_userData;
     std::shared_ptr<Camera> m_camera;
-
+	std::shared_ptr<Model> m_model;
 };
 
 inline long Node::getId() const {

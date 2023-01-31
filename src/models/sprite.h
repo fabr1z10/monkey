@@ -63,7 +63,7 @@ private:
 	// collision shapes (if any)
 	std::vector<std::shared_ptr<Shape>> m_shapes;
 	std::unordered_map<std::pair<std::string, int>, int> m_frameToShape;
-	Bounds m_staticBounds;
+	Bounds m_collisionBounds;
 	std::unordered_map<int, std::pair<int, int>> m_shapeInfo;
 };
 
@@ -76,7 +76,7 @@ inline std::string Sprite::getDefaultAnimation() const {
 }
 
 inline Bounds Sprite::getStaticBounds() const {
-	return m_staticBounds;
+	return m_collisionBounds;
 }
 
 inline const AnimInfo * Sprite::getAnimInfo(const std::string &anim) {

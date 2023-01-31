@@ -57,7 +57,7 @@ Sprite::Sprite(const YAML::Node& node, const std::string& sheetFile) : Model(), 
 			}
 			shape = s1;
 		}
-		m_staticBounds.expandWith(shape->getBounds());
+		m_collisionBounds.expandWith(shape->getBounds());
 		m_shapes.push_back(shape);
 	}
 
@@ -66,6 +66,10 @@ Sprite::Sprite(const YAML::Node& node, const std::string& sheetFile) : Model(), 
 	std::vector<unsigned> indices;
 	float ppu{1.f};
 	int quadCount {0};
+	auto inf = std::numeric_limits<float>::max();
+	m_modelBounds.min = glm::vec3(inf, inf, -100.f);
+	m_modelBounds.max = glm::vec3(-inf, -inf, 100.f);
+
 	for (YAML::const_iterator anit = node["animations"].begin(); anit != node["animations"].end(); ++anit) {
 		auto animId = anit->first.as<std::string>();
 		if (m_defaultAnimation.empty()) m_defaultAnimation = animId;
@@ -125,6 +129,12 @@ Sprite::Sprite(const YAML::Node& node, const std::string& sheetFile) : Model(), 
 				indices.insert(indices.end(), {ix, ix + 1, ix + 2, ix + 3, ix, ix + 2});
 				frameInfo.count += 6;
 				quadCount++;
+				// update static bounds
+				m_modelBounds.min.x = std::min(m_modelBounds.min.x, ox);
+				m_modelBounds.min.y = std::min(m_modelBounds.min.y, oy);
+				m_modelBounds.max.x = std::max(m_modelBounds.max.x, ox + width_actual);
+				m_modelBounds.max.y = std::max(m_modelBounds.max.y, oy + height_actual);
+
 			}
 			//auto itemId = item["id"].as<std::string>();
 			//m_stateToItems[animId + "_" + std::to_string(frameCount)].push_back(m_sheet->getId(itemId));

@@ -36,8 +36,9 @@ public:
     //void addLight(std::shared_ptr<Light>);
     //void setAmbientStrength(float);
     //void useLights(Shader*);
+    void setMainCam(std::shared_ptr<Camera>);
 private:
-
+	Camera* m_mainCamera;
     std::string m_id;
     std::shared_ptr<Node> m_root;
     std::unordered_map<std::type_index, std::shared_ptr<Runner> > m_runners;

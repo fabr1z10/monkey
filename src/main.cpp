@@ -20,6 +20,9 @@
 #include "states/walk2d.h"
 #include "states/playerwalk2d.h"
 #include "components/follow.h"
+#include "components/move_translate.h"
+#include "shapes/aabb.h"
+#include "states/climb.h"
 
 
 namespace py = pybind11;
@@ -54,7 +57,8 @@ PYBIND11_MODULE(monkey, m) {
     m.def("add", &add);
     m.def("read", &read_png);
 	m.def("get_sprite", &getSprite);
-    m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
+	m.def("get_node", &getNode);
+	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
     m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
     m.attr("SHADER_TEXTURE_PALETTE") = static_cast<int>(ShaderType::SHADER_TEXTURE_PALETTE);
@@ -69,6 +73,7 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Room, std::shared_ptr<Room>>(m, "Room")
         .def(py::init<const std::string&>())
 		.def("add_runner", &Room::addRunner)
+		.def("set_main_cam", &Room::setMainCam)
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
@@ -85,12 +90,14 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_position", &Node::setPosition)
         .def("set_model", &Node::setModel)
         .def("add_component", &Node::addComponent)
+		.def("set_state", &Node::setState)
+		.def_property_readonly("state", &Node::getState)
         .def("remove", &Node::remove);
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
-        .def("set_position", &Camera::setPosition)
-        .def(py::init<const py::kwargs&>());
+        .def("set_position", &Camera::setPosition);
+        //.def(py::init<const py::kwargs&>());
 
     py::class_<OrthoCamera, Camera, std::shared_ptr<OrthoCamera>>(m, "camera_ortho")
         .def(py::init<float, float, const py::kwargs&>());
@@ -113,7 +120,11 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Segment, Shape, std::shared_ptr<Segment>>(m, "segment")
         .def(py::init<float, float, float, float>());
 
-    /// --- models ---
+	py::class_<AABB, Shape, std::shared_ptr<AABB>>(m, "aabb")
+		.def(py::init<float, float, float, float>());
+
+
+	/// --- models ---
     py::module_ mm = m.def_submodule("models");
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def(py::init<int>());
@@ -165,11 +176,15 @@ PYBIND11_MODULE(monkey, m) {
 		.def("set_initial_state", &StateMachine::setInitialState)
 		.def(py::init<>());
 
+	py::class_<MoveTranslate, Component, std::shared_ptr<MoveTranslate>>(m, "move_translate")
+		.def(py::init<const pybind11::kwargs&>());
+
 	/// --- states ---
 	py::class_<State, std::shared_ptr<State>>(m, "state");
 	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
 	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
 		.def(py::init<const std::string&, py::kwargs&>());
-
+	py::class_<Climb, State, std::shared_ptr<Climb>>(m, "climb")
+		.def(py::init<const std::string&, const py::kwargs&>());
 
 }

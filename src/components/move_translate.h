@@ -17,12 +17,13 @@ private:
 		glm::vec2 startPosition;
 		glm::vec2 endPosition;
 		float z;
+		float length;
 	};
 	std::vector<Step> m_steps;
 	int m_loopType;     // 0 = moves back and forth, 1 = loop, 2 = end
 	float m_time;
 	int m_index;
-	float m_z;
+	//float m_z;
 
 	int m_maxIndex;
 };

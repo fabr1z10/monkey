@@ -1,9 +1,17 @@
 #include "bounds.h"
 
 
+Bounds Bounds::maxBounds() {
+	static Bounds maxB(glm::vec3(-std::numeric_limits<float>::max()), glm::vec3(std::numeric_limits<float>::max()));
+	return maxB;
+}
+
 Bounds::Bounds() : min(glm::vec3(0.0f)), max(glm::vec3(0.0f)) {
 
 }
+
+
+Bounds::Bounds(glm::vec3 m, glm::vec3 M) : min(m), max(M) {}
 
 Bounds::Bounds(glm::vec3 m) : min(m), max(m) {}
 
@@ -36,6 +44,12 @@ bool Bounds::intersect3D(Bounds& other) const {
     return !(other.min.x > max.x || other.max.x < min.x ||
              other.min.y > max.y || other.max.y < min.y ||
              other.min.z > max.z || other.max.z < min.z);
+}
+
+void Bounds::translate(const glm::vec3& vec) {
+	min += vec;
+	max += vec;
+
 }
 
 void Bounds::transform(const glm::mat4& m) {

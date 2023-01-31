@@ -3,6 +3,7 @@
 
 #include "shader.h"
 #include "component.h"
+#include "bounds.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
@@ -30,6 +31,7 @@ public:
     void generateBuffers(const std::vector<float>& vertices, const std::vector<unsigned>& indices);
     ShaderType getShaderType() const;
     GLuint getElSize() const;
+	Bounds getBounds() const;
 protected:
     ShaderType m_shaderType;
     GLuint m_size;
@@ -39,7 +41,7 @@ protected:
     GLuint m_elementSize;
     GLuint m_texId;
     GLuint m_paletteId;
-
+	Bounds m_modelBounds;
 };
 
 inline GLuint Model::getElSize() const {
@@ -48,5 +50,9 @@ inline GLuint Model::getElSize() const {
 
 inline ShaderType Model::getShaderType() const {
     return m_shaderType;
+}
+
+inline Bounds Model::getBounds() const {
+	return m_modelBounds;
 }
 
