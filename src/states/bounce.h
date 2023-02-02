@@ -1,28 +1,32 @@
 #pragma once
 
-#include "walk2d.h"
-#include "../components/controller.h"
+#include "../components/statemachine.h"
+#include "../components/controller2d.h"
 #include "../components/dynamics.h"
 #include "../components/sprite_renderer.h"
 
 class Node;
 
-class Climb : public State {
+class Bounce : public State {
 public:
-	Climb(const std::string& id, const pybind11::kwargs&);
+	Bounce(const std::string& id, const pybind11::kwargs&);
 	void run(double) override;
 	void init(const pybind11::kwargs& args) override;
-
 	void setParent(StateMachine*) override;
+
+
 private:
 	Controller2D* m_controller;
 	Dynamics* m_dynamics;
+	float m_gravity;
 	Node* m_node;
+	pybind11::function m_onBounceY;
+	int m_bounceCountY;
+	float m_fixedVelocityBounce;
+	bool m_isFixedVel;
+	bool m_checkWalls;
 	SpriteRenderer* m_animatedRenderer;
 	std::string m_animation;
-	std::string m_animIdle;
-	float m_speed;
-	std::string m_walkState;
 };
 
 

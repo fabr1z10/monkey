@@ -5,7 +5,7 @@
 
 class AnimatedTiledModelRenderer : public Renderer {
 public:
-	AnimatedTiledModelRenderer() = default;
+	AnimatedTiledModelRenderer(GLuint texId, GLuint palId) : Renderer(texId, palId) {}
 	void setModel(std::shared_ptr<Model>) override;
 	std::type_index getType() override;
 	void start() override;

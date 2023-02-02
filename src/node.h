@@ -45,10 +45,13 @@ public:
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
 	void setModel(std::shared_ptr<Model> model);
+	void setPalette(const std::string& palId);
 	Bounds getBounds();
 	std::string getState() const;
 	void setState (const std::string& state, const pybind11::kwargs&);
     void addComponent(std::shared_ptr<Component> c) ;
+    float getX() const;
+    float getY() const;
     template <typename T>
     T* getComponent() const {
         auto it = m_components.find(std::type_index(typeid(T)));

@@ -27,14 +27,14 @@ std::shared_ptr<Sprite> AssetManager::getSprite(const std::string & id) {
 //        	m_spriteSheets.insert(std::make_pair(sheetName, std::make_shared<SpriteSheet>(f)));
 //        }
 //		auto sheet = m_spriteSheets.at(sheetName);
-		auto sheetFile = f["sheet"].as<std::string>();
+		//auto sheetFile = f["sheet"].as<std::string>();
 		auto spritesNode = f["sprites"];
 
 		for(YAML::const_iterator it=spritesNode.begin();it!=spritesNode.end();++it) {
 			auto currId = it->first.as<std::string>();
 			std::string cspr = id.substr(0, u+1) + currId;
 			std::cout << " --- adding sprite: " << cspr << "\n";
-			m_sprites[cspr] = std::make_shared<Sprite>(it->second, sheetFile);
+			m_sprites[cspr] = std::make_shared<Sprite>(it->second);
 		}
 		if (m_sprites.count(id) == 0) {
 			std::cerr << " looks like sprite: " << id << " does not exist!" << std::endl;

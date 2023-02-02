@@ -1,8 +1,9 @@
 #include "renderer.h"
 #include "../node.h"
+#include "../assetmanager.h"
 
-Renderer::Renderer() : Component(), m_multColor(glm::vec4(1.0f)), m_addColor(0.0f), m_rendererTransform(1.f),
-    m_offset(0), m_count(0) {
+Renderer::Renderer(GLuint textureId, GLuint paletteId) : Component(), m_multColor(glm::vec4(1.0f)), m_addColor(0.0f), m_rendererTransform(1.f),
+    m_offset(0), m_count(0), m_texId(textureId), m_paletteId(paletteId) {
 
 }
 
@@ -23,9 +24,32 @@ int Renderer::setup(Shader * s) {
     return 0;
 }
 
+void Renderer::setPalette(const std::string &id) {
+    auto& am = AssetManager::instance();
+    auto pal = am.getPalette(id);
+    m_paletteId = pal->getTexId();
+}
+
 
 
 void Renderer::draw(Shader * s) {
+    if (m_paletteId != GL_INVALID_VALUE) {
+        s->setInt("texture_palette", 1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_1D, m_paletteId);
+        if (m_texId != GL_INVALID_VALUE) {
+            s->setInt("texture_pdiffuse1", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m_texId);
+        }
+    } else {
+        if (m_texId != GL_INVALID_VALUE) {
+            s->setInt("texture_diffuse1", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m_texId);
+        }
+    }
+
     m_model->draw(s, m_offset, m_count);
 }
 

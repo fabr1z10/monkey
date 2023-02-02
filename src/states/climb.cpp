@@ -11,6 +11,7 @@ Climb::Climb(const std::string& id, const pybind11::kwargs& kwargs) : State(id, 
 	m_speed = py_get_dict<float>(kwargs, "speed", 0.0f);
 	m_animation = kwargs["anim"].cast<std::string>();
 	m_animIdle = kwargs["anim_idle"].cast<std::string>();
+	m_walkState = py_get_dict<std::string>(kwargs, "walk_state", "walk");
 }
 
 void Climb::setParent(StateMachine * sm) {
@@ -44,7 +45,7 @@ void Climb::run(double dt) {
 	auto down = glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS;
 
 	if (m_controller->grounded() && down) {
-		m_sm->setState("pango");
+		m_sm->setState(m_walkState);
 	}
 	m_dynamics->m_velocity = glm::vec3(0.f);
 

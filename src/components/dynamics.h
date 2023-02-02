@@ -13,8 +13,12 @@ public:
 	void update(double dt) {
 		//m_velocity += m_acceleration * static_cast<float>(dt);
 	}
-
+	void setVelocity(float vx, float vy, float vz);
 	glm::vec3 m_velocity;
 	glm::vec3 m_acceleration;
 
 };
+
+inline void Dynamics::setVelocity(float vx, float vy, float vz) {
+	m_velocity = glm::vec3(vx, vy, vz);
+}

@@ -168,12 +168,12 @@ void Engine::start() {
 
         } // Check if the ESC key was pressed or the window was closed
         while (m_run && !m_shutdown);
-//        m_room->end();
-//        m_allNodes.clear();
-//        if (m_room) {
-//            m_room->cleanUp();
-//        }
-//        m_room = nullptr;
+        m_room->end();
+        m_allNodes.clear();
+        if (m_room) {
+            m_room->cleanUp();
+        }
+        m_room = nullptr;
     }
 
 

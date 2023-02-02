@@ -34,7 +34,7 @@ struct SpriteCollisionInfo {
 class Sprite : public Model {
 public:
 	Sprite(ShaderType type, GLenum primitive);
-	Sprite(const YAML::Node& node, const std::string& sheetFile);
+	Sprite(const YAML::Node& node);//, const std::string& sheetFile);
 	void init(Node*) override;
 	//void draw(Shader*, Node*) override;
 	std::shared_ptr<Renderer> getRenderer() const override;

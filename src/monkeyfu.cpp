@@ -14,3 +14,7 @@ std::shared_ptr<Sprite> getSprite(const std::string& id) {
 std::shared_ptr<Node> getNode(int id) {
 	return Engine::instance().getNode(id);
 }
+
+void closeRoom() {
+	Engine::instance().closeRoom();
+}

@@ -14,21 +14,21 @@
 //#include "../shapes/shapes3d/aabb3d.h"
 
 
-Sprite::Sprite(const YAML::Node& node, const std::string& sheetFile) : Model(), m_defaultAnimation(std::string()) {
-
+Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string()) {
 	m_shaderType = ShaderType::SHADER_TEXTURE;
 	m_primitive = GL_TRIANGLES;
 	auto& am = AssetManager::instance();
+	auto sheetFile = node["sheet"].as<std::string>();
 	auto tex = am.getTex(sheetFile);
 
 	if (tex->hasPalette()) {
 		m_shaderType = ShaderType::SHADER_TEXTURE_PALETTE;
 		m_paletteId = tex->getDefaultPaletteId();
-		auto paletteName = node["palette"].as<std::string>("");
-		if (!paletteName.empty()) {
-			auto pal = am.getPalette(paletteName);
-			m_paletteId = pal->getTexId();
-		}
+//		auto paletteName = node["palette"].as<std::string>("");
+//		if (!paletteName.empty()) {
+//			auto pal = am.getPalette(paletteName);
+//			m_paletteId = pal->getTexId();
+//		}
 	}
 
 	float texw = tex->getWidth();
@@ -177,7 +177,7 @@ const FrameInfo & Sprite::getFrameInfo(const std::string &anim, int frame) {
 }
 
 std::shared_ptr<Renderer> Sprite::getRenderer() const {
-	return std::make_shared<SpriteRenderer>(m_defaultAnimation);
+	return std::make_shared<SpriteRenderer>(m_defaultAnimation, m_texId, m_paletteId);
 
 }
 

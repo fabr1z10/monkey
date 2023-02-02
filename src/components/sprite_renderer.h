@@ -5,7 +5,7 @@
 
 class SpriteRenderer : public Renderer {
 public:
-	explicit SpriteRenderer(const std::string& anim);
+	explicit SpriteRenderer(const std::string& anim, GLuint texId, GLuint palId);
 	void setModel(std::shared_ptr<Model>) override;
 	std::type_index getType() override;
 	void start() override;
@@ -14,6 +14,8 @@ public:
 	Sprite* getSprite();
 	[[nodiscard]] int getFrame() const;
 	void draw(Shader *) override;
+	bool isComplete() const;
+
 private:
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const AnimInfo* m_animInfo;

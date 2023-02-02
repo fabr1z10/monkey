@@ -23,6 +23,10 @@
 #include "components/move_translate.h"
 #include "shapes/aabb.h"
 #include "states/climb.h"
+#include "components/keyboard.h"
+#include "states/foewalk2d.h"
+#include "states/idle.h"
+#include "states/bounce.h"
 
 
 namespace py = pybind11;
@@ -58,6 +62,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("read", &read_png);
 	m.def("get_sprite", &getSprite);
 	m.def("get_node", &getNode);
+	m.def("close_room", &closeRoom);
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
     m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
@@ -89,9 +94,15 @@ PYBIND11_MODULE(monkey, m) {
         .def("move_to", &Node::moveTo)
         .def("set_position", &Node::setPosition)
         .def("set_model", &Node::setModel)
+        .def("set_palette", &Node::setPalette)
         .def("add_component", &Node::addComponent)
 		.def("set_state", &Node::setState)
 		.def_property_readonly("state", &Node::getState)
+		.def_property_readonly("x", &Node::getX)
+		.def_property_readonly("y", &Node::getY)
+		.def_property_readonly("flip_x",&Node::getFlipX)
+		.def("get_state_machine", &Node::getComponent<StateMachine>, py::return_value_policy::reference)
+		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
         .def("remove", &Node::remove);
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
@@ -162,7 +173,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<py::kwargs&>());
 
 	py::class_<Dynamics, Component, std::shared_ptr<Dynamics>>(m, "dynamics")
-		.def_readwrite("velocity", &Dynamics::m_velocity)
+		.def("set_velocity", &Dynamics::setVelocity)
 		.def(py::init<const pybind11::kwargs&>());
 
 	py::class_<Follow, Component, std::shared_ptr<Follow>>(m, "follow")
@@ -179,12 +190,22 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<MoveTranslate, Component, std::shared_ptr<MoveTranslate>>(m, "move_translate")
 		.def(py::init<const pybind11::kwargs&>());
 
+	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(m, "keyboard")
+		.def("add", &Keyboard::addFunction)
+		.def(py::init<>());
+
 	/// --- states ---
 	py::class_<State, std::shared_ptr<State>>(m, "state");
 	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
 	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
 		.def(py::init<const std::string&, py::kwargs&>());
+	py::class_<FoeWalk2D, State, std::shared_ptr<FoeWalk2D>>(m, "walk_2d_foe")
+		.def(py::init<const std::string&, py::kwargs&>());
 	py::class_<Climb, State, std::shared_ptr<Climb>>(m, "climb")
+		.def(py::init<const std::string&, const py::kwargs&>());
+	py::class_<Idle, State, std::shared_ptr<Idle>>(m, "idle")
+		.def(py::init<const std::string&, const std::string&, py::kwargs&>());
+	py::class_<Bounce, State, std::shared_ptr<Bounce>>(m, "bounce")
 		.def(py::init<const std::string&, const py::kwargs&>());
 
 }

@@ -175,6 +175,6 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
 
 
 std::shared_ptr<Renderer> AnimatedTiledModel::getRenderer() const {
-	return std::make_shared<AnimatedTiledModelRenderer>();
+	return std::make_shared<AnimatedTiledModelRenderer>(m_texId, m_paletteId);
 
 }

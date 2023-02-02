@@ -133,6 +133,10 @@ void Node::addComponent(std::shared_ptr<Component> c) {
     c->setNode(this);
 }
 
+
+void Node::setPalette(const std::string &palId) {
+	getComponent<Renderer>()->setPalette(palId);
+}
 void Node::setModel(std::shared_ptr<Model> model) {
 
 	auto *r = getComponent<Renderer>();
@@ -180,4 +184,12 @@ void Node::setState(const std::string &state, const pybind11::kwargs& kwargs) {
 	if (sm != nullptr) {
 		sm->setState(state, kwargs);
 	}
+}
+
+float Node::getX() const {
+	return m_worldMatrix[3][0];
+}
+
+float Node::getY() const {
+	return m_worldMatrix[3][1];
 }

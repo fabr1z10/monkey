@@ -60,20 +60,21 @@ std::shared_ptr<Model> ModelMaker::makeConvexPoly(std::shared_ptr<Shape> s, glm:
     std::vector<float> vertices;
     std::vector<unsigned> elements;
     unsigned u{0};
-    for (const auto& p : cp->getPoints()) {
+    const auto& points = cp->getPoints();
+    for (const auto& p : points) {
         vertices.insert(vertices.end(), {p.x, p.y, 0.f, color.r, color.g, color.b, color.a});
-        elements.push_back(u++);
+        //elements.push_back(u++);
     }
 
     GLuint prim {GL_LINE_LOOP};
     if (ft == FillType::OUTLINE) {
-        for (int i = 0; i < vertices.size(); ++i) {
+        for (int i = 0; i < points.size(); ++i) {
             elements.push_back(i);
         }
         elements.push_back(0);
     } else {
         prim = GL_TRIANGLES;
-        for (int i = 0; i < vertices.size() - 2; ++i) {
+        for (int i = 0; i < points.size() - 2; ++i) {
             elements.push_back(0);
             elements.push_back(i + 1);
             elements.push_back(i + 2);

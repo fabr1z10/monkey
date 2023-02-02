@@ -6,7 +6,7 @@
 
 class Renderer : public Component {
 public:
-    Renderer();
+    Renderer(GLuint textureId, GLuint paletteId);
     virtual int setup(Shader*);
     virtual void draw(Shader*);
     std::shared_ptr<Model> getModel();
@@ -20,6 +20,9 @@ public:
     void setCount(int);
     void setOffset(int);
     ShaderType getShaderType() const;
+    void setPalette(const std::string& id);
+
+
 protected:
     std::shared_ptr<Model> m_model;
     glm::vec4 m_multColor;
@@ -27,5 +30,7 @@ protected:
     glm::mat4 m_rendererTransform;
     int m_offset;
     int m_count;
+	GLuint m_texId;
+	GLuint m_paletteId;
 };
 
