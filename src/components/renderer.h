@@ -21,9 +21,10 @@ public:
     void setOffset(int);
     ShaderType getShaderType() const;
     void setPalette(const std::string& id);
-
+	using Base = Renderer;
 
 protected:
+
     std::shared_ptr<Model> m_model;
     glm::vec4 m_multColor;
     glm::vec4 m_addColor;

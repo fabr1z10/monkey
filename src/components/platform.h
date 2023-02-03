@@ -19,6 +19,7 @@ public:
 	void unregisterAll();
 	void setActive(bool) override;
 	void move(Node*);
+	using Base = Platform;
 private:
 	std::unordered_set<Controller2D*> m_characters;
 	std::vector<Controller2D*> m_removeBuffer;

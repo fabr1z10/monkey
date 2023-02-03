@@ -54,7 +54,7 @@ public:
     float getY() const;
     template <typename T>
     T* getComponent() const {
-        auto it = m_components.find(std::type_index(typeid(T)));
+        auto it = m_components.find(std::type_index(typeid(typename T::Base)));
         if (it != m_components.end()) {
             return dynamic_cast<T*>(it->second.get());
         }

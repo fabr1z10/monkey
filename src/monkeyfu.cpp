@@ -18,3 +18,8 @@ std::shared_ptr<Node> getNode(int id) {
 void closeRoom() {
 	Engine::instance().closeRoom();
 }
+
+int playScript(const std::shared_ptr<Script> s) {
+	return Engine::instance().getRoom()->getRunner<Scheduler>()->add(s);
+}
+

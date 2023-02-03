@@ -21,6 +21,24 @@ int Renderer::setup(Shader * s) {
     s->setVec4("mult_color", m_multColor);
     s->setVec4("add_color", m_addColor);
     s->setMat4("model", m);
+
+	if (m_paletteId != GL_INVALID_VALUE) {
+		s->setInt("texture_palette", 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_1D, m_paletteId);
+		if (m_texId != GL_INVALID_VALUE) {
+			s->setInt("texture_pdiffuse1", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_texId);
+		}
+	} else {
+		if (m_texId != GL_INVALID_VALUE) {
+			s->setInt("texture_diffuse1", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_texId);
+		}
+	}
+
     return 0;
 }
 
@@ -33,23 +51,6 @@ void Renderer::setPalette(const std::string &id) {
 
 
 void Renderer::draw(Shader * s) {
-    if (m_paletteId != GL_INVALID_VALUE) {
-        s->setInt("texture_palette", 1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_1D, m_paletteId);
-        if (m_texId != GL_INVALID_VALUE) {
-            s->setInt("texture_pdiffuse1", 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m_texId);
-        }
-    } else {
-        if (m_texId != GL_INVALID_VALUE) {
-            s->setInt("texture_diffuse1", 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m_texId);
-        }
-    }
-
     m_model->draw(s, m_offset, m_count);
 }
 

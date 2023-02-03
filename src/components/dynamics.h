@@ -16,7 +16,7 @@ public:
 	void setVelocity(float vx, float vy, float vz);
 	glm::vec3 m_velocity;
 	glm::vec3 m_acceleration;
-
+	using Base = Dynamics;
 };
 
 inline void Dynamics::setVelocity(float vx, float vy, float vz) {

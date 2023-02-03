@@ -27,6 +27,11 @@
 #include "states/foewalk2d.h"
 #include "states/idle.h"
 #include "states/bounce.h"
+#include "runners/scheduler.h"
+#include "actions/delay.h"
+#include "actions/nodeaction.h"
+#include "actions/blink.h"
+#include "actions/callfunc.h"
 
 
 namespace py = pybind11;
@@ -63,6 +68,7 @@ PYBIND11_MODULE(monkey, m) {
 	m.def("get_sprite", &getSprite);
 	m.def("get_node", &getNode);
 	m.def("close_room", &closeRoom);
+	m.def("play", &playScript);
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
     m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
@@ -102,6 +108,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("y", &Node::getY)
 		.def_property_readonly("flip_x",&Node::getFlipX)
 		.def("get_state_machine", &Node::getComponent<StateMachine>, py::return_value_policy::reference)
+		.def("get_sprite_collider", &Node::getComponent<SpriteCollider>, py::return_value_policy::reference)
 		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
         .def("remove", &Node::remove);
 
@@ -150,6 +157,27 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<CollisionEngine, Runner, std::shared_ptr<CollisionEngine>>(m, "collision_engine")
 		.def("add_response", &CollisionEngine::addResponse)
 		.def(py::init<float, float, float>());
+	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "scheduler")
+		.def("add", &Scheduler::add)
+		.def(py::init<>());
+
+	/// --- scripts & actions
+	py::class_<Script, std::shared_ptr<Script>>(m, "script")
+		.def("add", &Script::add)
+		.def(py::init<const pybind11::kwargs&>());
+
+
+	/// --- actions ---
+	py::module_ ma = m.def_submodule("actions");
+	py::class_<Action, std::shared_ptr<Action>>(ma, "action");
+	py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "node_action");
+	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "delay")
+		.def(py::init<float>());
+	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "blink")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "callfunc")
+		.def(py::init<pybind11::function>());
+
 
 	/// --- components ---
 	py::class_<Component, std::shared_ptr<Component>>(m, "component");
@@ -162,6 +190,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<std::shared_ptr<Shape>, int, int, int>());
 
 	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "sprite_collider")
+		.def("set_override", &SpriteCollider::setCollisionOverride)
 		.def(py::init<int, int, int, const pybind11::kwargs&>());
 
 	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "controller")

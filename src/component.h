@@ -15,7 +15,7 @@ public:
     Node* getNode();
     bool isActive() const;
     virtual void setActive(bool);
-
+	//using Base = Component;
 protected:
     // the node this component belongs to
     Node* m_node;

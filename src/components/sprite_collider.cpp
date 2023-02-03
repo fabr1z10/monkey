@@ -98,3 +98,33 @@ void SpriteColliderRenderer::draw(Shader * s) {
 
 
 }
+
+int SpriteCollider::getCollisionTag() const {
+	auto it = m_override.find(m_renderer->getAnimation());
+	if (it != m_override.end()) {
+		return it->second[2];
+	}
+	return m_tag;
+}
+
+int SpriteCollider::getCollisionFlag() const {
+	auto it = m_override.find(m_renderer->getAnimation());
+	if (it != m_override.end()) {
+		return it->second[0];
+	}
+	return m_flag;
+
+}
+
+int SpriteCollider::getCollisionMask() const {
+	auto it = m_override.find(m_renderer->getAnimation());
+	if (it != m_override.end()) {
+		return it->second[1];
+	}
+	return m_mask;
+
+}
+
+void SpriteCollider::setCollisionOverride(const std::string & id , int flag, int mask, int tag) {
+	m_override[id] = glm::ivec3(flag, mask, tag);
+}

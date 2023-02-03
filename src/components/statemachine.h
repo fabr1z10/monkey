@@ -18,6 +18,7 @@ public:
 	virtual void run(double) {}
 	virtual void end();
 	virtual void setParent(StateMachine*);
+
 protected:
 	pybind11::function m_script;
 	std::string m_id;
@@ -53,6 +54,7 @@ public:
 	void setState(const std::string&, const pybind11::kwargs& kwargs = pybind11::kwargs());
 	void addState(std::shared_ptr<State> state);
 	void setInitialState(const std::string& id, const pybind11::kwargs& args);
+	using Base = StateMachine;
 protected:
 	std::shared_ptr<State> m_currentState;
 	std::string m_initialState;

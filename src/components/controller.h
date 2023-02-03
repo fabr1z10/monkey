@@ -15,6 +15,7 @@ public:
 	void setSize(glm::vec3 size, glm::vec3 offset);
 	virtual void move(glm::vec3&, bool forced);
 	glm::vec3 getSize() const;
+	using Base = Controller;
 protected:
 	void setDebugShape();
 	virtual std::shared_ptr<Model> getDebugModel() = 0;

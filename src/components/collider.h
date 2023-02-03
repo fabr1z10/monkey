@@ -14,13 +14,14 @@ public:
     glm::vec4 bounds() const;
     std::type_index getType() final override;
     virtual std::shared_ptr<Shape> getShape() = 0;
-    int getCollisionTag() const;
-    int getCollisionFlag() const;
-    int getCollisionMask() const;
+    virtual int getCollisionTag() const;
+    virtual int getCollisionFlag() const;
+    virtual int getCollisionMask() const;
     void setCollisionFlag(int);
     void setCollisionMask(int);
     void setCollisionTag(int);
     void start() override;
+	using Base = Collider;
 protected:
     virtual void generateDebugMesh() {}
     int m_callbackHandle;
