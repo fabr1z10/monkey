@@ -36,18 +36,20 @@ void CollisionEngine::add(Collider * c) {
 
 void CollisionEngine::remove(Collider * c) {
     m_removed.insert(c);
-    auto d = m_colliderLocations.at(c);
-    for (auto i = d.min.x; i <= d.max.x; ++i) {
-        for (auto j = d.min.y; j <= d.max.y; ++j) {
-            for (auto k = d.min.z; k <= d.max.z; ++k) {
-                auto aa = m_cells.find(glm::vec3(i, j, k));
-                if (aa != m_cells.end()) {
-                    aa->second.colliders.erase(c);
-                }
-            }
-        }
-    }
-    m_colliderLocations.erase(c);
+    if (m_colliderLocations.find(c) != m_colliderLocations.end()) {
+		auto d = m_colliderLocations.at(c);
+		for (auto i = d.min.x; i <= d.max.x; ++i) {
+			for (auto j = d.min.y; j <= d.max.y; ++j) {
+				for (auto k = d.min.z; k <= d.max.z; ++k) {
+					auto aa = m_cells.find(glm::vec3(i, j, k));
+					if (aa != m_cells.end()) {
+						aa->second.colliders.erase(c);
+					}
+				}
+			}
+		}
+		m_colliderLocations.erase(c);
+	}
     for (auto it = m_previouslyCollidingPairs.begin(); it != m_previouslyCollidingPairs.end(); ) {
         if (it->first.first == c || it->first.second == c) {
             it = m_previouslyCollidingPairs.erase(it);

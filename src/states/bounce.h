@@ -22,11 +22,16 @@ private:
 	Node* m_node;
 	pybind11::function m_onBounceY;
 	int m_bounceCountY;
-	float m_fixedVelocityBounce;
+	int m_counter;
+	std::vector<float> m_fixedVelocityBounce;
 	bool m_isFixedVel;
 	bool m_checkWalls;
 	SpriteRenderer* m_animatedRenderer;
 	std::string m_animation;
+	bool m_flipHorizontally;
+	bool m_left;
+	float m_horizontalSpeed;
+
 };
 
 

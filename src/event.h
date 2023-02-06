@@ -29,7 +29,8 @@ public:
 	void fire(Args args) {
 		if (!m_enabled)
 			return;
-		for (auto& f : m_callbacks) f.second(args);
+		for (auto& f : m_callbacks)
+			f.second(args);
 	}
 
 	bool isEmpty() {

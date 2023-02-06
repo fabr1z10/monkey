@@ -32,6 +32,8 @@
 #include "actions/nodeaction.h"
 #include "actions/blink.h"
 #include "actions/callfunc.h"
+#include "actions/moveacc.h"
+#include "actions/move.h"
 
 
 namespace py = pybind11;
@@ -177,6 +179,10 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "callfunc")
 		.def(py::init<pybind11::function>());
+	py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "move_accelerated")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "move")
+		.def(py::init<const pybind11::kwargs&>());
 
 
 	/// --- components ---
