@@ -170,7 +170,8 @@ bool Node::getFlipX() const {
 
 void Node::setFlipX(bool value) {
 	m_modelMatrix[0][0] = (value ? -1.f : 1.f) * abs(m_modelMatrix[0][0]);
-	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	if (m_parent != nullptr)
+		m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
 
 }
 

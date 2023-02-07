@@ -34,6 +34,8 @@
 #include "actions/callfunc.h"
 #include "actions/moveacc.h"
 #include "actions/move.h"
+#include "actions/animate.h"
+#include "actions/remove.h"
 
 
 namespace py = pybind11;
@@ -108,7 +110,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("state", &Node::getState)
 		.def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
-		.def_property_readonly("flip_x",&Node::getFlipX)
+		.def_property("flip_x",&Node::getFlipX, &Node::setFlipX)
 		.def("get_state_machine", &Node::getComponent<StateMachine>, py::return_value_policy::reference)
 		.def("get_sprite_collider", &Node::getComponent<SpriteCollider>, py::return_value_policy::reference)
 		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
@@ -175,6 +177,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "node_action");
 	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "delay")
 		.def(py::init<float>());
+	py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "animate")
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "blink")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "callfunc")
@@ -182,6 +186,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "move_accelerated")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "move")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
 		.def(py::init<const pybind11::kwargs&>());
 
 

@@ -10,7 +10,7 @@ Bounce::Bounce(const std::string& id, const pybind11::kwargs& kwargs) : State(id
 		m_fixedVelocityBounce = kwargs["bounce_velocity"].cast<std::vector<float>>();
 		m_isFixedVel = true;
 	}
-	if (kwargs.contains("on_bounce_y")) {
+	if (kwargs.contains("on_bounce_y") && !kwargs["on_bounce_y"].is_none()) {
 		m_onBounceY = kwargs["on_bounce_y"].cast<pybind11::function>();
 	}
 	m_checkWalls = py_get_dict<bool>(kwargs, "check_walls", true);

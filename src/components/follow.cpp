@@ -7,6 +7,16 @@ Follow::Follow (std::shared_ptr<Camera> cam, pybind11::tuple& c, pybind11::tuple
 																						 m_previous = glm::vec3(0.0f);
 }
 
+void Follow::start() {
+	auto worldPos = m_node->getWorldPosition();
+	glm::vec3 eye = worldPos + m_relativePos;
+	auto dir = glm::vec3(0.f, 0.f, -1.f);//(glm::normalize(m_node->getWorldPosition() - eye);
+	m_cam->setPosition(eye, dir, m_up);
+	m_previous = worldPos;
+	
+}
+
+
 void Follow::update (double dt) {
 	if (!m_active) return;
 
