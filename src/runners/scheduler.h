@@ -50,6 +50,7 @@ private:
 	long _lastAddedId;
 	std::string m_scriptId;
 	bool m_done;
+	long _loopId;
 
 };
 

@@ -93,6 +93,7 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
     std::stack<std::pair<int, int>> loopStack;
     //unsigned i0 = vertices.size();
     bool horizontalFlip = false;
+    bool vFlip = false;
     while (n < tokens.size()) {
 
         if (tokens[n][0] == 'W') {
@@ -129,14 +130,26 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
             horizontalFlip = true;
             continue;
         }
+		if (tokens[n][0] == 'V') {
+			// flip vertical next tile only
+			n++;
+			vFlip = true;
+			continue;
+		}
         int tx = std::stoi(tokens[n++]);
         if (tx != -1) {
             int ty = std::stoi(tokens[n++]);
             float tx0 = tx * m_t1;
             float tx1 = (tx + 1.f) * m_t1;
+            float ty0 = ty * m_t2;
+            float ty1 = (ty + 1.f) * m_t2;
             if (horizontalFlip) {
                 std::swap(tx0, tx1);
                 horizontalFlip = false;
+            }
+            if (vFlip) {
+            	std::swap(ty0, ty1);
+            	vFlip = false;
             }
             float xm = x * m_tileSize[0];
             float ym = y * m_tileSize[1];
@@ -144,13 +157,13 @@ void TiledModel::readTiles(const std::string& inputString, std::vector<GLfloat>&
 			float yM = ym + m_tileSize[1];
 
 			// bottom left
-            vertices.insert(vertices.end(),{xm, ym, 0.0f, tx0, (ty + 1.f) * m_t2, 1, 1, 1, 1});
+            vertices.insert(vertices.end(),{xm, ym, 0.0f, tx0, ty1, 1, 1, 1, 1});
             // bottom right
-            vertices.insert(vertices.end(),{xM, ym, 0.0f, tx1, (ty + 1) * m_t2, 1, 1, 1, 1});
+            vertices.insert(vertices.end(),{xM, ym, 0.0f, tx1, ty1, 1, 1, 1, 1});
             // top right
-            vertices.insert(vertices.end(),{xM, yM, 0.0f, tx1, ty * m_t2, 1, 1, 1, 1});
+            vertices.insert(vertices.end(),{xM, yM, 0.0f, tx1, ty0, 1, 1, 1, 1});
             // top left
-            vertices.insert(vertices.end(),{xm, yM, 0.0f, tx0, ty * m_t2, 1, 1, 1, 1});
+            vertices.insert(vertices.end(),{xm, yM, 0.0f, tx0, ty0, 1, 1, 1, 1});
             indices.insert(indices.end(), {m_i0, m_i0 + 1, m_i0 + 2, m_i0 + 3, m_i0, m_i0 + 2});
 			m_modelBounds.min.x = std::min(m_modelBounds.min.x, xm);
 			m_modelBounds.min.y = std::min(m_modelBounds.min.y, ym);

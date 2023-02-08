@@ -67,6 +67,7 @@ void Room::update(double dt) {
 		}
 		if (changeCam && !camStack.empty()) {
 			currentBounds = camStack.back().second->getViewingBounds();
+			currentBounds.scale(2.f, 2.f);
 		}
         auto b = current->getBounds();
         if (camStack.empty() || currentBounds.intersect2D(b)) {

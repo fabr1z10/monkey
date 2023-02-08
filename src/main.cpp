@@ -36,6 +36,8 @@
 #include "actions/move.h"
 #include "actions/animate.h"
 #include "actions/remove.h"
+#include "components/scriptplayer.h"
+#include "actions/move_dynamics.h"
 
 
 namespace py = pybind11;
@@ -185,6 +187,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<pybind11::function>());
 	py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "move_accelerated")
 		.def(py::init<const pybind11::kwargs&>());
+	py::class_<MoveDynamics, NodeAction, std::shared_ptr<MoveDynamics>>(ma, "move_dynamics")
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "move")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
@@ -233,6 +237,10 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(m, "keyboard")
 		.def("add", &Keyboard::addFunction)
+		.def(py::init<>());
+
+	py::class_<ScriptPlayer, Component, std::shared_ptr<ScriptPlayer>>(m, "script_player")
+		.def("play", &ScriptPlayer::play)
 		.def(py::init<>());
 
 	/// --- states ---

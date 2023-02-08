@@ -20,6 +20,7 @@ struct Bounds {
     Bounds intersection(const Bounds& other);
     glm::vec3 getCenter();
     static Bounds maxBounds();
+    void scale(float, float);
 
 };
 

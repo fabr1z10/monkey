@@ -9,7 +9,7 @@ public:
 	explicit MoveTranslate(const pybind11::kwargs&);
 	void update(double) override;
 	void start() override;
-
+	void setNode(Node*) override;
 private:
 	struct Step {
 		glm::vec2 velocity;

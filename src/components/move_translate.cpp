@@ -43,6 +43,11 @@ MoveTranslate::MoveTranslate(const pybind11::kwargs& args) : m_time(0.f), m_inde
 }
 
 
+void MoveTranslate::setNode(Node * node) {
+	Component::setNode(node);
+	m_node->setPosition(m_steps[0].startPosition.x, m_steps[0].startPosition.y, m_steps[0].z);
+}
+
 void MoveTranslate::start() {
 	m_index = 0;
 	const auto& step = m_steps[0];

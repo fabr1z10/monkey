@@ -10,6 +10,15 @@ Bounds::Bounds() : min(glm::vec3(0.0f)), max(glm::vec3(0.0f)) {
 
 }
 
+void Bounds::scale(float, float) {
+	auto halfWidth = (max.x - min.x) * 0.5f;
+	auto halfHeight = (max.y - min.y) * 0.5f;
+	min.x -= halfWidth;
+	max.x += halfWidth;
+	min.y -= halfHeight;
+	max.y += halfHeight;
+}
+
 
 Bounds::Bounds(glm::vec3 m, glm::vec3 M) : min(m), max(M) {}
 

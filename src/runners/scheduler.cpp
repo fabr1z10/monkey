@@ -15,7 +15,7 @@ void Action::setId(long id) {
 //    }
 //}
 
-Script::Script(const pybind11::kwargs& args) : m_done(false), _nextId(0), _lastAddedId(-1) {
+Script::Script(const pybind11::kwargs& args) : m_done(false), _nextId(0), _lastAddedId(-1), _loopId(-1) {
 	m_scriptId = py_get_dict<std::string>(args, "id", "");
 }
 
@@ -23,6 +23,10 @@ Script::Script(const pybind11::kwargs& args) : m_done(false), _nextId(0), _lastA
 
 long Script::add(std::shared_ptr<Action> action, const pybind11::kwargs & args) {
 	action->setId(_nextId);
+	auto loop = py_get_dict<bool>(args, "loop", false);
+	if (loop) {
+		_loopId = _nextId;
+	}
 	m_actions[_nextId] = action;
 	m_inDegree[_nextId] = 0;
 	m_edges[_nextId] = std::vector<int>();
@@ -86,13 +90,40 @@ void Script::update(double dt) {
 
 
 	// cleanup
-	for (auto c : complete) {
-		m_inDegree.erase(c);
-		m_actions.erase(c);
+	if (_loopId  == -1) {
+		for (auto c : complete) {
+			m_inDegree.erase(c);
+			m_actions.erase(c);
+		}
 	}
 	if (m_current.empty()) {
-		m_done = true;
+		if (_loopId == -1) {
+			m_done = true;
+		} else {
+			// reset in degree
+			std::list<int> m;
+			m.push_back(_loopId);
+			std::set<int> explored;
+			explored.insert(_loopId);
+			m_inDegree[_loopId] = 0;
+			while (!m.empty()) {
+				auto current = m.front();
+				m.pop_front();
+				auto it = m_edges.find(current);
+				if (it != m_edges.end()) {
+					for (const auto& n : it->second) {
+						m_inDegree[n]++;
+						if (explored.count(n) == 0) {
+							m.push_back(n);
+							explored.insert(n);
+						}
+					}
+				}
+			}
+
+		}
 	}
+
 }
 
 void Scheduler::update(double dt) {
