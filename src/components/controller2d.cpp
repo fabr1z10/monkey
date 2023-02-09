@@ -142,6 +142,15 @@ void Controller2D::horizontalCollisions(glm::vec3& velocity) {
 	}
 }
 
+void Controller2D::setMask(int up, int down) {
+	m_maskUp = up;
+	m_maskDown = down;
+}
+
+glm::ivec2 Controller2D::getMask() const {
+	return glm::ivec2(m_maskUp, m_maskDown);
+}
+
 void Controller2D::verticalCollisions(glm::vec3& velocity, bool forced) {
 	auto directionY = signf(velocity.y);
 	bool goingForward = velocity.x > 0.0f;

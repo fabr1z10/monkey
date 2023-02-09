@@ -12,7 +12,7 @@ public:
 	Climb(const std::string& id, const pybind11::kwargs&);
 	void run(double) override;
 	void init(const pybind11::kwargs& args) override;
-
+	void end() override;
 	void setParent(StateMachine*) override;
 private:
 	Controller2D* m_controller;
@@ -23,6 +23,11 @@ private:
 	std::string m_animIdle;
 	float m_speed;
 	std::string m_walkState;
+	glm::ivec2 m_mask;
+
+	int m_maskUp;
+	int m_maskDown;
+
 };
 
 

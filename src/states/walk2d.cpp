@@ -22,8 +22,7 @@ Walk2D::Walk2D(const std::string& id, const pybind11::kwargs& kwargs) : State(id
 
 void Walk2D::init(const pybind11::kwargs &args) {
 	State::init(args);
-	auto dir = py_get_dict<float>(args, "dir", -1.0f);
-	m_left = dir < 0.0f;
+	m_left = py_get_dict<bool>(args, "left", m_left);
 	m_right = !m_left;
 
 }

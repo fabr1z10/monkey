@@ -26,6 +26,8 @@ public:
 	void resetPlatform();
 	bool isFalling(float);
 	void resetDetails();
+	glm::ivec2 getMask() const;
+	void setMask(int, int);
 private:
 	std::shared_ptr<Model> getDebugModel() override;
 

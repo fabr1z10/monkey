@@ -191,6 +191,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "move")
 		.def(py::init<const pybind11::kwargs&>());
+	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "move_by")
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
 		.def(py::init<const pybind11::kwargs&>());
 

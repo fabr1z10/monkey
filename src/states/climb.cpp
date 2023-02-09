@@ -12,6 +12,9 @@ Climb::Climb(const std::string& id, const pybind11::kwargs& kwargs) : State(id, 
 	m_animation = kwargs["anim"].cast<std::string>();
 	m_animIdle = kwargs["anim_idle"].cast<std::string>();
 	m_walkState = py_get_dict<std::string>(kwargs, "walk_state", "walk");
+	m_maskUp = py_get_dict<int>(kwargs, "mask_up", 2);
+	m_maskDown = py_get_dict<int>(kwargs, "mask_up", 2 | 32);
+
 }
 
 void Climb::setParent(StateMachine * sm) {
@@ -33,7 +36,14 @@ void Climb::init(const pybind11::kwargs& args) {
 	m_node->setFlipX(false);
 	m_animatedRenderer->setAnimation(m_animIdle);
 	m_dynamics->m_velocity = glm::vec3(0.f);
+	m_mask = m_controller->getMask();
+	m_controller->setMask(m_maskUp, m_maskDown);
+	glfwGetKey(window, GLFW_KEY_DOWN);
+}
 
+void Climb::end() {
+	State::end();
+	m_controller->setMask(m_mask[0], m_mask[1]);
 }
 
 void Climb::run(double dt) {

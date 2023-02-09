@@ -79,6 +79,9 @@ void CollisionEngine::update(double) {
     for (auto& c : m_colliderLocations) {
         if (c.second.dirty) {
             auto *c1 = c.first;
+            if (!c1->isActive()) {
+            	continue;
+            }
             // loop through cells occupied by collider
             for (auto i = c.second.min.x; i <= c.second.max.x; ++i) {
                 for (auto j = c.second.min.y; j <= c.second.max.y; ++j) {
