@@ -1,5 +1,6 @@
 #include "model.h"
 #include "components/renderer.h"
+#include "assetmanager.h"
 
 Model::Model() : m_vbo(GL_INVALID_VALUE), m_ebo(GL_INVALID_VALUE), m_texId(GL_INVALID_VALUE), m_paletteId(GL_INVALID_VALUE) {}
 
@@ -34,11 +35,19 @@ void Model::generateBuffers(const std::vector<float>& vertices, const std::vecto
     // generate buffers
     glGenBuffers(1, &m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &m_ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
     m_size = indices.size();
+}
+
+
+void Model::setTexture(const std::string &texFile) {
+	auto& am = AssetManager::instance();
+	auto tex = am.getTex(texFile);
+	m_texId = tex->getTexId();
+
 }

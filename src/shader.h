@@ -7,6 +7,8 @@
 #include "glm/glm.hpp"
 #include "symbols.h"
 
+class Node;
+
 struct VertexInfo {
     int size;
     GLenum type;
@@ -18,7 +20,7 @@ class Shader {
 public:
     Shader(ShaderType, const std::string& vertexCode, const std::string& fragmentCode, const std::string& vertexFormat);
     ~Shader();
-    void use();
+    virtual void use();
     void setupVertices();
 
     void setInt(const std::string &name, int value) const;
@@ -29,6 +31,7 @@ public:
     void setVec4(const std::string &name, const glm::vec4 &value) const;
     [[nodiscard]] ShaderType getShaderType() const;
     [[nodiscard]] GLuint getProgId() const;
+    virtual void init(Node*) { }
 private:
     GLuint m_programId;
     GLuint m_vao;

@@ -129,7 +129,8 @@ void Room::draw(Shader* s) {
         // setup modelview
         auto renderer = current->getComponent<Renderer>();
         if (renderer != nullptr && renderer->getShaderType() == s->getShaderType()) {
-            //s->preDraw(current);
+            s->init(current);
+        	//s->preDraw(current);
             if (renderer->setup(s) == 0) {
                 renderer->draw(s);
 

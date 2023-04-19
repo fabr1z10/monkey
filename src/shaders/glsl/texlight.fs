@@ -25,6 +25,6 @@ void main()
     vec3 d = (intensity + ambient) * diffuse * texColor.rgb;
 
     //d = texColor;
-    fragColor = vec4(d, 1.);
+    fragColor = texColor; //vec4(d, 1.);
 }
 )"

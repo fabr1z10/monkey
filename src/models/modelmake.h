@@ -12,7 +12,7 @@ public:
         // Instantiated on first use.
         return instance;
     }
-
+	static std::shared_ptr<Model> pippo(const pybind11::kwargs& args);
     std::shared_ptr<Model> make(std::shared_ptr<Shape>, glm::vec4 color, FillType ft);
 private:
     int m_pointsPerCirle;

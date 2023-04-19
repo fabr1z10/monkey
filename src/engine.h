@@ -55,7 +55,11 @@ public:
 	void unregisterToKeyboardEvent(KeyboardListener*);
 
 private:
-    std::shared_ptr<Shader> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) ;
+	template<typename T=Shader>
+	std::shared_ptr<T> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
+		auto shader = std::make_shared<T>(type, vertex, fragment, vertexFormat);
+		return shader;
+	}
 
 
     //void setupFramebufferRendering();
@@ -63,7 +67,7 @@ private:
     void loadRoom();
     void loadShaders();
     pybind11::object m_game;
-    //pybind11::object m_game;
+
     std::string m_title;
     std::string m_roomId;
     glm::ivec2 m_windowSize;

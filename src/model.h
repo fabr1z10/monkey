@@ -19,7 +19,7 @@ public:
     virtual void init(Node*) {}
     //virtual void draw(Shader*, const glm::mat4&);
     virtual void draw(Shader* shader, int offset, int count);
-
+	void setTexture(const std::string& texFile);
 
     // ** a model can be shared by multiple nodes. **
     // so a model does not contain information relevant on how to draw it

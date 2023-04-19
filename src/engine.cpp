@@ -2,6 +2,7 @@
 #include <iostream>
 #include "pyhelper.h"
 #include "shaders/shaders.h"
+#include "shaders/lightshader.h"
 
 
 
@@ -13,14 +14,13 @@ namespace py = pybind11;
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
     m_shaderBuilders[0] = [&] () { return create_shader(ShaderType::SHADER_COLOR, color_vs, color_fs, "3f4f"); };
     m_shaderBuilders[1] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE, tex_vs, tex_fs, "3f2f4f"); };
-    m_shaderBuilders[3] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE_PALETTE, tex_vs, tex_pal_fs, "3f2f4f"); };
-
+    m_shaderBuilders[2] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE_PALETTE, tex_vs, tex_pal_fs, "3f2f4f"); };
+	// light shader
+	m_shaderBuilders[3] = [&] () { return create_shader<LightShader>(
+			ShaderType::SHADER_TEXTURE_LIGHT, tex_light_vs, tex_light_fs, "3f2f3f");};
 }
 
-std::shared_ptr<Shader> Engine::create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
-    auto shader = std::make_shared<Shader>(type, vertex, fragment, vertexFormat);
-    return shader;
-}
+
 
 
 //

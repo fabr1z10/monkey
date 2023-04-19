@@ -55,6 +55,54 @@ std::shared_ptr<Model> ModelMaker::makeAABB(std::shared_ptr<Shape> s, glm::vec4 
     return model;
 }
 
+std::shared_ptr<Model> ModelMaker::pippo(const pybind11::kwargs& args) {
+	auto size = py_get_dict<glm::vec2>(args, "size");
+	auto tex_repeat = py_get_dict<glm::vec2>(args, "tex_repeat", glm::vec2(0.f));
+
+	auto sheetFile = args["tex"].cast<std::string>();
+
+	if (tex_repeat == glm::vec2(0.f)) {
+		auto tex_repeat_every = py_get_dict<glm::vec2>(args, "tex_period", glm::vec2(0.f));
+		tex_repeat.x = size.x / tex_repeat_every.x;
+		tex_repeat.y = size.y / tex_repeat_every.y;
+	}
+	float width = size.x;
+	float height = size.y;
+	float tw = tex_repeat.x;
+	float th = tex_repeat.y;
+	auto normal = py_get_dict<char>(args, "normal");
+	std::vector<float> vertices;
+
+	if (normal == 'x') {
+		vertices = std::vector<float>({
+			0.f, 0.f, width, 0.f, 0.f, 1.f, 0.f, 0.f,
+			0.f, 0.f, 0.f, tw, 0.f, 1.f, 0.f, 0.f,
+			0.f, height, 0.f, tw, th, 1.f, 0.f, 0.f,
+			0.f, height, width, 0.f, th, 1.f, 0.f, 0.f});
+	} else if (normal == 'y') {
+		vertices = std::vector<float>({
+		    0.f, 0.f, height, 0.f, 0.f, 0.f, 1.f, 0.f,
+			width, 0.f, height, tw, 0.f, 0.f, 1.f, 0.f,
+			width, 0.f, 0.f, tw, th, 0.f, 1.f, 0.f,
+			0.f, 0.f, 0.f, 0.f, th, 0.f, 1.f, 0.f});
+	} else if (normal == 'z') {
+		vertices = std::vector<float>({
+			0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f,
+			width, 0.f, 0.f, tw, 0.f, 0.f, 0.f, 1.f,
+			width, height, 0.f, tw, th, 0.f, 0.f, 1.f,
+			0.f, height, 0.f, 0.f, th, 0.f, 0.f, 1.f});
+	} else {
+		std::cerr << "unknown normal: " << normal << ", must be x, y or z.";
+		exit(1);
+	}
+	std::vector<unsigned> elements{0, 1, 2, 3, 0, 2};
+	auto model = std::make_shared<Model>(ShaderType::SHADER_TEXTURE_LIGHT, GL_TRIANGLES);
+	model->generateBuffers(vertices, elements);
+	model->setTexture(sheetFile);
+	return model;
+
+}
+
 std::shared_ptr<Model> ModelMaker::makeConvexPoly(std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) {
     auto* cp = static_cast<ConvexPoly*>(s.get());
     std::vector<float> vertices;

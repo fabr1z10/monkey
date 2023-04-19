@@ -4,6 +4,7 @@
 #include "png.h"
 #include "engine.h"
 #include "node.h"
+#include "models/modelmake.h"
 #include <iostream>
 #include "monkeyfu.h"
 #include "shape.h"
@@ -38,6 +39,7 @@
 #include "actions/remove.h"
 #include "components/scriptplayer.h"
 #include "actions/move_dynamics.h"
+#include "runners/lighting.h"
 
 
 namespace py = pybind11;
@@ -79,7 +81,7 @@ PYBIND11_MODULE(monkey, m) {
     m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
     m.attr("SHADER_TEXTURE_PALETTE") = static_cast<int>(ShaderType::SHADER_TEXTURE_PALETTE);
-
+	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
 
 
     py::class_<Engine>(m, "Engine")
@@ -150,6 +152,7 @@ PYBIND11_MODULE(monkey, m) {
 
 	/// --- models ---
     py::module_ mm = m.def_submodule("models");
+	mm.def("make_plane", &ModelMaker::pippo);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def(py::init<int>());
     py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
@@ -166,6 +169,16 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());
+	py::class_<Lighting, Runner, std::shared_ptr<Lighting>>(m, "lighting")
+		.def(py::init<>())
+		.def("set_ambient", &Lighting::setAmbient)
+		.def("add_light", &Lighting::addLight);
+
+
+	/// --- lights ---
+	py::class_<Light, std::shared_ptr<Light>>(m, "light");
+	py::class_<DirectionalLight, Light, std::shared_ptr<DirectionalLight>>(m, "light_directional")
+		.def(py::init<const pybind11::kwargs&>());
 
 	/// --- scripts & actions
 	py::class_<Script, std::shared_ptr<Script>>(m, "script")
