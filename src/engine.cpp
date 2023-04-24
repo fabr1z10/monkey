@@ -18,6 +18,7 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 	// light shader
 	m_shaderBuilders[3] = [&] () { return create_shader<LightShader>(
 			ShaderType::SHADER_TEXTURE_LIGHT, tex_light_vs, tex_light_fs, "3f2f3f");};
+	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return create_shader(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
 }
 
 
@@ -151,7 +152,11 @@ void Engine::start() {
                 for (const auto &shader : m_shaders) {
                     // here it makes sense to
                     shader->use();
-                    m_room->draw(shader.get());
+                    for (const auto& batch : _batches) {
+                        batch->draw(shader.get());
+                    }
+
+                    //m_room->draw(shader.get());
                     //shader->done();
 
                 }
@@ -194,6 +199,11 @@ void Engine::closeRoom() {
 void Engine::loadRoom() {
     // generate current room
     std::cout << "sucalo\n";
+
+
+    // create a batch
+    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
+
     m_room = m_game.attr("rooms").attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
 
 
@@ -210,6 +220,20 @@ void Engine::loadShaders() {
         //m_shaderTypeToIndex[shader->getShaderType()] = m_shaders.size();
         m_shaders.push_back(shader);
     }
+    auto batches = py_get<std::vector<pybind11::dict>>(m_game, "sprite_batches");
+
+    for (const auto batch : batches) {
+        auto b = std::make_shared<SpriteBatch>(batch);
+        _batches.push_back(b);
+    }
+
+    for (const auto& shader : m_shaders) {
+        shader->use();
+        for (const auto& batch : _batches) {
+            batch->configure(shader.get());
+        }
+    }
+
 
 }
 
@@ -321,4 +345,8 @@ void Engine::registerToKeyboardEvent(KeyboardListener * listener) {
 
 void Engine::unregisterToKeyboardEvent(KeyboardListener * listener) {
 	m_keyboardListeners.erase(listener);
+}
+
+SpriteBatch * Engine::getBatch(int id) {
+    return _batches[id].get();
 }

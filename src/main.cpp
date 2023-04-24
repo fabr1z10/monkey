@@ -82,6 +82,7 @@ PYBIND11_MODULE(monkey, m) {
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
     m.attr("SHADER_TEXTURE_PALETTE") = static_cast<int>(ShaderType::SHADER_TEXTURE_PALETTE);
 	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
+    m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
 
 
     py::class_<Engine>(m, "Engine")

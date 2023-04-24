@@ -10,7 +10,7 @@ public:
 	std::type_index getType() override;
 	void start() override;
 	//virtual int getFrame() const;
-	void draw(Shader *) override;
+	//void draw(Shader *) override;
 private:
 	std::shared_ptr<AnimatedTiledModel> m_tiled;
 	int m_frame;

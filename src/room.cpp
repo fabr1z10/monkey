@@ -132,7 +132,7 @@ void Room::draw(Shader* s) {
             s->init(current);
         	//s->preDraw(current);
             if (renderer->setup(s) == 0) {
-                renderer->draw(s);
+                //renderer->draw(s);
 
             }
         }

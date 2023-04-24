@@ -43,3 +43,12 @@ const std::string tex_light_vs =
 const std::string tex_light_fs =
 #include "glsl/texlight.fs"
 ;
+
+const std::string quad_vs =
+#include "glsl/batchshader.vs"
+;
+
+const std::string quad_fs =
+#include "glsl/batchshader.fs"
+;
+

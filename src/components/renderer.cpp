@@ -50,9 +50,9 @@ void Renderer::setPalette(const std::string &id) {
 
 
 
-void Renderer::draw(Shader * s) {
-    m_model->draw(s, m_offset, m_count);
-}
+//void Renderer::draw(Shader * s) {
+//    m_model->draw(s, m_offset, m_count);
+//}
 
 void Renderer::setModel(std::shared_ptr<Model> model) {
     m_model = model;

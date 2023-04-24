@@ -1,9 +1,12 @@
 #include "sprite_renderer.h"
 #include "../error.h"
+#include "../node.h"
 
-SpriteRenderer::SpriteRenderer(const std::string& anim, GLuint texId, GLuint palId) : Renderer(texId, palId),
-	m_animation(anim), m_frame(0), m_ticks(0) {
+SpriteRenderer::SpriteRenderer(SpriteBatch* batch, const std::string& anim, GLuint texId, GLuint palId) : Renderer(texId, palId),
+    _spriteBatch(batch), m_animation(anim), m_frame(0), m_ticks(0) {
 
+    // request a new quad id to the batch
+    _quadId = _spriteBatch->getQuadId();
 }
 
 void SpriteRenderer::setModel(std::shared_ptr<Model> model) {
@@ -32,8 +35,31 @@ void SpriteRenderer::start() {
 	m_animInfo = m_sprite->getAnimInfo(m_animation);
 }
 
-void SpriteRenderer::draw(Shader * s) {
+void SpriteRenderer::update(double dt) {
 	const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
+	// get world pos
+	auto pos = m_node->getWorldPosition();
+	_spriteBatch->setQuad(_quadId, pos, a.size, a.texture_coordinates);
+
+
+
+    if (m_ticks >= a.ticks) {
+        // increment frame. if this animation is
+        m_frame++;
+        if (m_frame >= m_animInfo->frameCount) {
+            m_frame = (m_animInfo->loop ? m_animInfo->loopFrame : m_animInfo->frameCount - 1);
+            m_complete = true;
+        }
+        m_ticks = 0;
+    } else {
+        // if it's not time to update frame, increment current frame length
+        m_ticks++;
+    }
+
+
+
+
+
 //	if (m_paletteId != GL_INVALID_VALUE) {
 //		s->setInt("texture_palette", 1);
 //		glActiveTexture(GL_TEXTURE1);
@@ -51,22 +77,10 @@ void SpriteRenderer::draw(Shader * s) {
 //		}
 //	}
 
-	m_model->draw(s, a.offset, a.count);
+//	m_model->draw(s, a.offset, a.count);
 //	m_sprite->innerDraw(s, modelMatrix, ss.str());
 //	//m_sprite->draw(s, nullptr);
 	// time to update frame?
-	if (m_ticks >= a.ticks) {
-		// increment frame. if this animation is
-		m_frame++;
-		if (m_frame >= m_animInfo->frameCount) {
-			m_frame = (m_animInfo->loop ? m_animInfo->loopFrame : m_animInfo->frameCount - 1);
-			m_complete = true;
-		}
-		m_ticks = 0;
-	} else {
-		// if it's not time to update frame, increment current frame length
-		m_ticks++;
-	}
 
 }
 

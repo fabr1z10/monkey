@@ -2,10 +2,11 @@
 
 #include "../models/sprite.h"
 #include "renderer.h"
+#include "../spritebatch.h"
 
 class SpriteRenderer : public Renderer {
 public:
-	explicit SpriteRenderer(const std::string& anim, GLuint texId, GLuint palId);
+	explicit SpriteRenderer(SpriteBatch* , const std::string& anim, GLuint texId, GLuint palId);
 	void setModel(std::shared_ptr<Model>) override;
 	std::type_index getType() override;
 	void start() override;
@@ -13,10 +14,14 @@ public:
 	void setAnimation(const std::string&) ;
 	Sprite* getSprite();
 	[[nodiscard]] int getFrame() const;
-	void draw(Shader *) override;
+	//void draw(Shader *) override;
 	bool isComplete() const;
+    void update(double) override;
 
 private:
+    SpriteBatch* _spriteBatch;
+    int _quadId;
+
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const AnimInfo* m_animInfo;
 	std::string m_animation;

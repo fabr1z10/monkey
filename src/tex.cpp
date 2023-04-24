@@ -1,6 +1,7 @@
 #include "tex.h"
 #include <iostream>
 #include <memory>
+#include <yaml-cpp/yaml.h>
 
 //#define cimg_use_jpeg
 #define cimg_use_png
@@ -177,13 +178,36 @@ void Tex::load_png(const std::string &file) {
     png_get_PLTE(png_ptr, info_ptr, &pal, &colors);
     std::cout << " number of colors: " << colors << std::endl;
     // store default palette
-    std::vector<unsigned> defaultPalette;
+    std::vector<unsigned> defaultPalette(1024, 0);
     for (size_t i= 0; i< colors; ++i) {
         std::cout << "color #" << i << ": " << (int) pal[i].red << ", " << (int) pal[i].green << ", " << (int) pal[i].blue << "\n";
-        defaultPalette.push_back(pal[i].red);
-        defaultPalette.push_back(pal[i].green);
-        defaultPalette.push_back(pal[i].blue);
-        defaultPalette.push_back(i == 0 ? 0 : 255);
+        defaultPalette[i * 4] = pal[i].red;
+        defaultPalette[i * 4 + 1] = pal[i].green;
+        defaultPalette[i * 4 + 2] = pal[i].blue;
+        defaultPalette[i * 4 + 3] = i == 0 ? 0 : 255;
+    }
+    // load extra palettes for this sheet
+    try {
+        std::string palFile = file.substr(0, file.size()-4) + ".pal";
+        auto f = YAML::LoadFile(palFile);
+        int nAdditionalPalettes = f["palettes"].size();
+        defaultPalette.resize(1024*(nAdditionalPalettes+1), 0);
+        int i{1};
+        for (const auto& p : f["palettes"]) {
+            int offset = 1024 * (i++);
+            for (const auto& k : p) {
+                int n = k.first.as<int>();
+                auto colors = k.second.as<std::vector<int>>();
+                std::cout << k.first << std::endl;
+                defaultPalette[offset + n * 4] = colors[0];
+                defaultPalette[offset + n * 4 + 1] = colors[1];
+                defaultPalette[offset + n * 4 + 2] = colors[2];
+                defaultPalette[offset + n * 4 + 3] = colors[3];
+                std::cout << " cane\n";
+            }
+        }
+    } catch (YAML::BadFile& badFile) {
+        std::cout << " --- palette file not found\n";
     }
     auto defpal = std::make_shared<Palette>(defaultPalette);
     m_defaultPaletteId = defpal->getTexId();

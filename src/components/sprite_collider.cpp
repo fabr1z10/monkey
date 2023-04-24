@@ -77,27 +77,27 @@ void SpriteColliderRenderer::start() {
 	assert(m_reference!=nullptr);
 }
 
-void SpriteColliderRenderer::draw(Shader * s) {
-	if (m_model == nullptr || s->getShaderType() != ShaderType::SHADER_COLOR) {
-		return;
-	}
-	const auto& m = m_node->getWorldMatrix() ;
-	s->setVec4("mult_color", m_multColor);
-	s->setVec4("add_color", m_addColor);
-	s->setMat4("model", m);
-	const auto& currentAnim = m_reference->getAnimation();
-	int currentFrame = m_reference->getFrame();
-	auto data = m_sprite->getDebugShape(currentAnim, currentFrame);
-	auto dataA = m_sprite->getDebugAttackShape(currentAnim, currentFrame);
-	if (data.first != -1) {
-		m_model->draw(s, data.first, data.second);
-	}
-	if (dataA.first != -1) {
-		m_model->draw(s, dataA.first, dataA.second);
-	}
-
-
-}
+//void SpriteColliderRenderer::draw(Shader * s) {
+//	if (m_model == nullptr || s->getShaderType() != ShaderType::SHADER_COLOR) {
+//		return;
+//	}
+//	const auto& m = m_node->getWorldMatrix() ;
+//	s->setVec4("mult_color", m_multColor);
+//	s->setVec4("add_color", m_addColor);
+//	s->setMat4("model", m);
+//	const auto& currentAnim = m_reference->getAnimation();
+//	int currentFrame = m_reference->getFrame();
+//	auto data = m_sprite->getDebugShape(currentAnim, currentFrame);
+//	auto dataA = m_sprite->getDebugAttackShape(currentAnim, currentFrame);
+//	if (data.first != -1) {
+//		m_model->draw(s, data.first, data.second);
+//	}
+//	if (dataA.first != -1) {
+//		m_model->draw(s, dataA.first, dataA.second);
+//	}
+//
+//
+//}
 
 int SpriteCollider::getCollisionTag() const {
 	auto it = m_override.find(m_renderer->getAnimation());

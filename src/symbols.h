@@ -7,7 +7,8 @@ enum ShaderType {
     SHADER_TEXTURE_PALETTE,
     SHADER_TEXTURE_LIGHT,
 	SHADER_SKELETAL,
-    NONE
+    NONE,
+    QUAD_SHADER
 };
 
 enum FillType {

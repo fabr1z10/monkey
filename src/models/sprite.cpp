@@ -12,13 +12,17 @@
 //#include "rawmodel.h"
 //#include "../node.h"
 //#include "../shapes/shapes3d/aabb3d.h"
+#include "../input.h"
 
-
-Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string()) {
+Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string()), _batch(nullptr) {
 	m_shaderType = ShaderType::SHADER_TEXTURE;
 	m_primitive = GL_TRIANGLES;
 	auto& am = AssetManager::instance();
-	auto sheetFile = node["sheet"].as<std::string>();
+
+	auto batch = yaml_read<int>(node, "batch");
+	_batch = Engine::instance().getBatch(batch);
+	auto sheetFile = _batch->getSheet();
+	//auto sheetFile = node["sheet"].as<std::string>();
 	auto tex = am.getTex(sheetFile);
 
 	if (tex->hasPalette()) {
@@ -62,8 +66,8 @@ Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string
 	}
 
 
-	std::vector<float> vertices;
-	std::vector<unsigned> indices;
+	//std::vector<float> vertices;
+	//std::vector<unsigned> indices;
 	float ppu{1.f};
 	int quadCount {0};
 	auto inf = std::numeric_limits<float>::max();
@@ -83,8 +87,8 @@ Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string
 		int frameCount = 0;
 		for (const auto& el : anit->second["frames"]) {
 			FrameInfo frameInfo;
-			frameInfo.offset = indices.size();
-			frameInfo.count = 0;
+			//frameInfo.offset = indices.size();
+			//frameInfo.count = 0;
 			auto loopFrame = el["loop_frame"].as<bool>(false);
 			if (loopFrame) {
 				animInfo.loopFrame = frameCount;
@@ -109,25 +113,27 @@ Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string
 				float ty = ciao[1] / texh;
 				float tw = width_px / texw;
 				float th = height_px / texh;
+				frameInfo.texture_coordinates = glm::vec4(tx, tx + tw, ty, ty + th);
 				float tx1 = tx + tw;
 				float ty1 = ty + th;
 				float ox = ciao[4];
 				float oy = ciao[5];
 				float width_actual = static_cast<float>(width_px) / ppu;
 				float height_actual = static_cast<float>(height_px) / ppu;
+                frameInfo.size = glm::vec2(width_actual, height_actual);
 				if (fliph) std::swap(tx, tx1);
 				if (flipv) std::swap(ty, ty1);
 				// bottom left
-				vertices.insert(vertices.end(), {ox, oy, 0.0f, tx, ty1, 1, 1, 1, 1});
-				// bottom right
-				vertices.insert(vertices.end(), {ox + width_actual, oy, 0.0f, tx1, ty1, 1, 1, 1, 1});
-				// top right
-				vertices.insert(vertices.end(), {ox + width_actual, oy + height_actual, 0.0f, tx1, ty, 1, 1, 1, 1});
-				// top left
-				vertices.insert(vertices.end(), {ox, oy + height_actual, 0.0f, tx, ty, 1, 1, 1, 1});
-				unsigned ix = quadCount * 4;
-				indices.insert(indices.end(), {ix, ix + 1, ix + 2, ix + 3, ix, ix + 2});
-				frameInfo.count += 6;
+//				vertices.insert(vertices.end(), {ox, oy, 0.0f, tx, ty1, 1, 1, 1, 1});
+//				// bottom right
+//				vertices.insert(vertices.end(), {ox + width_actual, oy, 0.0f, tx1, ty1, 1, 1, 1, 1});
+//				// top right
+//				vertices.insert(vertices.end(), {ox + width_actual, oy + height_actual, 0.0f, tx1, ty, 1, 1, 1, 1});
+//				// top left
+//				vertices.insert(vertices.end(), {ox, oy + height_actual, 0.0f, tx, ty, 1, 1, 1, 1});
+//				unsigned ix = quadCount * 4;
+//				indices.insert(indices.end(), {ix, ix + 1, ix + 2, ix + 3, ix, ix + 2});
+				//frameInfo.count += 6;
 				quadCount++;
 				// update static bounds
 				m_modelBounds.min.x = std::min(m_modelBounds.min.x, ox);
@@ -145,7 +151,7 @@ Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string
 		}
 		m_animInfo.insert(std::make_pair(animId, animInfo));
 	}
-	generateBuffers(vertices, indices);
+	//generateBuffers(vertices, indices);
 
 
 }
@@ -156,7 +162,7 @@ void Sprite::init(Node * n) {
 	obj["frame"] = 0;
 }
 
-Sprite::Sprite(ShaderType type, GLenum primitive) : Model(type) {
+Sprite::Sprite(SpriteBatch* batch, ShaderType type, GLenum primitive) : Model(type), _batch(batch) {
 	m_primitive = primitive;
 }
 
@@ -177,7 +183,7 @@ const FrameInfo & Sprite::getFrameInfo(const std::string &anim, int frame) {
 }
 
 std::shared_ptr<Renderer> Sprite::getRenderer() const {
-	return std::make_shared<SpriteRenderer>(m_defaultAnimation, m_texId, m_paletteId);
+	return std::make_shared<SpriteRenderer>(_batch, m_defaultAnimation, m_texId, m_paletteId);
 
 }
 

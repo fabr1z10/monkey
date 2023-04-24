@@ -10,6 +10,7 @@
 #include "node.h"
 #include "room.h"
 #include "keylistener.h"
+#include "spritebatch.h"
 
 namespace py = pybind11;
 
@@ -53,7 +54,7 @@ public:
 
 	void registerToKeyboardEvent(KeyboardListener*);
 	void unregisterToKeyboardEvent(KeyboardListener*);
-
+    SpriteBatch* getBatch(int);
 private:
 	template<typename T=Shader>
 	std::shared_ptr<T> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
@@ -105,7 +106,7 @@ private:
     std::vector<std::shared_ptr<Shader>> m_shaders;
 
 	std::unordered_set<KeyboardListener*> m_keyboardListeners;
-
+	std::vector<std::shared_ptr<SpriteBatch>> _batches;
 };
 
 inline int Engine::getPixelScale() const {

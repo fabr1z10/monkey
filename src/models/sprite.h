@@ -5,9 +5,14 @@
 #include "../hashpair.h"
 //#include "spritesheet.h"
 #include <yaml-cpp/yaml.h>
+#include "../spritebatch.h"
 
 
 struct FrameInfo {
+    glm::vec4 texture_coordinates;
+    glm::vec2 size;
+    glm::vec2 anchor_point;
+
 	int offset;
 	int count;
 	int ticks;
@@ -33,7 +38,7 @@ struct SpriteCollisionInfo {
 
 class Sprite : public Model {
 public:
-	Sprite(ShaderType type, GLenum primitive);
+	Sprite(SpriteBatch*, ShaderType type, GLenum primitive);
 	Sprite(const YAML::Node& node);//, const std::string& sheetFile);
 	void init(Node*) override;
 	//void draw(Shader*, Node*) override;
@@ -53,6 +58,7 @@ public:
 	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
 	Bounds getAttackRange() const;
 private:
+    SpriteBatch* _batch;
 	Bounds m_attackRange;
 	//SpriteSheet* m_sheet;
 	std::string m_defaultAnimation;

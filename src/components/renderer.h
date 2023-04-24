@@ -8,7 +8,9 @@ class Renderer : public Component {
 public:
     Renderer(GLuint textureId, GLuint paletteId);
     virtual int setup(Shader*);
-    virtual void draw(Shader*);
+    //virtual void draw(Shader*);
+
+
     std::shared_ptr<Model> getModel();
     virtual void setModel(std::shared_ptr<Model>);
     void setMultColor(glm::vec4);
