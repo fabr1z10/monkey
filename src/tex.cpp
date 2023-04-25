@@ -178,7 +178,7 @@ void Tex::load_png(const std::string &file) {
     png_get_PLTE(png_ptr, info_ptr, &pal, &colors);
     std::cout << " number of colors: " << colors << std::endl;
     // store default palette
-    std::vector<unsigned> defaultPalette(1024, 0);
+    std::vector<unsigned char> defaultPalette(1024, 0);
     for (size_t i= 0; i< colors; ++i) {
         std::cout << "color #" << i << ": " << (int) pal[i].red << ", " << (int) pal[i].green << ", " << (int) pal[i].blue << "\n";
         defaultPalette[i * 4] = pal[i].red;
@@ -209,8 +209,8 @@ void Tex::load_png(const std::string &file) {
     } catch (YAML::BadFile& badFile) {
         std::cout << " --- palette file not found\n";
     }
-    auto defpal = std::make_shared<Palette>(defaultPalette);
-    m_defaultPaletteId = defpal->getTexId();
+    _pal = std::make_shared<Palette>(defaultPalette);
+    m_defaultPaletteId = _pal->getTexId();
 
     std::cout << "\n--- raw ---\n";
 //    for (int i = 0; i < imgHeight; ++i) {

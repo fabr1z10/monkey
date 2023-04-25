@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
+#include <memory>
+#include "palette.h"
 
 enum TexFilter { nearest, linear, linear_mipmap };
 
@@ -24,6 +26,7 @@ private:
     GLuint m_texId;
     GLuint m_defaultPaletteId;
     bool m_palette;
+    std::shared_ptr<Palette> _pal;
 };
 
 inline int Tex::getWidth () const { return m_width; }

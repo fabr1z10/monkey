@@ -1,7 +1,7 @@
 R"(
 #version 330 core
 
-in vec2 TexCoord0;
+in vec2 TexCoords0;
 
 out vec4 FragColor;
 
@@ -10,10 +10,11 @@ uniform sampler2D tex_pal;
 
 void main()
 {
-    //FragColor = texture2D(tex_main, TexCoord0);
-    float index = texture(tex_main, TexCoord0).r / 255.0;
-    vec4 texColor = texture(tex_pal, vec2(index, 0));
-    FragColor=vec4(1,1,1,1);//texColor;
+    //FragColor = texture2D(tex_main, TexCoords0);
+    float index = texture(tex_main, TexCoords0).r / 255.0;
+    vec4 texColor = texture(tex_pal, vec2(index, 0.1));
+    texColor = texture(tex_pal, vec2(index, 0.0));
+    FragColor=texColor; //vec4(index * 255 * 16, 0,0, 1);//texColor;//vec4(index, 0,0,1);//texColor;//vec4(1,1,1,1);//texColor;
 
 }
 

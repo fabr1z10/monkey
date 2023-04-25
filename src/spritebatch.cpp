@@ -66,14 +66,15 @@ SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
     auto& am = AssetManager::instance();
     auto tex = am.getTex(_sheet);
 
+    auto isPalShader =_shaderType == ShaderType::SHADER_TEXTURE_PALETTE || _shaderType == ShaderType::QUAD_SHADER;
 
-    if (_shaderType == ShaderType::SHADER_TEXTURE_PALETTE && !tex->hasPalette()) {
+    if (isPalShader && !tex->hasPalette()) {
         std::cerr << "texture " << _sheet << " has no palette as required by spritebatch!";
         exit(1);
     }
 
     _texId = tex->getTexId();
-    if (_shaderType == ShaderType::SHADER_TEXTURE_PALETTE) {
+    if (isPalShader) {
         _paletteId = tex->getDefaultPaletteId();
     }
 
@@ -137,7 +138,7 @@ void SpriteBatch::draw(Shader* s) {
     if (_paletteId != GL_INVALID_VALUE) {
         s->setInt("tex_pal", 1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_1D, _paletteId);
+        glBindTexture(GL_TEXTURE_2D, _paletteId);
     }
     s->setInt("tex_main", 0);
     glActiveTexture(GL_TEXTURE0);

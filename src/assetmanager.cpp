@@ -64,7 +64,7 @@ std::shared_ptr<Palette> AssetManager::getPalette(const std::string& id) {
         auto f = YAML::LoadFile(file);
         for(YAML::const_iterator it=f.begin();it!=f.end();++it) {
             auto currId = it->first.as<std::string>();
-            auto pal = it->second.as<std::vector<unsigned>>();
+            auto pal = it->second.as<std::vector<unsigned char>>();
             std::string cspr = ids.second + "/" + currId;
             std::cout << " --- adding sprite: " << cspr << "\n";
             m_palettes[cspr] = std::make_shared<Palette>(pal);

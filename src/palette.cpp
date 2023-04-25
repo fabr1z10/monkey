@@ -1,8 +1,8 @@
 #include "palette.h"
 #include <GL/glew.h>
+#include <cassert>
 
-
-Palette::Palette(const std::vector<unsigned>& in) : m_texId(GL_INVALID_VALUE) {
+Palette::Palette(const std::vector<unsigned char>& in) : m_texId(GL_INVALID_VALUE) {
 //
 //    std::vector<unsigned char> data(256, 0.f);
 //    for (size_t i = 0; i < in.size(); ++i) {
@@ -16,6 +16,7 @@ Palette::Palette(const std::vector<unsigned>& in) : m_texId(GL_INVALID_VALUE) {
 //    glTexParameterf (GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 //    glTexParameterf (GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+    assert(in.size() % 1024 == 0);
     int nPal = in.size() / 1024;
 
     glGenTextures (1, &m_texId);

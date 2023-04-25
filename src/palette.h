@@ -6,7 +6,7 @@
 
 class Palette {
 public:
-    Palette(const std::vector<unsigned>&);
+    Palette(const std::vector<unsigned char>&);
     ~Palette () = default;
     GLuint getTexId() const;
 private:
