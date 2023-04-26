@@ -17,6 +17,7 @@ public:
     GLuint getTexId() const;
     bool hasPalette() const;
     GLuint getDefaultPaletteId() const;
+    int getPaletteCount() const;
     static std::vector<unsigned char> getRaw(const std::string& , int&, int&);
 private:
     void load_png(const std::string& file);
@@ -34,4 +35,7 @@ inline int Tex::getHeight() const { return m_height; }
 inline GLuint Tex::getTexId() const { return m_texId; }
 inline bool Tex::hasPalette() const { return m_palette; }
 inline GLuint Tex::getDefaultPaletteId() const { return m_defaultPaletteId; }
+inline int Tex::getPaletteCount() const {
+    return _pal->getPaletteCount();
+}
 

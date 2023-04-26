@@ -34,7 +34,9 @@ Quad::Quad(const pybind11::kwargs& args) : Model(), _batch(nullptr), _quadCount(
             desc.textureCoordinates[1] = (tc[0] + tc[2]) / texw;
             desc.textureCoordinates[2] = tc[1] / texh;
             desc.textureCoordinates[3] = (tc[1] + tc[3]) / texh;
+            desc.paletteIndex = py_get_dict<int>(py_quad, "palette", 0);
             frame.quadDesc.push_back(desc);
+
         }
         _frames.push_back(frame);
     }
@@ -72,7 +74,8 @@ void QuadRenderer::update(double dt) {
     auto pos = m_node->getWorldPosition();
 
     for (size_t i = 0; i < _quadIds.size(); ++i) {
-        _spriteBatch->setQuad(_quadIds[i], pos + a.quadDesc[i].pos, a.quadDesc[i].size, a.quadDesc[i].textureCoordinates, a.quadDesc[i].repeat);
+        _spriteBatch->setQuad(_quadIds[i], pos + a.quadDesc[i].pos, a.quadDesc[i].size,
+                              a.quadDesc[i].textureCoordinates, a.quadDesc[i].repeat, a.quadDesc[i].paletteIndex, false, false);
     }
 
     if (a.ticks > 0 && _ticks >= a.ticks) {

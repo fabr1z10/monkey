@@ -12,6 +12,7 @@ struct FrameInfo {
     glm::vec4 texture_coordinates;
     glm::vec2 size;
     glm::vec2 anchor_point;
+    unsigned paletteIndex;
 
 	int offset;
 	int count;

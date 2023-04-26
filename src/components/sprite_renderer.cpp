@@ -39,7 +39,8 @@ void SpriteRenderer::update(double dt) {
 	const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
 	// get world pos
 	auto pos = m_node->getWorldPosition();
-	_spriteBatch->setQuad(_quadId, pos, a.size, a.texture_coordinates, glm::vec2(1, 1));
+	auto flipx = m_node->getFlipX();
+	_spriteBatch->setQuad(_quadId, pos, a.size, a.texture_coordinates, glm::vec2(1, 1), a.paletteIndex, flipx, false);
 
 
 

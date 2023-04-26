@@ -38,8 +38,8 @@ void SpriteBatch::configure(Shader* s) {
 
     m_quadInfoBuffer = (GLubyte*)malloc(_blockSize);
 
-    const int nElements = 4;
-    const GLchar* Names[] = { "Pos", "Size", "TexCoords", "Repeat"};
+    const int nElements = 5;
+    const GLchar* Names[] = { "Pos", "Size", "TexCoords", "Repeat", "Palette"};
     GLuint Indices[nElements] = { 0 };
     glGetUniformIndices(shaderProg, nElements, Names, Indices);
 
@@ -50,6 +50,7 @@ void SpriteBatch::configure(Shader* s) {
     m_quadInfoOffsets.Size       = Offsets[1];
     m_quadInfoOffsets.TexCoords  = Offsets[2];
     m_quadInfoOffsets.Repeat     = Offsets[3];
+    m_quadInfoOffsets.Palette    = Offsets[4];
 
     for (uint i = 0 ; i < nElements ; i++) {
         printf("%s: %d %d\n", Names[i], Indices[i], Offsets[i]);
@@ -79,6 +80,8 @@ SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
     _texId = tex->getTexId();
     if (isPalShader) {
         _paletteId = tex->getDefaultPaletteId();
+        _paletteCount = tex->getPaletteCount();
+        _invPaletteCount = 1.0f / _paletteCount;
     }
 
 
@@ -160,13 +163,15 @@ void SpriteBatch::draw(Shader* s) {
 }
 
 
-void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords, glm::vec2 repeat) {
+void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords, glm::vec2 repeat, int paletteIndex,
+                          bool flipx, bool flipy) {
     //assert(index < SPRITE_TECH_MAX_QUADS);
 
     auto* pBasePos = (glm::vec3*)(m_quadInfoBuffer + m_quadInfoOffsets.Pos);
     auto* pWidthHeight = (glm::vec2*) (m_quadInfoBuffer + m_quadInfoOffsets.Size);
     auto* pTexCoords = (glm::vec4*) (m_quadInfoBuffer + m_quadInfoOffsets.TexCoords);
     auto* pRepeat = (glm::vec2*) (m_quadInfoBuffer + m_quadInfoOffsets.Repeat);
+    auto* pPalette = (float*) (m_quadInfoBuffer + m_quadInfoOffsets.Palette);
 
     pBasePos[index].x = worldPos.x;
     pBasePos[index].y = worldPos.y;
@@ -175,12 +180,26 @@ void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::ve
     pWidthHeight[index].x = size.x;
     pWidthHeight[index].y = size.y;
 
-    pTexCoords[index].x = textureCoords.x;
-    pTexCoords[index].y = textureCoords.y;
-    pTexCoords[index].z = textureCoords.z;
-    pTexCoords[index].w = textureCoords.w;
+    if (flipx) {
+        pTexCoords[index].x = textureCoords.y;
+        pTexCoords[index].y = textureCoords.x;
+    } else {
+        pTexCoords[index].x = textureCoords.x;
+        pTexCoords[index].y = textureCoords.y;
+    }
+    if (flipy) {
+        pTexCoords[index].z = textureCoords.w;
+        pTexCoords[index].w = textureCoords.z;
+
+    } else {
+        pTexCoords[index].z = textureCoords.z;
+        pTexCoords[index].w = textureCoords.w;
+    }
+
 
     pRepeat[index].x = repeat.x;
     pRepeat[index].y = repeat.y;
+
+    pPalette[index] = _invPaletteCount * (0.5f + paletteIndex);
 
 }

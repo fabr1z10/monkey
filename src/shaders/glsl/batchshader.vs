@@ -11,6 +11,7 @@ uniform QuadInfo {
     vec2 Size[MAX_QUADS];
     vec4 TexCoords[MAX_QUADS];
     vec2 Repeat[MAX_QUADS];
+    float Palette[MAX_QUADS];
     //vec2 Anchor[MAX_QUADS];
 };
 
@@ -19,6 +20,7 @@ uniform mat4 projection;
 
 out vec2 TexCoords0;
 out vec4 TexBounds;
+out float palY;
 
 void main() {
     // calculate position
@@ -38,7 +40,7 @@ void main() {
     //TexCoords0 = vec2(tc[0] + Position.x * (tc[1] - tc[0]), tc[2] + Position.y * (tc[3] - tc[2]));
     //TexCoords0 = vec2(tc[0], tc[3]) + Position * vec2(tc[1] - tc[0], tc[2] - tc[3]);
     TexCoords0 = Position * Repeat[QuadId];
-
+    palY = Palette[QuadId];
 }
 
 )"

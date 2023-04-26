@@ -12,6 +12,7 @@ public:
         glm::vec2 size;
         glm::vec2 repeat;
         glm::vec4 textureCoordinates;
+        unsigned paletteIndex;
     };
 
     struct Frame {

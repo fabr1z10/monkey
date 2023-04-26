@@ -22,7 +22,7 @@ public:
     int getQuadId();
     void configure(Shader*);
     void setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords,
-                 glm::vec2 repeat);
+                 glm::vec2 repeat, int paletteIndex, bool flipx, bool flipy);
     void cleanUp();
 
     Camera* getCamera();
@@ -33,6 +33,7 @@ private:
         GLint Size      = 0;
         GLint TexCoords = 0;
         GLint Repeat    = 0;
+        GLint Palette   = 0;
     } m_quadInfoOffsets;
     struct V2 {
         glm::vec2 pos;
@@ -49,6 +50,8 @@ private:
     std::list<int> _deallocated;
     GLuint _texId;
     GLuint _paletteId;
+    int _paletteCount;
+    float _invPaletteCount;
     GLint _blockSize;
     GLuint m_uniformBuffer = 0;
     GLubyte* m_quadInfoBuffer = NULL;
