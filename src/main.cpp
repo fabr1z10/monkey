@@ -40,6 +40,7 @@
 #include "components/scriptplayer.h"
 #include "actions/move_dynamics.h"
 #include "runners/lighting.h"
+#include "models/quad.h"
 
 
 namespace py = pybind11;
@@ -156,6 +157,9 @@ PYBIND11_MODULE(monkey, m) {
 	mm.def("make_plane", &ModelMaker::pippo);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def(py::init<int>());
+    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
+        .def(py::init<const pybind11::kwargs&>());
+
     py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
         .def(py::init<const pybind11::kwargs&>());
 	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")

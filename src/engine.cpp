@@ -179,6 +179,9 @@ void Engine::start() {
             m_room->cleanUp();
         }
         m_room = nullptr;
+        for (const auto& batch : _batches) {
+            batch->cleanUp();
+        }
     }
 
 

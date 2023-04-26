@@ -38,17 +38,20 @@ void SpriteBatch::configure(Shader* s) {
 
     m_quadInfoBuffer = (GLubyte*)malloc(_blockSize);
 
-    const GLchar* Names[] = { "Pos", "Size", "TexCoords"};
-    GLuint Indices[3] = { 0 };
-    glGetUniformIndices(shaderProg, 3, Names, Indices);
+    const int nElements = 4;
+    const GLchar* Names[] = { "Pos", "Size", "TexCoords", "Repeat"};
+    GLuint Indices[nElements] = { 0 };
+    glGetUniformIndices(shaderProg, nElements, Names, Indices);
 
-    GLint Offsets[3];
-    glGetActiveUniformsiv(shaderProg, 3, Indices, GL_UNIFORM_OFFSET, Offsets);
+    GLint Offsets[nElements];
+    glGetActiveUniformsiv(shaderProg, nElements, Indices, GL_UNIFORM_OFFSET, Offsets);
 
     m_quadInfoOffsets.Pos        = Offsets[0];
     m_quadInfoOffsets.Size       = Offsets[1];
     m_quadInfoOffsets.TexCoords  = Offsets[2];
-    for (uint i = 0 ; i < 3 ; i++) {
+    m_quadInfoOffsets.Repeat     = Offsets[3];
+
+    for (uint i = 0 ; i < nElements ; i++) {
         printf("%s: %d %d\n", Names[i], Indices[i], Offsets[i]);
     }
 
@@ -118,6 +121,12 @@ SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
     glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, stride, (void*)(2*sizeof(float)));
 }
 
+void SpriteBatch::cleanUp() {
+
+    _nQuads = 0;
+    _deallocated.clear();
+    memset(m_quadInfoBuffer, 0, _blockSize);
+}
 
 
 
@@ -151,12 +160,13 @@ void SpriteBatch::draw(Shader* s) {
 }
 
 
-void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords) {
+void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords, glm::vec2 repeat) {
     //assert(index < SPRITE_TECH_MAX_QUADS);
 
     auto* pBasePos = (glm::vec3*)(m_quadInfoBuffer + m_quadInfoOffsets.Pos);
     auto* pWidthHeight = (glm::vec2*) (m_quadInfoBuffer + m_quadInfoOffsets.Size);
     auto* pTexCoords = (glm::vec4*) (m_quadInfoBuffer + m_quadInfoOffsets.TexCoords);
+    auto* pRepeat = (glm::vec2*) (m_quadInfoBuffer + m_quadInfoOffsets.Repeat);
 
     pBasePos[index].x = worldPos.x;
     pBasePos[index].y = worldPos.y;
@@ -169,5 +179,8 @@ void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::ve
     pTexCoords[index].y = textureCoords.y;
     pTexCoords[index].z = textureCoords.z;
     pTexCoords[index].w = textureCoords.w;
+
+    pRepeat[index].x = repeat.x;
+    pRepeat[index].y = repeat.y;
 
 }

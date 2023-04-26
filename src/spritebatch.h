@@ -21,12 +21,15 @@ public:
     std::string getSheet() const;
     int getQuadId();
     void configure(Shader*);
-    void setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords);
+    void setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords,
+                 glm::vec2 repeat);
+    void cleanUp();
 private:
     struct {
         GLint Pos       = 0;
         GLint Size      = 0;
         GLint TexCoords = 0;
+        GLint Repeat    = 0;
     } m_quadInfoOffsets;
     struct V2 {
         glm::vec2 pos;
