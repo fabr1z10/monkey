@@ -24,6 +24,9 @@ public:
     void setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords,
                  glm::vec2 repeat);
     void cleanUp();
+
+    Camera* getCamera();
+
 private:
     struct {
         GLint Pos       = 0;
@@ -56,3 +59,7 @@ inline std::string SpriteBatch::getSheet() const {
     return _sheet;
 }
 
+
+inline Camera * SpriteBatch::getCamera() {
+    return _cam.get();
+}

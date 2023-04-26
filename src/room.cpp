@@ -43,38 +43,27 @@ void Room::setMainCam(std::shared_ptr<Camera> cam) {
 }
 
 void Room::update(double dt) {
-	int m_nUpdates{0};
+
+    auto* cam = Engine::instance().getBatch(0)->getCamera();
+    auto currentBounds = cam->getViewingBounds();
+    currentBounds.scale(2.f, 2.f);
+
+    int m_nUpdates{0};
     //for (const auto& m : m_root->m_children) std::cout << "cane: " << m.second.use_count() << "\n";
     std::vector<Node*> li;
 	li.push_back(m_root.get());
-	std::vector<std::pair<int, std::shared_ptr<Camera>>> camStack;
-	Bounds currentBounds;
+	//std::vector<std::pair<int, std::shared_ptr<Camera>>> camStack;
+
     while (!li.empty()) {
         auto current = li.back();
-		int currentIndex = li.size() - 1;
+		//int currentIndex = li.size() - 1;
 		li.pop_back();
 		// check if current node has a camera
-		auto cam = current->getCamera();
+		//auto cam = current->getCamera();
 		bool changeCam = false;
-		while (!camStack.empty() && currentIndex < camStack.back().first) {
-			// need to pop cam from stack
-			changeCam = true;
-			camStack.pop_back();
-		}
-		if (cam != nullptr) {
-			changeCam = true;
-			camStack.emplace_back(currentIndex, cam);
-		}
-		if (changeCam && !camStack.empty()) {
-			currentBounds = camStack.back().second->getViewingBounds();
-			currentBounds.scale(2.f, 2.f);
-		}
         auto b = current->getBounds();
-        if (camStack.empty() || currentBounds.intersect2D(b)) {
+        if (currentBounds.intersect2D(b)) {
 			current->update(dt);
-			if (!camStack.empty())
-				m_nUpdates++;
-			// update world transform
 			for (auto const &[k, v] : current->getChildren()) {
 				li.push_back(v.get());
 			}
