@@ -103,45 +103,54 @@ Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string
 				m_attackRange.expandWith(m_shapes[frameInfo.attackBox]->getBounds());
 			}
 			m_frameToShape[std::make_pair(animId, frameCount)] = boxFrame;
-			auto ciao = el["quads"].as<std::vector<int>>();
-			assert(ciao.size() % 6 == 0);
-			int nquads = ciao.size() / 6;
-			for (size_t i = 0; i < ciao.size(); i += 6) {
-				int width_px = ciao[i+2];
-				int height_px = ciao[i+3];
-				float tx = ciao[0] / texw;
-				float ty = ciao[1] / texh;
-				float tw = width_px / texw;
-				float th = height_px / texh;
-				frameInfo.texture_coordinates = glm::vec4(tx, tx + tw, ty, ty + th);
-				float tx1 = tx + tw;
-				float ty1 = ty + th;
-				float ox = ciao[4];
-				float oy = ciao[5];
-				float width_actual = static_cast<float>(width_px) / ppu;
-				float height_actual = static_cast<float>(height_px) / ppu;
-                frameInfo.size = glm::vec2(width_actual, height_actual);
-				if (fliph) std::swap(tx, tx1);
-				if (flipv) std::swap(ty, ty1);
-				// bottom left
-//				vertices.insert(vertices.end(), {ox, oy, 0.0f, tx, ty1, 1, 1, 1, 1});
-//				// bottom right
-//				vertices.insert(vertices.end(), {ox + width_actual, oy, 0.0f, tx1, ty1, 1, 1, 1, 1});
-//				// top right
-//				vertices.insert(vertices.end(), {ox + width_actual, oy + height_actual, 0.0f, tx1, ty, 1, 1, 1, 1});
-//				// top left
-//				vertices.insert(vertices.end(), {ox, oy + height_actual, 0.0f, tx, ty, 1, 1, 1, 1});
-//				unsigned ix = quadCount * 4;
-//				indices.insert(indices.end(), {ix, ix + 1, ix + 2, ix + 3, ix, ix + 2});
-				//frameInfo.count += 6;
-				quadCount++;
-				// update static bounds
-				m_modelBounds.min.x = std::min(m_modelBounds.min.x, ox);
-				m_modelBounds.min.y = std::min(m_modelBounds.min.y, oy);
-				m_modelBounds.max.x = std::max(m_modelBounds.max.x, ox + width_actual);
-				m_modelBounds.max.y = std::max(m_modelBounds.max.y, oy + height_actual);
-
-			}
+			auto texc = yaml_read<glm::vec4>(el, "tex");
+            frameInfo.anchor_point = yaml_read<glm::vec2>(el, "anchor", glm::vec2(0.f));
+            frameInfo.paletteIndex = yaml_read<int>(el, "pal", 0);
+            frameInfo.ticks = yaml_read<int>(el, "ticks", defaultTicks);
+            frameInfo.texture_coordinates[0] = texc[0] / texw;
+            frameInfo.texture_coordinates[1] = (texc[0] + texc[2]) / texw;
+            frameInfo.texture_coordinates[2] = texc[1] / texh;
+            frameInfo.texture_coordinates[3] = (texc[1] + texc[3]) / texw;
+            int width_px = texc[2];
+            int height_px = texc[3];
+            float width_actual = static_cast<float>(width_px) / ppu;
+            float height_actual = static_cast<float>(height_px) / ppu;
+            frameInfo.size = glm::vec2(width_actual, height_actual);
+            m_modelBounds.min.x = std::min(m_modelBounds.min.x, -frameInfo.anchor_point.x);
+            m_modelBounds.min.y = std::min(m_modelBounds.min.y, -frameInfo.anchor_point.y);
+            m_modelBounds.max.x = std::max(m_modelBounds.max.x, -frameInfo.anchor_point.x + width_actual);
+            m_modelBounds.max.y = std::max(m_modelBounds.max.y, -frameInfo.anchor_point.y + height_actual);
+//
+//            for (size_t i = 0; i < ciao.size(); i += 6) {
+//				float tx = ciao[0] / texw;
+//				float ty = ciao[1] / texh;
+//				float tw = width_px / texw;
+//				float th = height_px / texh;
+//				frameInfo.texture_coordinates = glm::vec4(tx, tx + tw, ty, ty + th);
+//				float tx1 = tx + tw;
+//				float ty1 = ty + th;
+//				float ox = ciao[4];
+//				float oy = ciao[5];
+//				float width_actual = static_cast<float>(width_px) / ppu;
+//				float height_actual = static_cast<float>(height_px) / ppu;
+//                frameInfo.size = glm::vec2(width_actual, height_actual);
+//				if (fliph) std::swap(tx, tx1);
+//				if (flipv) std::swap(ty, ty1);
+//				// bottom left
+////				vertices.insert(vertices.end(), {ox, oy, 0.0f, tx, ty1, 1, 1, 1, 1});
+////				// bottom right
+////				vertices.insert(vertices.end(), {ox + width_actual, oy, 0.0f, tx1, ty1, 1, 1, 1, 1});
+////				// top right
+////				vertices.insert(vertices.end(), {ox + width_actual, oy + height_actual, 0.0f, tx1, ty, 1, 1, 1, 1});
+////				// top left
+////				vertices.insert(vertices.end(), {ox, oy + height_actual, 0.0f, tx, ty, 1, 1, 1, 1});
+////				unsigned ix = quadCount * 4;
+////				indices.insert(indices.end(), {ix, ix + 1, ix + 2, ix + 3, ix, ix + 2});
+//				//frameInfo.count += 6;
+//				quadCount++;
+//				// update static bounds
+//
+//			}
 			//auto itemId = item["id"].as<std::string>();
 			//m_stateToItems[animId + "_" + std::to_string(frameCount)].push_back(m_sheet->getId(itemId));
 

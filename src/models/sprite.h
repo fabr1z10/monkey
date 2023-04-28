@@ -13,6 +13,8 @@ struct FrameInfo {
     glm::vec2 size;
     glm::vec2 anchor_point;
     unsigned paletteIndex;
+    bool flipx;
+    bool flipy;
 
 	int offset;
 	int count;
