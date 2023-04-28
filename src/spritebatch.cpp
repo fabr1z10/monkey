@@ -5,39 +5,11 @@
 #include "pyhelper.h"
 #include <iostream>
 
-SpriteBatch::~SpriteBatch() {
-    free(m_quadInfoBuffer);
-}
-
-int SpriteBatch::getQuadId() {
-    int next;
-    if (_deallocated.empty()) {
-        next = _nQuads;
-        _nQuads++;
-    } else {
-        next = _deallocated.front();
-        _deallocated.pop_front();
-    }
-    return next;
-}
 
 
-void SpriteBatch::configure(Shader* s) {
 
-    if (s->getShaderType() != _shaderType) {
-        return;
-    }
-    auto shaderProg = s->getProgId();
-    GLuint BlockIndex = glGetUniformBlockIndex(shaderProg, "QuadInfo");
 
-    glUniformBlockBinding(shaderProg, 0, BlockIndex);
-    printf("BlockIndex %d\n", BlockIndex);
-
-    glGetActiveUniformBlockiv(shaderProg, BlockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &_blockSize);
-    printf("Size %d\n", _blockSize);
-
-    m_quadInfoBuffer = (GLubyte*)malloc(_blockSize);
-
+void SpriteBatch::computeOffsets(GLuint shaderProg) {
     const int nElements = 5;
     const GLchar* Names[] = { "Pos", "Size", "TexCoords", "Repeat", "Palette"};
     GLuint Indices[nElements] = { 0 };
@@ -55,16 +27,35 @@ void SpriteBatch::configure(Shader* s) {
     for (uint i = 0 ; i < nElements ; i++) {
         printf("%s: %d %d\n", Names[i], Indices[i], Offsets[i]);
     }
-
-    glGenBuffers(1, &m_uniformBuffer);
-    printf("Uniform buffer %d\n", m_uniformBuffer);
 }
+//
+//void SpriteBatch::configure(Shader* s) {
+//
+//    if (s->getShaderType() != _shaderType) {
+//        return;
+//    }
+//    auto shaderProg = s->getProgId();
+//    GLuint BlockIndex = glGetUniformBlockIndex(shaderProg, "QuadInfo");
+//
+//    glUniformBlockBinding(shaderProg, 0, BlockIndex);
+//    printf("BlockIndex %d\n", BlockIndex);
+//
+//    glGetActiveUniformBlockiv(shaderProg, BlockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &_blockSize);
+//    printf("Size %d\n", _blockSize);
+//
+//    m_quadInfoBuffer = (GLubyte*)malloc(_blockSize);
+//
+//
+//
+//    glGenBuffers(1, &m_uniformBuffer);
+//    printf("Uniform buffer %d\n", m_uniformBuffer);
+//}
+//
 
-SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
-    _maxQuads = py_get_dict<int>(args, "max_quads");
+SpriteBatch::SpriteBatch(const pybind11::kwargs& args) : Batch(GL_TRIANGLES, 6) {
+    _maxPrimitives = py_get_dict<int>(args, "max_quads");
     _shaderType = static_cast<ShaderType>(py_get_dict<int>(args, "shader_type"));
     _cam = args["cam"].cast<std::shared_ptr<Camera>>();
-
 
     _sheet = py_get_dict<std::string>(args, "sheet");
     auto& am = AssetManager::instance();
@@ -86,7 +77,6 @@ SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
 
 
     // vertices forming a quad
-    const unsigned vertsPerQuad{6};
     glm::vec2 vertices[] = {
             glm::vec2(0.f, 0.f),                // bottom left
             glm::vec2(0.f, 1.f),                // top left
@@ -99,12 +89,12 @@ SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
     //vertices_vec.resize(_maxQuads * vertsPerQuad);
 
     std::vector<V2> vertices_vec;
-    vertices_vec.resize(_maxQuads * vertsPerQuad);
+    vertices_vec.resize(_maxPrimitives * _verticesPerPrimitive);
 
-    for (uint i = 0; i < _maxQuads; ++i) {
-        for (uint j = 0; j < vertsPerQuad; ++j) {
-            vertices_vec[i * vertsPerQuad + j].pos = vertices[j];
-            vertices_vec[i * vertsPerQuad + j].quadId = i;//vertices[j];
+    for (uint i = 0; i < _maxPrimitives; ++i) {
+        for (uint j = 0; j < _verticesPerPrimitive; ++j) {
+            vertices_vec[i * _verticesPerPrimitive + j].pos = vertices[j];
+            vertices_vec[i * _verticesPerPrimitive + j].quadId = i;//vertices[j];
         }
     }
 
@@ -124,12 +114,6 @@ SpriteBatch::SpriteBatch(const pybind11::kwargs& args) {
     glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, stride, (void*)(2*sizeof(float)));
 }
 
-void SpriteBatch::cleanUp() {
-
-    _nQuads = 0;
-    _deallocated.clear();
-    memset(m_quadInfoBuffer, 0, _blockSize);
-}
 
 
 
@@ -140,12 +124,12 @@ void SpriteBatch::draw(Shader* s) {
     if (s->getShaderType() != _shaderType) {
         return;
     }
-    _cam->init(s);
-    // set view matrix
-    s->setMat4("view", _cam->getViewMatrix());
-    glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffer);
-    glBufferData(GL_UNIFORM_BUFFER, _blockSize, m_quadInfoBuffer, GL_DYNAMIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_uniformBuffer);
+//    _cam->init(s);
+//    // set view matrix
+//    s->setMat4("view", _cam->getViewMatrix());
+//    glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBuffer);
+//    glBufferData(GL_UNIFORM_BUFFER, _blockSize, m_quadInfoBuffer, GL_DYNAMIC_DRAW);
+//    glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_uniformBuffer);
 
     if (_paletteId != GL_INVALID_VALUE) {
         s->setInt("tex_pal", 1);
@@ -156,10 +140,11 @@ void SpriteBatch::draw(Shader* s) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _texId);
 
+    Batch::draw(s);
 
-    glBindVertexArray(_vao);
-    glDrawArrays(GL_TRIANGLES, 0, _nQuads * 6);
-    glBindVertexArray(0);
+//    glBindVertexArray(_vao);
+//    glDrawArrays(GL_TRIANGLES, 0, _nQuads * 6);
+//    glBindVertexArray(0);
 }
 
 

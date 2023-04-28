@@ -6,7 +6,7 @@ SpriteRenderer::SpriteRenderer(SpriteBatch* batch, const std::string& anim, GLui
     _spriteBatch(batch), m_animation(anim), m_frame(0), m_ticks(0) {
 
     // request a new quad id to the batch
-    _quadId = _spriteBatch->getQuadId();
+    _quadId = _spriteBatch->getPrimitiveId();
 }
 
 void SpriteRenderer::setModel(std::shared_ptr<Model> model) {

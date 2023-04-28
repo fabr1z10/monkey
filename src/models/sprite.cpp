@@ -20,7 +20,7 @@ Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string
 	auto& am = AssetManager::instance();
 
 	auto batch = yaml_read<int>(node, "batch");
-	_batch = Engine::instance().getBatch(batch);
+	_batch = dynamic_cast<SpriteBatch*>(Engine::instance().getBatch(batch));
 	auto sheetFile = _batch->getSheet();
 	//auto sheetFile = node["sheet"].as<std::string>();
 	auto tex = am.getTex(sheetFile);

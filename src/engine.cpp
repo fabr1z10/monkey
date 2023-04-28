@@ -19,6 +19,7 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 	m_shaderBuilders[3] = [&] () { return create_shader<LightShader>(
 			ShaderType::SHADER_TEXTURE_LIGHT, tex_light_vs, tex_light_fs, "3f2f3f");};
 	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return create_shader(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
+    m_shaderBuilders[ShaderType::LINE_SHADER] = [&] () { return create_shader(ShaderType::LINE_SHADER, line_vs, line_fs, "1f1I"); };
 }
 
 
@@ -110,7 +111,17 @@ void Engine::start() {
     // Dark blue background
     glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
     loadShaders();
+
+}
+
+void Engine::run() {
     m_shutdown = false;
+    for (const auto& shader : m_shaders) {
+        shader->use();
+        for (const auto& batch : _batches) {
+            batch->configure(shader.get());
+        }
+    }
 
     // main loop
     while (!m_shutdown) {
@@ -188,7 +199,6 @@ void Engine::start() {
     glfwTerminate();
 }
 
-
 void Engine::shutdown() {
     //	// Close OpenGL window and terminate GLFW
     m_shutdown = true;
@@ -212,6 +222,10 @@ void Engine::loadRoom() {
 
 }
 
+void Engine::addBatch(std::shared_ptr<Batch> batch) {
+    _batches.push_back(batch);
+}
+
 void Engine::loadShaders() {
 
     auto shaders = py_get<std::vector<int>>(m_game, "shaders");
@@ -225,17 +239,18 @@ void Engine::loadShaders() {
     }
     auto batches = py_get<std::vector<pybind11::dict>>(m_game, "sprite_batches");
 
-    for (const auto batch : batches) {
-        auto b = std::make_shared<SpriteBatch>(batch);
-        _batches.push_back(b);
-    }
-
-    for (const auto& shader : m_shaders) {
-        shader->use();
-        for (const auto& batch : _batches) {
-            batch->configure(shader.get());
-        }
-    }
+//    for (const auto batch : batches) {
+//        //auto b = std::make_shared<SpriteBatch>(batch);
+//        auto bb = batch.cast<std::shared_ptr<Batch>>();
+//        _batches.push_back(bb);
+//    }
+//
+//    for (const auto& shader : m_shaders) {
+//        shader->use();
+//        for (const auto& batch : _batches) {
+//            batch->configure(shader.get());
+//        }
+//    }
 
 
 }
@@ -350,6 +365,6 @@ void Engine::unregisterToKeyboardEvent(KeyboardListener * listener) {
 	m_keyboardListeners.erase(listener);
 }
 
-SpriteBatch * Engine::getBatch(int id) {
+Batch * Engine::getBatch(int id) {
     return _batches[id].get();
 }

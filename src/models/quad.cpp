@@ -6,7 +6,7 @@
 Quad::Quad(const pybind11::kwargs& args) : Model(), _batch(nullptr), _quadCount(0) {
 
     auto batch = py_get_dict<int>(args, "batch");
-    _batch = Engine::instance().getBatch(batch);
+    _batch = dynamic_cast<SpriteBatch*>(Engine::instance().getBatch(batch));
 
     auto& am = AssetManager::instance();
     auto sheetFile = _batch->getSheet();
@@ -58,7 +58,7 @@ void QuadRenderer::setModel(std::shared_ptr<Model> model) {
 
     auto qc = _quad->getQuadCount();
     for (int i = 0; i< qc; ++i) {
-        _quadIds.push_back(_spriteBatch->getQuadId());
+        _quadIds.push_back(_spriteBatch->getPrimitiveId());
     }
 
 }

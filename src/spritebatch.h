@@ -1,31 +1,30 @@
 #pragma once
 
-#include <GL/glew.h>
-#include <list>
+#include "batch.h"
+
 #include <string>
 #include <glm/glm.hpp>
 #include <pybind11/pytypes.h>
 #include "symbols.h"
-#include "camera.h"
 
 
-class Shader;
 
-class SpriteBatch {
 
+class SpriteBatch : public Batch {
 public:
     SpriteBatch(const pybind11::kwargs&);
-    ~SpriteBatch();
+
     //SpriteBatch(int maxQuads, const std::string& sheet);
-    void draw(Shader*);
+    void draw(Shader*) override;
     std::string getSheet() const;
-    int getQuadId();
-    void configure(Shader*);
+
+    //void configure(Shader*) override;
+    virtual void computeOffsets(GLuint) override;
+
     void setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::vec4 textureCoords,
                  glm::vec2 repeat, int paletteIndex, bool flipx, bool flipy);
-    void cleanUp();
 
-    Camera* getCamera();
+
 
 private:
     struct {
@@ -41,21 +40,11 @@ private:
 
     };
 
-    ShaderType _shaderType;
-    int _maxQuads;
-    int _nQuads;
-    GLuint _vao;
-    GLuint _vbo;
     std::string _sheet;
-    std::list<int> _deallocated;
     GLuint _texId;
     GLuint _paletteId;
     int _paletteCount;
     float _invPaletteCount;
-    GLint _blockSize;
-    GLuint m_uniformBuffer = 0;
-    GLubyte* m_quadInfoBuffer = NULL;
-    std::shared_ptr<Camera> _cam;
 };
 
 inline std::string SpriteBatch::getSheet() const {
@@ -63,6 +52,3 @@ inline std::string SpriteBatch::getSheet() const {
 }
 
 
-inline Camera * SpriteBatch::getCamera() {
-    return _cam.get();
-}

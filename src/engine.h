@@ -25,6 +25,7 @@ public:
     //Engine();
     long getNextId();
     void start();
+    void run();
     void closeRoom();
     //void load(pybind11::object obj);
     void shutdown();
@@ -46,7 +47,7 @@ public:
     std::shared_ptr<Node> getNode(int);
     void addNode(std::shared_ptr<Node>);
     void scheduleForRemoval(Node*);
-
+    void addBatch(std::shared_ptr<Batch>);
     pybind11::object getConfig();
     bool isRunning() const;
 
@@ -54,7 +55,7 @@ public:
 
 	void registerToKeyboardEvent(KeyboardListener*);
 	void unregisterToKeyboardEvent(KeyboardListener*);
-    SpriteBatch* getBatch(int);
+    Batch* getBatch(int);
 private:
 	template<typename T=Shader>
 	std::shared_ptr<T> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
@@ -106,7 +107,7 @@ private:
     std::vector<std::shared_ptr<Shader>> m_shaders;
 
 	std::unordered_set<KeyboardListener*> m_keyboardListeners;
-	std::vector<std::shared_ptr<SpriteBatch>> _batches;
+	std::vector<std::shared_ptr<Batch>> _batches;
 };
 
 inline int Engine::getPixelScale() const {

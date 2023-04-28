@@ -41,6 +41,8 @@
 #include "actions/move_dynamics.h"
 #include "runners/lighting.h"
 #include "models/quad.h"
+#include "linebatch.h"
+#include "models/lines.h"
 
 
 namespace py = pybind11;
@@ -85,11 +87,15 @@ PYBIND11_MODULE(monkey, m) {
 	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
     m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
 
+    m.attr("SHADER_LINEBATCH") = static_cast<int>(ShaderType::LINE_SHADER);
+
 
     py::class_<Engine>(m, "Engine")
         //.def(py::init<>())
         .def("start", &Engine::start)
-        .def("shutdown", &Engine::shutdown);
+        .def("run", &Engine::run)
+        .def("shutdown", &Engine::shutdown)
+        .def("add_batch", &Engine::addBatch);
 
     py::class_<Room, std::shared_ptr<Room>>(m, "Room")
         .def(py::init<const std::string&>())
@@ -121,6 +127,13 @@ PYBIND11_MODULE(monkey, m) {
 		.def("get_sprite_collider", &Node::getComponent<SpriteCollider>, py::return_value_policy::reference)
 		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
         .def("remove", &Node::remove);
+
+    py::class_<Batch, std::shared_ptr<Batch>>(m, "batch");
+
+    py::class_<SpriteBatch, Batch, std::shared_ptr<SpriteBatch>>(m, "sprite_batch")
+        .def(py::init<const pybind11::kwargs&>());
+    py::class_<LineBatch, Batch, std::shared_ptr<LineBatch>>(m, "line_batch")
+        .def(py::init<const pybind11::kwargs&>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -158,6 +171,8 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def(py::init<int>());
     py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
+        .def(py::init<const pybind11::kwargs&>());
+    py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")
         .def(py::init<const pybind11::kwargs&>());
 
     py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
