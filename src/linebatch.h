@@ -8,6 +8,8 @@ public:
     LineBatch(const pybind11::kwargs&);
     virtual void computeOffsets(GLuint) ;
     void setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color);
+    //void draw(Shader*) override;
+
 private:
     struct {
         GLint P0        = 0;

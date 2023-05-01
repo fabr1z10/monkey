@@ -13,6 +13,7 @@ private:
         glm::vec4 color;
     };
 public:
+    PolyChain(int batch, const std::vector<glm::vec2>& points, glm::vec4 color);
     explicit PolyChain(const pybind11::kwargs&);
     std::shared_ptr<Renderer> getRenderer() const override;
     int getLineCount() const;

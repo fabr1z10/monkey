@@ -19,6 +19,8 @@ out vec4 fs_color;
 
 void main() {
     vec3 P = Pos0[QuadId] + loc * (Pos1[QuadId] - Pos0[QuadId]);
+    //vec3 P = vec3(0,QuadId*16.0,0) + vec3(0,0,0) + loc * (vec3(32,16,0)-vec3(0,0,0));
+    //P = vec3(16.0 * loc, 32+ 16.0 * QuadId, 0.0);
     gl_Position = projection * view * vec4(P, 1);
     fs_color = Color[QuadId];
 }

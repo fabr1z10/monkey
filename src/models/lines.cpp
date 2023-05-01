@@ -2,6 +2,21 @@
 #include "../pyhelper.h"
 #include "../engine.h"
 
+PolyChain::PolyChain(int batch, const std::vector<glm::vec2>& points, glm::vec4 color) : Model(), _lineCount(0) {
+    _batch = dynamic_cast<LineBatch*>(Engine::instance().getBatch(batch));
+    glm::vec3 P0 (points[0], 0.f);
+    for (size_t i = 1; i < points.size(); ++i) {
+        glm::vec3 P1(points[i], 0.f);
+        Segment s;
+        s.P0 = P0;
+        s.P1 = P1;
+        s.color =color;
+        _segments.push_back(s);
+        P0=P1;
+        _lineCount++;
+    }
+}
+
 PolyChain::PolyChain(const pybind11::kwargs& args) : Model(), _batch(nullptr), _lineCount(0) {
 
     auto batch = py_get_dict<int>(args, "batch");
@@ -15,7 +30,7 @@ PolyChain::PolyChain(const pybind11::kwargs& args) : Model(), _batch(nullptr), _
         Segment s;
         s.P0 = P0;
         s.P1 = P1;
-        s.color = color;
+        s.color = glm::vec4(1.f);
         _segments.push_back(s);
         P0 = P1;
         _lineCount++;

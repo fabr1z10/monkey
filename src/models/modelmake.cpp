@@ -7,6 +7,7 @@
 #include "../shapes/aabb.h"
 #include "../pyhelper.h"
 #include "../models/multi.h"
+#include "lines.h"
 
 
 #include <cmath>
@@ -33,26 +34,36 @@ std::shared_ptr<Model> ModelMaker::makeCompoundShape(std::shared_ptr<Shape> s, g
 }
 
 std::shared_ptr<Model> ModelMaker::makeAABB(std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) {
-    std::vector<float> vertices;
-    std::vector<unsigned> elements;
-    unsigned u{0};
+
     auto b = s->getBounds();
-    vertices.insert(vertices.end(), {b.min.x, b.min.y, 0.f, color.r, color.g, color.b, color.a});
-    vertices.insert(vertices.end(), {b.max.x, b.min.y, 0.f, color.r, color.g, color.b, color.a});
-    vertices.insert(vertices.end(), {b.max.x, b.max.y, 0.f, color.r, color.g, color.b, color.a});
-    vertices.insert(vertices.end(), {b.min.x, b.max.y, 0.f, color.r, color.g, color.b, color.a});
+    std::vector<glm::vec2> pts= {
+        glm::vec2(b.min.x, b.min.y),
+        glm::vec2(b.max.x, b.min.y),
+        glm::vec2(b.max.x, b.max.y),
+        glm::vec2(b.min.x, b.max.y),
+        glm::vec2(b.min.x, b.min.y)
+    };
+    auto lines = std::make_shared<PolyChain>(1, pts, glm::vec4(1.f));
 
-    GLuint prim {GL_LINE_LOOP};
-    if (ft == FillType::OUTLINE) {
-        elements.insert(elements.end(), {0, 1, 2, 3});
-    } else {
-        elements.insert(elements.end(), {0, 1, 2, 2, 3, 0});
-        prim = GL_TRIANGLES;
-    }
-
-    auto model = std::make_shared<Model>(ShaderType::SHADER_COLOR, prim);
-    model->generateBuffers(vertices, elements);
-    return model;
+//    std::vector<float> vertices;
+//    std::vector<unsigned> elements;
+//    unsigned u{0};
+//    vertices.insert(vertices.end(), {b.min.x, b.min.y, 0.f, color.r, color.g, color.b, color.a});
+//    vertices.insert(vertices.end(), {b.max.x, b.min.y, 0.f, color.r, color.g, color.b, color.a});
+//    vertices.insert(vertices.end(), {b.max.x, b.max.y, 0.f, color.r, color.g, color.b, color.a});
+//    vertices.insert(vertices.end(), {b.min.x, b.max.y, 0.f, color.r, color.g, color.b, color.a});
+//
+//    GLuint prim {GL_LINE_LOOP};
+//    if (ft == FillType::OUTLINE) {
+//        elements.insert(elements.end(), {0, 1, 2, 3});
+//    } else {
+//        elements.insert(elements.end(), {0, 1, 2, 2, 3, 0});
+//        prim = GL_TRIANGLES;
+//    }
+//
+//    auto model = std::make_shared<Model>(ShaderType::SHADER_COLOR, prim);
+//    model->generateBuffers(vertices, elements);
+    return lines;
 }
 
 std::shared_ptr<Model> ModelMaker::pippo(const pybind11::kwargs& args) {

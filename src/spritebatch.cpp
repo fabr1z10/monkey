@@ -152,7 +152,7 @@ void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::ve
                           bool flipx, bool flipy) {
     //assert(index < SPRITE_TECH_MAX_QUADS);
 
-    auto* pBasePos = (glm::vec3*)(m_quadInfoBuffer + m_quadInfoOffsets.Pos);
+    auto* pBasePos = (glm::vec4*)(m_quadInfoBuffer + m_quadInfoOffsets.Pos);
     auto* pWidthHeight = (glm::vec2*) (m_quadInfoBuffer + m_quadInfoOffsets.Size);
     auto* pTexCoords = (glm::vec4*) (m_quadInfoBuffer + m_quadInfoOffsets.TexCoords);
     auto* pRepeat = (glm::vec2*) (m_quadInfoBuffer + m_quadInfoOffsets.Repeat);
@@ -161,6 +161,7 @@ void SpriteBatch::setQuad(int index, glm::vec3 worldPos, glm::vec2 size, glm::ve
     pBasePos[index].x = worldPos.x;
     pBasePos[index].y = worldPos.y;
     pBasePos[index].z = worldPos.z;
+    pBasePos[index].w = 1.0;
 
     pWidthHeight[index].x = size.x;
     pWidthHeight[index].y = size.y;

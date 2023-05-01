@@ -33,7 +33,7 @@ void Batch::draw(Shader* s) {
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_uniformBuffer);
 
     glBindVertexArray(_vao);
-    glDrawArrays(GL_TRIANGLES, 0, _nPrimitive * _verticesPerPrimitive);
+    glDrawArrays(_prim, 0, _nPrimitive * _verticesPerPrimitive);
     glBindVertexArray(0);
 }
 

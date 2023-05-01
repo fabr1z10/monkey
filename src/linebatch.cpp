@@ -1,5 +1,7 @@
 #include "linebatch.h"
 #include "pyhelper.h"
+#include <iostream>
+
 
 LineBatch::LineBatch(const pybind11::kwargs& args) : Batch(GL_LINES, 2) {
     _maxPrimitives = py_get_dict<int>(args, "max_lines");
@@ -28,9 +30,10 @@ LineBatch::LineBatch(const pybind11::kwargs& args) : Batch(GL_LINES, 2) {
 
     auto stride = sizeof(V2);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, 0);
+    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(1);
     glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, stride, (void*)(sizeof(float)));
+    glBindVertexArray(0);
 }
 
 void LineBatch::computeOffsets(GLuint shaderProg) {
@@ -53,17 +56,19 @@ void LineBatch::computeOffsets(GLuint shaderProg) {
 
 void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) {
 
-    auto* p0Pos = (glm::vec3*)(m_quadInfoBuffer + m_lineInfoOffsets.P0);
-    auto* p1Pos = (glm::vec3*) (m_quadInfoBuffer + m_lineInfoOffsets.P1);
+    auto* p0Pos = (glm::vec4*)(m_quadInfoBuffer + m_lineInfoOffsets.P0);
+    auto* p1Pos = (glm::vec4*) (m_quadInfoBuffer + m_lineInfoOffsets.P1);
     auto* pColor = (glm::vec4*) (m_quadInfoBuffer + m_lineInfoOffsets.Color);
 
     p0Pos[index].x = P0.x;
     p0Pos[index].y = P0.y;
     p0Pos[index].z = P0.z;
+    p0Pos[index].w = 0.f;
 
     p1Pos[index].x = P1.x;
     p1Pos[index].y = P1.y;
     p1Pos[index].z = P1.z;
+    p1Pos[index].w = 0.f;
 
     pColor[index].x = color.x;
     pColor[index].y = color.y;
@@ -71,3 +76,20 @@ void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) 
     pColor[index].w = color.w;
 
 }
+
+//void LineBatch::draw(Shader * s) {
+//
+//    float* ciccio = (float*)m_quadInfoBuffer;
+//    for (size_t i = 0; i < 20; i++) {
+//        std::cout << *ciccio << "\n";
+//        ciccio++;
+//    }
+//    std::cout << "---\n";
+//    ciccio =(float*)(m_quadInfoBuffer + m_lineInfoOffsets.P1);
+//    for (size_t i = 0; i < 20; i++) {
+//        std::cout << *ciccio << "\n";
+//        ciccio++;
+//    }
+//    std::cout << "###\n";
+//    Batch::draw(s);
+//}
