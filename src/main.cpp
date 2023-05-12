@@ -41,7 +41,7 @@
 #include "actions/move_dynamics.h"
 #include "runners/lighting.h"
 #include "models/quad.h"
-#include "linebatch.h"
+//#include "batch/linebatch.h"
 #include "models/lines.h"
 
 
@@ -128,12 +128,13 @@ PYBIND11_MODULE(monkey, m) {
 		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
         .def("remove", &Node::remove);
 
-    py::class_<Batch, std::shared_ptr<Batch>>(m, "batch");
+    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
+	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
 
-    py::class_<SpriteBatch, Batch, std::shared_ptr<SpriteBatch>>(m, "sprite_batch")
-        .def(py::init<const pybind11::kwargs&>());
-    py::class_<LineBatch, Batch, std::shared_ptr<LineBatch>>(m, "line_batch")
-        .def(py::init<const pybind11::kwargs&>());
+    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
+        .def(py::init<int, const pybind11::kwargs&>());
+    //py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
+    //    .def(py::init<ShaderType, int, const pybind11::kwargs&>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -171,14 +172,14 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def(py::init<int>());
     py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
-        .def(py::init<const pybind11::kwargs&>());
+        .def(py::init<std::shared_ptr<IBatch>, const pybind11::kwargs&>());
     py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")
         .def(py::init<const pybind11::kwargs&>());
 
-    py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
-        .def(py::init<const pybind11::kwargs&>());
-	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
-		.def(py::init<const pybind11::kwargs&>());
+//    py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
+//        .def(py::init<const pybind11::kwargs&>());
+//	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
+//		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
 
 	/// --- runners ---

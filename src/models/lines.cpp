@@ -3,7 +3,7 @@
 #include "../engine.h"
 
 PolyChain::PolyChain(int batch, const std::vector<glm::vec2>& points, glm::vec4 color) : Model(), _lineCount(0) {
-    _batch = dynamic_cast<LineBatch*>(Engine::instance().getBatch(batch));
+    //_batch = dynamic_cast<LineBatch*>(Engine::instance().getBatch(batch));
     glm::vec3 P0 (points[0], 0.f);
     for (size_t i = 1; i < points.size(); ++i) {
         glm::vec3 P1(points[i], 0.f);
@@ -19,8 +19,8 @@ PolyChain::PolyChain(int batch, const std::vector<glm::vec2>& points, glm::vec4 
 
 PolyChain::PolyChain(const pybind11::kwargs& args) : Model(), _batch(nullptr), _lineCount(0) {
 
-    auto batch = py_get_dict<int>(args, "batch");
-    _batch = dynamic_cast<LineBatch*>(Engine::instance().getBatch(batch));
+
+    _batch = dynamic_cast<LineBatch*>(args["batch"].cast<std::shared_ptr<IBatch>>().get());
     auto z = py_get_dict<float>(args, "z", 0.f);
     auto py_pts = args["points"].cast<std::vector<float>>();
     auto color = py_get_dict<glm::vec4>(args, "color");
@@ -48,7 +48,7 @@ PolyChainRenderer::PolyChainRenderer(LineBatch* batch) : Renderer(0, 0), _lineBa
 
 
 
-void PolyChainRenderer::setModel(std::shared_ptr<Model> model) {
+void PolyChainRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs&) {
     _chain = std::dynamic_pointer_cast<PolyChain>(model);
 
     auto qc = _chain->getLineCount();

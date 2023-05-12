@@ -2,12 +2,13 @@
 
 #include "../models/sprite.h"
 #include "renderer.h"
-#include "../spritebatch.h"
+#include "../batch/quadbatch.h"
 
 class SpriteRenderer : public Renderer {
 public:
-	explicit SpriteRenderer(SpriteBatch* , const std::string& anim, GLuint texId, GLuint palId);
-	void setModel(std::shared_ptr<Model>) override;
+	explicit SpriteRenderer(QuadBatch* , const std::string& anim, GLuint texId, GLuint palId);
+	virtual ~SpriteRenderer();
+	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	void start() override;
 	[[nodiscard]] const std::string& getAnimation() const;
@@ -19,8 +20,9 @@ public:
     void update(double) override;
 
 private:
-    SpriteBatch* _spriteBatch;
+	QuadBatch* _spriteBatch;
     int _quadId;
+    int _paletteId;
 
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const AnimInfo* m_animInfo;

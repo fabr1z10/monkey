@@ -19,6 +19,7 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 	m_shaderBuilders[3] = [&] () { return create_shader<LightShader>(
 			ShaderType::SHADER_TEXTURE_LIGHT, tex_light_vs, tex_light_fs, "3f2f3f");};
 	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return create_shader(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
+	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return create_shader(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
     m_shaderBuilders[ShaderType::LINE_SHADER] = [&] () { return create_shader(ShaderType::LINE_SHADER, line_vs, line_fs, "1f1I"); };
 }
 
@@ -33,8 +34,8 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 
 
 void Engine::start() {
-	
-	py::object settings = py::module::import("settings");
+    m_game = py::module::import("game");
+	py::object settings = py::module::import("game.settings");
 	if (settings) {
 	} else {
 		std::cout << " don't know\n";
@@ -49,7 +50,7 @@ void Engine::start() {
 	m_frameTime = 1.0 / 60.0;
 	m_timeLastUpdate = 0.0;
 	m_enableMouse = py_get<bool>(settings, "enable_mouse", false);
-	m_game = settings;
+	m_settings = settings;
 	m_clearColor = py_get<glm::vec4>(settings, "clear_color", glm::vec4(0.f, 0.f, 0.4f, 0.f));
 	if (pybind11::hasattr(settings, "init")) {
 		settings.attr("init").cast<pybind11::function>()();
@@ -116,16 +117,19 @@ void Engine::start() {
 
 void Engine::run() {
     m_shutdown = false;
-    for (const auto& shader : m_shaders) {
-        shader->use();
-        for (const auto& batch : _batches) {
-            batch->configure(shader.get());
-        }
+
+    // init shaders
+    for (size_t i = 0; i < m_shaders.size(); ++i) {
+    	auto current = m_shaders[i].get();
+    	current->use();
+    	for (const auto& batch : _batches[i]) {
+    		batch->configure(current);
+    	}
     }
 
     // main loop
     while (!m_shutdown) {
-        m_roomId = py_get<std::string>(m_game, "room");
+        m_roomId = py_get<std::string>(m_settings, "room");
         std::cout << " loading room: " << m_roomId << std::endl;
         loadRoom();
         // start up all nodes and components
@@ -160,17 +164,13 @@ void Engine::run() {
                 m_room->update(m_frameTime);
 
 
-                for (const auto &shader : m_shaders) {
-                    // here it makes sense to
-                    shader->use();
-                    for (const auto& batch : _batches) {
-                        batch->draw(shader.get());
-                    }
-
-                    //m_room->draw(shader.get());
-                    //shader->done();
-
-                }
+				for (size_t i = 0; i < m_shaders.size(); ++i) {
+					auto current = m_shaders[i].get();
+					current->use();
+					for (const auto& batch : _batches[i]) {
+						batch->draw(current);
+					}
+				}
 
 
                 glfwSwapBuffers(window);
@@ -190,11 +190,18 @@ void Engine::run() {
             m_room->cleanUp();
         }
         m_room = nullptr;
-        for (const auto& batch : _batches) {
-            batch->cleanUp();
+        for (size_t i = 0; i < _batches.size(); ++i) {
+            for (const auto& batch : _batches[i]) {
+				batch->cleanUp();
+			}
         }
     }
+	//m_settings.attr("on_close")();
 
+    _batches.clear();
+    m_shaders.clear();
+	m_game.release();
+	m_settings.release();
 
     glfwTerminate();
 }
@@ -217,18 +224,18 @@ void Engine::loadRoom() {
     // create a batch
     // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
 
-    m_room = m_game.attr("rooms").attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
+    m_room = m_game.attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
 
 
 }
 
-void Engine::addBatch(std::shared_ptr<Batch> batch) {
-    _batches.push_back(batch);
+void Engine::addBatch(int shaderIndex, std::shared_ptr<IBatch> batch) {
+    _batches[shaderIndex].push_back(batch);
 }
 
 void Engine::loadShaders() {
 
-    auto shaders = py_get<std::vector<int>>(m_game, "shaders");
+    auto shaders = py_get<std::vector<int>>(m_settings, "shaders");
     for (auto shaderId : shaders) {
         //auto flags = sh.second.cast<unsigned>();
         auto shader = m_shaderBuilders[shaderId]();
@@ -236,8 +243,9 @@ void Engine::loadShaders() {
         //  modify here
         //m_shaderTypeToIndex[shader->getShaderType()] = m_shaders.size();
         m_shaders.push_back(shader);
+        _batches.push_back(std::vector<std::shared_ptr<IBatch>>());
     }
-    auto batches = py_get<std::vector<pybind11::dict>>(m_game, "sprite_batches");
+    //auto batches = py_get<std::vector<pybind11::dict>>(m_settings, "sprite_batches");
 
 //    for (const auto batch : batches) {
 //        //auto b = std::make_shared<SpriteBatch>(batch);
@@ -365,6 +373,6 @@ void Engine::unregisterToKeyboardEvent(KeyboardListener * listener) {
 	m_keyboardListeners.erase(listener);
 }
 
-Batch * Engine::getBatch(int id) {
-    return _batches[id].get();
-}
+//IBatch * Engine::getBatch(int id) {
+//    return _batches[id].get();
+//}

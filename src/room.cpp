@@ -44,8 +44,8 @@ void Room::setMainCam(std::shared_ptr<Camera> cam) {
 
 void Room::update(double dt) {
 
-    auto* cam = Engine::instance().getBatch(0)->getCamera();
-    auto currentBounds = cam->getViewingBounds();
+    //auto* cam = Engine::instance().getBatch(0)->getCamera();
+    auto currentBounds = m_mainCamera->getViewingBounds();
     currentBounds.scale(2.f, 2.f);
 
     int m_nUpdates{0};

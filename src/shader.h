@@ -21,6 +21,7 @@ public:
     Shader(ShaderType, const std::string& vertexCode, const std::string& fragmentCode, const std::string& vertexFormat);
     ~Shader();
     virtual void use();
+    void init();
     void setupVertices();
 
     void setInt(const std::string &name, int value) const;

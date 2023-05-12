@@ -54,7 +54,7 @@ void Renderer::setPalette(const std::string &id) {
 //    m_model->draw(s, m_offset, m_count);
 //}
 
-void Renderer::setModel(std::shared_ptr<Model> model) {
+void Renderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
     m_model = model;
 }
 

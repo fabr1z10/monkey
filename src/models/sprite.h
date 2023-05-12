@@ -5,7 +5,7 @@
 #include "../hashpair.h"
 //#include "spritesheet.h"
 #include <yaml-cpp/yaml.h>
-#include "../spritebatch.h"
+#include "../batch/quadbatch.h"
 
 
 struct FrameInfo {
@@ -41,8 +41,8 @@ struct SpriteCollisionInfo {
 
 class Sprite : public Model {
 public:
-	Sprite(SpriteBatch*, ShaderType type, GLenum primitive);
-	Sprite(const YAML::Node& node);//, const std::string& sheetFile);
+	Sprite(IBatch*,  ShaderType type, GLenum primitive);
+	Sprite(std::shared_ptr<IBatch>, const YAML::Node& node);//, const std::string& sheetFile);
 	void init(Node*) override;
 	//void draw(Shader*, Node*) override;
 	std::shared_ptr<Renderer> getRenderer() const override;
@@ -61,7 +61,7 @@ public:
 	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
 	Bounds getAttackRange() const;
 private:
-    SpriteBatch* _batch;
+    QuadBatch* _batch;
 	Bounds m_attackRange;
 	//SpriteSheet* m_sheet;
 	std::string m_defaultAnimation;

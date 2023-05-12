@@ -2,7 +2,7 @@
 
 #include "../model.h"
 #include "../components/renderer.h"
-#include "../linebatch.h"
+#include "../batch/linebatch.h"
 
 
 class PolyChain : public Model {
@@ -37,7 +37,7 @@ inline const PolyChain::Segment& PolyChain::getSegment(int index) const {
 class PolyChainRenderer : public Renderer {
 public:
     explicit PolyChainRenderer(LineBatch*);
-    void setModel(std::shared_ptr<Model>) override;
+    void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     //void start() override;
     void update(double) override;

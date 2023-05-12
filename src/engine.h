@@ -10,7 +10,7 @@
 #include "node.h"
 #include "room.h"
 #include "keylistener.h"
-#include "spritebatch.h"
+#include "batch.h"
 
 namespace py = pybind11;
 
@@ -47,7 +47,7 @@ public:
     std::shared_ptr<Node> getNode(int);
     void addNode(std::shared_ptr<Node>);
     void scheduleForRemoval(Node*);
-    void addBatch(std::shared_ptr<Batch>);
+    void addBatch(int, std::shared_ptr<IBatch>);
     pybind11::object getConfig();
     bool isRunning() const;
 
@@ -55,7 +55,7 @@ public:
 
 	void registerToKeyboardEvent(KeyboardListener*);
 	void unregisterToKeyboardEvent(KeyboardListener*);
-    Batch* getBatch(int);
+    //IBatch* getBatch(int);
 private:
 	template<typename T=Shader>
 	std::shared_ptr<T> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
@@ -69,7 +69,7 @@ private:
     void loadRoom();
     void loadShaders();
     pybind11::object m_game;
-
+    pybind11::object m_settings;
     std::string m_title;
     std::string m_roomId;
     glm::ivec2 m_windowSize;
@@ -107,7 +107,7 @@ private:
     std::vector<std::shared_ptr<Shader>> m_shaders;
 
 	std::unordered_set<KeyboardListener*> m_keyboardListeners;
-	std::vector<std::shared_ptr<Batch>> _batches;
+	std::vector<std::vector<std::shared_ptr<IBatch>>> _batches;
 };
 
 inline int Engine::getPixelScale() const {
@@ -121,7 +121,7 @@ inline bool Engine::isRunning() const {
 }
 
 inline pybind11::object Engine::getConfig() {
-    return m_game;
+    return m_settings;
 }
 
 inline long Engine::getNextId() {

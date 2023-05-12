@@ -2,7 +2,7 @@
 
 #include "../model.h"
 #include "../components/renderer.h"
-#include "../spritebatch.h"
+#include "../batch/quadbatch.h"
 
 
 class Quad : public Model {
@@ -19,16 +19,20 @@ public:
         std::vector<Desc> quadDesc;
         int ticks;
     };
-    explicit Quad(const pybind11::kwargs&);
+    explicit Quad(std::shared_ptr<IBatch>, const pybind11::kwargs&);
     const Frame& getFrame(int) const;
     int getQuadCount() const;
     std::shared_ptr<Renderer> getRenderer() const override;
-
+    int getFrameCount() const;
 private:
-    SpriteBatch* _batch;
+    QuadBatch* _batch;
     std::vector<Frame> _frames;
     int _quadCount;
 };
+
+inline int Quad::getFrameCount() const {
+    return _frames.size();
+}
 
 inline const Quad::Frame& Quad::getFrame(int id) const {
     return _frames[id];
@@ -40,13 +44,13 @@ inline int Quad::getQuadCount() const {
 
 class QuadRenderer : public Renderer {
 public:
-    explicit QuadRenderer(SpriteBatch*);
-    void setModel(std::shared_ptr<Model>) override;
+    explicit QuadRenderer(QuadBatch*);
+    void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     void start() override;
     void update(double) override;
 private:
-    SpriteBatch* _spriteBatch;
+	QuadBatch* _spriteBatch;
     int _frame;
     int _ticks;
     std::shared_ptr<Quad> _quad;

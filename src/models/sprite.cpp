@@ -14,13 +14,15 @@
 //#include "../shapes/shapes3d/aabb3d.h"
 #include "../input.h"
 
-Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string()), _batch(nullptr) {
+Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(), m_defaultAnimation(std::string()), _batch(nullptr) {
 	m_shaderType = ShaderType::SHADER_TEXTURE;
 	m_primitive = GL_TRIANGLES;
 	auto& am = AssetManager::instance();
 
-	auto batch = yaml_read<int>(node, "batch");
-	_batch = dynamic_cast<SpriteBatch*>(Engine::instance().getBatch(batch));
+	//auto batch = yaml_read<int>(node, "batch");
+	//_batch = dynamic_cast<SpriteBatch*>(Engine::instance().getBatch(batch));
+	_batch = dynamic_cast<QuadBatch*>(batch.get());
+
 	auto sheetFile = _batch->getSheet();
 	//auto sheetFile = node["sheet"].as<std::string>();
 	auto tex = am.getTex(sheetFile);
@@ -171,7 +173,8 @@ void Sprite::init(Node * n) {
 	obj["frame"] = 0;
 }
 
-Sprite::Sprite(SpriteBatch* batch, ShaderType type, GLenum primitive) : Model(type), _batch(batch) {
+Sprite::Sprite(IBatch* batch, ShaderType type, GLenum primitive) : Model(type) {
+
 	m_primitive = primitive;
 }
 
@@ -181,6 +184,8 @@ std::shared_ptr<Shape> Sprite::getRect(int mode, int x0, int x1, int y0, int y1)
 		return std::make_shared<AABB>(x0, x1, y0, y1);
 	} else {
 		//return std::make_shared<AABB3D>(x0, x1, y0, y1, -m_halfThickness, m_halfThickness);
+
+		return nullptr;
 	}
 
 }

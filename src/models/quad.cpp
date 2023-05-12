@@ -3,10 +3,10 @@
 #include "../engine.h"
 #include "../assetmanager.h"
 
-Quad::Quad(const pybind11::kwargs& args) : Model(), _batch(nullptr), _quadCount(0) {
+Quad::Quad(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args) : Model(), _batch(nullptr), _quadCount(0) {
 
-    auto batch = py_get_dict<int>(args, "batch");
-    _batch = dynamic_cast<SpriteBatch*>(Engine::instance().getBatch(batch));
+
+    _batch = dynamic_cast<QuadBatch*>(batch.get());
 
     auto& am = AssetManager::instance();
     auto sheetFile = _batch->getSheet();
@@ -47,13 +47,13 @@ std::shared_ptr<Renderer> Quad::getRenderer() const {
 
 }
 
-QuadRenderer::QuadRenderer(SpriteBatch* batch) : Renderer(0, 0), _spriteBatch(batch), _frame(0), _ticks(0) {
-    // request a new quad id to the batch
+QuadRenderer::QuadRenderer(QuadBatch* batch) : Renderer(0, 0), _frame(0), _ticks(0), _spriteBatch(batch) {
+    // request a new quad id to the batchcam_node.add(monkey_toolkit.platformer.platform_border(0, 2, 3, 5, qq, 0, platform_type=monkey_toolkit.platformer.PlatformType.LINE))
 
 
 }
 
-void QuadRenderer::setModel(std::shared_ptr<Model> model) {
+void QuadRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs&  args) {
     _quad = std::dynamic_pointer_cast<Quad>(model);
 
     auto qc = _quad->getQuadCount();
@@ -81,7 +81,7 @@ void QuadRenderer::update(double dt) {
     if (a.ticks > 0 && _ticks >= a.ticks) {
         // increment frame. if this animation is
         _frame++;
-        if (_frame >= a.quadDesc.size()) {
+        if (_frame >= _quad->getFrameCount()) {
             _frame = 0;
         }
         // reset tick counter

@@ -138,12 +138,12 @@ void Node::addComponent(std::shared_ptr<Component> c) {
 void Node::setPalette(const std::string &palId) {
 	getComponent<Renderer>()->setPalette(palId);
 }
-void Node::setModel(std::shared_ptr<Model> model) {
+void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 
 	auto *r = getComponent<Renderer>();
 	if (r == nullptr) {
 		auto renderer = model->getRenderer();
-		renderer->setModel(model);
+		renderer->setModel(model, args);
 		addComponent(renderer);
 	} else {
 		r->setModel(model);

@@ -12,7 +12,7 @@ public:
 
 
     std::shared_ptr<Model> getModel();
-    virtual void setModel(std::shared_ptr<Model>);
+    virtual void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args = pybind11::kwargs());
     void setMultColor(glm::vec4);
     void setAddColor(glm::vec4);
     const glm::mat4& getRendererTransform() const;

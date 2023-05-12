@@ -1,16 +1,22 @@
 #include "sprite_renderer.h"
 #include "../error.h"
 #include "../node.h"
+#include "../pyhelper.h"
 
-SpriteRenderer::SpriteRenderer(SpriteBatch* batch, const std::string& anim, GLuint texId, GLuint palId) : Renderer(texId, palId),
+SpriteRenderer::SpriteRenderer(QuadBatch* batch, const std::string& anim, GLuint texId, GLuint palId) : Renderer(texId, palId),
     _spriteBatch(batch), m_animation(anim), m_frame(0), m_ticks(0) {
 
     // request a new quad id to the batch
     _quadId = _spriteBatch->getPrimitiveId();
 }
 
-void SpriteRenderer::setModel(std::shared_ptr<Model> model) {
-	Renderer::setModel(model);
+SpriteRenderer::~SpriteRenderer() {
+	_spriteBatch->releaseQuad(_quadId);
+}
+
+void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
+	Renderer::setModel(model, args);
+	_paletteId = py_get_dict<int>(args, "pal", 0);
 	m_sprite = std::dynamic_pointer_cast<Sprite>(model);
 }
 
@@ -39,8 +45,26 @@ void SpriteRenderer::update(double dt) {
 	const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
 	// get world pos
 	auto pos = m_node->getWorldPosition();
+
+	// the bottom left corner depends whether entity is flipped horizontally
+
+
+
+	//auto worldTransform = m_node->getWorldMatrix();
+	//glm::vec3 pos = worldTransform * glm::vec4(a.anchor_point, 0.f, 1.f);
 	auto flipx = m_node->getFlipX();
-	_spriteBatch->setQuad(_quadId, pos, a.size, a.texture_coordinates, glm::vec2(1, 1), a.paletteIndex, flipx, false);
+	glm::vec2 delta = flipx ? (glm::vec2(a.size.x, 0.f) - a.anchor_point) : a.anchor_point;
+    auto bottomLeft = pos - glm::vec3(delta, 0.f);
+
+    _spriteBatch->setQuad(_quadId,
+						 bottomLeft,
+						 a.size,
+						 a.texture_coordinates,
+						glm::vec2(1, 1),
+						 _paletteId,
+						 flipx,
+						false);
+	//_spriteBatch->setQuad(_quadId, bottomLeft, a.size, a.texture_coordinates, glm::vec2(1, 1), a.paletteIndex, flipx, false);
 
 
 

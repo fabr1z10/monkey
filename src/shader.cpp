@@ -95,13 +95,16 @@ Shader::~Shader() {
     glDeleteProgram(m_programId);
 }
 
+void Shader::init() {
+	glUseProgram(m_programId);
+	glBindVertexArray(m_vao);
+	setupVertices();
+
+}
+
 void Shader::use() {
     glUseProgram(m_programId);
     glBindVertexArray(m_vao);
-    setupVertices();
-//    for (const auto& init : m_initializers) {
-//        init->init(this);
-//    }
 }
 
 void Shader::setupVertices() {
