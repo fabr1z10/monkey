@@ -11,7 +11,7 @@ uniform mat4 projection;
 
 out vec4 TexBounds;
 out vec2 TexCoords;
-flat out float palY;
+out float palY;
 
 void main() {
     // calculate position

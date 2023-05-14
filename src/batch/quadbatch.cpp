@@ -154,7 +154,7 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::ve
 	float txr = fliph ? 0.f : textureRepeat.x;
 	float tyb = flipv ? 0.f : textureRepeat.y;
 	float tyt = flipv ? textureRepeat.y : 0.f;
-	float palY = 1.5f * palette * _invPaletteCount;
+	float palY = _invPaletteCount * (0.5f + palette);
 	int offset = index * _vertsPerElement;
 
 	_data[offset].position = bottomLeft;

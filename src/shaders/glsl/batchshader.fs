@@ -10,7 +10,7 @@ uniform sampler2D tex_pal;
 
 in vec4 TexBounds;
 in vec2 TexCoords;
-flat in float palY;
+in float palY;
 
 void main()
 {
