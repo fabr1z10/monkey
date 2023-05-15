@@ -97,8 +97,8 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 			}
 			frameInfo.ticks = el["ticks"].as<int>(defaultTicks);
 			int boxFrame = el["box"].as<int>(boxAnim);
-			bool fliph = el["fliph"].as<bool>(false);
-			bool flipv = el["flipv"].as<bool>(false);
+			//bool fliph = el["fliph"].as<bool>(false);
+			//bool flipv = el["flipv"].as<bool>(false);
 			frameInfo.box = boxFrame;
 			frameInfo.attackBox = el["attack"].as<int>(-1);
 			if (frameInfo.attackBox != -1) {
@@ -113,6 +113,7 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
             frameInfo.texture_coordinates[1] = (texc[0] + texc[2]) / texw;
             frameInfo.texture_coordinates[2] = texc[1] / texh;
             frameInfo.texture_coordinates[3] = (texc[1] + texc[3]) / texw;
+            frameInfo.flipx = yaml_read<bool>(el, "fliph", false);
             frameInfo.flipy = yaml_read<bool>(el, "flipv", false);
             int width_px = texc[2];
             int height_px = texc[3];

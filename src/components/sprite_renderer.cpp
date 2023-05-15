@@ -52,7 +52,7 @@ void SpriteRenderer::update(double dt) {
 
 	//auto worldTransform = m_node->getWorldMatrix();
 	//glm::vec3 pos = worldTransform * glm::vec4(a.anchor_point, 0.f, 1.f);
-	auto flipx = m_node->getFlipX();
+	auto flipx = m_node->getFlipX() ^ a.flipx;
 
 	glm::vec2 delta = flipx ? (glm::vec2(a.size.x, 0.f) - a.anchor_point) : a.anchor_point;
     auto bottomLeft = pos - glm::vec3(delta, 0.f);
