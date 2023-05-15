@@ -122,6 +122,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("state", &Node::getState)
 		.def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
+		.def_property_readonly("z", &Node::getZ)
 		.def_property("flip_x",&Node::getFlipX, &Node::setFlipX)
 		.def("get_state_machine", &Node::getComponent<StateMachine>, py::return_value_policy::reference)
 		.def("get_sprite_collider", &Node::getComponent<SpriteCollider>, py::return_value_policy::reference)

@@ -195,3 +195,7 @@ float Node::getX() const {
 float Node::getY() const {
 	return m_worldMatrix[3][1];
 }
+
+float Node::getZ() const {
+	return m_worldMatrix[3][2];
+}

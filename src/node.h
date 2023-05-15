@@ -52,6 +52,7 @@ public:
     void addComponent(std::shared_ptr<Component> c) ;
     float getX() const;
     float getY() const;
+	float getZ() const;
     template <typename T>
     T* getComponent() const {
         auto it = m_components.find(std::type_index(typeid(typename T::Base)));
