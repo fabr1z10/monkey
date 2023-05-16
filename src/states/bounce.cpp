@@ -18,6 +18,7 @@ Bounce::Bounce(const std::string& id, const pybind11::kwargs& kwargs) : State(id
 	m_flipHorizontally = py_get_dict<bool>(kwargs, "flip", false);
 	m_horizontalSpeed = py_get_dict<float>(kwargs, "speed");
 	m_left = py_get_dict<bool>(kwargs, "left", true);
+	m_flipOnEdge = py_get_dict<bool>(kwargs, "flip_on_edge", false);
 
 }
 
@@ -54,6 +55,13 @@ void Bounce::init(const pybind11::kwargs& args) {
 
 void Bounce::run(double dt) {
 	auto dtf = static_cast<float>(dt);
+
+
+	// check if I reached the end of the platform
+	if (m_flipOnEdge && m_controller->grounded() && m_controller->isFalling(m_left ? -1.f : 1.f)) {
+		m_left = !m_left;
+		//m_right = !m_left;
+	}
 
 
 	float maxSpeed {0.f};

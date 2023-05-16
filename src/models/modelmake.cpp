@@ -25,12 +25,12 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
 }
 
 std::shared_ptr<Model> ModelMaker::makeCompoundShape(std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) {
-    auto* cs = static_cast<CompoundShape*>(s.get());
-    auto model = std::make_shared<MultiModel>();
-    for (const auto& shape : cs->getShapes()) {
-        model->addModel(this->make(shape, color, ft));
-    }
-    return model;
+//    auto* cs = static_cast<CompoundShape*>(s.get());
+//    auto model = std::make_shared<MultiModel>();
+//    for (const auto& shape : cs->getShapes()) {
+//        model->addModel(this->make(shape, color, ft));
+//    }
+//    return model;
 }
 
 std::shared_ptr<Model> ModelMaker::makeAABB(std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) {
@@ -107,9 +107,9 @@ std::shared_ptr<Model> ModelMaker::pippo(const pybind11::kwargs& args) {
 		exit(1);
 	}
 	std::vector<unsigned> elements{0, 1, 2, 3, 0, 2};
-	auto model = std::make_shared<Model>(ShaderType::SHADER_TEXTURE_LIGHT, GL_TRIANGLES);
-	model->generateBuffers(vertices, elements);
-	model->setTexture(sheetFile);
+	auto model = std::make_shared<Model>();
+	//model->generateBuffers(vertices, elements);
+	//model->setTexture(sheetFile);
 	return model;
 
 }
@@ -140,8 +140,8 @@ std::shared_ptr<Model> ModelMaker::makeConvexPoly(std::shared_ptr<Shape> s, glm:
         }
     }
 
-    auto model = std::make_shared<Model>(ShaderType::SHADER_COLOR, prim);
-    model->generateBuffers(vertices, elements);
+    auto model = std::make_shared<Model>();
+    //model->generateBuffers(vertices, elements);
     return model;
 
 }
@@ -181,8 +181,8 @@ std::shared_ptr<Model> ModelMaker::makeCircle(std::shared_ptr<Shape> s, glm::vec
     }
 
 
-    auto model = std::make_shared<Model>(ShaderType::SHADER_COLOR, prim);
-    model->generateBuffers(vertices, elements);
+    auto model = std::make_shared<Model>();
+    //model->generateBuffers(vertices, elements);
     return model;
 
 }

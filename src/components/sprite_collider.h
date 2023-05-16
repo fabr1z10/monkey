@@ -26,7 +26,7 @@ private:
 
 class SpriteColliderRenderer : public Renderer {
 public:
-	SpriteColliderRenderer() : Renderer(GL_INVALID_VALUE, GL_INVALID_VALUE) {}
+	SpriteColliderRenderer() : Renderer() {}
 	//void draw(Shader * s) override;
 	void start() override;
 	std::type_index getType() override;

@@ -43,7 +43,7 @@ class Sprite : public Model {
 public:
 	Sprite(IBatch*,  ShaderType type, GLenum primitive);
 	Sprite(std::shared_ptr<IBatch>, const YAML::Node& node);//, const std::string& sheetFile);
-	void init(Node*) override;
+	//void init(Node*) override;
 	//void draw(Shader*, Node*) override;
 	std::shared_ptr<Renderer> getRenderer() const override;
 	const FrameInfo& getFrameInfo(const std::string& anim, int frame);

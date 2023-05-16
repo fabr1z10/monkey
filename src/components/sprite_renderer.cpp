@@ -3,7 +3,7 @@
 #include "../node.h"
 #include "../pyhelper.h"
 
-SpriteRenderer::SpriteRenderer(QuadBatch* batch, const std::string& anim, GLuint texId, GLuint palId) : Renderer(texId, palId),
+SpriteRenderer::SpriteRenderer(QuadBatch* batch, const std::string& anim) : Renderer(),
     _spriteBatch(batch), m_animation(anim), m_frame(0), m_ticks(0) {
 
     // request a new quad id to the batch

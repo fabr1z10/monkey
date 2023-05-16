@@ -42,7 +42,7 @@ std::shared_ptr<Renderer> PolyChain::getRenderer() const {
     return std::make_shared<PolyChainRenderer>(_batch);
 
 }
-PolyChainRenderer::PolyChainRenderer(LineBatch* batch) : Renderer(0, 0), _lineBatch(batch) {
+PolyChainRenderer::PolyChainRenderer(LineBatch* batch) : Renderer(), _lineBatch(batch) {
 
 }
 

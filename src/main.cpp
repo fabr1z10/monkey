@@ -171,7 +171,7 @@ PYBIND11_MODULE(monkey, m) {
     py::module_ mm = m.def_submodule("models");
 	mm.def("make_plane", &ModelMaker::pippo);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
-        .def(py::init<int>());
+        .def(py::init<>());
     py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
         .def(py::init<std::shared_ptr<IBatch>, const pybind11::kwargs&>());
     py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")

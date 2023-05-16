@@ -3,6 +3,7 @@
 #include "../model.h"
 #include "../shape.h"
 #include "../symbols.h"
+#include <pybind11/pybind11.h>
 
 // convert shape to models
 class ModelMaker {

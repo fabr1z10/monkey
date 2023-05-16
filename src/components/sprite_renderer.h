@@ -6,7 +6,7 @@
 
 class SpriteRenderer : public Renderer {
 public:
-	explicit SpriteRenderer(QuadBatch* , const std::string& anim, GLuint texId, GLuint palId);
+	explicit SpriteRenderer(QuadBatch* , const std::string& anim);
 	virtual ~SpriteRenderer();
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;

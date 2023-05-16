@@ -15,8 +15,8 @@
 #include "../input.h"
 
 Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(), m_defaultAnimation(std::string()), _batch(nullptr) {
-	m_shaderType = ShaderType::SHADER_TEXTURE;
-	m_primitive = GL_TRIANGLES;
+	//m_shaderType = ShaderType::SHADER_TEXTURE;
+	//m_primitive = GL_TRIANGLES;
 	auto& am = AssetManager::instance();
 
 	//auto batch = yaml_read<int>(node, "batch");
@@ -28,8 +28,8 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 	auto tex = am.getTex(sheetFile);
 
 	if (tex->hasPalette()) {
-		m_shaderType = ShaderType::SHADER_TEXTURE_PALETTE;
-		m_paletteId = tex->getDefaultPaletteId();
+		//m_shaderType = ShaderType::SHADER_TEXTURE_PALETTE;
+		//m_paletteId = tex->getDefaultPaletteId();
 //		auto paletteName = node["palette"].as<std::string>("");
 //		if (!paletteName.empty()) {
 //			auto pal = am.getPalette(paletteName);
@@ -39,7 +39,7 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 
 	float texw = tex->getWidth();
 	float texh = tex->getHeight();
-	m_texId = tex->getTexId();
+	//m_texId = tex->getTexId();
 
 	auto& engine = Engine::instance();
 
@@ -168,16 +168,16 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 
 
 }
+//
+//void Sprite::init(Node * n) {
+//	auto obj = n->getUserData();
+//	obj["anim"] = m_defaultAnimation;
+//	obj["frame"] = 0;
+//}
 
-void Sprite::init(Node * n) {
-	auto obj = n->getUserData();
-	obj["anim"] = m_defaultAnimation;
-	obj["frame"] = 0;
-}
+Sprite::Sprite(IBatch* batch, ShaderType type, GLenum primitive) : Model() {
 
-Sprite::Sprite(IBatch* batch, ShaderType type, GLenum primitive) : Model(type) {
-
-	m_primitive = primitive;
+	//m_primitive = primitive;
 }
 
 
@@ -199,7 +199,7 @@ const FrameInfo & Sprite::getFrameInfo(const std::string &anim, int frame) {
 }
 
 std::shared_ptr<Renderer> Sprite::getRenderer() const {
-	return std::make_shared<SpriteRenderer>(_batch, m_defaultAnimation, m_texId, m_paletteId);
+	return std::make_shared<SpriteRenderer>(_batch, m_defaultAnimation);
 
 }
 
@@ -244,42 +244,42 @@ std::pair<int, int> Sprite::getDebugAttackShape(const std::string &anim, int fra
 
 
 std::shared_ptr<Model> Sprite::generateDebugModel() {
-	std::vector<float> vertices;
-	std::vector<unsigned> elements;
-	unsigned u{0};
-	glm::vec4 color(1.f);
-	auto model = std::make_shared<Model>(ShaderType::SHADER_COLOR, GL_LINES);
+//	std::vector<float> vertices;
+//	std::vector<unsigned> elements;
+//	unsigned u{0};
+//	glm::vec4 color(1.f);
+//	auto model = std::make_shared<Model>();
+////
+////    auto model = std::make_shared<AnimatedModel>(ShaderType::SHADER_COLOR, GL_LINES);
+////
+//	// every shape is associated an offset and a count
 //
-//    auto model = std::make_shared<AnimatedModel>(ShaderType::SHADER_COLOR, GL_LINES);
+//	auto lambda = [&] (const Bounds& b) {
+//		vertices.insert(vertices.end(), {b.min.x, b.min.y, 0.0f, color.r, color.g, color.b, color.a});
+//		vertices.insert(vertices.end(), {b.max.x, b.min.y, 0.0f, color.r, color.g, color.b, color.a});
+//		vertices.insert(vertices.end(), {b.max.x, b.max.y, 0.0f, color.r, color.g, color.b, color.a});
+//		vertices.insert(vertices.end(), {b.min.x, b.max.y, 0.0f, color.r, color.g, color.b, color.a});
+//		elements.insert(elements.end(), {u, u+1, u+1, u+2, u+2, u+3, u+3, u});
+//		u += 4;
+//	};
 //
-	// every shape is associated an offset and a count
-
-	auto lambda = [&] (const Bounds& b) {
-		vertices.insert(vertices.end(), {b.min.x, b.min.y, 0.0f, color.r, color.g, color.b, color.a});
-		vertices.insert(vertices.end(), {b.max.x, b.min.y, 0.0f, color.r, color.g, color.b, color.a});
-		vertices.insert(vertices.end(), {b.max.x, b.max.y, 0.0f, color.r, color.g, color.b, color.a});
-		vertices.insert(vertices.end(), {b.min.x, b.max.y, 0.0f, color.r, color.g, color.b, color.a});
-		elements.insert(elements.end(), {u, u+1, u+1, u+2, u+2, u+3, u+3, u});
-		u += 4;
-	};
-
-	int ishape{0};
-	for (const auto& s : m_shapes) {
-		unsigned offset = elements.size();
-		if (s->getShapeType() == ShapeType::COMPOUND) {
-			auto* cs = static_cast<CompoundShape*>(s.get());
-			for (const auto& t : cs->getShapes()) {
-				lambda(t->getBounds());
-			}
-		} else {
-			lambda(s->getBounds());
-		}
-		m_shapeInfo[ishape++] = std::make_pair(offset, elements.size() - offset);
-//		model->addItem(offset, elements.size() - offset);
-	}
-	model->generateBuffers(vertices, elements);
-
-	return model;
-	//return std::make_shared<RawModel>(ShaderType::SHADER_COLOR, GL_LINES, vertices, elements);
+//	int ishape{0};
+//	for (const auto& s : m_shapes) {
+//		unsigned offset = elements.size();
+//		if (s->getShapeType() == ShapeType::COMPOUND) {
+//			auto* cs = static_cast<CompoundShape*>(s.get());
+//			for (const auto& t : cs->getShapes()) {
+//				lambda(t->getBounds());
+//			}
+//		} else {
+//			lambda(s->getBounds());
+//		}
+//		m_shapeInfo[ishape++] = std::make_pair(offset, elements.size() - offset);
+////		model->addItem(offset, elements.size() - offset);
+//	}
+//	model->generateBuffers(vertices, elements);
+//
+//	return model;
+//	//return std::make_shared<RawModel>(ShaderType::SHADER_COLOR, GL_LINES, vertices, elements);
 
 }

@@ -3,10 +3,11 @@
 #include "../component.h"
 #include "../shader.h"
 #include "../model.h"
+#include <pybind11/pybind11.h>
 
 class Renderer : public Component {
 public:
-    Renderer(GLuint textureId, GLuint paletteId);
+    Renderer();
     virtual int setup(Shader*);
     //virtual void draw(Shader*);
 
@@ -33,7 +34,7 @@ protected:
     glm::mat4 m_rendererTransform;
     int m_offset;
     int m_count;
-	GLuint m_texId;
-	GLuint m_paletteId;
+	//GLuint m_texId;
+	//GLuint m_paletteId;
 };
 

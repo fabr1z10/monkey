@@ -31,6 +31,7 @@ private:
 	bool m_flipHorizontally;
 	bool m_left;
 	float m_horizontalSpeed;
+	bool m_flipOnEdge;
 
 };
 

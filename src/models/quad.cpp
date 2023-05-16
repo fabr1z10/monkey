@@ -47,7 +47,7 @@ std::shared_ptr<Renderer> Quad::getRenderer() const {
 
 }
 
-QuadRenderer::QuadRenderer(QuadBatch* batch) : Renderer(0, 0), _frame(0), _ticks(0), _spriteBatch(batch) {
+QuadRenderer::QuadRenderer(QuadBatch* batch) : Renderer(), _frame(0), _ticks(0), _spriteBatch(batch) {
     // request a new quad id to the batchcam_node.add(monkey_toolkit.platformer.platform_border(0, 2, 3, 5, qq, 0, platform_type=monkey_toolkit.platformer.PlatformType.LINE))
 
 
