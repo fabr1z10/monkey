@@ -21,6 +21,7 @@ struct FrameInfo {
 	int ticks;
 	int box;
 	int attackBox;
+	std::vector<glm::vec3> joints;
 };
 
 struct AnimInfo {
@@ -47,7 +48,9 @@ public:
 	//void draw(Shader*, Node*) override;
 	std::shared_ptr<Renderer> getRenderer() const override;
 	const FrameInfo& getFrameInfo(const std::string& anim, int frame);
-	const AnimInfo* getAnimInfo(const std::string& anim);
+    const FrameInfo* getFrameInfo2(const std::string& anim, int frame);
+
+    const AnimInfo* getAnimInfo(const std::string& anim);
 
 	std::shared_ptr<Shape> getShape (const std::string& anim, int frame) const;
 	std::shared_ptr<Shape> getShapeCast (const std::string& anim, int frame) const;

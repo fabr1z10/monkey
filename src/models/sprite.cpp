@@ -199,7 +199,7 @@ const FrameInfo & Sprite::getFrameInfo(const std::string &anim, int frame) {
 }
 
 std::shared_ptr<Renderer> Sprite::getRenderer() const {
-	return std::make_shared<SpriteRenderer>(_batch, m_defaultAnimation);
+	return std::make_shared<SpriteRenderer>(_batch);
 
 }
 

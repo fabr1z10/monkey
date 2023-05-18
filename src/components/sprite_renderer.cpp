@@ -3,8 +3,8 @@
 #include "../node.h"
 #include "../pyhelper.h"
 
-SpriteRenderer::SpriteRenderer(QuadBatch* batch, const std::string& anim) : Renderer(),
-    _spriteBatch(batch), m_animation(anim), m_frame(0), m_ticks(0) {
+SpriteRenderer::SpriteRenderer(QuadBatch* batch) : Renderer(),
+    _spriteBatch(batch), m_frame(0), m_ticks(0) {
 
     // request a new quad id to the batch
     _quadId = _spriteBatch->getPrimitiveId();
@@ -16,8 +16,10 @@ SpriteRenderer::~SpriteRenderer() {
 
 void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 	Renderer::setModel(model, args);
+    m_sprite = std::dynamic_pointer_cast<Sprite>(model);
+
+	m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
 	_paletteId = py_get_dict<int>(args, "pal", 0);
-	m_sprite = std::dynamic_pointer_cast<Sprite>(model);
 }
 
 const std::string & SpriteRenderer::getAnimation() const {
