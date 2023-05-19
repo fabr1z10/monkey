@@ -7,9 +7,12 @@
 
 class MultiSprite : public Model {
 public:
+    MultiSprite(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args);
 	MultiSprite(std::shared_ptr<IBatch> batch);
     int getKey(const std::string& key);
-	void addSprite(const std::string& key, std::shared_ptr<Sprite> sprite, const std::string& parent = std::string(), int joint = -1);
+
+
+	void addSprite(const std::string& key, std::shared_ptr<Sprite> sprite) ; //, const std::string& parent = std::string(), int joint = -1);
     std::shared_ptr<Renderer> getRenderer() const override;
     struct Node {
         Node(int id, std::shared_ptr<Sprite> sprite, int parent, int joint) : id(id), _sprite(sprite), _parent(parent), _joint(joint) {
@@ -22,8 +25,11 @@ public:
         int _joint;
         std::vector<int> _next;
     };
+    void addAnimation(const std::string& id, const std::string& subSprite, const std::string& anim);
+    const std::unordered_map<int, std::string>& getAnimationData(const std::string&);
 private:
     QuadBatch* _batch;
+    std::unordered_map<std::string, std::unordered_map<int, std::string>> _anims;
 
 
     std::unordered_map<std::string, int> _map;
@@ -43,25 +49,30 @@ public:
 
 	void update(double) override;
 
-	void setAnimation(const std::string& key, const std::string& anim);
+	void setAnimation(const std::string& anim) override;
+
+    std::type_index getType() override;
+
 private:
     QuadBatch* _spriteBatch;
     std::shared_ptr<MultiSprite> m_sprite;
 
 
-
 	struct Node {
 	    Node (const MultiSprite::Node* node, int quadId);
-        int _quadId;
+        const MultiSprite::Node* link;
+	    int _quadId;
         int _key;
 	    int _parent;
         int _joint;
-	    std::shared_ptr<Sprite> _sprite;
+
+	    //std::shared_ptr<Sprite> _sprite;
         int _paletteId;
         std::string _animation;
         int _frame;
         int _ticks;
-
+        glm::vec3 _bottomLeft;
+        glm::vec3 _bottomRight;
         void setAnimation(const std::string&);
         const AnimInfo* _animInfo;
         glm::vec3 _pos;

@@ -37,7 +37,8 @@ void Walk2D::setParent(StateMachine * sm) {
 	m_dynamics = m_sm->getNode()->getComponent<Dynamics>();
 	assert(m_dynamics != nullptr);
 
-	m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
+	//m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
+	m_animatedRenderer = m_node->getComponent<Renderer>();
 }
 
 

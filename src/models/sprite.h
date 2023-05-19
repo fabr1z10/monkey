@@ -12,6 +12,7 @@ struct FrameInfo {
     glm::vec4 texture_coordinates;
     glm::vec2 size;
     glm::vec2 anchor_point;
+    float z;
     unsigned paletteIndex;
     bool flipx;
     bool flipy;
@@ -63,6 +64,7 @@ public:
 	std::pair<int, int> getDebugShape(const std::string& anim, int frame);
 	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
 	Bounds getAttackRange() const;
+	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 private:
     QuadBatch* _batch;
 	Bounds m_attackRange;
@@ -77,11 +79,16 @@ private:
 	std::unordered_map<std::pair<std::string, int>, int> m_frameToShape;
 	Bounds m_collisionBounds;
 	std::unordered_map<int, std::pair<int, int>> m_shapeInfo;
+
+	std::vector<glm::vec2> m_joints;
+    // joint override
+    std::unordered_map<std::pair<std::string, int>, std::vector<glm::vec2>> m_jointOverride;
 };
 
 inline Bounds Sprite::getAttackRange() const {
 	return m_attackRange;
 }
+
 
 inline std::string Sprite::getDefaultAnimation() const {
 	return m_defaultAnimation;

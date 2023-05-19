@@ -3,6 +3,22 @@
 #include <yaml-cpp/yaml.h>
 #include "glm/glm.hpp"
 
+namespace YAML {
+    // std::string
+    template <>
+    struct convert<glm::vec2> {
+        static Node encode(const glm::vec2& rhs) { return Node(std::vector<float>(rhs.x, rhs.y)); }
+
+        static bool decode(const Node& node, glm::vec2& rhs) {
+            if (node.IsScalar())
+                return false;
+            rhs.x = node[0].as<float>();
+            rhs.y = node[1].as<float>();
+            return true;
+        }
+    };
+}
+
 template<typename T>
 T _ycast(const YAML::Node& node) {
     return node.as<T>();

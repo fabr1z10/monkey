@@ -12,7 +12,7 @@ public:
 	std::type_index getType() override;
 	void start() override;
 	[[nodiscard]] const std::string& getAnimation() const;
-	void setAnimation(const std::string&) ;
+	void setAnimation(const std::string&) override;
 	Sprite* getSprite();
 	[[nodiscard]] int getFrame() const;
 	//void draw(Shader *) override;

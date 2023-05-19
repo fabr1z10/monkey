@@ -49,6 +49,8 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 	m_halfThickness = (mode == 0) ? 0 : node["thickness"].as<float>();
 	auto defaultTicks = py_get<int>(engine.getConfig(),"ticks", 5);
 
+	m_joints = yaml_read<std::vector<glm::vec2>>(node, "joints", std::vector<glm::vec2>());
+
 	// read collision boxes
 	for (YAML::const_iterator anit = node["boxes"].begin(); anit != node["boxes"].end(); ++anit) {
 		auto a = (*anit).as<std::vector<float>>();
@@ -75,6 +77,8 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 	auto inf = std::numeric_limits<float>::max();
 	m_modelBounds.min = glm::vec3(inf, inf, -100.f);
 	m_modelBounds.max = glm::vec3(-inf, -inf, 100.f);
+
+
 
 	for (YAML::const_iterator anit = node["animations"].begin(); anit != node["animations"].end(); ++anit) {
 		auto animId = anit->first.as<std::string>();
@@ -115,6 +119,7 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
             frameInfo.texture_coordinates[3] = (texc[1] + texc[3]) / texw;
             frameInfo.flipx = yaml_read<bool>(el, "fliph", false);
             frameInfo.flipy = yaml_read<bool>(el, "flipv", false);
+            frameInfo.z = yaml_read<float>(el, "z", 0.f);
             int width_px = texc[2];
             int height_px = texc[3];
             float width_actual = static_cast<float>(width_px) / ppu;
@@ -124,6 +129,9 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
             m_modelBounds.min.y = std::min(m_modelBounds.min.y, -frameInfo.anchor_point.y);
             m_modelBounds.max.x = std::max(m_modelBounds.max.x, -frameInfo.anchor_point.x + width_actual);
             m_modelBounds.max.y = std::max(m_modelBounds.max.y, -frameInfo.anchor_point.y + height_actual);
+            if (el["joints"]) {
+                m_jointOverride[std::make_pair(animId, frameCount)] = yaml_read<std::vector<glm::vec2>>(el, "joints");
+            }
 //
 //            for (size_t i = 0; i < ciao.size(); i += 6) {
 //				float tx = ciao[0] / texw;
@@ -282,4 +290,12 @@ std::shared_ptr<Model> Sprite::generateDebugModel() {
 //	return model;
 //	//return std::make_shared<RawModel>(ShaderType::SHADER_COLOR, GL_LINES, vertices, elements);
 
+}
+
+glm::vec2 Sprite::getJoint(const std::string &anim, int frame, int joint) const {
+    auto it = m_jointOverride.find(std::make_pair(anim, frame));
+    if (it == m_jointOverride.end()) {
+        return m_joints[joint];
+    }
+    return it->second[joint];
 }

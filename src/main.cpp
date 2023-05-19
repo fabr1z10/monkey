@@ -186,6 +186,8 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<MultiSprite, Model, std::shared_ptr<MultiSprite>>(mm, "multi_sprite")
         .def(py::init<std::shared_ptr<IBatch>>())
+        .def(py::init<std::shared_ptr<IBatch>, const pybind11::kwargs&>())
+        .def("add_anim", &MultiSprite::addAnimation)
         .def("add", &MultiSprite::addSprite);
 
 	/// --- runners ---

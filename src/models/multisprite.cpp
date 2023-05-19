@@ -1,5 +1,37 @@
 #include "multisprite.h"
 #include "../node.h"
+#include "../pyhelper.h"
+#include <iostream>
+
+MultiSprite::MultiSprite(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args) {
+    _batch = dynamic_cast<QuadBatch*>(batch.get());
+    for (const auto& node : args["nodes"]) {
+        auto dict = node.cast<pybind11::dict>();
+        auto key = node["id"].cast<std::string>();
+        auto parent = py_get_dict<std::string>(dict, "parent", "");
+        auto joint = py_get_dict<int>(dict, "joint", 0);
+        std::cout << "key : " << key << "\n";
+        size_t id = _nodes.size();
+        _map[key] = id;
+        int parent_id = parent.empty() ? -1 : _map.at(parent);
+        _nodes.push_back(std::make_unique<Node>(id, nullptr, parent_id, joint));
+        if (!parent.empty()) {
+            _nodes.at(_map.at(parent))->_next.push_back(id);
+        }
+    }
+    auto anims = args["animations"].cast<pybind11::dict>();
+    for (const auto& anim : anims) {
+        auto animId = anim.first.cast<std::string>();
+        std::unordered_map<int, std::string> dd;
+        for (const auto& a : anim.second.cast<pybind11::dict>()) {
+            dd[_map.at(a.first.cast<std::string>())] = a.second.cast<std::string>();
+        }
+        _anims[animId] = dd;
+    }
+    std::cout << "ok!\n";
+
+
+}
 
 MultiSprite::MultiSprite(std::shared_ptr<IBatch> batch) : Model() {
     _batch = dynamic_cast<QuadBatch*>(batch.get());
@@ -22,19 +54,19 @@ int MultiSprite::getKey(const std::string &key) {
     return _map.at(key);
 }
 
-void MultiSprite::addSprite(const std::string &key, std::shared_ptr<Sprite> sprite, const std::string &parent,
-                            int joint) {
-    size_t id = _nodes.size();
-    _map[key] = id;
-    int parent_id = -1;
-    if (!parent.empty()) {
-        parent_id = _map.at(parent);
-    }
-    _nodes.push_back(std::make_unique<Node>(id, sprite, parent_id, joint));
-    m_modelBounds = sprite->getBounds();
-    if (!parent.empty()) {
-        _nodes.at(_map.at(parent))->_next.push_back(id);
-    }
+void MultiSprite::addSprite(const std::string &key, std::shared_ptr<Sprite> sprite) {
+    _nodes[_map.at(key)]->_sprite = sprite;
+//    size_t id = _nodes.size();
+//    _map[key] = id;
+//    int parent_id = -1;
+//    if (!parent.empty()) {
+//        parent_id = _map.at(parent);
+//    }
+//    _nodes.push_back(std::make_unique<Node>(id, sprite, parent_id, joint));
+//    m_modelBounds = sprite->getBounds();
+//    if (!parent.empty()) {
+//        _nodes.at(_map.at(parent))->_next.push_back(id);
+//    }
 }
 
 MultiSpriteRenderer::MultiSpriteRenderer(QuadBatch* batch) : Renderer(),
@@ -43,14 +75,16 @@ MultiSpriteRenderer::MultiSpriteRenderer(QuadBatch* batch) : Renderer(),
 }
 
 
-MultiSpriteRenderer::Node::Node(const MultiSprite::Node* node, int quadId) {
+MultiSpriteRenderer::Node::Node(const MultiSprite::Node* node, int quadId) : link(node), _animInfo(nullptr) {
     _quadId = quadId;
     _key = node->id;
     _parent = node->_parent;
     _joint = node->_joint;
-    _sprite = node->_sprite;
+    //_sprite = node->_sprite;
     _paletteId = 0;
-    setAnimation(_sprite->getDefaultAnimation());
+    if (node->_sprite != nullptr) {
+        setAnimation(node->_sprite->getDefaultAnimation());
+    }
     _frame = 0;
     _ticks = 0;
     _next = node->_next;
@@ -58,7 +92,9 @@ MultiSpriteRenderer::Node::Node(const MultiSprite::Node* node, int quadId) {
 
 void MultiSpriteRenderer::Node::setAnimation(const std::string & anim) {
     if (_animation != anim) {
-        _animInfo = _sprite->getAnimInfo(anim);
+        if (link->_sprite != nullptr) {
+            _animInfo = link->_sprite->getAnimInfo(anim);
+        }
         _animation = anim;
         _frame = 0;
         _ticks = 0;
@@ -84,20 +120,30 @@ void MultiSpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11:
 
 }
 
-void MultiSpriteRenderer::setAnimation(const std::string &key, const std::string &anim) {
-    auto node = _nodes.at(m_sprite->getKey(key)).get();
-    if (node->_animation != anim) {
-        node->_animation = anim;
-        node->_frame = 0;
-        node->_ticks = 0;
-        node->_sprite->getAnimInfo(anim);
 
+void MultiSprite::addAnimation(const std::string& id, const std::string& subsprite, const std::string& anim) {
+    _anims[id][_map.at(subsprite)] = anim;
+}
+
+const std::unordered_map<int, std::string> & MultiSprite::getAnimationData(const std::string & id) {
+    auto anim = _anims.find(id);
+    if (anim == _anims.end()) {
+        std::cerr << "multisrptie has no animation: " << id;
+        exit(1);
+    }
+    return  anim->second;
+}
+
+void MultiSpriteRenderer::setAnimation(const std::string &anim) {
+
+    const auto& aa = m_sprite->getAnimationData(anim);
+    for (const auto& m : aa) {
+        _nodes[m.first]->setAnimation(m.second);
     }
 
-
-    _nodes.at(m_sprite->getKey(key))->_animation = anim;
-
 }
+
+
 
 void MultiSpriteRenderer::update(double) {
 
@@ -111,30 +157,42 @@ void MultiSpriteRenderer::update(double) {
         auto current = _nodes[nodes.front()].get();
         nodes.pop_front();
 
-        // store position
+        if (current->_animInfo == nullptr) {
+            continue;
+        }
 
+        // store position
+        auto& a = current->_animInfo->frameInfo[current->_frame];
+        auto flipx = m_node->getFlipX() ^ a.flipx;
+        auto worldPos =m_node->getWorldPosition();
         if (current->_parent == -1) {
             // this is root node
-            current->_pos = m_node->getWorldPosition();
+            current->_pos = worldPos;
         } else {
             // not the root
             auto parentNode = _nodes[current->_parent].get();
-            current->_pos = parentNode->_pos +
-                    parentNode->_animInfo->frameInfo[parentNode->_frame].joints[current->_joint];
+            auto joint = parentNode->link->_sprite->getJoint(parentNode->_animation, parentNode->_frame, current->_joint);
+
+            //auto deltax = flipx ? parenta.size.x - joint.x : joint.x;
+            current->_pos = flipx ? (parentNode->_bottomRight + glm::vec3(-joint.x, joint.y, 0.f)) :
+                            (parentNode->_bottomLeft + glm::vec3(joint.x, joint.y, 0));
+            //current->_pos = parentNode->_pos +
+            //        parentNode->_animInfo->frameInfo[parentNode->_frame].joints[current->_joint];
         }
 
-        auto& a = current->_animInfo->frameInfo[current->_frame];
 
         // update frame
         current->update();
 
         // update quad
-        auto flipx = m_node->getFlipX() ^ a.flipx;
-        glm::vec2 delta = flipx ? (glm::vec2(a.size.x, 0.f) - a.anchor_point) : a.anchor_point;
-        auto bottomLeft = current->_pos - glm::vec3(delta, 0.f);
+
+        glm::vec2 delta = flipx ? (glm::vec2(a.size.x - a.anchor_point.x,a.anchor_point.y)) : a.anchor_point;
+        current->_bottomLeft = current->_pos - glm::vec3(delta, 0.f);
+        current->_bottomLeft.z = worldPos.z + a.z;
+        current->_bottomRight = current->_bottomLeft + glm::vec3(a.size.x, 0.f, 0.f);
 
         _spriteBatch->setQuad(current->_quadId,
-                              bottomLeft,
+                              current->_bottomLeft,
                               a.size,
                               a.texture_coordinates,
                               glm::vec2(1, 1),
@@ -152,4 +210,9 @@ void MultiSpriteRenderer::update(double) {
     }
 
 
+}
+
+
+std::type_index MultiSpriteRenderer::getType() {
+    return std::type_index(typeid(Renderer));
 }

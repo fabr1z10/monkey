@@ -25,6 +25,7 @@ public:
     ShaderType getShaderType() const;
     void setPalette(const std::string& id);
 	using Base = Renderer;
+    virtual void setAnimation(const std::string&) {}
 
 protected:
 
