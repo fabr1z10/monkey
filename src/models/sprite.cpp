@@ -47,7 +47,7 @@ Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(),
 
 	auto mode = py_get<int>(engine.getConfig(),"game_mode", 0);
 	m_halfThickness = (mode == 0) ? 0 : node["thickness"].as<float>();
-	auto defaultTicks = py_get<int>(engine.getConfig(),"ticks", 5);
+	auto defaultTicks = yaml_read<int>(node,"ticks", 5);
 
 	m_joints = yaml_read<std::vector<glm::vec2>>(node, "joints", std::vector<glm::vec2>());
 

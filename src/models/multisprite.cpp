@@ -162,9 +162,17 @@ void MultiSpriteRenderer::update(double) {
         }
 
         // store position
+
+
+
+
+        // update frame
+        current->update();
         auto& a = current->_animInfo->frameInfo[current->_frame];
+
         auto flipx = m_node->getFlipX() ^ a.flipx;
         auto worldPos =m_node->getWorldPosition();
+
         if (current->_parent == -1) {
             // this is root node
             current->_pos = worldPos;
@@ -179,11 +187,6 @@ void MultiSpriteRenderer::update(double) {
             //current->_pos = parentNode->_pos +
             //        parentNode->_animInfo->frameInfo[parentNode->_frame].joints[current->_joint];
         }
-
-
-        // update frame
-        current->update();
-
         // update quad
 
         glm::vec2 delta = flipx ? (glm::vec2(a.size.x - a.anchor_point.x,a.anchor_point.y)) : a.anchor_point;
