@@ -9,9 +9,10 @@ class Node;
 
 class Walk2D : public State {
 public:
-	Walk2D(const std::string& id, const pybind11::kwargs&);
+	Walk2D() : State() {}
+	void start() override;
 	void init(const pybind11::kwargs& args) override;
-	void setParent(StateMachine*) override;
+	void setParent(StateMachine*, const pybind11::kwargs&) override;
 	void run(double) override;
 	//void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	virtual void control() = 0;
@@ -31,6 +32,7 @@ protected:
 	std::string m_idleAnim;
 	std::string m_walkAnim;
 	std::string m_jumpAnim;
+    std::string m_fallAnim;
 	bool m_left;
 	bool m_right;
 	bool m_up;

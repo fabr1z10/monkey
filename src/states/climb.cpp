@@ -7,27 +7,28 @@
 extern GLFWwindow* window;
 
 
-Climb::Climb(const std::string& id, const pybind11::kwargs& kwargs) : State(id, kwargs) {
-	m_speed = py_get_dict<float>(kwargs, "speed", 0.0f);
-	m_animation = kwargs["anim"].cast<std::string>();
-	m_animIdle = kwargs["anim_idle"].cast<std::string>();
-	m_walkState = py_get_dict<std::string>(kwargs, "walk_state", "walk");
-	m_maskUp = py_get_dict<int>(kwargs, "mask_up", 2);
-	m_maskDown = py_get_dict<int>(kwargs, "mask_up", 2 | 32);
+void Climb::setParent(StateMachine * sm, const pybind11::kwargs& kwargs) {
+    State::setParent(sm, kwargs);
+    m_speed = py_get_dict<float>(kwargs, "speed", 0.0f);
+    m_animation = kwargs["anim"].cast<std::string>();
+    m_animIdle = kwargs["anim_idle"].cast<std::string>();
+    m_walkState = py_get_dict<std::string>(kwargs, "walk_state", "walk");
+    m_maskUp = py_get_dict<int>(kwargs, "mask_up", 2);
+    m_maskDown = py_get_dict<int>(kwargs, "mask_up", 2 | 32);
+	m_node = sm->getNode();
 
 }
 
-void Climb::setParent(StateMachine * sm) {
-	State::setParent(sm);
-	m_node = sm->getNode();
+void Climb::start() {
+    auto node = m_sm->getNode();
 
-	m_controller = dynamic_cast<Controller2D*>(m_sm->getNode()->getComponent<Controller>());
-	assert(m_controller != nullptr);
+    m_controller = dynamic_cast<Controller2D*>(node->getComponent<Controller>());
+    assert(m_controller != nullptr);
 
-	m_dynamics = m_sm->getNode()->getComponent<Dynamics>();
-	assert(m_dynamics != nullptr);
+    m_dynamics =node->getComponent<Dynamics>();
+    assert(m_dynamics != nullptr);
 
-	m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
+    m_animatedRenderer = dynamic_cast<SpriteRenderer*>(node->getComponent<Renderer>());
 }
 
 

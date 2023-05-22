@@ -4,7 +4,7 @@
 
 extern GLFWwindow* window;
 
-PlayerWalk2D::PlayerWalk2D(const std::string& id, const pybind11::kwargs& args) : Walk2D(id, args) {}
+
 
 void PlayerWalk2D::control() {
 	if (m_controller->grounded() && !m_wasGroudned) {
@@ -21,10 +21,10 @@ void PlayerWalk2D::keyCallback(int key) {
 
 	switch (key) {
 		case GLFW_KEY_LEFT:
-			m_node->setFlipX(true);
+			m_sm->getNode()->setFlipX(true);
 			break;
 		case GLFW_KEY_RIGHT:
-			m_node->setFlipX(false);
+			m_sm->getNode()->setFlipX(false);
 			break;
 	}
 	State::keyCallback(key);

@@ -44,6 +44,7 @@
 //#include "batch/linebatch.h"
 #include "models/lines.h"
 #include "models/multisprite.h"
+#include "states/attack.h"
 
 
 namespace py = pybind11;
@@ -274,7 +275,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<StateMachine, Component, std::shared_ptr<StateMachine>>(m, "state_machine")
 		.def("add", &StateMachine::addState)
 		.def("set_initial_state", &StateMachine::setInitialState)
-		.def(py::init<>());
+		.def(py::init<const pybind11::kwargs&>());
 
 	py::class_<MoveTranslate, Component, std::shared_ptr<MoveTranslate>>(m, "move_translate")
 		.def(py::init<const pybind11::kwargs&>());
@@ -291,14 +292,16 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<State, std::shared_ptr<State>>(m, "state");
 	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
 	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
-		.def(py::init<const std::string&, py::kwargs&>());
+		.def(py::init<>());
 	py::class_<FoeWalk2D, State, std::shared_ptr<FoeWalk2D>>(m, "walk_2d_foe")
-		.def(py::init<const std::string&, py::kwargs&>());
+		.def(py::init<>());
 	py::class_<Climb, State, std::shared_ptr<Climb>>(m, "climb")
-		.def(py::init<const std::string&, const py::kwargs&>());
+		.def(py::init<>());
 	py::class_<Idle, State, std::shared_ptr<Idle>>(m, "idle")
-		.def(py::init<const std::string&, const std::string&, py::kwargs&>());
+		.def(py::init<>());
 	py::class_<Bounce, State, std::shared_ptr<Bounce>>(m, "bounce")
-		.def(py::init<const std::string&, const py::kwargs&>());
+		.def(py::init<>());
+    py::class_<Attack, State, std::shared_ptr<Attack>>(m, "attack")
+            .def(py::init<>());
 
 }

@@ -53,6 +53,7 @@ public:
 
     std::type_index getType() override;
 
+    bool isComplete() override;
 private:
     QuadBatch* _spriteBatch;
     std::shared_ptr<MultiSprite> m_sprite;
@@ -71,6 +72,7 @@ private:
         std::string _animation;
         int _frame;
         int _ticks;
+        bool _complete;
         glm::vec3 _bottomLeft;
         glm::vec3 _bottomRight;
         void setAnimation(const std::string&);
@@ -82,6 +84,7 @@ private:
                 _frame++;
                 if (_frame >= _animInfo->frameCount) {
                     _frame = (_animInfo->loop ? _animInfo->loopFrame : _animInfo->frameCount - 1);
+                    _complete = true;
                 }
                 _ticks = 0;
             } else {

@@ -3,21 +3,38 @@
 #include "../util.h"
 
 
-Walk2D::Walk2D(const std::string& id, const pybind11::kwargs& kwargs) : State(id, kwargs) {
-	m_gravity = py_get_dict<float>(kwargs, "gravity", 0.0f);
-	m_jumpHeight = py_get_dict<float>(kwargs, "jump_height");
-	m_timeToJumpApex = py_get_dict<float>(kwargs, "time_to_jump_apex");
+void Walk2D::setParent(StateMachine * sm, const pybind11::kwargs & kwargs) {
+    State::setParent(sm, kwargs);
+	m_gravity = py_get_dict<float>(kwargs, "gravity", m_sm->getProperty<float>("gravity"));
+	m_jumpHeight = py_get_dict<float>(kwargs, "jump_height", m_sm->getProperty<float>("jump_height"));
+	m_timeToJumpApex = py_get_dict<float>(kwargs, "time_to_jump_apex", m_sm->getProperty<float>("time_to_jump_apex"));
 	m_jumpVelocity = (m_jumpHeight + 0.5f * m_gravity * m_timeToJumpApex * m_timeToJumpApex) / m_timeToJumpApex;
-	m_maxSpeedGround = py_get_dict<float>(kwargs, "speed");
-	m_maxSpeedAir = py_get_dict<float>(kwargs, "speed_air", m_maxSpeedGround);
-	m_accelerationTime = py_get_dict<float>(kwargs, "acc_time", 0.1f);
-	if (m_accelerationTime == 0.f)
-		m_acceleration = 0.f;
-	else
-		m_acceleration = m_maxSpeedGround / m_accelerationTime;
-	m_idleAnim = py_get_dict<std::string>(kwargs, "idle_anim", "idle");
-	m_walkAnim = py_get_dict<std::string>(kwargs, "walk_anim", "walk");
-	m_jumpAnim = py_get_dict<std::string>(kwargs, "jump_anim", "jump");
+	m_maxSpeedGround = py_get_dict<float>(kwargs, "speed", m_sm->getProperty<float>("speed"));
+    m_maxSpeedAir = py_get_dict<float>(kwargs, "speed_air", m_maxSpeedGround);
+    m_accelerationTime = py_get_dict<float>(kwargs, "acc_time", m_sm->getProperty<float>("acc_time"));
+    if (m_accelerationTime == 0.f)
+        m_acceleration = 0.f;
+    else
+        m_acceleration = m_maxSpeedGround / m_accelerationTime;
+	m_idleAnim = m_sm->getProperty<std::string>("idle_anim", "idle");
+	m_walkAnim = m_sm->getProperty<std::string>("walk_anim", "walk");
+	m_jumpAnim = m_sm->getProperty<std::string>("jump_anim", "jump");
+    m_fallAnim = m_sm->getProperty<std::string>("fall_anim", m_jumpAnim);
+	// fall animation
+
+}
+
+void Walk2D::start() {
+    auto node = m_sm->getNode();
+
+    m_controller = dynamic_cast<Controller2D*>(node->getComponent<Controller>());
+    assert(m_controller != nullptr);
+
+    m_dynamics = node->getComponent<Dynamics>();
+    assert(m_dynamics != nullptr);
+
+    //m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
+    m_animatedRenderer = node->getComponent<Renderer>();
 }
 
 void Walk2D::init(const pybind11::kwargs &args) {
@@ -26,20 +43,13 @@ void Walk2D::init(const pybind11::kwargs &args) {
 	m_right = !m_left;
 
 }
-
-void Walk2D::setParent(StateMachine * sm) {
-	State::setParent(sm);
-	m_node = sm->getNode();
-
-	m_controller = dynamic_cast<Controller2D*>(m_sm->getNode()->getComponent<Controller>());
-	assert(m_controller != nullptr);
-
-	m_dynamics = m_sm->getNode()->getComponent<Dynamics>();
-	assert(m_dynamics != nullptr);
-
-	//m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
-	m_animatedRenderer = m_node->getComponent<Renderer>();
-}
+//
+//void Walk2D::setParent(StateMachine * sm) {
+//	State::setParent(sm);
+//	m_node = sm->getNode();
+//
+//
+//}
 
 
 void Walk2D::run(double dt) {
@@ -104,6 +114,7 @@ void Walk2D::run(double dt) {
 				m_animatedRenderer->setAnimation(m_walkAnim);
 			}
 		} else {
+		    // jump or fall anim?
 			m_animatedRenderer->setAnimation(m_jumpAnim);
 		}
 

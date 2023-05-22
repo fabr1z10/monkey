@@ -5,11 +5,11 @@
 #include "../pyhelper.h"
 #include "collider.h"
 
-
-State::State(const std::string& id, const pybind11::kwargs& kwargs) : m_id(id), m_current(false) {
-	m_script = py_get_dict<pybind11::function>(kwargs, "script", pybind11::function());
-	if (kwargs.contains("keys")) {
-		auto keys = kwargs["keys"].cast<pybind11::dict>();
+void State::setParent(StateMachine * sm, const pybind11::kwargs& args) {
+    m_sm = sm;
+    m_script = py_get_dict<pybind11::function>(args, "script", pybind11::function());
+	if (args.contains("keys")) {
+		auto keys = args["keys"].cast<pybind11::dict>();
 		for (const auto& key : keys) {
 			auto keyId = key.first.cast<int>();
 			auto callback = key.second.cast<pybind11::function>();
@@ -49,14 +49,18 @@ void State::end() {
 }
 
 void StateMachine::start() {
-	for (const auto& s : m_states) {
-		s.second->setParent(this);
+	for (auto& s : m_states) {
+		s.second->start();
 	}
 	if (!m_initialState.empty()) {
 		setState(m_initialState, m_args);
 	}
 }
 
+void StateMachine::addState(const std::string& id, std::shared_ptr<State> state, const pybind11::kwargs& args) {
+    state->setParent(this, args);
+    m_states.insert(std::make_pair(id, state));
+}
 
 
 void StateMachine::setState(const std::string & state, const pybind11::kwargs& args) {

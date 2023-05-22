@@ -9,11 +9,13 @@ class Node;
 
 class Climb : public State {
 public:
-	Climb(const std::string& id, const pybind11::kwargs&);
+	Climb() : State() {}
+    void setParent(StateMachine*, const pybind11::kwargs& kwargs) override;
+	void start() override;
 	void run(double) override;
 	void init(const pybind11::kwargs& args) override;
 	void end() override;
-	void setParent(StateMachine*) override;
+
 private:
 	Controller2D* m_controller;
 	Dynamics* m_dynamics;

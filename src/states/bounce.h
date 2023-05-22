@@ -9,10 +9,10 @@ class Node;
 
 class Bounce : public State {
 public:
-	Bounce(const std::string& id, const pybind11::kwargs&);
+	Bounce() : State() {}
 	void run(double) override;
 	void init(const pybind11::kwargs& args) override;
-	void setParent(StateMachine*) override;
+	void setParent(StateMachine*, const pybind11::kwargs&) override;
 
 
 private:

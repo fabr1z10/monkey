@@ -38,7 +38,8 @@ void FoeWalk2D::control() {
 	}
 }
 
-FoeWalk2D::FoeWalk2D(const std::string& id, const pybind11::kwargs& kwargs) : Walk2D(id, kwargs) {
+void FoeWalk2D::setParent(StateMachine* sm, const pybind11::kwargs& kwargs) {
+    Walk2D::setParent(sm, kwargs);
 	m_left = py_get_dict<bool>(kwargs, "left", true);
 	m_flipHorizontally = py_get_dict<bool>(kwargs, "flip", false);
 	m_flipOnEdge = py_get_dict<bool>(kwargs, "flip_on_edge", false);

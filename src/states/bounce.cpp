@@ -3,7 +3,8 @@
 #include "../node.h"
 #include "../util.h"
 
-Bounce::Bounce(const std::string& id, const pybind11::kwargs& kwargs) : State(id, kwargs) {
+void Bounce::setParent(StateMachine * sm, const pybind11::kwargs& kwargs) {
+    State::setParent(sm, kwargs);
 	m_gravity = py_get_dict<float>(kwargs, "gravity", 0.0f);
 	m_isFixedVel = false;
 	if (kwargs.contains("bounce_velocity")) {
@@ -19,21 +20,15 @@ Bounce::Bounce(const std::string& id, const pybind11::kwargs& kwargs) : State(id
 	m_horizontalSpeed = py_get_dict<float>(kwargs, "speed");
 	m_left = py_get_dict<bool>(kwargs, "left", true);
 	m_flipOnEdge = py_get_dict<bool>(kwargs, "flip_on_edge", false);
+    m_controller = dynamic_cast<Controller2D*>(m_sm->getNode()->getComponent<Controller>());
+    assert(m_controller != nullptr);
 
+    m_dynamics = m_sm->getNode()->getComponent<Dynamics>();
+    assert(m_dynamics != nullptr);
+
+    m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
 }
 
-void Bounce::setParent(StateMachine * sm) {
-	State::setParent(sm);
-	m_node = sm->getNode();
-
-	m_controller = dynamic_cast<Controller2D*>(m_sm->getNode()->getComponent<Controller>());
-	assert(m_controller != nullptr);
-
-	m_dynamics = m_sm->getNode()->getComponent<Dynamics>();
-	assert(m_dynamics != nullptr);
-
-	m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
-}
 
 
 void Bounce::init(const pybind11::kwargs& args) {

@@ -9,8 +9,11 @@ class Node;
 
 class FoeWalk2D : public Walk2D {
 public:
-	FoeWalk2D(const std::string& id, const pybind11::kwargs&);
-	void control() override;
+	FoeWalk2D() : Walk2D() {}
+
+    void setParent(StateMachine*, const pybind11::kwargs&) override;
+
+    void control() override;
 private:
 	bool m_flipOnEdge;
 	bool m_flipHorizontally;

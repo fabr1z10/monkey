@@ -86,3 +86,7 @@ void Renderer::setOffset(int offset) {
 void Renderer::setTransform(const glm::mat4 &m) {
     m_rendererTransform = m;
 }
+
+bool Renderer::isComplete() {
+    return false;
+}

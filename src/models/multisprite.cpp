@@ -75,7 +75,7 @@ MultiSpriteRenderer::MultiSpriteRenderer(QuadBatch* batch) : Renderer(),
 }
 
 
-MultiSpriteRenderer::Node::Node(const MultiSprite::Node* node, int quadId) : link(node), _animInfo(nullptr) {
+MultiSpriteRenderer::Node::Node(const MultiSprite::Node* node, int quadId) : link(node), _animInfo(nullptr), _complete(false) {
     _quadId = quadId;
     _key = node->id;
     _parent = node->_parent;
@@ -98,6 +98,7 @@ void MultiSpriteRenderer::Node::setAnimation(const std::string & anim) {
         _animation = anim;
         _frame = 0;
         _ticks = 0;
+        _complete = false;
 
     }
 }
@@ -118,6 +119,18 @@ void MultiSpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11:
 
     }
 
+}
+
+bool MultiSpriteRenderer::isComplete() {
+    bool complete = true;
+    for (const auto& node : _nodes) {
+
+        complete &= (node->_animInfo == nullptr || node->_complete);
+        if (!complete) {
+            return false;
+        }
+    }
+    return complete;
 }
 
 

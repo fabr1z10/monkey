@@ -3,7 +3,7 @@
 
 class PlayerWalk2D : public Walk2D {
 public:
-	PlayerWalk2D(const std::string& id, const pybind11::kwargs&);
+	PlayerWalk2D() : Walk2D() {}
 	void control() override;
 
 	void keyCallback(int key) override;
