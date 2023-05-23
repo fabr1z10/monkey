@@ -36,6 +36,7 @@ protected:
 	bool m_left;
 	bool m_right;
 	bool m_up;
+	bool m_jmp;
 };
 
 

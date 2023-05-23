@@ -4,6 +4,7 @@
 
 
 void Walk2D::setParent(StateMachine * sm, const pybind11::kwargs & kwargs) {
+    m_jmp = false;
     State::setParent(sm, kwargs);
 	m_gravity = py_get_dict<float>(kwargs, "gravity", m_sm->getProperty<float>("gravity"));
 	m_jumpHeight = py_get_dict<float>(kwargs, "jump_height", m_sm->getProperty<float>("jump_height"));
@@ -19,7 +20,7 @@ void Walk2D::setParent(StateMachine * sm, const pybind11::kwargs & kwargs) {
 	m_idleAnim = m_sm->getProperty<std::string>("idle_anim", "idle");
 	m_walkAnim = m_sm->getProperty<std::string>("walk_anim", "walk");
 	m_jumpAnim = m_sm->getProperty<std::string>("jump_anim", "jump");
-    m_fallAnim = m_sm->getProperty<std::string>("fall_anim", m_jumpAnim);
+    m_fallAnim = py_get_dict<std::string>(kwargs, "fall_anim", m_jumpAnim);
 	// fall animation
 
 }
@@ -63,8 +64,10 @@ void Walk2D::run(double dt) {
 		maxSpeed = m_maxSpeedGround;
 		if (m_up) {
 			m_dynamics->m_velocity.y = m_jumpVelocity;
+			m_jmp = true;
 		} else {
 			m_dynamics->m_velocity.y = 0.0f;
+			m_jmp = false;
 		}
 	} else {
 		// bump head
@@ -115,7 +118,7 @@ void Walk2D::run(double dt) {
 			}
 		} else {
 		    // jump or fall anim?
-			m_animatedRenderer->setAnimation(m_jumpAnim);
+			m_animatedRenderer->setAnimation(m_jmp ? m_jumpAnim : m_fallAnim);
 		}
 
 
