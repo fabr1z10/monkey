@@ -54,8 +54,12 @@ int MultiSprite::getKey(const std::string &key) {
     return _map.at(key);
 }
 
-void MultiSprite::addSprite(const std::string &key, std::shared_ptr<Sprite> sprite) {
-    _nodes[_map.at(key)]->_sprite = sprite;
+void MultiSprite::addSprite(const std::string &key, std::shared_ptr<Sprite> sprite, int palette) {
+    const auto& node = _nodes.at(_map.at(key));
+    node->_sprite = sprite;
+    node->_pal = palette;
+    //_nodes[_map.at(key)]->_sprite = sprite;
+
 //    size_t id = _nodes.size();
 //    _map[key] = id;
 //    int parent_id = -1;
@@ -81,7 +85,7 @@ MultiSpriteRenderer::Node::Node(const MultiSprite::Node* node, int quadId) : lin
     _parent = node->_parent;
     _joint = node->_joint;
     //_sprite = node->_sprite;
-    _paletteId = 0;
+    _paletteId = node->_pal;
     if (node->_sprite != nullptr) {
         setAnimation(node->_sprite->getDefaultAnimation());
     }

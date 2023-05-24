@@ -12,7 +12,7 @@ public:
     int getKey(const std::string& key);
 
 
-	void addSprite(const std::string& key, std::shared_ptr<Sprite> sprite) ; //, const std::string& parent = std::string(), int joint = -1);
+	void addSprite(const std::string& key, std::shared_ptr<Sprite> sprite, int palette) ; //, const std::string& parent = std::string(), int joint = -1);
     std::shared_ptr<Renderer> getRenderer() const override;
     struct Node {
         Node(int id, std::shared_ptr<Sprite> sprite, int parent, int joint) : id(id), _sprite(sprite), _parent(parent), _joint(joint) {
@@ -21,6 +21,7 @@ public:
 
         int id;
         std::shared_ptr<Sprite> _sprite;
+        int _pal;
         int _parent;
         int _joint;
         std::vector<int> _next;

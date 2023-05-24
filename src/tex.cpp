@@ -188,7 +188,7 @@ void Tex::load_png(const std::string &file) {
     }
     // load extra palettes for this sheet
     try {
-        std::string palFile = file.substr(0, file.size()-4) + ".pal";
+        std::string palFile = file.substr(0, file.size()-4) + "_pal.yaml";
         auto f = YAML::LoadFile(palFile);
         int nAdditionalPalettes = f["palettes"].size();
         defaultPalette.resize(1024*(nAdditionalPalettes+1), 0);
