@@ -4,6 +4,14 @@
 git clone git@github.com:fabr1z10/monkey.git
 pip install ./monkey
 ```
+# Ubuntu
+Install all require dependencies:
+
+```bash
+sudo apt-get update -y 
+sudo apt-get install -y libglew-dev libglfw libglfw-dev
+```
+
 
 # Windows
 ## libpng
