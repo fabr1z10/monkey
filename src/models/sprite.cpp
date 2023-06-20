@@ -14,16 +14,19 @@
 //#include "../shapes/shapes3d/aabb3d.h"
 #include "../input.h"
 
-Sprite::Sprite(std::shared_ptr<IBatch> batch, const YAML::Node& node) : Model(), m_defaultAnimation(std::string()), _batch(nullptr) {
+Sprite::Sprite(const YAML::Node& node) : Model(), m_defaultAnimation(std::string()) {
 	//m_shaderType = ShaderType::SHADER_TEXTURE;
 	//m_primitive = GL_TRIANGLES;
 	auto& am = AssetManager::instance();
 
 	//auto batch = yaml_read<int>(node, "batch");
 	//_batch = dynamic_cast<SpriteBatch*>(Engine::instance().getBatch(batch));
-	_batch = dynamic_cast<QuadBatch*>(batch.get());
+//    _batch = dynamic_cast<QuadBatch*>(Engine::instance().getBatch(0, batchId));
+//    assert(_batch);
 
-	auto sheetFile = _batch->getSheet();
+    auto sheetFile = yaml_read<std::string>(node, "sheet");
+
+    //auto sheetFile = _batch->getSheet();
 	//auto sheetFile = node["sheet"].as<std::string>();
 	auto tex = am.getTex(sheetFile);
 
@@ -206,8 +209,8 @@ const FrameInfo & Sprite::getFrameInfo(const std::string &anim, int frame) {
 	return m_animInfo.at(anim).frameInfo[frame];
 }
 
-std::shared_ptr<Renderer> Sprite::getRenderer() const {
-	return std::make_shared<SpriteRenderer>(_batch);
+std::shared_ptr<Renderer> Sprite::getRenderer(IBatch* batch) const {
+	return std::make_shared<SpriteRenderer>(batch);
 
 }
 

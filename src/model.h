@@ -6,6 +6,7 @@
 #include "bounds.h"
 
 
+class IBatch;
 
 class Renderer;
 
@@ -17,7 +18,7 @@ public:
 
 	//void setTexture(const std::string& texFile);
 
-    virtual std::shared_ptr<Renderer> getRenderer() const;
+    virtual std::shared_ptr<Renderer> getRenderer(IBatch*) const = 0;
 
 	Bounds getBounds() const;
 protected:

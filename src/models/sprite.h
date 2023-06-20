@@ -44,10 +44,10 @@ struct SpriteCollisionInfo {
 class Sprite : public Model {
 public:
 	Sprite(IBatch*,  ShaderType type, GLenum primitive);
-	Sprite(std::shared_ptr<IBatch>, const YAML::Node& node);//, const std::string& sheetFile);
+	Sprite(const YAML::Node& node);
 	//void init(Node*) override;
 	//void draw(Shader*, Node*) override;
-	std::shared_ptr<Renderer> getRenderer() const override;
+	std::shared_ptr<Renderer> getRenderer(IBatch*) const override;
 	const FrameInfo& getFrameInfo(const std::string& anim, int frame);
     const FrameInfo* getFrameInfo2(const std::string& anim, int frame);
 
@@ -66,7 +66,7 @@ public:
 	Bounds getAttackRange() const;
 	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 private:
-    QuadBatch* _batch;
+    //QuadBatch* _batch;
 	Bounds m_attackRange;
 	//SpriteSheet* m_sheet;
 	std::string m_defaultAnimation;

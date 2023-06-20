@@ -9,7 +9,7 @@ Install all require dependencies:
 
 ```bash
 sudo apt-get update -y 
-sudo apt-get install -y libglew-dev libglfw libglfw-dev
+sudo apt-get install -y libglew-dev libglfw libglfw-dev libpng-dev
 ```
 
 

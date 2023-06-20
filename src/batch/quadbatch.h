@@ -17,7 +17,7 @@ struct QuadBatchVertexData {
 
 class QuadBatch : public Batch<QuadBatchVertexData> {
 public:
-    QuadBatch(int maxElements, const pybind11::kwargs&);
+    QuadBatch(int maxElements, std::shared_ptr<Camera>, const std::string& sheet);
 
     void initDraw(Shader* s) override;
 

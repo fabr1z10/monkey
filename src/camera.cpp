@@ -81,7 +81,7 @@ void Camera::init(Shader* s) {
     float w = m_viewport[2] * vp[2];
     float h = m_viewport[3] * vp[3];
     m_screenViewport = glm::vec4(x, y, x+w, y+h);
-    glViewport(x, y, w, h);
+    glViewport(vp.x, vp.y, vp.z, vp.w);
 
 
 }

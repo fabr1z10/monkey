@@ -3,9 +3,9 @@
 #include <iostream>
 
 
-LineBatch::LineBatch(int maxElements, const pybind11::kwargs& args) : Batch(maxElements, 2, 2) {
+LineBatch::LineBatch(int maxElements, std::shared_ptr<Camera> cam) : Batch(maxElements, 2, 2) {
 	_prim = GL_LINES;
-	_cam = args["cam"].cast<std::shared_ptr<Camera>>();
+	_cam = cam;// args["cam"].cast<std::shared_ptr<Camera>>();
 //
 //	_maxPrimitives = py_get_dict<int>(args, "max_lines");
 //    _shaderType = ShaderType::LINE_SHADER;
@@ -48,7 +48,16 @@ void LineBatch::innerConfigure() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3*sizeof(float)));
 
+    // this depends on the particular batch and should go in a virtual method
+    std::vector<unsigned> indices;
+    for (size_t i = 0; i < _maxElements; ++i) {
+        indices.push_back(2 * i);
+        indices.push_back(2 * i + 1);
+    }
 
+    glGenBuffers(1, &_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW);
 }
 
 //void LineBatch::computeOffsets(GLuint shaderProg) {
@@ -69,8 +78,15 @@ void LineBatch::innerConfigure() {
 //    }
 //}
 //
-//void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) {
-//
+void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) {
+
+    int offset = index * _vertsPerElement;
+    _data[offset].position = P0;
+    _data[offset].color = color;
+    _data[offset+1].position = P1;
+    _data[offset+1].color = color;
+
+
 //    auto* p0Pos = (glm::vec4*)(m_quadInfoBuffer + m_lineInfoOffsets.P0);
 //    auto* p1Pos = (glm::vec4*) (m_quadInfoBuffer + m_lineInfoOffsets.P1);
 //    auto* pColor = (glm::vec4*) (m_quadInfoBuffer + m_lineInfoOffsets.Color);
@@ -90,7 +106,7 @@ void LineBatch::innerConfigure() {
 //    pColor[index].z = color.z;
 //    pColor[index].w = color.w;
 //
-//}
+}
 
 //void LineBatch::draw(Shader * s) {
 //

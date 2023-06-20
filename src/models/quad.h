@@ -21,13 +21,13 @@ public:
         std::vector<Desc> quadDesc;
         int ticks;
     };
-    explicit Quad(std::shared_ptr<IBatch>, const pybind11::kwargs&);
+    explicit Quad(const pybind11::kwargs&);
     const Frame& getFrame(int) const;
     int getQuadCount() const;
-    std::shared_ptr<Renderer> getRenderer() const override;
+    std::shared_ptr<Renderer> getRenderer(IBatch*) const override;
     int getFrameCount() const;
 private:
-    QuadBatch* _batch;
+    //QuadBatch* _batch;
     std::vector<Frame> _frames;
     int _quadCount;
 };
@@ -46,7 +46,7 @@ inline int Quad::getQuadCount() const {
 
 class QuadRenderer : public Renderer {
 public:
-    explicit QuadRenderer(QuadBatch*);
+    explicit QuadRenderer(IBatch*);
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     void start() override;

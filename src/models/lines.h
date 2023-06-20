@@ -5,46 +5,51 @@
 #include "../batch/linebatch.h"
 
 
-class PolyChain : public Model {
-private:
+class LineModel : public Model {
+public:
     struct Segment {
         glm::vec3 P0;
         glm::vec3 P1;
         glm::vec4 color;
     };
-public:
-    PolyChain(int batch, const std::vector<glm::vec2>& points, glm::vec4 color);
-    explicit PolyChain(const pybind11::kwargs&);
-    std::shared_ptr<Renderer> getRenderer() const override;
+    LineModel();
+    explicit LineModel(const pybind11::kwargs&);
+    std::shared_ptr<Renderer> getRenderer(IBatch*) const override;
     int getLineCount() const;
     const Segment& getSegment(int index) const;
-private:
-
-
-    LineBatch* _batch;
+    void init(const glm::vec4& color, const std::vector<float>& data);
+protected:
+    //LineBatch* _batch;
     std::vector<Segment> _segments;
     int _lineCount;
 };
 
-inline int PolyChain::getLineCount() const {
-    return _lineCount;
-}
-
-inline const PolyChain::Segment& PolyChain::getSegment(int index) const {
+inline const LineModel::Segment& LineModel::getSegment(int index) const {
     return _segments[index];
 }
 
-class PolyChainRenderer : public Renderer {
+inline int LineModel::getLineCount() const {
+    return _lineCount;
+}
+
+
+class PolyChain : public LineModel {
 public:
-    explicit PolyChainRenderer(LineBatch*);
+    PolyChain() : LineModel() {}
+    explicit PolyChain(const pybind11::kwargs&);
+    void initChain(const glm::vec4& color, const std::vector<float>& data, bool closed);
+};
+
+class LinesRenderer : public Renderer {
+public:
+    explicit LinesRenderer(IBatch*);
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     //void start() override;
     void update(double) override;
 private:
     LineBatch* _lineBatch;
-    std::shared_ptr<PolyChain> _chain;
+    std::shared_ptr<LineModel> _lineModel;
     std::vector<int> _quadIds;
 };
-
 

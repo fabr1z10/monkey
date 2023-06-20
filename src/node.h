@@ -44,7 +44,8 @@ public:
     void setPosition(float, float, float);
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
-	void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());
+	std::shared_ptr<Model> getModel();
+	void setModel(std::shared_ptr<Model> model);
 	void setPalette(const std::string& palId);
 	Bounds getBounds();
 	std::string getState() const;

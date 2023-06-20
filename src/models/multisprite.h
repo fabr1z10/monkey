@@ -7,13 +7,13 @@
 
 class MultiSprite : public Model {
 public:
-    MultiSprite(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args);
-	MultiSprite(std::shared_ptr<IBatch> batch);
+    MultiSprite(const pybind11::kwargs& args);
+	//MultiSprite();
     int getKey(const std::string& key);
 
 
 	void addSprite(const std::string& key, std::shared_ptr<Sprite> sprite, int palette) ; //, const std::string& parent = std::string(), int joint = -1);
-    std::shared_ptr<Renderer> getRenderer() const override;
+    std::shared_ptr<Renderer> getRenderer(IBatch*) const override;
     struct Node {
         Node(int id, std::shared_ptr<Sprite> sprite, int parent, int joint) : id(id), _sprite(sprite), _parent(parent), _joint(joint) {
 
@@ -44,7 +44,7 @@ public:
 
 class MultiSpriteRenderer : public Renderer {
 public:
-    explicit MultiSpriteRenderer(QuadBatch*);
+    explicit MultiSpriteRenderer(IBatch*);
 
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 

@@ -8,10 +8,17 @@
 
 class Room {
 public:
-    Room(const std::string& id);
+    Room();
+    void setClearColor(int r, int g, int b);
+    void addCamera(const std::string& id, std::shared_ptr<Camera>);
+    void addSpriteBatch(const std::string& spriteSheet, const std::string& camName, int maxElements = 1000);
+    void addLinesBatch(const std::string& camName, int maxElements = 1000);
+    IBatch* getBatch(int shader, int id);
+    Camera* getCamera(const std::string& id);
     ~Room();
     void update(double);
-    void draw(Shader*);
+    void configure(Shader*, int);
+    void draw(Shader*, int);
     std::string id() const;
     std::shared_ptr<Node> getRoot();
     void iterate_dfs(std::function<void(Node*)> f);
@@ -41,12 +48,17 @@ private:
 	Camera* m_mainCamera;
     std::string m_id;
     std::shared_ptr<Node> m_root;
+    std::unordered_map<std::string, std::shared_ptr<Camera>> m_cameras;
     std::unordered_map<std::type_index, std::shared_ptr<Runner> > m_runners;
     float m_ambientStrength;
     //std::vector<std::shared_ptr<Light>> m_lights;
-
+    glm::vec4 m_clearColor;
     pybind11::function m_onStart;
     pybind11::function m_onEnd;
+
+
+    std::vector<std::vector<std::shared_ptr<IBatch>>> _batches;
+
 };
 
 

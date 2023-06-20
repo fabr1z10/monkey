@@ -80,6 +80,8 @@ PYBIND11_MODULE(monkey, m) {
     m.def("read", &read_png);
 	m.def("get_sprite", &getSprite);
 	m.def("get_node", &getNode);
+	m.def("get_batch", &getBatch, py::return_value_policy::reference);
+    m.def("get_camera", &getCamera, py::return_value_policy::reference);
 	m.def("close_room", &closeRoom);
 	m.def("play", &playScript);
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
@@ -96,12 +98,15 @@ PYBIND11_MODULE(monkey, m) {
         //.def(py::init<>())
         .def("start", &Engine::start)
         .def("run", &Engine::run)
-        .def("shutdown", &Engine::shutdown)
-        .def("add_batch", &Engine::addBatch);
+        .def("shutdown", &Engine::shutdown);
 
     py::class_<Room, std::shared_ptr<Room>>(m, "Room")
-        .def(py::init<const std::string&>())
+        .def(py::init<>())
 		.def("add_runner", &Room::addRunner)
+		.def("add_camera", &Room::addCamera)
+		.def("add_sprite_batch", &Room::addSpriteBatch)
+        .def("add_line_batch", &Room::addLinesBatch)
+		.def("set_clear_color", &Room::setClearColor)
 		.def("set_main_cam", &Room::setMainCam)
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 
@@ -131,13 +136,15 @@ PYBIND11_MODULE(monkey, m) {
 		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
         .def("remove", &Node::remove);
 
-    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
+    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch")
+        .def("add", &IBatch::add);
 	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
+    py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
 
     py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
-        .def(py::init<int, const pybind11::kwargs&>());
-    //py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
-    //    .def(py::init<ShaderType, int, const pybind11::kwargs&>());
+        .def(py::init<int, std::shared_ptr<Camera>, const std::string&>());
+    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
+        .def(py::init<int, std::shared_ptr<Camera>>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -172,10 +179,12 @@ PYBIND11_MODULE(monkey, m) {
 	/// --- models ---
     py::module_ mm = m.def_submodule("models");
 	mm.def("make_plane", &ModelMaker::pippo);
-    py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
-        .def(py::init<>());
+	mm.def("make", &ModelMaker::makeModel);
+    py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
+        //.def(py::init<>());
     py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
-        .def(py::init<std::shared_ptr<IBatch>, const pybind11::kwargs&>());
+        .def(py::init<const pybind11::kwargs&>());
+    //py::class_<Lines, Model, std::shared_ptr<Lines>>(mm)
     py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")
         .def(py::init<const pybind11::kwargs&>());
 
@@ -186,8 +195,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
 
     py::class_<MultiSprite, Model, std::shared_ptr<MultiSprite>>(mm, "multi_sprite")
-        .def(py::init<std::shared_ptr<IBatch>>())
-        .def(py::init<std::shared_ptr<IBatch>, const pybind11::kwargs&>())
+        //.def(py::init<std::shared_ptr<IBatch>>())
+        .def(py::init<const pybind11::kwargs&>())
         .def("add_anim", &MultiSprite::addAnimation)
         .def("add", &MultiSprite::addSprite);
 

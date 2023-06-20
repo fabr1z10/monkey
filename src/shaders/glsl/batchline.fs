@@ -1,12 +1,12 @@
 R"(
 #version 330 core
 
-in vec4 fs_color;
+in vec4 Color;
 out vec4 FragColor;
 
 void main()
 {
-    FragColor = fs_color; //vec4(1,1,1,1);
+    FragColor = Color;
 }
 
 )"

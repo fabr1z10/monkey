@@ -1,10 +1,12 @@
 #include "multisprite.h"
 #include "../node.h"
 #include "../pyhelper.h"
+#include "../engine.h"
 #include <iostream>
 
-MultiSprite::MultiSprite(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args) {
-    _batch = dynamic_cast<QuadBatch*>(batch.get());
+MultiSprite::MultiSprite(const pybind11::kwargs& args) {
+    auto batchId = py_get_dict<int>(args, "batch", 0);
+    _batch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(0, batchId));
     for (const auto& node : args["nodes"]) {
         auto dict = node.cast<pybind11::dict>();
         auto key = node["id"].cast<std::string>();
@@ -33,18 +35,18 @@ MultiSprite::MultiSprite(std::shared_ptr<IBatch> batch, const pybind11::kwargs& 
 
 }
 
-MultiSprite::MultiSprite(std::shared_ptr<IBatch> batch) : Model() {
-    _batch = dynamic_cast<QuadBatch*>(batch.get());
-
-
-}
+//MultiSprite::MultiSprite(std::shared_ptr<IBatch> batch) : Model() {
+//    _batch = dynamic_cast<QuadBatch*>(batch.get());
+//
+//
+//}
 
 const std::vector<std::unique_ptr<MultiSprite::Node>> & MultiSprite::getNodes() const {
     return _nodes;
 }
 
-std::shared_ptr<Renderer> MultiSprite::getRenderer() const {
-    return std::make_shared<MultiSpriteRenderer>(_batch);
+std::shared_ptr<Renderer> MultiSprite::getRenderer(IBatch* batch) const {
+    return std::make_shared<MultiSpriteRenderer>(batch);
 
 }
 
@@ -73,9 +75,10 @@ void MultiSprite::addSprite(const std::string &key, std::shared_ptr<Sprite> spri
 //    }
 }
 
-MultiSpriteRenderer::MultiSpriteRenderer(QuadBatch* batch) : Renderer(),
-    _spriteBatch(batch)
+MultiSpriteRenderer::MultiSpriteRenderer(IBatch* batch) : Renderer(),
+    _spriteBatch(dynamic_cast<QuadBatch*>(batch))
 {
+    assert(_spriteBatch);
 }
 
 

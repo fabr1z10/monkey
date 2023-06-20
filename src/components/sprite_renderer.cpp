@@ -3,8 +3,9 @@
 #include "../node.h"
 #include "../pyhelper.h"
 
-SpriteRenderer::SpriteRenderer(QuadBatch* batch) : Renderer(),
-    _spriteBatch(batch), m_frame(0), m_ticks(0) {
+SpriteRenderer::SpriteRenderer(IBatch* batch) : Renderer(),
+    _spriteBatch(dynamic_cast<QuadBatch*>(batch)), m_frame(0), m_ticks(0) {
+    assert(_spriteBatch != nullptr);
 
     // request a new quad id to the batch
     _quadId = _spriteBatch->getPrimitiveId();

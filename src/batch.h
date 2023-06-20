@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <list>
 #include "camera.h"
+#include "node.h"
 
 class Shader;
 
@@ -16,6 +17,8 @@ public:
 	Camera* getCamera() {
 		return _cam.get();
 	};
+	// add current node to this batch for rendering
+	void add(Node*, const pybind11::kwargs& args = pybind11::kwargs());
 protected:
 	int _maxElements; 			// max number of elements (e.g quads or lines)
 	int _vertsPerElement;		// vertices per element
@@ -106,7 +109,7 @@ public:
 
 protected:
     // index of next primitive
-    int _bytesPerVertex;
+    //int _bytesPerVertex;
     int _indicesPerElement;
 	int _nPrimitive;			// next element to be allocated
     GLenum _prim;

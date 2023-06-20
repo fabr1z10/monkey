@@ -3,13 +3,15 @@
 #include "../engine.h"
 #include "../assetmanager.h"
 
-Quad::Quad(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args) : Model(), _batch(nullptr), _quadCount(0) {
+Quad::Quad(const pybind11::kwargs& args) : Model(), _quadCount(0) {
 
-
-    _batch = dynamic_cast<QuadBatch*>(batch.get());
+//    auto batchId = py_get_dict<int>(args, "batch", 0);
+//    _batch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(0, batchId));
+//    assert(_batch);
+    //_batch = dynamic_cast<QuadBatch*>(batch.get());
 
     auto& am = AssetManager::instance();
-    auto sheetFile = _batch->getSheet();
+    auto sheetFile = py_get_dict<std::string>(args, "sheet");
     auto tex = am.getTex(sheetFile);
 
     float texw = tex->getWidth();
@@ -43,12 +45,13 @@ Quad::Quad(std::shared_ptr<IBatch> batch, const pybind11::kwargs& args) : Model(
     }
 }
 
-std::shared_ptr<Renderer> Quad::getRenderer() const {
-    return std::make_shared<QuadRenderer>(_batch);
+std::shared_ptr<Renderer> Quad::getRenderer(IBatch* b) const {
+    return std::make_shared<QuadRenderer>(b);
 
 }
 
-QuadRenderer::QuadRenderer(QuadBatch* batch) : Renderer(), _frame(0), _ticks(0), _spriteBatch(batch) {
+QuadRenderer::QuadRenderer(IBatch* batch) : Renderer(), _frame(0), _ticks(0), _spriteBatch(dynamic_cast<QuadBatch*>(batch)) {
+    assert(_spriteBatch);
     // request a new quad id to the batchcam_node.add(monkey_toolkit.platformer.platform_border(0, 2, 3, 5, qq, 0, platform_type=monkey_toolkit.platformer.PlatformType.LINE))
 
 

@@ -12,7 +12,7 @@ std::shared_ptr<Tex> AssetManager::getTex(const std::string & id) {
     return it->second;
 }
 
-std::shared_ptr<Sprite> AssetManager::getSprite(std::shared_ptr<IBatch> batch, const std::string & id) {
+std::shared_ptr<Sprite> AssetManager::getSprite(const std::string & id) {
 	auto it = m_sprites.find(id);
 	if (it == m_sprites.end()) {
 		std::cout << " --- not cached. Create new!\n";
@@ -34,7 +34,7 @@ std::shared_ptr<Sprite> AssetManager::getSprite(std::shared_ptr<IBatch> batch, c
 			auto currId = it->first.as<std::string>();
 			std::string cspr = id.substr(0, u+1) + currId;
 			std::cout << " --- adding sprite: " << cspr << "\n";
-			m_sprites[cspr] = std::make_shared<Sprite>(batch, it->second);
+			m_sprites[cspr] = std::make_shared<Sprite>( it->second);
 		}
 		if (m_sprites.count(id) == 0) {
 			std::cerr << " looks like sprite: " << id << " does not exist!" << std::endl;

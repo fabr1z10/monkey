@@ -11,10 +11,10 @@ Model::Model() /*m_vbo(GL_INVALID_VALUE), m_ebo(GL_INVALID_VALUE),m_texId(GL_INV
 Model::~Model() {
 }
 
-
-std::shared_ptr<Renderer> Model::getRenderer() const {
-    return std::make_shared<Renderer>();
-}
+//
+//std::shared_ptr<Renderer> Model::getRenderer() const {
+//    return std::make_shared<Renderer>();
+//}
 
 
 

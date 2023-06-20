@@ -86,14 +86,14 @@ void QuadBatch::innerConfigure() {
 
 }
 
-QuadBatch::QuadBatch(int maxElements, const pybind11::kwargs& args) : Batch(maxElements, 4, 6) {
+QuadBatch::QuadBatch(int maxElements, std::shared_ptr<Camera> camera, const std::string& sheet) : Batch(maxElements, 4, 6) {
 	_prim = GL_TRIANGLES;
-	_cam = args["cam"].cast<std::shared_ptr<Camera>>();
+    _cam = camera;
+    _sheet = sheet;
 
     //_maxPrimitives = py_get_dict<int>(args, "max_quads");
     //_shaderType = static_cast<ShaderType>(py_get_dict<int>(args, "shader_type"));
 
-    _sheet = py_get_dict<std::string>(args, "sheet");
     auto& am = AssetManager::instance();
     auto tex = am.getTex(_sheet);
 

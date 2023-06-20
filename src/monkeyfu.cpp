@@ -6,13 +6,21 @@ Engine& getEngine() {
     return engine;
 }
 
-std::shared_ptr<Sprite> getSprite(std::shared_ptr<IBatch> batch, const std::string& id) {
+std::shared_ptr<Sprite> getSprite(const std::string& id) {
 	auto& am = AssetManager::instance();
-	return am.getSprite(batch, id);
+	return am.getSprite(id);
 }
 
 std::shared_ptr<Node> getNode(int id) {
 	return Engine::instance().getNode(id);
+}
+
+Camera* getCamera(const std::string& id) {
+    return Engine::instance().getRoom()->getCamera(id);
+}
+
+IBatch* getBatch(int shader, int batch) {
+    return Engine::instance().getRoom()->getBatch(shader, batch);
 }
 
 void closeRoom() {

@@ -11,6 +11,7 @@
 #include "room.h"
 #include "keylistener.h"
 #include "batch.h"
+#include "enginedraw.h"
 
 namespace py = pybind11;
 
@@ -36,6 +37,7 @@ public:
     glm::ivec2 getDeviceSize() const;
     glm::ivec2 getWindowSize() const;
     glm::vec4 getActualDeviceViewport() const;
+    glm::vec4 getWindowViewport() const;
     void setActualDeviceViewport(glm::vec4) ;
     static void WindowResizeCallback(GLFWwindow* win, int width, int height);
     static void cursor_pos_callback(GLFWwindow*, double xpos, double ypos);
@@ -47,7 +49,6 @@ public:
     std::shared_ptr<Node> getNode(int);
     void addNode(std::shared_ptr<Node>);
     void scheduleForRemoval(Node*);
-    void addBatch(int, std::shared_ptr<IBatch>);
     pybind11::object getConfig();
     bool isRunning() const;
 
@@ -56,7 +57,11 @@ public:
 	void registerToKeyboardEvent(KeyboardListener*);
 	void unregisterToKeyboardEvent(KeyboardListener*);
     //IBatch* getBatch(int);
+
+
 private:
+
+
 	template<typename T=Shader>
 	std::shared_ptr<T> create_shader(ShaderType type, const std::string& vertex, const std::string& fragment, const std::string& vertexFormat) {
 		auto shader = std::make_shared<T>(type, vertex, fragment, vertexFormat);
@@ -76,7 +81,7 @@ private:
     glm::ivec2 m_deviceSize;
     glm::vec4 m_actualDeviceViewport;
     glm::vec4 m_windowViewport;
-    glm::vec4 m_clearColor;
+
     double m_deviceAspectRatio;
     // the current room
 
@@ -103,11 +108,13 @@ private:
     // node management
     std::unordered_map<int, std::weak_ptr<Node>> m_allNodes;
     std::vector<Node*> m_scheduledForRemoval;
-    std::unordered_map<int, std::function<std::shared_ptr<Shader>()>> m_shaderBuilders;
-    std::vector<std::shared_ptr<Shader>> m_shaders;
+
 
 	std::unordered_set<KeyboardListener*> m_keyboardListeners;
-	std::vector<std::vector<std::shared_ptr<IBatch>>> _batches;
+
+
+
+    std::unique_ptr<EngineDraw> _engineDraw;
 };
 
 inline int Engine::getPixelScale() const {
