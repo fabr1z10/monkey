@@ -9,7 +9,7 @@ class Shader;
 
 class IBatch {
 public:
-	IBatch(int maxElements, int verticesPerElement) : _maxElements(maxElements), _vertsPerElement(verticesPerElement) {}
+	IBatch(int maxElements, int verticesPerElement) : _maxElements(maxElements), _vertsPerElement(verticesPerElement), _nPrimitive(0) {}
 	virtual void draw(Shader* s) = 0;
 	virtual void cleanUp() = 0;
 	//ShaderType getShaderType() const;
@@ -19,6 +19,10 @@ public:
 	};
 	// add current node to this batch for rendering
 	void add(Node*, const pybind11::kwargs& args = pybind11::kwargs());
+
+    int getPrimitiveId() ;
+
+    void release(int id);
 protected:
 	int _maxElements; 			// max number of elements (e.g quads or lines)
 	int _vertsPerElement;		// vertices per element
@@ -26,6 +30,8 @@ protected:
 	//ShaderType _shaderType;
 	std::shared_ptr<Camera> _cam;
 
+    int _nPrimitive;			// next element to be allocated
+    std::list<int> _deallocated;
 };
 
 //inline ShaderType IBatch::getShaderType() const {
@@ -38,7 +44,7 @@ template<typename VERTEXDATA>
 class Batch : public IBatch{
 public:
     Batch(int maxElements, int vertsPerElement, int indicesPerElement) : IBatch(maxElements, vertsPerElement),
-    	_indicesPerElement(indicesPerElement), _nPrimitive(0) {
+    	_indicesPerElement(indicesPerElement)  {
     	_data.resize(maxElements * vertsPerElement);
     }
 
@@ -72,17 +78,7 @@ public:
 		_data = std::vector<VERTEXDATA>(_maxElements);
 	}
 
-    int getPrimitiveId() {
-		int next;
-		if (_deallocated.empty()) {
-			next = _nPrimitive;
-			_nPrimitive++;
-		} else {
-			next = _deallocated.front();
-			_deallocated.pop_front();
-		}
-		return next;
-	}
+
 
     void configure(Shader* s) override {
 
@@ -111,14 +107,13 @@ protected:
     // index of next primitive
     //int _bytesPerVertex;
     int _indicesPerElement;
-	int _nPrimitive;			// next element to be allocated
     GLenum _prim;
     unsigned _verticesPerPrimitive;
     GLuint _vao;
 	GLuint _vbo;
 	GLuint _ebo;
     GLint _blockSize;
-    std::list<int> _deallocated;
+
 
     std::vector<VERTEXDATA> _data;
 

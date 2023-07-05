@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../model.h"
+#include "iquad.h"
 #include "../shape.h"
 #include "../hashpair.h"
 //#include "spritesheet.h"
@@ -8,69 +8,38 @@
 #include "../batch/quadbatch.h"
 
 
-struct FrameInfo {
-    glm::vec4 texture_coordinates;
-    glm::vec2 size;
-    glm::vec2 anchor_point;
-    float z;
-    unsigned paletteIndex;
-    bool flipx;
-    bool flipy;
+class Sprite : public IQuad {
 
-	int offset;
-	int count;
-	int ticks;
-	int box;
-	int attackBox;
-	std::vector<glm::vec3> joints;
-};
-
-struct AnimInfo {
-	AnimInfo() : loopFrame(0) {}
-	bool loop;
-	int loopFrame;
-	std::vector<FrameInfo> frameInfo;
-	int frameCount;
-};
-
-
-struct SpriteCollisionInfo {
-	int flag;
-	int mask;
-	int tag;
-};
-
-
-class Sprite : public Model {
 public:
-	Sprite(IBatch*,  ShaderType type, GLenum primitive);
-	Sprite(const YAML::Node& node);
+    Sprite(const YAML::Node &node, const YAML::Node &globals);
+    //void initFromPy(const pybind11::kwargs&) override {}
+    //void initFromYAML(const YAML::Node &node, const YAML::Node &globals) override;
 	//void init(Node*) override;
 	//void draw(Shader*, Node*) override;
-	std::shared_ptr<Renderer> getRenderer(IBatch*) const override;
-	const FrameInfo& getFrameInfo(const std::string& anim, int frame);
-    const FrameInfo* getFrameInfo2(const std::string& anim, int frame);
+	//std::shared_ptr<Renderer> getRenderer(IBatch*) override;
+//	const FrameInfo& getFrameInfo(const std::string& anim, int frame);
+//    const FrameInfo* getFrameInfo2(const std::string& anim, int frame);
 
-    const AnimInfo* getAnimInfo(const std::string& anim);
-
-	std::shared_ptr<Shape> getShape (const std::string& anim, int frame) const;
-	std::shared_ptr<Shape> getShapeCast (const std::string& anim, int frame) const;
-	bool hasCollision(const std::string&) const;
-	//const SpriteCollisionInfo& getCollisionInfo(const std::string& anim) const;
-	std::shared_ptr<Model> generateDebugModel();
-	Bounds getStaticBounds() const;
-//	void innerDraw(Shader*, const glm::mat4&, const std::string& key) override;
-	std::string getDefaultAnimation() const;
-	std::pair<int, int> getDebugShape(const std::string& anim, int frame);
-	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
-	Bounds getAttackRange() const;
-	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
+    //const AnimInfo* getAnimInfo(const std::string& anim);
+//
+//	std::shared_ptr<Shape> getShape (const std::string& anim, int frame) const;
+//	std::shared_ptr<Shape> getShapeCast (const std::string& anim, int frame) const;
+//	bool hasCollision(const std::string&) const;
+//	//const SpriteCollisionInfo& getCollisionInfo(const std::string& anim) const;
+//	std::shared_ptr<Model> generateDebugModel();
+//	Bounds getStaticBounds() const;
+////	void innerDraw(Shader*, const glm::mat4&, const std::string& key) override;
+//	std::string getDefaultAnimation() const;
+//	std::pair<int, int> getDebugShape(const std::string& anim, int frame);
+//	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
+//	Bounds getAttackRange() const;
+//	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 private:
     //QuadBatch* _batch;
 	Bounds m_attackRange;
 	//SpriteSheet* m_sheet;
-	std::string m_defaultAnimation;
-	std::unordered_map<std::string, AnimInfo> m_animInfo;
+    //std::string m_defaultAnimation;
+	//std::unordered_map<std::string, AnimInfo> m_animInfo;
 	//std::unordered_map<std::string, std::vector<FrameInfo>> m_frameInfo;
 	std::shared_ptr<Shape> getRect(int mode, int, int, int, int);
 	float m_halfThickness;
@@ -85,25 +54,25 @@ private:
     std::unordered_map<std::pair<std::string, int>, std::vector<glm::vec2>> m_jointOverride;
 };
 
-inline Bounds Sprite::getAttackRange() const {
-	return m_attackRange;
-}
-
-
-inline std::string Sprite::getDefaultAnimation() const {
-	return m_defaultAnimation;
-}
-
-inline Bounds Sprite::getStaticBounds() const {
-	return m_collisionBounds;
-}
-
-inline const AnimInfo * Sprite::getAnimInfo(const std::string &anim) {
-	auto it = m_animInfo.find(anim);
-	if (it == m_animInfo.end())
-		return nullptr;
-
-	return &it->second;
-	//return &m_animInfo[anim];
-}
-
+//inline Bounds Sprite::getAttackRange() const {
+//	return m_attackRange;
+//}
+//
+//
+//inline std::string Sprite::getDefaultAnimation() const {
+//	return m_defaultAnimation;
+//}
+//
+//inline Bounds Sprite::getStaticBounds() const {
+//	return m_collisionBounds;
+//}
+//
+//inline const AnimInfo * Sprite::getAnimInfo(const std::string &anim) {
+//	auto it = m_animInfo.find(anim);
+//	if (it == m_animInfo.end())
+//		return nullptr;
+//
+//	return &it->second;
+//	//return &m_animInfo[anim];
+//}
+//

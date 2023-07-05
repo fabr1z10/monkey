@@ -6,7 +6,7 @@
 #include "batch/quadbatch.h"
 #include "batch/linebatch.h"
 
-Room::Room() : m_mainCamera(nullptr) {
+Room::Room() : m_mainCamera(nullptr), m_clearColor(0.f, 0.f, 0.f, 255.f) {
     m_root = std::make_shared<Node>();
     _batches.emplace_back();
     _batches.emplace_back();
@@ -76,7 +76,11 @@ Camera* Room::getCamera(const std::string &id) {
 void Room::update(double dt) {
 
     //auto* cam = Engine::instance().getBatch(0)->getCamera();
-    auto currentBounds = m_mainCamera->getViewingBounds();
+    Bounds currentBounds;
+    if (m_mainCamera != nullptr) {
+        currentBounds = m_mainCamera->getViewingBounds();
+    }
+
     currentBounds.scale(2.f, 2.f);
 
     int m_nUpdates{0};

@@ -29,12 +29,15 @@ std::shared_ptr<Sprite> AssetManager::getSprite(const std::string & id) {
 //		auto sheet = m_spriteSheets.at(sheetName);
 		//auto sheetFile = f["sheet"].as<std::string>();
 		auto spritesNode = f["sprites"];
+		auto globals = f["globals"];
 
 		for(YAML::const_iterator it=spritesNode.begin();it!=spritesNode.end();++it) {
 			auto currId = it->first.as<std::string>();
 			std::string cspr = id.substr(0, u+1) + currId;
 			std::cout << " --- adding sprite: " << cspr << "\n";
-			m_sprites[cspr] = std::make_shared<Sprite>( it->second);
+			auto sprite = std::make_shared<Sprite>(it->second, globals);
+			//sprite->initFromYAML(it->second, globals);
+			m_sprites[cspr] = sprite;
 		}
 		if (m_sprites.count(id) == 0) {
 			std::cerr << " looks like sprite: " << id << " does not exist!" << std::endl;
@@ -74,4 +77,15 @@ std::shared_ptr<Palette> AssetManager::getPalette(const std::string& id) {
         return it->second;
     }
 
+}
+
+std::shared_ptr<Font> AssetManager::getFont(const std::string & id, const std::string& file) {
+    auto it = m_fonts.find(id);
+    if (it == m_fonts.end()) {
+        std::cout << " --- not cached. Create new!\n";
+        auto font = std::make_shared<Font>(file);
+        m_fonts[id] = font;
+        return font;
+    }
+    return it->second;
 }

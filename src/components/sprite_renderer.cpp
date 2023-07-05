@@ -8,17 +8,24 @@ SpriteRenderer::SpriteRenderer(IBatch* batch) : Renderer(),
     assert(_spriteBatch != nullptr);
 
     // request a new quad id to the batch
-    _quadId = _spriteBatch->getPrimitiveId();
+    //_quadId = _spriteBatch->getPrimitiveId();
+
+
 }
 
 SpriteRenderer::~SpriteRenderer() {
-	_spriteBatch->releaseQuad(_quadId);
+    for (const auto& quadId : _quadIds) {
+        _spriteBatch->releaseQuad(quadId);
+    }
 }
 
 void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 	Renderer::setModel(model, args);
-    m_sprite = std::dynamic_pointer_cast<Sprite>(model);
-
+    m_sprite = std::dynamic_pointer_cast<IQuad>(model);
+    auto qc = m_sprite->getQuadCount();
+    for (int i = 0; i< qc; ++i) {
+        _quadIds.push_back(_spriteBatch->getPrimitiveId());
+    }
 	m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
 	_paletteId = py_get_dict<int>(args, "pal", 0);
 }
@@ -32,7 +39,7 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 		return;
 	}
 	m_complete = false;
-	m_animInfo = m_sprite->getAnimInfo(anim);
+	m_animInfo = m_sprite->getAnimationInfo(anim);
 	if (m_animInfo == nullptr) {
 		GLIB_FAIL("mmh don't know animation: " + anim);
 	}
@@ -41,7 +48,7 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 }
 
 void SpriteRenderer::start() {
-	m_animInfo = m_sprite->getAnimInfo(m_animation);
+	m_animInfo = m_sprite->getAnimationInfo(m_animation);
 }
 
 void SpriteRenderer::update(double dt) {
@@ -55,19 +62,25 @@ void SpriteRenderer::update(double dt) {
 
 	//auto worldTransform = m_node->getWorldMatrix();
 	//glm::vec3 pos = worldTransform * glm::vec4(a.anchor_point, 0.f, 1.f);
-	auto flipx = m_node->getFlipX() ^ a.flipx;
 
-	glm::vec2 delta = flipx ? (glm::vec2(a.size.x, 0.f) - a.anchor_point) : a.anchor_point;
-    auto bottomLeft = pos - glm::vec3(delta, 0.f);
+	// draw all quads in the frame
+	int qid = 0;
 
-    _spriteBatch->setQuad(_quadId,
-						 bottomLeft,
-						 a.size,
-						 a.texture_coordinates,
-						glm::vec2(1, 1),
-						 _paletteId,
-						 flipx,
-						a.flipy);
+	for (const auto& quad : a.quads) {
+        auto flipx = m_node->getFlipX() ^ quad.fliph;
+
+        glm::vec2 delta = flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint;
+        auto bottomLeft = pos - glm::vec3(delta, 0.f);
+
+        _spriteBatch->setQuad(_quadIds[qid++],
+                              bottomLeft,
+                              quad.size,
+                              quad.textureCoordinates,
+                              quad.repeat,
+                              _paletteId,
+                              flipx,
+                              quad.flipv);
+    }
 	//_spriteBatch->setQuad(_quadId, bottomLeft, a.size, a.texture_coordinates, glm::vec2(1, 1), a.paletteIndex, flipx, false);
 
 
@@ -75,8 +88,8 @@ void SpriteRenderer::update(double dt) {
     if (m_ticks >= a.ticks) {
         // increment frame. if this animation is
         m_frame++;
-        if (m_frame >= m_animInfo->frameCount) {
-            m_frame = (m_animInfo->loop ? m_animInfo->loopFrame : m_animInfo->frameCount - 1);
+        if (m_frame >= m_animInfo->frames.size()) {
+            m_frame = (m_animInfo->loop ? m_animInfo->loop : m_animInfo->frames.size() - 1);
             m_complete = true;
         }
         m_ticks = 0;

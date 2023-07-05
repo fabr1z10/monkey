@@ -13,7 +13,7 @@ public:
 	void start() override;
 	[[nodiscard]] const std::string& getAnimation() const;
 	void setAnimation(const std::string&) override;
-	Sprite* getSprite();
+    IQuad* getSprite();
 	[[nodiscard]] int getFrame() const;
 	//void draw(Shader *) override;
 	bool isComplete() const;
@@ -21,20 +21,20 @@ public:
 
 private:
 	QuadBatch* _spriteBatch;
-    int _quadId;
+    std::vector<int> _quadIds;
     int _paletteId;
 
 	//void innerDraw(Shader*, const glm::mat4&) override;
-	const AnimInfo* m_animInfo;
+	const Animation* m_animInfo;
 	std::string m_animation;
 	int m_frame;
-	std::shared_ptr<Sprite> m_sprite;
+	std::shared_ptr<IQuad> m_sprite;
 	int m_ticks;
 	bool m_complete;
 
 };
 
-inline Sprite* SpriteRenderer::getSprite() {
+inline IQuad* SpriteRenderer::getSprite() {
 	return m_sprite.get();
 }
 

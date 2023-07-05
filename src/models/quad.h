@@ -5,6 +5,13 @@
 #include "../batch/quadbatch.h"
 
 
+class QuadBase : public Model {
+public:
+
+
+};
+
+
 class Quad : public Model {
 public:
     struct Desc {
@@ -24,7 +31,7 @@ public:
     explicit Quad(const pybind11::kwargs&);
     const Frame& getFrame(int) const;
     int getQuadCount() const;
-    std::shared_ptr<Renderer> getRenderer(IBatch*) const override;
+    std::shared_ptr<Renderer> getRenderer(IBatch*) override;
     int getFrameCount() const;
 private:
     //QuadBatch* _batch;

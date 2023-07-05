@@ -5,6 +5,7 @@
 #include "tex.h"
 #include "models/sprite.h"
 #include "palette.h"
+#include "font.h"
 
 
 class AssetManager {
@@ -19,12 +20,12 @@ public:
     //std::shared_ptr<TiledModel> getTiled(const std::string&);
     std::shared_ptr<Tex> getTex(const std::string&);
     std::shared_ptr<Palette> getPalette(const std::string&);
-
+    std::shared_ptr<Font> getFont(const std::string& name, const std::string& = std::string());
 private:
 	std::pair<std::string, std::string> splitFileAsset(const std::string&);
 
 	std::unordered_map<std::string, std::shared_ptr<Tex>> m_tex;
     std::unordered_map<std::string, std::shared_ptr<Palette>> m_palettes;
 	std::unordered_map<std::string, std::shared_ptr<Sprite>> m_sprites;
-
+    std::unordered_map<std::string, std::shared_ptr<Font>> m_fonts;
 };

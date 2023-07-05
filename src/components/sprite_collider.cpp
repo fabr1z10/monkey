@@ -17,28 +17,28 @@ void SpriteCollider::start() {
 	m_renderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
 	assert(m_renderer != nullptr);
 
-	m_sprite = m_renderer->getSprite();
-	m_staticBounds = m_sprite->getStaticBounds();
+//	m_sprite = m_renderer->getSprite();
+//	m_staticBounds = m_sprite->getStaticBounds();
 	Collider::start();
 }
 
 void SpriteCollider::update(double) {
 	// check if current (anim, frame) has a shape to cast
-	auto animId = m_renderer->getAnimation();
-	auto frame = m_renderer->getFrame();
-	auto box = m_sprite->getShapeCast(animId, frame);
-	bool hit = false;
-	if (box != nullptr) {
-		auto t = m_node->getWorldMatrix();
-		auto e = m_engine->shapeCast(box.get(), t, m_castMask, true);
-		if (!e.empty()) {
-			hit = true;
-			m_engine->processCollisions(e, m_node, m_castTag);
-		}
-	}
-	if (!hit) {
-		// m_lastHit = nullptr;
-	}
+//	auto animId = m_renderer->getAnimation();
+//	auto frame = m_renderer->getFrame();
+//	auto box = m_sprite->getShapeCast(animId, frame);
+//	bool hit = false;
+//	if (box != nullptr) {
+//		auto t = m_node->getWorldMatrix();
+//		auto e = m_engine->shapeCast(box.get(), t, m_castMask, true);
+//		if (!e.empty()) {
+//			hit = true;
+//			m_engine->processCollisions(e, m_node, m_castTag);
+//		}
+//	}
+//	if (!hit) {
+//		// m_lastHit = nullptr;
+//	}
 
 
 
@@ -47,23 +47,23 @@ void SpriteCollider::update(double) {
 
 
 std::shared_ptr<Shape> SpriteCollider::getShape() {
-	return m_sprite->getShape(m_renderer->getAnimation(), m_renderer->getFrame());
+	//return m_sprite->getShape(m_renderer->getAnimation(), m_renderer->getFrame());
 }
 
-void SpriteCollider::generateDebugMesh() {
-	if (m_debugNode != nullptr) {
-		m_debugNode->remove();
-	}
-	auto model = m_sprite->generateDebugModel();
-
-	auto node = std::make_shared<Node>();
-	node->setModel(model);
-	auto renderer = std::make_shared<SpriteColliderRenderer>();
-	renderer->setModel(model);
-	node->addComponent(renderer);
-	m_node->add(node);
-	m_debugNode = node.get();
-}
+void SpriteCollider::generateDebugMesh() {}
+//	if (m_debugNode != nullptr) {
+//		m_debugNode->remove();
+//	}
+//	auto model = m_sprite->generateDebugModel();
+//
+//	auto node = std::make_shared<Node>();
+//	node->setModel(model);
+//	auto renderer = std::make_shared<SpriteColliderRenderer>();
+//	renderer->setModel(model);
+//	node->addComponent(renderer);
+//	m_node->add(node);
+//	m_debugNode = node.get();
+//}
 
 
 std::type_index SpriteColliderRenderer::getType() {
@@ -71,10 +71,10 @@ std::type_index SpriteColliderRenderer::getType() {
 }
 
 void SpriteColliderRenderer::start() {
-	Renderer::start();
-	m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
-	m_sprite = m_reference->getSprite();
-	assert(m_reference!=nullptr);
+//	Renderer::start();
+//	m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
+//	m_sprite = m_reference->getSprite();
+//	assert(m_reference!=nullptr);
 }
 
 //void SpriteColliderRenderer::draw(Shader * s) {

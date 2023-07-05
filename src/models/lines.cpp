@@ -24,7 +24,7 @@ void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
     }
 }
 
-std::shared_ptr<Renderer> LineModel::getRenderer(IBatch* batch) const {
+std::shared_ptr<Renderer> LineModel::getRenderer(IBatch* batch) {
     return std::make_shared<LinesRenderer>(batch);
 }
 

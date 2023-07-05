@@ -18,7 +18,7 @@ public:
 
 	//void setTexture(const std::string& texFile);
 
-    virtual std::shared_ptr<Renderer> getRenderer(IBatch*) const = 0;
+    virtual std::shared_ptr<Renderer> getRenderer(IBatch*) = 0;
 
 	Bounds getBounds() const;
 protected:

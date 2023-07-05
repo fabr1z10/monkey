@@ -45,7 +45,7 @@ Quad::Quad(const pybind11::kwargs& args) : Model(), _quadCount(0) {
     }
 }
 
-std::shared_ptr<Renderer> Quad::getRenderer(IBatch* b) const {
+std::shared_ptr<Renderer> Quad::getRenderer(IBatch* b) {
     return std::make_shared<QuadRenderer>(b);
 
 }

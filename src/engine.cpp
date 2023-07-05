@@ -4,6 +4,7 @@
 
 #include "shaders/lightshader.h"
 #include "batch/quadbatch.h"
+#include "assetmanager.h"
 #include "batch/linebatch.h"
 
 
@@ -124,6 +125,14 @@ void Engine::start() {
 
     _engineDraw->loadShaders();
 
+    // load fonts
+    auto fonts = py_get<py::dict>(m_settings, "fonts", py::dict());
+    for (const auto& font : fonts) {
+        auto name = font.first.cast<std::string>();
+        auto file = font.second.cast<std::string>();
+        std::cout << name << ", " << file << "\n";
+        AssetManager::instance().getFont(name, file);
+    }
 }
 
 void Engine::run() {

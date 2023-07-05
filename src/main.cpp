@@ -45,6 +45,7 @@
 #include "models/lines.h"
 #include "models/multisprite.h"
 #include "states/attack.h"
+#include "models/text.h"
 
 
 namespace py = pybind11;
@@ -193,12 +194,15 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
+	py::class_<Text, Model, std::shared_ptr<Text>>(mm, "text")
+		.def(py::init<const pybind11::kwargs&>());
 
-    py::class_<MultiSprite, Model, std::shared_ptr<MultiSprite>>(mm, "multi_sprite")
+
+    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
         //.def(py::init<std::shared_ptr<IBatch>>())
         .def(py::init<const pybind11::kwargs&>())
-        .def("add_anim", &MultiSprite::addAnimation)
-        .def("add", &MultiSprite::addSprite);
+        .def("set_model", &MultiModel::setModel);
+
 
 	/// --- runners ---
 	py::class_<Runner, std::shared_ptr<Runner>>(m, "runner");

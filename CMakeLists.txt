@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 3.4...3.18)
 
+
+
 IF (WIN32)
 	set(CMAKE_PREFIX_PATH "c:/program files (x86)/libpng;c:/program files (x86)/glew")
 ENDIF()
 
+#add_definitions(-DNDEBUG)
+
 project(monkey)
+
 
 set(CMAKE_CXX_STANDARD 17)
 set(MONKEY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
