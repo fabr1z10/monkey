@@ -25,6 +25,9 @@ Font::Font(const std::string& fontId) {
     //m_hasPalette = tex->hasPalette();
     _texId = tex->getTexId();
 
+    std::getline(infile, line);
+    _lineWidth = std::stof(line);
+
     while (std::getline(infile, line))
     {
         if (line.empty() || line[0] == '#') {

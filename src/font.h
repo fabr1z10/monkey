@@ -19,7 +19,13 @@ class Font {
 public:
     Font(const std::string& file);
     const CharInfo& getCharInfo(char32_t c);
+    float getLineWidth() const;
 private:
     GLuint _texId;
+    float _lineWidth;
     std::unordered_map<char32_t, CharInfo> m_info;
 };
+
+inline float Font::getLineWidth() const {
+	return _lineWidth;
+}

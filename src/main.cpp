@@ -91,8 +91,10 @@ PYBIND11_MODULE(monkey, m) {
     m.attr("SHADER_TEXTURE_PALETTE") = static_cast<int>(ShaderType::SHADER_TEXTURE_PALETTE);
 	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
     m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
-
     m.attr("SHADER_LINEBATCH") = static_cast<int>(ShaderType::LINE_SHADER);
+    m.attr("ALIGN_LEFT") = static_cast<int>(HAlign::LEFT);
+	m.attr("ALIGN_CENTER") = static_cast<int>(HAlign::CENTER);
+	m.attr("ALIGN_RIGHT") = static_cast<int>(HAlign::RIGHT);
 
 
     py::class_<Engine>(m, "Engine")

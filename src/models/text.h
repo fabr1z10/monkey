@@ -4,6 +4,13 @@
 #include "iquad.h"
 #include <pybind11/pybind11.h>
 
+
+enum HAlign {
+	LEFT,
+	CENTER,
+	RIGHT
+};
+
 class Text : public IQuad {
 public:
 	Text(const pybind11::kwargs&);
