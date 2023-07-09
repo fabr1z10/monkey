@@ -70,7 +70,7 @@ void SpriteRenderer::update(double dt) {
         auto flipx = m_node->getFlipX() ^ quad.fliph;
 
         glm::vec2 delta = flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint;
-        auto bottomLeft = pos - glm::vec3(delta, 0.f);
+        auto bottomLeft = pos + quad.location - glm::vec3(delta, 0.f);
 
         _spriteBatch->setQuad(_quadIds[qid++],
                               bottomLeft,

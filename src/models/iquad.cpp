@@ -1,6 +1,8 @@
 #include "iquad.h"
 #include "../components/sprite_renderer.h"
 
+
+
 std::shared_ptr<Renderer> IQuad::getRenderer(IBatch* batch) {
     return std::make_shared<SpriteRenderer>(batch);
 

@@ -7,7 +7,9 @@
 
 Text::Text(const pybind11::kwargs & args) : IQuad() {
 
-	auto halign = static_cast<HAlign>(py_get_dict<int>(args, "halign"));
+	auto halign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
+
+	auto valign = static_cast<VAlign>(py_get_dict<int>(args, "valign", static_cast<int>(VAlign::TOP)));
 
     auto text = py_get_dict<std::string>(args, "text");
     auto s32 = getString32(text);
@@ -19,9 +21,10 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
     Frame frame;
     _quadCount = 0;
 	std::vector<float> rowLength;
+	int lineCount = 1;
 	std::vector<int> rowStart {0};
 
-    glm::vec2 position(0.f, 0.f);
+    glm::vec3 position(0.f, -font->getLineWidth(), 0.f);
     for (const auto& c : s32) {
         //font->get
         // one quad per character
@@ -33,6 +36,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
         	position.x = 0;
         	position.y -= font->getLineWidth();
         	rowStart.push_back(_quadCount);
+        	lineCount++;
         	continue;
         }
 
@@ -41,7 +45,8 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 
         quad.textureCoordinates = glm::vec4(charInfo.tx, charInfo.tx + charInfo.tw, charInfo.ty, charInfo.ty + charInfo.th);
         quad.size = glm::vec2(charInfo.w, charInfo.h);
-        quad.anchorPoint = -position;
+        quad.location = position;
+        quad.anchorPoint = glm::vec2(0.f);
         position.x += charInfo.advance;
         quad.repeat = glm::vec2(1, 1);
         frame.quads.push_back(quad);
@@ -58,6 +63,12 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 			}
 		}
 	}
+    if (valign != VAlign::TOP) {
+    	for (auto& quad : frame.quads) {
+    		quad.anchorPoint.y -= (lineCount * font->getLineWidth()) * (valign == VAlign::CENTER ? 0.5f : 1.0f);
+    	}
+    }
+
     anim.frames.push_back(frame);
 	_defaultAnimation = "main";
 	_animations["main"] = anim;

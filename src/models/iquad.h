@@ -6,6 +6,8 @@
 
 // describe a single quad
 struct Desc {
+	Desc() : location(0.f), anchorPoint(0.f), size(0.f), repeat(1.f), textureCoordinates(0.f), flipv(false), fliph(false) {}
+	glm::vec3 location;
     glm::vec2 anchorPoint;
     glm::vec2 size;
     glm::vec2 repeat;

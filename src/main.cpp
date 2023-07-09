@@ -95,6 +95,9 @@ PYBIND11_MODULE(monkey, m) {
     m.attr("ALIGN_LEFT") = static_cast<int>(HAlign::LEFT);
 	m.attr("ALIGN_CENTER") = static_cast<int>(HAlign::CENTER);
 	m.attr("ALIGN_RIGHT") = static_cast<int>(HAlign::RIGHT);
+	m.attr("VALIGN_TOP") = static_cast<int>(VAlign::TOP);
+	m.attr("VALIGN_CENTER") = static_cast<int>(VAlign::CENTER);
+	m.attr("VALIGN_BOTTOM") = static_cast<int>(VAlign::BOTTOM);
 
 
     py::class_<Engine>(m, "Engine")

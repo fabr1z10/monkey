@@ -104,6 +104,7 @@ Sprite::Sprite(const YAML::Node &node, const YAML::Node &globals) : IQuad() {
                 desc.textureCoordinates[3] = (texc[1] + texc[3]) / texw;
 				desc.repeat = yaml_read<glm::vec2>(q, "repeat", glm::vec2(1.f, 1.f));
                 desc.anchorPoint = yaml_read<glm::vec2>(q, "anchor", glm::vec3(0.f));
+                desc.location = yaml_read<glm::vec3>(q, "pos", glm::vec3(0.f));
                 float width_actual = static_cast<float>(width_px) / ppu;
                 float height_actual = static_cast<float>(height_px) / ppu;
                 desc.size = glm::vec2(width_actual, height_actual);
