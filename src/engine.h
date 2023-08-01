@@ -24,6 +24,7 @@ public:
         return instance;
     }
     //Engine();
+    void initialize();
     long getNextId();
     void start();
     void run();

@@ -4,17 +4,31 @@
 #include <memory>
 #include "node.h"
 #include "runner.h"
+#include "batch/quadbatch.h"
+#include "batch/linebatch.h"
 //#include "light.h"
+
+struct CurrentCamera {
+	Camera* cam;
+	glm::mat4 pvMatrix;
+	Node* endNode;
+
+	void clear() {
+		cam = nullptr;
+		endNode = nullptr;
+	}
+};
 
 class Room {
 public:
     Room();
+    void addSpritesheet(const std::string& sheet);
     void setClearColor(int r, int g, int b);
-    void addCamera(const std::string& id, std::shared_ptr<Camera>);
-    void addSpriteBatch(const std::string& spriteSheet, const std::string& camName, int maxElements = 1000);
-    void addLinesBatch(const std::string& camName, int maxElements = 1000);
-    IBatch* getBatch(int shader, int id);
-    Camera* getCamera(const std::string& id);
+    void addCamera(std::shared_ptr<Camera>);
+    QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
+    void addLinesBatch(int maxElements = 1000);
+    //IBatch* getBatch(int shader, int id);
+    Camera* getCamera(int id);
     ~Room();
     void update(double);
     void configure(Shader*, int);
@@ -44,11 +58,15 @@ public:
     //void setAmbientStrength(float);
     //void useLights(Shader*);
     void setMainCam(std::shared_ptr<Camera>);
+
+    const CurrentCamera& getCurrentCamera();
+    void addCallback(pybind11::function f) {_callbacks.push_back(f);}
 private:
+	CurrentCamera _currentCamera;
 	Camera* m_mainCamera;
     std::string m_id;
     std::shared_ptr<Node> m_root;
-    std::unordered_map<std::string, std::shared_ptr<Camera>> m_cameras;
+    std::vector<std::shared_ptr<Camera>> m_cameras;
     std::unordered_map<std::type_index, std::shared_ptr<Runner> > m_runners;
     float m_ambientStrength;
     //std::vector<std::shared_ptr<Light>> m_lights;
@@ -56,11 +74,16 @@ private:
     pybind11::function m_onStart;
     pybind11::function m_onEnd;
 
+	std::list<pybind11::function> _callbacks;
+    std::shared_ptr<LineBatch> _lineBatch;
 
-    std::vector<std::vector<std::shared_ptr<IBatch>>> _batches;
+    std::unordered_map<std::string, std::shared_ptr<QuadBatch>> _quadBatches;
 
 };
 
+inline const CurrentCamera & Room::getCurrentCamera() {
+	return _currentCamera;
+}
 
 inline std::string Room::id() const {
     return m_id;

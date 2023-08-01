@@ -43,9 +43,10 @@
 #include "models/quad.h"
 //#include "batch/linebatch.h"
 #include "models/lines.h"
-#include "models/multisprite.h"
+
 #include "states/attack.h"
 #include "models/text.h"
+#include "multinode.h"
 
 
 namespace py = pybind11;
@@ -80,11 +81,13 @@ PYBIND11_MODULE(monkey, m) {
     m.def("add", &add);
     m.def("read", &read_png);
 	m.def("get_sprite", &getSprite);
+	m.def("get_multi", &getMulti);
 	m.def("get_node", &getNode);
-	m.def("get_batch", &getBatch, py::return_value_policy::reference);
+	//m.def("get_batch", &getBatch, py::return_value_policy::reference);
     m.def("get_camera", &getCamera, py::return_value_policy::reference);
 	m.def("close_room", &closeRoom);
 	m.def("play", &playScript);
+	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
     m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
     m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
@@ -108,6 +111,7 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<Room, std::shared_ptr<Room>>(m, "Room")
         .def(py::init<>())
+        .def("add_spritesheet", &Room::addSpritesheet)
 		.def("add_runner", &Room::addRunner)
 		.def("add_camera", &Room::addCamera)
 		.def("add_sprite_batch", &Room::addSpriteBatch)
@@ -117,19 +121,22 @@ PYBIND11_MODULE(monkey, m) {
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
-        .def(py::init<>())
+        .def(py::init<const std::string&>(), py::arg("lebel")="")
         .def("get_camera", &Node::getCamera)
         .def("set_camera", &Node::setCamera)
+		.def_property("scale", &Node::getScale, &Node::setScale)
         .def_property("user_data", &Node::getUserData, &Node::setUserData)
         .def_property("active", &Node::active, &Node::setActive)
         .def("get_parent",&Node::getParent, py::return_value_policy::reference)
         .def("get_children", &Node::getChildren)
         .def_property_readonly("id", &Node::getId)
+        .def_property_readonly("label", &Node::getLabel)
         .def("add", &Node::add)
         .def("move_to", &Node::moveTo)
         .def("set_position", &Node::setPosition)
         .def("set_model", &Node::setModel)
         .def("set_palette", &Node::setPalette)
+        .def("set_animation", &Node::setAnimation)
         .def("add_component", &Node::addComponent)
 		.def("set_state", &Node::setState)
 		.def_property_readonly("state", &Node::getState)
@@ -142,15 +149,21 @@ PYBIND11_MODULE(monkey, m) {
 		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
         .def("remove", &Node::remove);
 
-    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch")
-        .def("add", &IBatch::add);
+    py::class_<MultiNode, Node, std::shared_ptr<MultiNode>>(m, "MultiNode")
+    	.def("set_node_model", &MultiNode::setNodeModel);
+
+		//.def(py::init<const std::string&>())
+
+
+    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
+        //.def("add", &IBatch::add);
 	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
     py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
 
-    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
-        .def(py::init<int, std::shared_ptr<Camera>, const std::string&>());
-    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
-        .def(py::init<int, std::shared_ptr<Camera>>());
+//    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
+//        .def(py::init<int, std::shared_ptr<Camera>, const std::string&>());
+//    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
+//        .def(py::init<int, std::shared_ptr<Camera>>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -188,8 +201,8 @@ PYBIND11_MODULE(monkey, m) {
 	mm.def("make", &ModelMaker::makeModel);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
         //.def(py::init<>());
-    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
-        .def(py::init<const pybind11::kwargs&>());
+//    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
+//        .def(py::init<const pybind11::kwargs&>());
     //py::class_<Lines, Model, std::shared_ptr<Lines>>(mm)
     py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")
         .def(py::init<const pybind11::kwargs&>());
@@ -199,14 +212,15 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
+		//.def(py::init<const pybind11::kwargs&>());
 	py::class_<Text, Model, std::shared_ptr<Text>>(mm, "text")
 		.def(py::init<const pybind11::kwargs&>());
 
 
-    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
-        //.def(py::init<std::shared_ptr<IBatch>>())
-        .def(py::init<const pybind11::kwargs&>())
-        .def("set_model", &MultiModel::setModel);
+//    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
+//        //.def(py::init<std::shared_ptr<IBatch>>())
+//        .def(py::init<const pybind11::kwargs&>())
+//        .def("set_model", &MultiModel::setNodeModel);
 
 
 	/// --- runners ---

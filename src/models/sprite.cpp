@@ -12,22 +12,24 @@
 //#include "rawmodel.h"
 //#include "../node.h"
 //#include "../shapes/shapes3d/aabb3d.h"
-#include "../input.h"
+#include "../yamlexp.h"
+#include "../spritesheet.h"
 
 // construct from YAML
-Sprite::Sprite(const YAML::Node &node, const YAML::Node &globals) : IQuad() {
+Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad(sheet) {
+
+	//_batch = Engine::instance().getRoom()->addSpriteBatch(sheet);
 
 	auto& am = AssetManager::instance();
 
-    auto sheetFile = yaml_read<std::string>(globals, "sheet");
 
-	auto tex = am.getTex(sheetFile);
+	auto * tex = sheet->getTex();
 	float texw = tex->getWidth();
 	float texh = tex->getHeight();
 
 	auto& engine = Engine::instance();
 
-	auto defaultTicks = yaml_read<int>(node,"ticks", 5);
+	auto defaultTicks = node["ticks"].as<int>(10);
 
 	// read collision boxes
 //	for (YAML::const_iterator anit = node["boxes"].begin(); anit != node["boxes"].end(); ++anit) {
@@ -58,18 +60,20 @@ Sprite::Sprite(const YAML::Node &node, const YAML::Node &globals) : IQuad() {
 
 
 
-	for (YAML::const_iterator anit = node["animations"].begin(); anit != node["animations"].end(); ++anit) {
-		auto animId = anit->first.as<std::string>();
+	for (const auto& py_anim : node["animations"]) {
+		auto animId = py_anim.first.as<std::string>();
+		auto a = py_anim.second;
 		if (_defaultAnimation.empty()) _defaultAnimation = animId;
-		//std::cerr << " reading animation:" << animId << "\n";
+
 		Animation animInfo;
 		std::vector<Frame> frameInfos;
-		animInfo.loop = anit->second["loop"].as<int>(0);
+		animInfo.loop = a["loop"].as<int>(0);
 		//animInfo.loopFrame = anit->second["loop_frame"].as<int>(0);
-		int boxAnim = anit->second["box"].as<int>(-1);
+		//int boxAnim = anit->second["box"].as<int>(-1);
 		//animInfo.frameCount = 0;
 		int frameCount = 0;
-		for (const auto& el : anit->second["frames"]) {
+
+		for (const auto& el : a["frames"]) {
 			Frame frameInfo;
 			//frameInfo.offset = indices.size();
 			//frameInfo.count = 0;
@@ -77,7 +81,7 @@ Sprite::Sprite(const YAML::Node &node, const YAML::Node &globals) : IQuad() {
 			if (loopFrame) {
 				animInfo.loop = frameCount;
 			}
-			frameInfo.ticks = yaml_read<int>(el, "ticks", defaultTicks);
+			frameInfo.ticks = el["ticks"].as<int>(defaultTicks);
 
 			//int boxFrame = el["box"].as<int>(boxAnim);
 			//bool fliph = el["fliph"].as<bool>(false);
@@ -90,36 +94,39 @@ Sprite::Sprite(const YAML::Node &node, const YAML::Node &globals) : IQuad() {
 			//}
 			//m_frameToShape[std::make_pair(animId, frameCount)] = boxFrame;
 			int quadCurrentFrame {0};
-			for (const auto& q : el["quads"]) {
-			    Desc desc;
-                auto texc = yaml_read<glm::vec4>(q, "tex");
-                int width_px = texc[2];
-                int height_px = texc[3];
-			    //desc.paletteIndex = yaml_read<int>(q, "palette", 0);
-			    desc.fliph = yaml_read<bool>(q, "fliph", false);
-                desc.flipv = yaml_read<bool>(q, "flipv", false);
-                desc.textureCoordinates[0] = texc[0] / texw;
-                desc.textureCoordinates[1] = (texc[0] + texc[2]) / texw;
-                desc.textureCoordinates[2] = texc[1] / texh;
-                desc.textureCoordinates[3] = (texc[1] + texc[3]) / texw;
-				desc.repeat = yaml_read<glm::vec2>(q, "repeat", glm::vec2(1.f, 1.f));
-                desc.anchorPoint = yaml_read<glm::vec2>(q, "anchor", glm::vec3(0.f));
-                desc.location = yaml_read<glm::vec3>(q, "pos", glm::vec3(0.f));
-                float width_actual = static_cast<float>(width_px) / ppu;
-                float height_actual = static_cast<float>(height_px) / ppu;
-                desc.size = glm::vec2(width_actual, height_actual);
-                m_modelBounds.min.x = std::min(m_modelBounds.min.x, -desc.anchorPoint.x);
-                m_modelBounds.min.y = std::min(m_modelBounds.min.y, -desc.anchorPoint.y);
-                m_modelBounds.max.x = std::max(m_modelBounds.max.x, -desc.anchorPoint.x + width_actual);
-                m_modelBounds.max.y = std::max(m_modelBounds.max.y, -desc.anchorPoint.y + height_actual);
-                frameInfo.quads.push_back(desc);
-                quadCurrentFrame++;
-            }
-			_quadCount = std::max(_quadCount, quadCurrentFrame);
-
-
+			//for (const auto& q : el["quads"]) {
+			Desc desc;
+            auto texc = el["tex"].as<glm::vec4>();
+            int width_px = texc[2];
+            int height_px = texc[3];
+			//desc.paletteIndex = yaml_read<int>(q, "palette", 0);
+			desc.fliph = el["fliph"].as<bool>(false);
+            desc.flipv = el["flipv"].as<bool>(false);
+            desc.textureCoordinates[0] = texc[0] / texw;
+            desc.textureCoordinates[1] = (texc[0] + texc[2]) / texw;
+            desc.textureCoordinates[2] = texc[1] / texh;
+            desc.textureCoordinates[3] = (texc[1] + texc[3]) / texw;
+			desc.repeat = el["repeat"].as<glm::vec2>(glm::vec2(1.f, 1.f));
+            desc.anchorPoint = el["anchor"].as<glm::vec2>(glm::vec2(0.f));
+            //desc.location = el["pos"]. py_get_dict<glm::vec3>(el, "pos", glm::vec3(0.f));
+            float width_actual = static_cast<float>(width_px) / ppu;
+            float height_actual = static_cast<float>(height_px) / ppu;
+            desc.size = glm::vec2(width_actual, height_actual);
+            m_modelBounds.min.x = std::min(m_modelBounds.min.x, -desc.anchorPoint.x);
+            m_modelBounds.min.y = std::min(m_modelBounds.min.y, -desc.anchorPoint.y);
+            m_modelBounds.max.x = std::max(m_modelBounds.max.x, -desc.anchorPoint.x + width_actual);
+            m_modelBounds.max.y = std::max(m_modelBounds.max.y, -desc.anchorPoint.y + height_actual);
+            frameInfo.quads.push_back(desc);
+            quadCurrentFrame++;
+			_quadCount = 1;
             if (el["joints"]) {
-                m_jointOverride[std::make_pair(animId, frameCount)] = yaml_read<std::vector<glm::vec2>>(el, "joints");
+                int jointIndex {0};
+                for (auto joint : el["joints"]) {
+                    frameInfo.joints[jointIndex++] = joint.as<glm::vec2>();
+                    if (jointIndex >= MAX_JOINTS) break;
+                }
+
+                //m_jointOverride[std::make_pair(animId, frameCount)] = py_get_dict<std::vector<glm::vec2>>(el, "joints");
             }
 
 			frameCount++;
@@ -247,10 +254,11 @@ std::shared_ptr<Shape> Sprite::getRect(int mode, int x0, int x1, int y0, int y1)
 //
 //}
 //
-//glm::vec2 Sprite::getJoint(const std::string &anim, int frame, int joint) const {
+glm::vec2 Sprite::getJoint(const std::string &anim, int frame, int joint) const {
+    return _animations.at(anim).frames[frame].joints[joint];
 //    auto it = m_jointOverride.find(std::make_pair(anim, frame));
 //    if (it == m_jointOverride.end()) {
 //        return m_joints[joint];
 //    }
 //    return it->second[joint];
-//}
+}

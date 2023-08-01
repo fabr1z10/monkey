@@ -11,7 +11,7 @@
 //
 //    }
 //
-//    void setModel(std::shared_ptr<Model> model) override {
+//    void setNodeModel(std::shared_ptr<Model> model) override {
 //        _m = std::dynamic_pointer_cast<M>(model);
 //        auto qc = _m->getPrimitiveCount();
 //        for (int i = 0; i< qc; ++i) {

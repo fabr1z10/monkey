@@ -3,6 +3,11 @@
 
 #include <GL/glew.h>
 #include <unordered_map>
+#include "batch/quadbatch.h"
+#include <yaml-cpp/yaml.h>
+
+class SpriteSheet;
+
 
 struct CharInfo {
     // texture top left
@@ -17,15 +22,18 @@ struct CharInfo {
 
 class Font {
 public:
-    Font(const std::string& file);
+    Font(SpriteSheet* sheet, const YAML::Node& node);
     const CharInfo& getCharInfo(char32_t c);
-    float getLineWidth() const;
+    float getLineHeight() const;
+    QuadBatch* getBatch();
 private:
-    GLuint _texId;
-    float _lineWidth;
+    QuadBatch* _batch;
+    float _lineHeight;
     std::unordered_map<char32_t, CharInfo> m_info;
+    SpriteSheet* _sheet;
 };
 
-inline float Font::getLineWidth() const {
-	return _lineWidth;
+inline float Font::getLineHeight() const {
+	return _lineHeight;
 }
+

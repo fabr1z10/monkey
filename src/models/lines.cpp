@@ -24,8 +24,8 @@ void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
     }
 }
 
-std::shared_ptr<Renderer> LineModel::getRenderer(IBatch* batch) {
-    return std::make_shared<LinesRenderer>(batch);
+std::shared_ptr<Renderer> LineModel::getRenderer(const pybind11::kwargs& args) {
+    //return std::make_shared<LinesRenderer>(_ba);
 }
 
 

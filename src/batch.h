@@ -14,11 +14,11 @@ public:
 	virtual void cleanUp() = 0;
 	//ShaderType getShaderType() const;
 	virtual void configure(Shader* s) = 0;
-	Camera* getCamera() {
-		return _cam.get();
-	};
+//	Camera* getCamera() {
+//		return _cam.get();
+//	};
 	// add current node to this batch for rendering
-	void add(Node*, const pybind11::kwargs& args = pybind11::kwargs());
+	//void add(Node*, const pybind11::kwargs& args = pybind11::kwargs());
 
     int getPrimitiveId() ;
 
@@ -28,7 +28,7 @@ protected:
 	int _vertsPerElement;		// vertices per element
 
 	//ShaderType _shaderType;
-	std::shared_ptr<Camera> _cam;
+	//std::shared_ptr<Camera> _cam;
 
     int _nPrimitive;			// next element to be allocated
     std::list<int> _deallocated;
@@ -59,15 +59,13 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(VERTEXDATA) * _nPrimitive * _vertsPerElement, &_data[0]);
 
-		_cam->init(s);
+		//_cam->init(s);
+
 		// set view matrix
-		s->setMat4("view", _cam->getViewMatrix());
+		//s->setMat4("view", _cam->getViewMatrix());
 
 		initDraw(s);
 		glBindVertexArray(_vao);
-
-
-
 		glDrawElements(_prim, _indicesPerElement * _nPrimitive, GL_UNSIGNED_INT, (GLvoid*)0);
 		glBindVertexArray(0);
 	}

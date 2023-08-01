@@ -3,7 +3,7 @@
 #include "../assetmanager.h"
 
 Renderer::Renderer() : Component(), m_multColor(glm::vec4(1.0f)), m_addColor(0.0f), m_rendererTransform(1.f),
-    m_offset(0), m_count(0) {
+    m_offset(0), m_count(0), m_shift(glm::vec3(0.f)) {
 
 }
 
@@ -42,7 +42,8 @@ int Renderer::setup(Shader * s) {
 //    return 0;
 }
 
-void Renderer::setPalette(const std::string &id) {
+void Renderer::setPalette(unsigned palId) {
+    _paletteId = palId;
 //    auto& am = AssetManager::instance();
 //    auto pal = am.getPalette(id);
 //    m_paletteId = pal->getTexId();
@@ -89,4 +90,8 @@ void Renderer::setTransform(const glm::mat4 &m) {
 
 bool Renderer::isComplete() {
     return false;
+}
+
+void Renderer::setShift(glm::vec3 shift) {
+	m_shift = shift;
 }

@@ -1,11 +1,10 @@
 #include "tex.h"
 #include <iostream>
-#include <memory>
-#include <yaml-cpp/yaml.h>
-
+#include "globals.h"
 //#define cimg_use_jpeg
 #define cimg_use_png
 #define cimg_display 0
+
 
 #include "CImg.h"
 #include "png.h"
@@ -13,7 +12,7 @@
 
 using namespace cimg_library;
 
-Tex::Tex (const std::string& file) : m_palette(false), m_defaultPaletteId(GL_INVALID_VALUE) { //const std::string& filename, TexFilter filter) {
+Tex::Tex (const std::string& file) : m_palette(false), _pal(nullptr), m_defaultPaletteId(GL_INVALID_VALUE) { //const std::string& filename, TexFilter filter) {
     //std::string file = table.Get<std::string>("file");
     TexFilter filter = nearest;
     auto extension = file.substr(file.size() - 3);
@@ -178,41 +177,70 @@ void Tex::load_png(const std::string &file) {
     png_get_PLTE(png_ptr, info_ptr, &pal, &colors);
     std::cout << " number of colors: " << colors << std::endl;
     // store default palette
-    std::vector<unsigned char> defaultPalette(1024, 0);
-    for (size_t i= 0; i< colors; ++i) {
-        std::cout << "color #" << i << ": " << (int) pal[i].red << ", " << (int) pal[i].green << ", " << (int) pal[i].blue << "\n";
-        defaultPalette[i * 4] = pal[i].red;
-        defaultPalette[i * 4 + 1] = pal[i].green;
-        defaultPalette[i * 4 + 2] = pal[i].blue;
-        defaultPalette[i * 4 + 3] = i == 0 ? 0 : 255;
-    }
-    // load extra palettes for this sheet
-    try {
-        std::string palFile = file.substr(0, file.size()-4) + "_pal.yaml";
-        auto f = YAML::LoadFile(palFile);
-        int nAdditionalPalettes = f["palettes"].size();
-        defaultPalette.resize(1024*(nAdditionalPalettes+1), 0);
-        int i{1};
-        for (const auto& p : f["palettes"]) {
-            int offset = 1024 * (i++);
-            for (const auto& k : p) {
-                int n = k.first.as<int>();
-                auto colors = k.second.as<std::vector<int>>();
-                std::cout << k.first << std::endl;
-                defaultPalette[offset + n * 4] = colors[0];
-                defaultPalette[offset + n * 4 + 1] = colors[1];
-                defaultPalette[offset + n * 4 + 2] = colors[2];
-                defaultPalette[offset + n * 4 + 3] = colors[3];
-                std::cout << " cane\n";
-            }
-        }
-    } catch (YAML::BadFile& badFile) {
-        std::cout << " --- palette file not found\n";
-    }
-    _pal = std::make_shared<Palette>(defaultPalette);
-    m_defaultPaletteId = _pal->getTexId();
 
-    std::cout << "\n--- raw ---\n";
+
+    _pal = new unsigned char[PALETTE_SIZE];
+    memset(_pal, 0, PALETTE_SIZE);
+
+    for (size_t i = 0, j = 0; i< colors; ++i) {
+        std::cout << "color #" << i << ": " << (int) pal[i].red << ", " << (int) pal[i].green << ", " << (int) pal[i].blue << "\n";
+        _pal[j++] = pal[i].red;
+		_pal[j++] = pal[i].green;
+		_pal[j++] = pal[i].blue;
+		_pal[j++] = (i == 0 ? 0 : 255);
+		_indices[(pal[i].red << 16) | (pal[i].green << 8) | (pal[i].blue)] = i;
+        //defaultPalette[i * 4 + 3] = i == 0 ? 0 : 255;
+    }
+//    // load extra palettes for this sheet
+//    try {
+//        std::string paletteFileName = file.substr(0, file.size()-4) + ".pal";
+//        std::fstream paletteFile(paletteFileName, std::ios::in);
+//        std::string line, word;
+//        std::vector<int> row;
+//
+//        if(paletteFile.is_open())
+//        {
+//            int paletteCount {0};
+//            while(std::getline(paletteFile, line)) {
+//                if (line[0] == ';') paletteCount++;
+//            }
+//            paletteFile.clear();
+//            paletteFile.seekg(0);
+//            // make room for additional palettes
+//            defaultPalette.resize(PALETTE_SIZE * (paletteCount + 1), 0);
+//            int index {PALETTE_SIZE};
+//
+//            while(std::getline(paletteFile, line))
+//            {
+//                if (line.empty() || line[0] == '#') {
+//                    continue;
+//                }
+//                if (line[0] == ';') {
+//                    index += PALETTE_SIZE;
+//                    continue;
+//                }
+//                row.clear();
+//                std::stringstream str(line);
+//
+//                while(getline(str, word, ','))
+//                    row.push_back(std::stoi(word));
+//                int colorIndex = row[0];
+//                defaultPalette[index + colorIndex * 4] = row[1];
+//                defaultPalette[index + colorIndex * 4 + 1] = row[2];
+//                defaultPalette[index + colorIndex * 4 + 2] = row[3];
+//                defaultPalette[index + colorIndex * 4 + 3] = row[4];
+//
+//            }
+//        }
+//    } catch (...) {
+//        std::cerr << "err reading pal";
+//        exit(1);
+//    }
+//
+//    _pal = std::make_shared<Palette>(defaultPalette);
+//    m_defaultPaletteId = _pal->getTexId();
+
+    //std::cout << "\n--- raw ---\n";
 //    for (int i = 0; i < imgHeight; ++i) {
 //        std::cout << "row " << i << "\n";
 //        for (int j = 0; j < imgWidth; ++j) {
@@ -221,7 +249,7 @@ void Tex::load_png(const std::string &file) {
 //        }
 //        std::cout << "\n";
 //    }
-    std::cout.flush();
+    //std::cout.flush();
 
     glGenTextures (1, &m_texId);
     glBindTexture (GL_TEXTURE_2D, m_texId);
@@ -234,10 +262,7 @@ void Tex::load_png(const std::string &file) {
     delete [] _pixels;
     delete [] _row_pointers;
     delete [] _data;
-
-
-    return;
-    //  png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+   //  png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
     //             NULL, NULL, NULL);
 //    *pWidth = width;
 //    *pHeight = height;
@@ -283,4 +308,14 @@ void Tex::load_generic(const std::string &file) {
 
 Tex::~Tex() {
     glDeleteTextures (1, &m_texId);
+    delete[] _pal;
+}
+
+
+void Tex::assignPalette(std::shared_ptr<Palette> pal) {
+	_palette = pal;
+}
+
+int Tex::getColorIndex(unsigned long color) {
+	return _indices.at(color);
 }

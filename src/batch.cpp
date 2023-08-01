@@ -2,13 +2,13 @@
 #include "components/renderer.h"
 
 
-void IBatch::add(Node * node, const pybind11::kwargs& args) {
-    auto model = node->getModel();
-    auto renderer = model->getRenderer(this);
-    node->addComponent(renderer);
-	renderer->setModel(model, args);
-
-}
+//void IBatch::add(Node * node, const pybind11::kwargs& args) {
+//    auto model = node->getModel();
+//    auto renderer = model->getRenderer(this);
+//    node->addComponent(renderer);
+//	renderer->setNodeModel(model, args);
+//
+//}
 
 int IBatch::getPrimitiveId() {
     int next;

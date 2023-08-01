@@ -5,11 +5,27 @@
 #include <glm/glm.hpp>
 #include "batch/quadbatch.h"
 #include "batch/linebatch.h"
+#include "error.h"
+#include <glm/gtc/type_ptr.hpp>
+#include "assetmanager.h"
+#include "spritesheet.h"
+
+
 
 Room::Room() : m_mainCamera(nullptr), m_clearColor(0.f, 0.f, 0.f, 255.f) {
     m_root = std::make_shared<Node>();
-    _batches.emplace_back();
-    _batches.emplace_back();
+    Engine::instance().addNode(m_root);
+
+
+
+//    _batches.emplace_back();
+//    _batches.emplace_back();
+}
+
+void Room::addSpritesheet(const std::string &sheet) {
+	auto s = AssetManager::instance().getSpritesheet(sheet);
+	_quadBatches[s->getId()] = s->getBatch();
+
 }
 
 Room::~Room() {
@@ -46,30 +62,32 @@ void Room::setMainCam(std::shared_ptr<Camera> cam) {
 	m_mainCamera = cam.get();
 }
 
-void Room::addCamera(const std::string &id, std::shared_ptr<Camera> cam) {
-    if (m_cameras.empty()) {
-        m_mainCamera = cam.get();
-    }
-    m_cameras[id] = cam;
+void Room::addCamera(std::shared_ptr<Camera> cam) {
+    m_cameras.push_back(cam);
 }
 
-void Room::addSpriteBatch(const std::string &spriteSheet, const std::string &camName, int maxElements) {
-    auto ptr = std::make_shared<QuadBatch>(maxElements, m_cameras.at(camName), spriteSheet);
-    _batches[0].push_back(ptr);
-
-}
-void Room::addLinesBatch(const std::string &camName, int maxElements) {
-    auto ptr = std::make_shared<LineBatch>(maxElements, m_cameras.at(camName));
-    _batches[1].push_back(ptr);
-
-}
-
-IBatch * Room::getBatch(int shader, int id) {
-    return _batches[shader][id].get();
+QuadBatch* Room::addSpriteBatch(const std::string &spriteSheet, int maxElements) {
+//	auto it = _quadBatches.find(spriteSheet);
+//	if (it != _quadBatches.end()) {
+//		return it->second.get();
+//	}
+//	auto ptr = std::make_shared<QuadBatch>(maxElements, spriteSheet);
+//	_quadBatches[spriteSheet] = ptr;
+//	return ptr.get();
 }
 
-Camera* Room::getCamera(const std::string &id) {
-    return m_cameras.at(id).get();
+void Room::addLinesBatch(int maxElements) {
+    _lineBatch = std::make_shared<LineBatch>(maxElements);
+    //_batches[1].push_back(ptr);
+
+}
+
+//IBatch * Room::getBatch(int shader, int id) {
+//    return _batches[shader][id].get();
+//}
+
+Camera* Room::getCamera(int id) {
+    return m_cameras[id].get();
 }
 
 
@@ -77,29 +95,29 @@ void Room::update(double dt) {
 
     //auto* cam = Engine::instance().getBatch(0)->getCamera();
     Bounds currentBounds;
-    if (m_mainCamera != nullptr) {
-        currentBounds = m_mainCamera->getViewingBounds();
-    }
-
-    currentBounds.scale(2.f, 2.f);
+//    if (m_mainCamera != nullptr) {
+//        currentBounds = m_mainCamera->getViewingBounds();
+//    }
+//
+//    currentBounds.scale(2.f, 2.f);
 
     int m_nUpdates{0};
     //for (const auto& m : m_root->m_children) std::cout << "cane: " << m.second.use_count() << "\n";
-    std::vector<Node*> li;
+    std::list<Node*> li;
 	li.push_back(m_root.get());
 	//std::vector<std::pair<int, std::shared_ptr<Camera>>> camStack;
-
+	_currentCamera.clear();
     while (!li.empty()) {
-        auto current = li.back();
-		//int currentIndex = li.size() - 1;
-		li.pop_back();
-		// check if current node has a camera
-		//auto cam = current->getCamera();
-		bool changeCam = false;
-        auto b = current->getBounds();
-        if (currentBounds.intersect2D(b)) {
+        auto current = li.front();
+		li.pop_front();
+
+        //auto b = current->getBounds();
+        //if (currentBounds.intersect2D(b)) {
+		if (true) {
 			current->update(dt);
 			for (auto const &[k, v] : current->getChildren()) {
+
+
 				li.push_back(v.get());
 			}
 		}
@@ -107,20 +125,46 @@ void Room::update(double dt) {
     for (const auto& r : m_runners) {
         r.second->update(dt);
     }
+
+    // process input
+    while(!_callbacks.empty()) {
+    	_callbacks.front()();
+    	_callbacks.pop_front();
+
+    }
+
+
     //std::cout << "# updates: " << m_nUpdates << std::endl;
 }
 
 void Room::configure(Shader * s, int i ) {
-    for (const auto& batch : _batches[i]) {
-        batch->configure(s);
+    for (const auto& batch : _quadBatches) {
+        batch.second->configure(s);
+    }
+    if (_lineBatch != nullptr) {
+    	_lineBatch->configure(s);
     }
 
 }
 void Room::draw(Shader* s, int i) {
 
-    for (const auto& batch : _batches[i]) {
-		batch->draw(s);
-    }
+	auto vp = Engine::instance().getActualDeviceViewport();
+	glViewport(vp.x, vp.y, vp.z, vp.w);
+
+	std::vector<glm::mat4> pvMatrices;
+	for (const auto& camera : m_cameras) {
+		pvMatrices.push_back(camera->getProjectionMatrix() * camera->getViewMatrix());
+	}
+	int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "pv_mat");
+	glUniformMatrix4fv(jointMatrixLoc, 2, GL_FALSE, glm::value_ptr(pvMatrices[0]));
+
+
+	for (const auto& batch : _quadBatches) {
+		batch.second->draw(s);
+	}
+	if (_lineBatch != nullptr) {
+		_lineBatch->draw(s);
+	}
 //    typedef void(Node::*BarkFunction)(void);
 //
 //    std::vector<std::pair<int, glm::mat4>> m_matrices;

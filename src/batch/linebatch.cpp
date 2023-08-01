@@ -3,9 +3,9 @@
 #include <iostream>
 
 
-LineBatch::LineBatch(int maxElements, std::shared_ptr<Camera> cam) : Batch(maxElements, 2, 2) {
+LineBatch::LineBatch(int maxElements) : Batch(maxElements, 2, 2) {
 	_prim = GL_LINES;
-	_cam = cam;// args["cam"].cast<std::shared_ptr<Camera>>();
+
 //
 //	_maxPrimitives = py_get_dict<int>(args, "max_lines");
 //    _shaderType = ShaderType::LINE_SHADER;

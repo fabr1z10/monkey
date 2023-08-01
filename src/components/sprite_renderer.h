@@ -6,23 +6,26 @@
 
 class SpriteRenderer : public Renderer {
 public:
-	explicit SpriteRenderer(IBatch*);
+	explicit SpriteRenderer(IBatch*, const pybind11::kwargs& args);
 	virtual ~SpriteRenderer();
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	void start() override;
 	[[nodiscard]] const std::string& getAnimation() const;
 	void setAnimation(const std::string&) override;
+	void setAnimationForce(const std::string&);
     IQuad* getSprite();
 	[[nodiscard]] int getFrame() const;
 	//void draw(Shader *) override;
 	bool isComplete() const;
     void update(double) override;
-
+    bool updateTick(int);
+    void updateBatch();
+    inline int getTickCount() const;
 private:
 	QuadBatch* _spriteBatch;
     std::vector<int> _quadIds;
-    int _paletteId;
+    unsigned _camId;
 
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const Animation* m_animInfo;
@@ -33,6 +36,10 @@ private:
 	bool m_complete;
 
 };
+
+inline int SpriteRenderer::getTickCount() const {
+    return m_ticks;
+}
 
 inline IQuad* SpriteRenderer::getSprite() {
 	return m_sprite.get();

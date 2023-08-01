@@ -6,6 +6,9 @@
 #include "models/sprite.h"
 #include "palette.h"
 #include "font.h"
+#include "multinode.h"
+
+
 
 
 class AssetManager {
@@ -16,11 +19,17 @@ public:
         // Instantiated on first use.
         return instance;
     }
+
+
+	void readSpritesheet (const std::string& id, const std::string& directory);
+	std::shared_ptr<SpriteSheet> getSpritesheet (const std::string& id);
+
     std::shared_ptr<Sprite> getSprite(const std::string&);
+    std::shared_ptr<MultiNode> getMulti(const std::string&);
     //std::shared_ptr<TiledModel> getTiled(const std::string&);
     std::shared_ptr<Tex> getTex(const std::string&);
     std::shared_ptr<Palette> getPalette(const std::string&);
-    std::shared_ptr<Font> getFont(const std::string& name, const std::string& = std::string());
+    std::shared_ptr<Font> getFont(const std::string&);
 private:
 	std::pair<std::string, std::string> splitFileAsset(const std::string&);
 
@@ -28,4 +37,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Palette>> m_palettes;
 	std::unordered_map<std::string, std::shared_ptr<Sprite>> m_sprites;
     std::unordered_map<std::string, std::shared_ptr<Font>> m_fonts;
+    std::unordered_map<std::string, std::shared_ptr<MultiNode>> m_multiSprites;
+    std::unordered_map<std::string, std::shared_ptr<SpriteSheet>> m_spritesheets;
 };

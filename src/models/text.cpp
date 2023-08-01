@@ -3,9 +3,14 @@
 #include "../util.h"
 #include "../font.h"
 #include "../assetmanager.h"
+#include "../engine.h"
 #include <iostream>
 
-Text::Text(const pybind11::kwargs & args) : IQuad() {
+std::shared_ptr<Renderer> Text::getRenderer(const pybind11::kwargs & args) {
+	return std::make_shared<SpriteRenderer>(_font->getBatch(), args);
+}
+
+Text::Text(const pybind11::kwargs & args) : IQuad(nullptr) {
 
 	auto halign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
 
@@ -16,6 +21,8 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 
     auto fontId = py_get_dict<std::string>(args, "font");
     auto font = AssetManager::instance().getFont(fontId);
+    _font = font.get();
+	//_batch = font->getBatch();
 
     Animation anim;
     Frame frame;
@@ -24,7 +31,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 	int lineCount = 1;
 	std::vector<int> rowStart {0};
 
-    glm::vec3 position(0.f, -font->getLineWidth(), 0.f);
+    glm::vec3 position(0.f, -font->getLineHeight(), 0.f);
     for (const auto& c : s32) {
         //font->get
         // one quad per character
@@ -34,19 +41,19 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
         	std::cout << " suca newline\n";
         	rowLength.push_back(position.x);
         	position.x = 0;
-        	position.y -= font->getLineWidth();
+        	position.y -= font->getLineHeight();
         	rowStart.push_back(_quadCount);
         	lineCount++;
         	continue;
         }
 
         const auto& charInfo = font->getCharInfo(c);
-        std::cout << "ciao " << charInfo.advance << "\n";
+        //std::cout << "ciao " << charInfo.advance << "\n";
 
         quad.textureCoordinates = glm::vec4(charInfo.tx, charInfo.tx + charInfo.tw, charInfo.ty, charInfo.ty + charInfo.th);
         quad.size = glm::vec2(charInfo.w, charInfo.h);
         quad.location = position;
-        quad.anchorPoint = glm::vec2(0.f);
+        quad.anchorPoint = glm::vec2(0.f, -charInfo.oy);
         position.x += charInfo.advance;
         quad.repeat = glm::vec2(1, 1);
         frame.quads.push_back(quad);
@@ -65,7 +72,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 	}
     if (valign != VAlign::TOP) {
     	for (auto& quad : frame.quads) {
-    		quad.anchorPoint.y -= (lineCount * font->getLineWidth()) * (valign == VAlign::CENTER ? 0.5f : 1.0f);
+    		quad.anchorPoint.y -= (lineCount * font->getLineHeight()) * (valign == VAlign::CENTER ? 0.5f : 1.0f);
     	}
     }
 
@@ -74,3 +81,4 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 	_animations["main"] = anim;
 
 }
+

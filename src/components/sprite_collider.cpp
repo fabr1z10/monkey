@@ -57,9 +57,9 @@ void SpriteCollider::generateDebugMesh() {}
 //	auto model = m_sprite->generateDebugModel();
 //
 //	auto node = std::make_shared<Node>();
-//	node->setModel(model);
+//	node->setNodeModel(model);
 //	auto renderer = std::make_shared<SpriteColliderRenderer>();
-//	renderer->setModel(model);
+//	renderer->setNodeModel(model);
 //	node->addComponent(renderer);
 //	m_node->add(node);
 //	m_debugNode = node.get();

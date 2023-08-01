@@ -23,10 +23,11 @@ public:
     void setCount(int);
     void setOffset(int);
     ShaderType getShaderType() const;
-    void setPalette(const std::string& id);
+    void setPalette(unsigned paletteId);
 	using Base = Renderer;
     virtual void setAnimation(const std::string&) {}
     virtual bool isComplete();
+    void setShift(glm::vec3);
 protected:
 
     std::shared_ptr<Model> m_model;
@@ -35,6 +36,9 @@ protected:
     glm::mat4 m_rendererTransform;
     int m_offset;
     int m_count;
+    unsigned _paletteId;
+
+    glm::vec3 m_shift;
 	//GLuint m_texId;
 	//GLuint m_paletteId;
 };

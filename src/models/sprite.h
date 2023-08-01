@@ -1,17 +1,17 @@
 #pragma once
 
+#include <yaml-cpp/yaml.h>
 #include "iquad.h"
 #include "../shape.h"
 #include "../hashpair.h"
 //#include "spritesheet.h"
-#include <yaml-cpp/yaml.h>
 #include "../batch/quadbatch.h"
 
 
 class Sprite : public IQuad {
 
 public:
-    Sprite(const YAML::Node &node, const YAML::Node &globals);
+    Sprite(SpriteSheet* sheet, const YAML::Node& node);
     //void initFromPy(const pybind11::kwargs&) override {}
     //void initFromYAML(const YAML::Node &node, const YAML::Node &globals) override;
 	//void init(Node*) override;
@@ -33,7 +33,7 @@ public:
 //	std::pair<int, int> getDebugShape(const std::string& anim, int frame);
 //	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
 //	Bounds getAttackRange() const;
-//	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
+	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 private:
     //QuadBatch* _batch;
 	Bounds m_attackRange;
@@ -52,6 +52,7 @@ private:
 	std::vector<glm::vec2> m_joints;
     // joint override
     std::unordered_map<std::pair<std::string, int>, std::vector<glm::vec2>> m_jointOverride;
+
 };
 
 //inline Bounds Sprite::getAttackRange() const {

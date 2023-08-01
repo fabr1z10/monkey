@@ -4,8 +4,37 @@
 #include "util.h"
 #include "components/statemachine.h"
 
-Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
-    m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)) {
+Node::Node(const std::string& label) : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
+    m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
+    _label(label), m_model(nullptr), _scale(1.0f) {
+}
+
+Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nullptr) {
+	_label = other._label;
+	_scale = other._scale;
+	for (const auto& child : other.m_children) {
+		add(child.second->clone());
+	}
+	for (const auto& component : other.m_components) {
+		// clone component
+	}
+	m_modelMatrix = other.m_modelMatrix;
+	m_worldMatrix = other.m_worldMatrix;
+	m_scaleMatrix = other.m_scaleMatrix;
+	m_active = other.m_active;
+	m_started = other.m_started;
+	m_userData = other.m_userData;
+	m_camera = other.m_camera;
+	m_model = other.m_model;
+}
+
+std::shared_ptr<Node> Node::clone() {
+	return std::make_shared<Node>(*this);
+}
+
+
+std::string Node::getLabel() const {
+	return _label;
 }
 
 Node::~Node() {
@@ -14,6 +43,9 @@ Node::~Node() {
     m_children.clear();
 }
 
+void Node::setAnimation(const std::string& animId) {
+	getComponent<Renderer>()->setAnimation(animId);
+}
 
 void Node::setParent(Node * node) {
     m_parent = node;
@@ -135,7 +167,7 @@ void Node::addComponent(std::shared_ptr<Component> c) {
 }
 
 
-void Node::setPalette(const std::string &palId) {
+void Node::setPalette(unsigned palId) {
 	getComponent<Renderer>()->setPalette(palId);
 }
 
@@ -143,15 +175,35 @@ std::shared_ptr<Model> Node::getModel() {
     return m_model;
 }
 
-void Node::setModel(std::shared_ptr<Model> model) {
+void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 
+	if (model == nullptr) {
+		if (m_model != nullptr) {
+			m_components.erase(std::type_index(typeid(Renderer)));
+		}
+		m_model = nullptr;
+
+	} else {
+		m_model = model;
+		auto renderer = model->getRenderer(args);
+		this->addComponent(renderer);
+		renderer->setModel(model);
+		if (Engine::instance().isRunning()) {
+			renderer->start();
+		}
+	}
+
+	//auto model = node->getModel();
+	//auto renderer = model->getRenderer(this);
+	//node->addComponent(renderer);
+	//renderer->setNodeModel(model, args);
 //	auto *r = getComponent<Renderer>();
 //	if (r == nullptr) {
 //		auto renderer = model->getRenderer();
-//		renderer->setModel(model, args);
+//		renderer->setNodeModel(model, args);
 //		addComponent(renderer);
 //	} else {
-//		r->setModel(model);
+//		r->setNodeModel(model);
 //		for (auto &c : m_components) {
 //			c.second->start();
 //		}
@@ -203,4 +255,15 @@ float Node::getY() const {
 
 float Node::getZ() const {
 	return m_worldMatrix[3][2];
+}
+
+void Node::setScale(float scale) {
+	_scale = scale;
+	for (const auto& c : m_children) {
+		c.second->setScale(scale);
+	}
+}
+
+float Node::getScale() const {
+	return _scale;
 }

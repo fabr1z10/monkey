@@ -4,6 +4,7 @@
 #include "iquad.h"
 #include <pybind11/pybind11.h>
 
+class Font;
 
 enum class HAlign {
 	LEFT = 0,
@@ -24,8 +25,9 @@ public:
     // then we might have some subclass ... like text appearing one character at a time
     //void initFromPy(const pybind11::kwargs&) override;
     //void initFromYAML(const YAML::Node &node, const YAML::Node &globals) override { throw; }
-
+    void setText(const std::string& value);
+	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
 
 private:
-
+	Font* _font;
 };

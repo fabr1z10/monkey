@@ -2,8 +2,9 @@
 
 #include "../model.h"
 #include <pybind11/pybind11.h>
-#include <yaml-cpp/yaml.h>
+#include "../batch/quadbatch.h"
 
+const int MAX_JOINTS = 2;
 // describe a single quad
 struct Desc {
 	Desc() : location(0.f), anchorPoint(0.f), size(0.f), repeat(1.f), textureCoordinates(0.f), flipv(false), fliph(false) {}
@@ -18,8 +19,14 @@ struct Desc {
 };
 
 struct Frame {
+    Frame() : ticks(0) {
+        for (int i = 0; i < MAX_JOINTS; ++i) {
+            joints[i] = glm::vec2(0.f, 0.f);
+        }
+    }
     std::vector<Desc> quads;
     int ticks;
+    std::array<glm::vec2, MAX_JOINTS> joints;
 };
 
 struct Animation {
@@ -29,10 +36,11 @@ struct Animation {
     int loop;   // -1 no loop
 };
 
+class SpriteSheet;
 
 class IQuad : public Model {
 public:
-    IQuad() : _quadCount(0) {}
+    IQuad(SpriteSheet* sheet) : _quadCount(0), _sheet(sheet) {}
     virtual ~IQuad() {}
     // returns information for rendering a frame (used by the renderer - which is responsibile
     // for keeping track of current animation and frame
@@ -40,13 +48,15 @@ public:
     Animation* getAnimationInfo(const std::string& anim);
     //virtual void initFromPy(const pybind11::kwargs&) = 0;
     //virtual void initFromYAML(const YAML::Node &node, const YAML::Node &globals) = 0;
-    virtual std::shared_ptr<Renderer> getRenderer(IBatch*);
+    std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
     std::string getDefaultAnimation() const;
     int getQuadCount() const;
 protected:
     std::unordered_map<std::string, Animation> _animations;
     int _quadCount; // the number of quads to book -> this is the # pf quads of the frame with the highest n of quads
     std::string _defaultAnimation;
+    //QuadBatch* _batch;
+	SpriteSheet* _sheet;
 };
 
 inline std::string IQuad::getDefaultAnimation() const {

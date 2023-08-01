@@ -17,12 +17,13 @@ void main()
     vec2 tc = vec2(TexBounds[0] + fract(TexCoords.x) * (TexBounds[1] - TexBounds[0]),
                    TexBounds[2] + fract(TexCoords.y) * (TexBounds[3] - TexBounds[2]));
     float index = texture(tex_main, tc).r / 255.0;
-    vec4 texColor = texture(tex_pal, vec2(index, 0.1));
-    texColor = texture(tex_pal, vec2(index, palY));
+    //vec4 texColor = texture(tex_pal, vec2(index, 0.1));
+    vec4 texColor = texture(tex_pal, vec2(index, palY));
     if (texColor.a < 0.5) {
-    	discard;
+        discard;
     }
     FragColor=texColor;
+    //gl_FragDepth = texColor.a;
 
 }
 

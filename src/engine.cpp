@@ -125,20 +125,37 @@ void Engine::start() {
 
     _engineDraw->loadShaders();
 
-    // load fonts
-    auto fonts = py_get<py::dict>(m_settings, "fonts", py::dict());
-    for (const auto& font : fonts) {
-        auto name = font.first.cast<std::string>();
-        auto file = font.second.cast<std::string>();
-        std::cout << name << ", " << file << "\n";
-        AssetManager::instance().getFont(name, file);
-    }
+//    // load fonts
+//    auto fonts = py_get<py::dict>(m_settings, "fonts", py::dict());
+//    for (const auto& font : fonts) {
+//        auto name = font.first.cast<std::string>();
+//        auto file = font.second.cast<std::string>();
+//        std::cout << name << ", " << file << "\n";
+//        AssetManager::instance().getFont(name, file);
+//    }
+}
+
+void Engine::initialize() {
+	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
+	for (const auto& sheet : sheets) {
+
+		auto id = sheet.first.cast<std::string>();
+		auto file = sheet.second.cast<std::string>();
+		std::cout << "READING SPRITESHEET " << id << " AT " << file << "\n";
+		AssetManager::instance().readSpritesheet(id, file);
+
+	}
+
+
+
 }
 
 void Engine::run() {
     m_shutdown = false;
 
 
+
+    initialize();
 
     // main loop
     while (!m_shutdown) {
@@ -225,9 +242,11 @@ void Engine::loadRoom() {
     //for (auto& batch : _batches) batch.clear();
     m_room = std::make_shared<Room>();
     m_game.attr(m_roomId.c_str())(m_room);
-    //m_room = m_game.attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
+	_engineDraw->init(m_room.get());
+
+	//m_room = m_game.attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
     // init shaders
-    _engineDraw->init(m_room.get());
+
 
 }
 

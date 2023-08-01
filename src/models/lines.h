@@ -14,7 +14,7 @@ public:
     };
     LineModel();
     explicit LineModel(const pybind11::kwargs&);
-    std::shared_ptr<Renderer> getRenderer(IBatch*) override;
+    std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
     int getLineCount() const;
     const Segment& getSegment(int index) const;
     void init(const glm::vec4& color, const std::vector<float>& data);

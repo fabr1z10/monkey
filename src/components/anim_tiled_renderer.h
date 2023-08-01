@@ -6,7 +6,7 @@
 //class AnimatedTiledModelRenderer : public Renderer {
 //public:
 //	AnimatedTiledModelRenderer(GLuint texId, GLuint palId) : Renderer(texId, palId) {}
-//	void setModel(std::shared_ptr<Model>) override;
+//	void setNodeModel(std::shared_ptr<Model>) override;
 //	std::type_index getType() override;
 //	void start() override;
 //	//virtual int getFrame() const;

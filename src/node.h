@@ -11,20 +11,23 @@
 
 class Node {
 public:
-    Node();
+    Node(const std::string& label = std::string());
+    Node(const Node&);
+    virtual std::shared_ptr<Node> clone();
     ~Node();
     long getId() const;
     Node* getParent();
     void setParent(Node*);
-    void add(std::shared_ptr<Node>);
+    virtual void setAnimation(const std::string&);
+    virtual void add(std::shared_ptr<Node>);
     void moveTo(std::shared_ptr<Node> node);
     void removeChild(long);
     // remove this node
     void remove();
 
     // node lifetime
-    void start();
-    void update(double) ;
+    virtual void start();
+    virtual void update(double) ;
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
 
     void setActive(bool);
@@ -45,8 +48,9 @@ public:
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
 	std::shared_ptr<Model> getModel();
-	void setModel(std::shared_ptr<Model> model);
-	void setPalette(const std::string& palId);
+	virtual void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());
+
+	void setPalette(unsigned palId);
 	Bounds getBounds();
 	std::string getState() const;
 	void setState (const std::string& state, const pybind11::kwargs&);
@@ -66,10 +70,13 @@ public:
     // --- events ---
 	Event<Node*> onMove;						// fires when this node moves
 	Event<Node*> onRemove;                      // fires when node is deleted
-
+	std::string getLabel() const;
+	void setScale(float);
+	float getScale() const;
 private:
 	void notifyMove();
     long _id;
+	float _scale;
     Node* m_parent;
     std::unordered_map<long, std::shared_ptr<Node>> m_children;
     std::unordered_map<std::type_index, std::shared_ptr<Component> > m_components;
@@ -81,6 +88,8 @@ private:
     pybind11::object m_userData;
     std::shared_ptr<Camera> m_camera;
 	std::shared_ptr<Model> m_model;
+protected:
+	std::string _label;
 };
 
 inline long Node::getId() const {

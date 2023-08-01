@@ -6,7 +6,7 @@
 Move::Move(const pybind11::kwargs& args) : NodeAction(args) {
 	for (const auto& p : args["frames"].cast<pybind11::dict>()) {
 		auto tick = p.first.cast<int>();
-		auto pos = py_get<glm::vec3>(p.second.cast<pybind11::object>());
+		auto pos = p.second.cast<glm::vec3>();//py_get<glm::vec3>(p.second.cast<pybind11::object>());
 		m_ticks.push_back(tick);
 		m_positions.push_back(pos);
 

@@ -14,6 +14,9 @@ EngineDraw::EngineDraw() {
 }
 
 void EngineDraw::init(Room * room) {
+
+
+
     for (size_t i = 0; i < m_shaders.size(); ++i) {
         auto current = m_shaders[i].get();
         current->use();
@@ -100,13 +103,20 @@ void FrameBufferEngineDraw::loadShaders() {
     // Creating a renderbuffer object isn't too hard. The only thing we have to remember is that we're creating it as a
     // depth and stencil attachment renderbuffer object. We set its internal format to GL_DEPTH24_STENCIL8 which
     // is enough precision for our purposes:
-    glGenRenderbuffers(1, &_depth);
-    glBindRenderbuffer(GL_RENDERBUFFER, _depth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, deviceSize.x, deviceSize.y);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depth);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+	glGenTextures(1, &_depth);
+	glBindTexture(GL_TEXTURE_2D, _depth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, deviceSize.x, deviceSize.y, 0,  GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depth, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+//    glGenRenderbuffers(1, &_depth);
+//    glBindRenderbuffer(GL_RENDERBUFFER, _depth);
+//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, deviceSize.x, deviceSize.y);
+//    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depth);
+//    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+//        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -114,8 +124,11 @@ void FrameBufferEngineDraw::draw(Room *room) {
 
     // restore if you want framebuffer rendering
     glBindFramebuffer(GL_FRAMEBUFFER, _fb);
-    glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
-
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	glAlphaFunc ( GL_GREATER, 0.1 ) ;
+//	glEnable ( GL_ALPHA_TEST ) ;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (size_t i = 0; i < m_shaders.size(); ++i) {

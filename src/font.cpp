@@ -3,40 +3,45 @@
 #include "assetmanager.h"
 #include <fstream>
 #include <iostream>
+#include "engine.h"
+#include "spritesheet.h"
+#include "yamlexp.h"
+#include "room.h"
 
-Font::Font(const std::string& fontId) {
-    std::string filepath = "assets/" + fontId;
+QuadBatch * Font::getBatch() {
+	return _sheet->getBatch().get();
+}
 
-    std::ifstream infile(filepath);
-    if (!infile.good()) {
-        std::cout << "file not found: " << filepath;
-        exit(1);
-    }
-    std::string textureFile;
+Font::Font(SpriteSheet* s, const YAML::Node& node) : _sheet(s) {
 
-    std::string line;
+//    std::string filepath = "assets/" + fontId;
+//
+//    std::ifstream infile(filepath);
+//    if (!infile.good()) {
+//        std::cout << "file not found: " << filepath;
+//        exit(1);
+//    }
+//    std::string textureFile;
+//
+//    std::string line;
+//
+//    std::getline(infile, textureFile);
+//    std::cout << " the tex filepath is " << textureFile << "\n";
+//    auto& am = AssetManager::instance();
 
-    std::getline(infile, textureFile);
-    std::cout << " the tex filepath is " << textureFile << "\n";
-    auto& am = AssetManager::instance();
-    auto tex = am.getTex(textureFile);
+    //_batch = Engine::instance().getRoom()->addSpriteBatch(textureFile);
+    auto tex = s->getTex();//am.getTex(_batch->getSheet());
     float tw = tex->getWidth();
     float th = tex->getHeight();
     //m_hasPalette = tex->hasPalette();
-    _texId = tex->getTexId();
+    //_texId = tex->getTexId();
 
-    std::getline(infile, line);
-    _lineWidth = std::stof(line);
+    _lineHeight = YAML::read<float>(node, "line_height");
 
-    while (std::getline(infile, line))
-    {
-        if (line.empty() || line[0] == '#') {
-            continue;
-        }
-        auto colon = line.find(':');
-        std::string chars = line.substr(0, colon);
-        auto data = strToVec<float>(line.substr(colon + 1));
-        auto sss = getString32(chars);
+    for (const auto& n : node["chars"]) {
+    	auto chars = n.first.as<std::string>();
+		auto sss = getString32(chars);
+        auto data = n.second.as<std::vector<float>>();
         int u = 0;
         for (char32_t w : sss) {
             if (u % 2 == 0) {

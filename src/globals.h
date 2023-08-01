@@ -1,0 +1,1 @@
+#define PALETTE_SIZE 1024

@@ -45,7 +45,7 @@
 ////}
 //
 //
-//void AnimatedTiledModelRenderer::setModel(std::shared_ptr<Model> model) {
-//	Renderer::setModel(model);
+//void AnimatedTiledModelRenderer::setNodeModel(std::shared_ptr<Model> model) {
+//	Renderer::setNodeModel(model);
 //	m_tiled = std::dynamic_pointer_cast<AnimatedTiledModel>(model);
 //}
