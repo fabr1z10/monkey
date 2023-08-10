@@ -27,7 +27,8 @@ public:
 
     // node lifetime
     virtual void start();
-    virtual void update(double) ;
+    void update(double) ;
+    virtual void postProcess() {}
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
 
     void setActive(bool);
@@ -73,7 +74,7 @@ public:
 	std::string getLabel() const;
 	void setScale(float);
 	float getScale() const;
-private:
+protected:
 	void notifyMove();
     long _id;
 	float _scale;

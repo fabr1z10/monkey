@@ -47,6 +47,7 @@
 #include "states/attack.h"
 #include "models/text.h"
 #include "multinode.h"
+#include "nodes/itemlist.h"
 
 
 namespace py = pybind11;
@@ -152,6 +153,10 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<MultiNode, Node, std::shared_ptr<MultiNode>>(m, "MultiNode")
     	.def("set_node_model", &MultiNode::setNodeModel);
 
+    py::class_<ItemList, Node, std::shared_ptr<ItemList>>(m, "ItemList")
+    	.def(py::init<const pybind11::kwargs&>())
+		.def("add_item", &ItemList::addItem)
+		.def("clear", &ItemList::clear);
 		//.def(py::init<const std::string&>())
 
 

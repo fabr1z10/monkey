@@ -3,6 +3,7 @@
 
 KeyboardListener::KeyboardListener() {
 	Engine::instance().registerToKeyboardEvent(this);
+
 }
 
 KeyboardListener::~KeyboardListener() {

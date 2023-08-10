@@ -30,8 +30,18 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad(sheet) {
 	auto& engine = Engine::instance();
 
 	auto defaultTicks = node["ticks"].as<int>(10);
-
+	float z = node["z"].as<float>(0.f);
 	// read collision boxes
+	_maxBoxes = 0;
+	for (const auto& n : node["boxes"]) {
+		auto a = n.as<std::vector<float>>();
+		assert(a.size() % 4 == 0);
+		_maxBoxes = std::max(_maxBoxes, a.size() / 4);
+		_boxOffset.emplace_back(_boxData.size(), a.size() / 4);
+		_boxData.insert(_boxData.end (), a.begin(), a.end ());
+	}
+
+
 //	for (YAML::const_iterator anit = node["boxes"].begin(); anit != node["boxes"].end(); ++anit) {
 //		auto a = (*anit).as<std::vector<float>>();
 //		assert(a.size() % 4 == 0);
@@ -58,7 +68,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad(sheet) {
 	m_modelBounds.min = glm::vec3(inf, inf, -100.f);
 	m_modelBounds.max = glm::vec3(-inf, -inf, 100.f);
 
-
+	int defaultBox = -1;
 
 	for (const auto& py_anim : node["animations"]) {
 		auto animId = py_anim.first.as<std::string>();
@@ -68,6 +78,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad(sheet) {
 		Animation animInfo;
 		std::vector<Frame> frameInfos;
 		animInfo.loop = a["loop"].as<int>(0);
+		defaultBox = a["box"].as<int>(-1);
 		//animInfo.loopFrame = anit->second["loop_frame"].as<int>(0);
 		//int boxAnim = anit->second["box"].as<int>(-1);
 		//animInfo.frameCount = 0;
@@ -82,7 +93,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad(sheet) {
 				animInfo.loop = frameCount;
 			}
 			frameInfo.ticks = el["ticks"].as<int>(defaultTicks);
-
+			frameInfo.boxId = el["box"].as<int>(defaultBox);
 			//int boxFrame = el["box"].as<int>(boxAnim);
 			//bool fliph = el["fliph"].as<bool>(false);
 			//bool flipv = el["flipv"].as<bool>(false);

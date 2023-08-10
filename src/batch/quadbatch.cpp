@@ -88,6 +88,7 @@ void QuadBatch::innerConfigure() {
 
 QuadBatch::QuadBatch(int maxElements, SpriteSheet* sheet) : Batch(maxElements, 4, 6) {
 	_prim = GL_TRIANGLES;
+	_shaderType = ShaderType::QUAD_SHADER;
     //_sheet = sheet;
 
     //_maxPrimitives = py_get_dict<int>(args, "max_quads");
@@ -139,14 +140,21 @@ QuadBatch::QuadBatch(int maxElements, SpriteSheet* sheet) : Batch(maxElements, 4
 
 }
 
-void QuadBatch::releaseQuad(int index) {
-	_deallocated.push_back(index);
+void QuadBatch::release(int index) {
+	IBatch::release(index);
+	//_deallocated.push_back(index);
 	int offset = index * _vertsPerElement;
 	memset(&_data[offset], 0, sizeof(QuadBatchVertexData) * 4);
 }
 
+void QuadBatch::setInvisible(int index) {
+	int offset = index * _vertsPerElement;
+	for (size_t i = 0; i < 4; ++i) _data[offset+i].palette = -1;
+
+}
+
 void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-						int palette, bool fliph, bool flipv, unsigned cam, float scale)
+						int palette, bool fliph, bool flipv, unsigned cam, float scale, float zLayer)
 {
 
 	float txl = fliph ? textureRepeat.x : 0.f;
@@ -180,7 +188,9 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::ve
 	_data[offset+3].textureCoords = glm::vec2(txl, tyt);
 	_data[offset+3].camera = cam;
 
-
+	for (int i = 0; i < 4; i++) {
+		_data[offset + i].position.z += zLayer * 0.01f;
+	}
 }
 
 void QuadBatch::initDraw(Shader* s) {

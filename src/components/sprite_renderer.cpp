@@ -3,10 +3,11 @@
 #include "../node.h"
 #include "../pyhelper.h"
 #include "../engine.h"
+#include <iostream>
 
-SpriteRenderer::SpriteRenderer(IBatch* batch, const pybind11::kwargs& args) : Renderer(),
-    _spriteBatch(dynamic_cast<QuadBatch*>(batch)), m_frame(0), m_ticks(0) {
-    assert(_spriteBatch != nullptr);
+SpriteRenderer::SpriteRenderer(IBatch* batch, const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(), m_frame(0), m_ticks(0) {
+    _batch = dynamic_cast<QuadBatch*>(batch);
+    assert(_batch != nullptr);
     _paletteId = py_get_dict<unsigned>(args, "pal", 0);
     _camId = py_get_dict<unsigned>(args, "cam", 0);
 
@@ -16,19 +17,13 @@ SpriteRenderer::SpriteRenderer(IBatch* batch, const pybind11::kwargs& args) : Re
 
 }
 
-SpriteRenderer::~SpriteRenderer() {
-
-    for (const auto& quadId : _quadIds) {
-        _spriteBatch->releaseQuad(quadId);
-    }
-}
 
 void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 	Renderer::setModel(model, args);
     m_sprite = std::dynamic_pointer_cast<IQuad>(model);
     auto qc = m_sprite->getQuadCount();
     for (int i = 0; i< qc; ++i) {
-        _quadIds.push_back(_spriteBatch->getPrimitiveId());
+        _primitiveIds.push_back(_batch->getPrimitiveId());
     }
 	m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
 	_paletteId = py_get_dict<int>(args, "pal", 0);
@@ -58,6 +53,8 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 	m_animation = anim;
 }
 
+
+
 void SpriteRenderer::start() {
 	m_animInfo = m_sprite->getAnimationInfo(m_animation);
 }
@@ -70,7 +67,7 @@ void SpriteRenderer::updateBatch() {
     auto pos = m_node->getWorldPosition();
     auto scale = m_node->getScale();
     // the bottom left corner depends whether entity is flipped horizontally
-
+	glm::vec3 ciao=pos;
 
 
     //auto worldTransform = m_node->getWorldMatrix();
@@ -84,8 +81,10 @@ void SpriteRenderer::updateBatch() {
 
         glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);
         auto bottomLeft = pos + scale * (m_shift + quad.location) - glm::vec3(delta, 0.f);
-
-        _spriteBatch->setQuad(_quadIds[qid++],
+		if (m_node->getLabel()== "sword") {
+			std::cout << bottomLeft.x << ", " << bottomLeft.y << " -- " << ciao.x << ", " << ciao.y <<  " ... \n";
+		}
+        _batch->setQuad(_primitiveIds[qid++],
                               bottomLeft,
                               quad.size,
                               quad.textureCoordinates,
@@ -93,7 +92,7 @@ void SpriteRenderer::updateBatch() {
                               _paletteId,
                               flipx,
                               quad.flipv,
-                              _camId, scale);
+                              _camId, scale, _zLayer);
     }
 }
 

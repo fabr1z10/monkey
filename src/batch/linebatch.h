@@ -17,6 +17,7 @@ public:
     //void draw(Shader*) override;
 	void innerConfigure() override;
 	void initDraw(Shader*) override {}
+	void setInvisible(int index) override {}
 private:
 
 

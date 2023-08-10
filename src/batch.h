@@ -12,7 +12,7 @@ public:
 	IBatch(int maxElements, int verticesPerElement) : _maxElements(maxElements), _vertsPerElement(verticesPerElement), _nPrimitive(0) {}
 	virtual void draw(Shader* s) = 0;
 	virtual void cleanUp() = 0;
-	//ShaderType getShaderType() const;
+	ShaderType getShaderType() const;
 	virtual void configure(Shader* s) = 0;
 //	Camera* getCamera() {
 //		return _cam.get();
@@ -22,21 +22,24 @@ public:
 
     int getPrimitiveId() ;
 
-    void release(int id);
+    virtual void release(int id);
+
+	virtual void setInvisible(int index) = 0;
+
 protected:
 	int _maxElements; 			// max number of elements (e.g quads or lines)
 	int _vertsPerElement;		// vertices per element
 
-	//ShaderType _shaderType;
+	ShaderType _shaderType;
 	//std::shared_ptr<Camera> _cam;
 
     int _nPrimitive;			// next element to be allocated
     std::list<int> _deallocated;
 };
 
-//inline ShaderType IBatch::getShaderType() const {
-//	return _shaderType;
-//}
+inline ShaderType IBatch::getShaderType() const {
+	return _shaderType;
+}
 
 
 // implements batch rendering
@@ -55,6 +58,9 @@ public:
     }
 
     void draw(Shader* s) {
+    	if (s->getShaderType() != _shaderType) {
+    		return;
+    	}
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(VERTEXDATA) * _nPrimitive * _vertsPerElement, &_data[0]);

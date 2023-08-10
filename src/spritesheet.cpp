@@ -37,15 +37,22 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string &directory) : 
 					std::cout << palId << "\n";
 					palOffset += PALETTE_SIZE;
 					for (const auto& color : pal.second) {
-						unsigned long colorHex = strtoul(color.first.as<std::string>().c_str(), NULL, 16);
-						int colorIndex = _texture->getColorIndex(colorHex) ;
+						auto key = color.first.as<std::string>();
+						int colorIndex{0};
+						if (key == "0") {
+
+						} else {
+							unsigned long colorHex = strtoul(key.c_str(), NULL, 16);
+							colorIndex = _texture->getColorIndex(colorHex);
+						}
 						unsigned long destColor = strtoul(color.second.as<std::string>().c_str(), NULL, 16);
 						//auto c = color.second.as<glm::vec3>();
 						size_t i = palOffset + colorIndex * 4;
 						colors[i++] = (destColor & 0xff0000) >> 16;
 						colors[i++] = (destColor & 0x00ff00) >> 8;
 						colors[i++] = destColor & 0x0000ff;
-						colors[i] = (colorIndex == 0 ? 0 : 255);
+						colors[i] = 255;//(colorIndex == 0 ? 0 : 255);
+
 					}
 				}
 			} else {
@@ -114,7 +121,7 @@ std::string SpriteSheet::toString() {
 
 std::shared_ptr<QuadBatch> SpriteSheet::getBatch() {
 	if (_batch == nullptr) {
-		_batch = std::make_shared<QuadBatch>(1000, this);
+		_batch = std::make_shared<QuadBatch>(10000, this);
 	}
 
 	return _batch;

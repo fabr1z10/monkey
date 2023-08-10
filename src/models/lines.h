@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../model.h"
-#include "../components/renderer.h"
+#include "../components/batchrenderer.h"
 #include "../batch/linebatch.h"
 
 
@@ -40,16 +40,14 @@ public:
     void initChain(const glm::vec4& color, const std::vector<float>& data, bool closed);
 };
 
-class LinesRenderer : public Renderer {
+class LinesRenderer : public BatchRenderer<LineBatch> {
 public:
-    explicit LinesRenderer(IBatch*);
+    explicit LinesRenderer();
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     //void start() override;
     void update(double) override;
 private:
-    LineBatch* _lineBatch;
     std::shared_ptr<LineModel> _lineModel;
-    std::vector<int> _quadIds;
 };
 

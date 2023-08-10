@@ -28,6 +28,7 @@ public:
     virtual void setAnimation(const std::string&) {}
     virtual bool isComplete();
     void setShift(glm::vec3);
+    void setZLayer(float);
 protected:
 
     std::shared_ptr<Model> m_model;
@@ -37,9 +38,13 @@ protected:
     int m_offset;
     int m_count;
     unsigned _paletteId;
-
+	float _zLayer;
     glm::vec3 m_shift;
 	//GLuint m_texId;
 	//GLuint m_paletteId;
 };
 
+
+inline void Renderer::setZLayer(float z) {
+	_zLayer = z;
+}

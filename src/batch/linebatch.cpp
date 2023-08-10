@@ -5,7 +5,7 @@
 
 LineBatch::LineBatch(int maxElements) : Batch(maxElements, 2, 2) {
 	_prim = GL_LINES;
-
+	_shaderType = ShaderType::LINE_SHADER;
 //
 //	_maxPrimitives = py_get_dict<int>(args, "max_lines");
 //    _shaderType = ShaderType::LINE_SHADER;

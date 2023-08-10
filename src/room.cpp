@@ -16,7 +16,7 @@ Room::Room() : m_mainCamera(nullptr), m_clearColor(0.f, 0.f, 0.f, 255.f) {
     m_root = std::make_shared<Node>();
     Engine::instance().addNode(m_root);
 
-
+	addLinesBatch();
 
 //    _batches.emplace_back();
 //    _batches.emplace_back();
@@ -46,14 +46,13 @@ void Room::addRunner(std::shared_ptr<Runner> c) {
 }
 
 void Room::iterate_dfs(std::function<void(Node*)> f) {
-    std::vector<Node*> li;
-    li.push_back(m_root.get());
+    std::list<Node*> li {m_root.get()};
     while (!li.empty()) {
-        auto current = li.back();
-        li.pop_back();
+        auto* current = li.front();
+        li.pop_front();
         f(current);
-        for (auto const &[k, v] : current->getChildren()) {
-            li.push_back(v.get());
+        for (const auto& i : current->getChildren()) {
+            li.push_front(i.second.get());
         }
     }
 }
@@ -113,15 +112,16 @@ void Room::update(double dt) {
 
         //auto b = current->getBounds();
         //if (currentBounds.intersect2D(b)) {
-		if (true) {
-			current->update(dt);
-			for (auto const &[k, v] : current->getChildren()) {
-
-
-				li.push_back(v.get());
-			}
+		//if (true) {
+		current->update(dt);
+		for (auto const &[k, v] : current->getChildren()) {
+			li.push_front(v.get());
 		}
+		//}
     }
+
+    iterate_dfs([] (Node* n) { n->postProcess(); });
+
     for (const auto& r : m_runners) {
         r.second->update(dt);
     }

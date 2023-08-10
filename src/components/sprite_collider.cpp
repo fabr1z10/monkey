@@ -50,24 +50,29 @@ std::shared_ptr<Shape> SpriteCollider::getShape() {
 	//return m_sprite->getShape(m_renderer->getAnimation(), m_renderer->getFrame());
 }
 
-void SpriteCollider::generateDebugMesh() {}
+void SpriteCollider::generateDebugMesh() {
 //	if (m_debugNode != nullptr) {
 //		m_debugNode->remove();
 //	}
 //	auto model = m_sprite->generateDebugModel();
 //
-//	auto node = std::make_shared<Node>();
+	auto node = std::make_shared<Node>();
 //	node->setNodeModel(model);
-//	auto renderer = std::make_shared<SpriteColliderRenderer>();
+	auto renderer = std::make_shared<SpriteColliderRenderer>();
 //	renderer->setNodeModel(model);
-//	node->addComponent(renderer);
-//	m_node->add(node);
+	node->addComponent(renderer);
+	m_node->add(node);
 //	m_debugNode = node.get();
-//}
+}
 
 
 std::type_index SpriteColliderRenderer::getType() {
 	return std::type_index(typeid(Renderer));
+}
+
+SpriteColliderRenderer::SpriteColliderRenderer() : Renderer() {
+	_lineBatch = Engine::instance().getRoom()->getLineBatch();
+
 }
 
 void SpriteColliderRenderer::start() {
@@ -75,6 +80,17 @@ void SpriteColliderRenderer::start() {
 //	m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
 //	m_sprite = m_reference->getSprite();
 //	assert(m_reference!=nullptr);
+}
+
+void SpriteColliderRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
+	Renderer::setModel(model, args);
+	m_sprite = std::dynamic_pointer_cast<Sprite>(model).get();
+	auto qc = m_sprite->getMaxBoxes();
+	for (int i = 0; i < qc; ++i) {
+		_quadIds.push_back(_lineBatch->getPrimitiveId());
+	}
+	//m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
+	//_paletteId = py_get_dict<int>(args, "pal", 0);
 }
 
 //void SpriteColliderRenderer::draw(Shader * s) {

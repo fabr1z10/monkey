@@ -47,13 +47,20 @@ Text::Text(const pybind11::kwargs & args) : IQuad(nullptr) {
         	continue;
         }
 
+
         const auto& charInfo = font->getCharInfo(c);
         //std::cout << "ciao " << charInfo.advance << "\n";
+		if (c == 0x20) {
+			position.x += charInfo.advance;
+			continue;
+
+
+		}
 
         quad.textureCoordinates = glm::vec4(charInfo.tx, charInfo.tx + charInfo.tw, charInfo.ty, charInfo.ty + charInfo.th);
         quad.size = glm::vec2(charInfo.w, charInfo.h);
         quad.location = position;
-        quad.anchorPoint = glm::vec2(0.f, -charInfo.oy);
+        quad.anchorPoint = glm::vec3(0.f, -charInfo.oy, 0.f);
         position.x += charInfo.advance;
         quad.repeat = glm::vec2(1, 1);
         frame.quads.push_back(quad);

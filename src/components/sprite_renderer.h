@@ -1,13 +1,12 @@
 #pragma once
 
 #include "../models/sprite.h"
-#include "renderer.h"
+#include "batchrenderer.h"
 #include "../batch/quadbatch.h"
 
-class SpriteRenderer : public Renderer {
+class SpriteRenderer : public BatchRenderer<QuadBatch> {
 public:
 	explicit SpriteRenderer(IBatch*, const pybind11::kwargs& args);
-	virtual ~SpriteRenderer();
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	void start() override;
@@ -22,11 +21,11 @@ public:
     bool updateTick(int);
     void updateBatch();
     inline int getTickCount() const;
-private:
-	QuadBatch* _spriteBatch;
-    std::vector<int> _quadIds;
-    unsigned _camId;
 
+private:
+	//QuadBatch* _spriteBatch;
+
+    unsigned _camId;
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const Animation* m_animInfo;
 	std::string m_animation;

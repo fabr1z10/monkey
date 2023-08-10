@@ -27,6 +27,9 @@ public:
     void addCamera(std::shared_ptr<Camera>);
     QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
     void addLinesBatch(int maxElements = 1000);
+	LineBatch* getLineBatch() {
+		return _lineBatch.get();
+	}
     //IBatch* getBatch(int shader, int id);
     Camera* getCamera(int id);
     ~Room();

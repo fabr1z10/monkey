@@ -136,6 +136,9 @@ void Node::setPosition(float x, float y, float z) {
     m_modelMatrix[3][0] = x;
     m_modelMatrix[3][1] = y;
     m_modelMatrix[3][2] = z;
+    //if (m_parent == nullptr)
+	//m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	notifyMove();
 }
 
 void Node::move(glm::mat4 m) {
@@ -152,7 +155,11 @@ void Node::move(glm::vec3 delta) {
 }
 
 void Node::notifyMove() {
-	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	if (m_parent != nullptr) {
+		m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	} else {
+		m_worldMatrix = m_modelMatrix;
+	}
 
 	onMove.fire(this);
 	for (const auto& child : m_children) {
@@ -187,7 +194,7 @@ void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) 
 		m_model = model;
 		auto renderer = model->getRenderer(args);
 		this->addComponent(renderer);
-		renderer->setModel(model);
+		renderer->setModel(model, args);
 		if (Engine::instance().isRunning()) {
 			renderer->start();
 		}

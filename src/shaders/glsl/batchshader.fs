@@ -14,6 +14,8 @@ in float palY;
 
 void main()
 {
+    if (palY < 0) discard;
+
     vec2 tc = vec2(TexBounds[0] + fract(TexCoords.x) * (TexBounds[1] - TexBounds[0]),
                    TexBounds[2] + fract(TexCoords.y) * (TexBounds[3] - TexBounds[2]));
     float index = texture(tex_main, tc).r / 255.0;

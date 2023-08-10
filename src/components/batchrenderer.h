@@ -1,12 +1,27 @@
-//#pragma once
-//
-//
-//#include "renderer.h"
-//
-//
-//template<typename B, typename M>
-//class BatchRenderer : public Renderer {
-//public:
+#pragma once
+
+
+#include "renderer.h"
+
+
+template<typename BATCH>
+class BatchRenderer : public Renderer {
+public:
+	BatchRenderer() : Renderer() {
+
+	}
+
+	~BatchRenderer() {
+		for (const auto& primitiveId : _primitiveIds) {
+			_batch->release(primitiveId);
+		}
+	}
+	void setActive(bool value) override {
+		Component::setActive(value);
+		for (const auto& quad : _primitiveIds) {
+			_batch->setInvisible(quad);
+		}
+	}
 //    explicit BatchRenderer(B* b) : Renderer(0, 0), _batch(b) {
 //
 //    }
@@ -22,9 +37,11 @@
 //
 //
 //
-//private:
-//    B* _batch;
+protected:
+	std::vector<int> _primitiveIds{};
+	BATCH* _batch;
 //    std::shared_ptr<M> _m;
 //    std::vector<int> _primitiveIds;
-//};
-//
+};
+
+

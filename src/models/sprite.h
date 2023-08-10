@@ -34,6 +34,7 @@ public:
 //	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
 //	Bounds getAttackRange() const;
 	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
+	ulong getMaxBoxes() const;
 private:
     //QuadBatch* _batch;
 	Bounds m_attackRange;
@@ -52,9 +53,14 @@ private:
 	std::vector<glm::vec2> m_joints;
     // joint override
     std::unordered_map<std::pair<std::string, int>, std::vector<glm::vec2>> m_jointOverride;
-
+	std::vector<float> _boxData;
+	std::vector<std::pair<unsigned, unsigned>> _boxOffset;
+	ulong _maxBoxes;
 };
 
+inline ulong Sprite::getMaxBoxes() const {
+	return _maxBoxes;
+}
 //inline Bounds Sprite::getAttackRange() const {
 //	return m_attackRange;
 //}

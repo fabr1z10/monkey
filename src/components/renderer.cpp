@@ -3,7 +3,7 @@
 #include "../assetmanager.h"
 
 Renderer::Renderer() : Component(), m_multColor(glm::vec4(1.0f)), m_addColor(0.0f), m_rendererTransform(1.f),
-    m_offset(0), m_count(0), m_shift(glm::vec3(0.f)) {
+    m_offset(0), m_count(0), m_shift(glm::vec3(0.f)), _zLayer(0.f) {
 
 }
 
@@ -62,6 +62,8 @@ void Renderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& ar
 void Renderer::setMultColor(glm::vec4 multColor) {
     m_multColor = multColor;
 }
+
+
 
 void Renderer::setAddColor(glm::vec4 addColor) {
     m_addColor = addColor;

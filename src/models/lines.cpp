@@ -25,7 +25,7 @@ void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
 }
 
 std::shared_ptr<Renderer> LineModel::getRenderer(const pybind11::kwargs& args) {
-    //return std::make_shared<LinesRenderer>(_ba);
+    return std::make_shared<LinesRenderer>();
 }
 
 
@@ -74,9 +74,9 @@ void PolyChain::initChain(const glm::vec4 &color, const std::vector<float> &data
 //
 //}
 
-LinesRenderer::LinesRenderer(IBatch* batch) : Renderer(), _lineBatch(dynamic_cast<LineBatch*>(batch)) {
-    assert(_lineBatch);
-
+LinesRenderer::LinesRenderer() : BatchRenderer<LineBatch>() {
+    //assert(_lineBatch);
+	_batch = Engine::instance().getRoom()->getLineBatch();
 }
 
 
@@ -85,7 +85,7 @@ void LinesRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwarg
     _lineModel = std::dynamic_pointer_cast<LineModel>(model);
     auto qc = _lineModel->getLineCount();
     for (int i = 0; i < qc; ++i) {
-        _quadIds.push_back(_lineBatch->getPrimitiveId());
+        _primitiveIds.push_back(_batch->getPrimitiveId());
     }
 
 }
@@ -100,9 +100,9 @@ void LinesRenderer::update(double dt) {
     auto pos = m_node->getWorldPosition();
 
 
-    for (size_t i = 0; i < _quadIds.size(); ++i) {
+    for (size_t i = 0; i < _primitiveIds.size(); ++i) {
         const auto& s = _lineModel->getSegment(i);
-        _lineBatch->setLine(_quadIds[i], pos + s.P0, pos + s.P1, s.color);
+        _batch->setLine(_primitiveIds[i], pos + s.P0, pos + s.P1, s.color);
     }
 
 

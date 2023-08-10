@@ -19,13 +19,14 @@ struct Desc {
 };
 
 struct Frame {
-    Frame() : ticks(0) {
+    Frame() : ticks(0), boxId(-1) {
         for (int i = 0; i < MAX_JOINTS; ++i) {
             joints[i] = glm::vec2(0.f, 0.f);
         }
     }
     std::vector<Desc> quads;
     int ticks;
+    int boxId;
     std::array<glm::vec2, MAX_JOINTS> joints;
 };
 

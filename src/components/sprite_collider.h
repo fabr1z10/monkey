@@ -2,6 +2,7 @@
 
 #include "collider.h"
 #include "sprite_renderer.h"
+#include "../batch/linebatch.h"
 
 class SpriteCollider : public Collider {
 public:
@@ -26,11 +27,16 @@ private:
 
 class SpriteColliderRenderer : public Renderer {
 public:
-	SpriteColliderRenderer() : Renderer() {}
+	SpriteColliderRenderer();
 	//void draw(Shader * s) override;
 	void start() override;
 	std::type_index getType() override;
+	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
+
 private:
+	std::vector<int> _quadIds;
 	SpriteRenderer* m_reference;
 	Sprite* m_sprite;
+	LineBatch* _lineBatch;
+
 };
