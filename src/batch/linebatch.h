@@ -14,6 +14,7 @@ public:
     LineBatch(int maxElements);
     //virtual void computeOffsets(GLuint) ;
     void setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) ;
+    void hideLines(int index, int number);
     //void draw(Shader*) override;
 	void innerConfigure() override;
 	void initDraw(Shader*) override {}

@@ -273,3 +273,12 @@ glm::vec2 Sprite::getJoint(const std::string &anim, int frame, int joint) const 
 //    }
 //    return it->second[joint];
 }
+
+const float *Sprite::getBoxData(const std::string &anim, int frame) {
+    auto boxId = _animations.at(anim).frames[frame].boxId;
+    if (boxId == -1) {
+        return nullptr;
+    }
+	auto& p = _boxOffset[boxId];
+	return &_boxData[p.first];
+}

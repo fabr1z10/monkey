@@ -64,13 +64,13 @@ void SpriteRenderer::updateBatch() {
     // get world pos
 
 
-    auto pos = m_node->getWorldPosition();
+    //auto pos = m_node->getWorldPosition();
     auto scale = m_node->getScale();
     // the bottom left corner depends whether entity is flipped horizontally
-	glm::vec3 ciao=pos;
+	//glm::vec3 ciao=pos;
 
 
-    //auto worldTransform = m_node->getWorldMatrix();
+    auto worldTransform = m_node->getWorldMatrix();
     //glm::vec3 pos = worldTransform * glm::vec4(a.anchor_point, 0.f, 1.f);
 
     // draw all quads in the frame
@@ -79,20 +79,22 @@ void SpriteRenderer::updateBatch() {
     for (const auto& quad : a.quads) {
         auto flipx = m_node->getFlipX() ^ quad.fliph;
 
-        glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);
-        auto bottomLeft = pos + scale * (m_shift + quad.location) - glm::vec3(delta, 0.f);
-		if (m_node->getLabel()== "sword") {
-			std::cout << bottomLeft.x << ", " << bottomLeft.y << " -- " << ciao.x << ", " << ciao.y <<  " ... \n";
-		}
+        auto bottomLeft = worldTransform * glm::vec4(m_shift + quad.location - glm::vec3(quad.anchorPoint, 0.f), 1.f);
+        //glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);
+        //auto bottomLeft = pos + scale * (m_shift + quad.location) - glm::vec3(delta, 0.f);
+//		if (m_node->getLabel()== "sword") {
+//			std::cout << bottomLeft.x << ", " << bottomLeft.y << " -- " << ciao.x << ", " << ciao.y <<  " ... \n";
+//		}
+        auto size = quad.size * scale;
         _batch->setQuad(_primitiveIds[qid++],
                               bottomLeft,
-                              quad.size,
+                              size,
                               quad.textureCoordinates,
                               quad.repeat,
                               _paletteId,
                               flipx,
                               quad.flipv,
-                              _camId, scale, _zLayer);
+                              _camId, _zLayer);
     }
 }
 

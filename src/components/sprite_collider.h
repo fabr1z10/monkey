@@ -25,18 +25,18 @@ private:
 };
 
 
-class SpriteColliderRenderer : public Renderer {
+class SpriteColliderRenderer : public BatchRenderer<LineBatch> {
 public:
 	SpriteColliderRenderer();
 	//void draw(Shader * s) override;
 	void start() override;
 	std::type_index getType() override;
-	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
+	//void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
+	void update(double) override;
 
 private:
-	std::vector<int> _quadIds;
 	SpriteRenderer* m_reference;
 	Sprite* m_sprite;
-	LineBatch* _lineBatch;
+
 
 };

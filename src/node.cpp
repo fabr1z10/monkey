@@ -265,12 +265,12 @@ float Node::getZ() const {
 }
 
 void Node::setScale(float scale) {
-	_scale = scale;
-	for (const auto& c : m_children) {
-		c.second->setScale(scale);
-	}
+    for (int i = 0; i < 3; ++i) {
+        m_modelMatrix[i][i] = signf(m_modelMatrix[i][i]) * scale;
+    }
+    notifyMove();
 }
 
 float Node::getScale() const {
-	return _scale;
+	return fabs(m_worldMatrix[0][0]);
 }

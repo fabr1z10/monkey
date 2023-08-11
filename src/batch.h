@@ -82,6 +82,13 @@ public:
 		_data = std::vector<VERTEXDATA>(_maxElements);
 	}
 
+	void release(int index) override {
+        IBatch::release(index);
+        //_deallocated.push_back(index);
+        int offset = index * _vertsPerElement;
+        memset(&_data[offset], 0, sizeof(VERTEXDATA) * _vertsPerElement);
+    }
+
 
 
     void configure(Shader* s) override {

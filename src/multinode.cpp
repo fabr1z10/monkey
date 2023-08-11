@@ -173,7 +173,7 @@ void MultiNode::postProcess() {
 			auto anim = parentInfo.renderer->getAnimation();
 			auto frame = parentInfo.renderer->getFrame();
 			const auto& f = parentInfo.model->getFrameInfo(anim ,frame);
-			auto pos = parentInfo.node->getScale() * (-f.quads[0].anchorPoint + f.joints[info.joint]);
+			auto pos = /*parentInfo.node->getScale() **/ (-f.quads[0].anchorPoint + f.joints[info.joint]);
 			info.node->setPosition(pos.x, pos.y, 0.f);
 		}
 		std::cout << "node: " << current << ", " << info.node->getLocalPosition().x << ", " << info.node->getLocalPosition().y << "\n";

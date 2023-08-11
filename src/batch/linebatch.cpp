@@ -78,6 +78,17 @@ void LineBatch::innerConfigure() {
 //    }
 //}
 //
+
+void LineBatch::hideLines(int index, int n) {
+    int offset = index * _vertsPerElement;
+    for (int i = 0; i < n * _vertsPerElement; ++i) {
+        _data[offset+i].color.a = 0.f;
+    }
+
+}
+
+
+
 void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) {
 
     int offset = index * _vertsPerElement;

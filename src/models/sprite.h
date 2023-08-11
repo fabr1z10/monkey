@@ -35,6 +35,7 @@ public:
 //	Bounds getAttackRange() const;
 	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 	ulong getMaxBoxes() const;
+	const float* getBoxData(const std::string& anim, int frame);
 private:
     //QuadBatch* _batch;
 	Bounds m_attackRange;

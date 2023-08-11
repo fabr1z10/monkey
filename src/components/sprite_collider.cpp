@@ -4,6 +4,8 @@
 #include "../pyhelper.h"
 #include "../runners/collision_engine.h"
 #include "../models/sprite.h"
+#include <iostream>
+
 
 SpriteCollider::SpriteCollider(int flag, int mask, int tag, const pybind11::kwargs& args) : Collider(flag, mask, tag),
 	m_sprite(nullptr), m_renderer(nullptr) {
@@ -59,39 +61,28 @@ void SpriteCollider::generateDebugMesh() {
 	auto node = std::make_shared<Node>();
 //	node->setNodeModel(model);
 	auto renderer = std::make_shared<SpriteColliderRenderer>();
-//	renderer->setNodeModel(model);
+
+	//renderer->setNodeModel(model);
 	node->addComponent(renderer);
 	m_node->add(node);
 //	m_debugNode = node.get();
 }
 
 
-std::type_index SpriteColliderRenderer::getType() {
-	return std::type_index(typeid(Renderer));
-}
 
-SpriteColliderRenderer::SpriteColliderRenderer() : Renderer() {
-	_lineBatch = Engine::instance().getRoom()->getLineBatch();
 
-}
 
-void SpriteColliderRenderer::start() {
-//	Renderer::start();
-//	m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
-//	m_sprite = m_reference->getSprite();
-//	assert(m_reference!=nullptr);
-}
 
-void SpriteColliderRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
-	Renderer::setModel(model, args);
-	m_sprite = std::dynamic_pointer_cast<Sprite>(model).get();
-	auto qc = m_sprite->getMaxBoxes();
-	for (int i = 0; i < qc; ++i) {
-		_quadIds.push_back(_lineBatch->getPrimitiveId());
-	}
-	//m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
-	//_paletteId = py_get_dict<int>(args, "pal", 0);
-}
+//void SpriteColliderRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
+//	Renderer::setModel(model, args);
+//	m_sprite = std::dynamic_pointer_cast<Sprite>(model).get();
+//	auto qc = m_sprite->getMaxBoxes();
+//	for (int i = 0; i < qc; ++i) {
+//		_primitiveIds.push_back(_batch->getPrimitiveId());
+//	}
+//	//m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
+//	//_paletteId = py_get_dict<int>(args, "pal", 0);
+//}
 
 //void SpriteColliderRenderer::draw(Shader * s) {
 //	if (m_model == nullptr || s->getShaderType() != ShaderType::SHADER_COLOR) {
@@ -143,4 +134,55 @@ int SpriteCollider::getCollisionMask() const {
 
 void SpriteCollider::setCollisionOverride(const std::string & id , int flag, int mask, int tag) {
 	m_override[id] = glm::ivec3(flag, mask, tag);
+}
+
+
+
+SpriteColliderRenderer::SpriteColliderRenderer() : BatchRenderer<LineBatch>() {
+    //_lineBatch = Engine::instance().getRoom()->getLineBatch();
+    _batch = Engine::instance().getRoom()->getLineBatch();
+}
+
+std::type_index SpriteColliderRenderer::getType() {
+    return std::type_index(typeid(Renderer));
+}
+
+
+void SpriteColliderRenderer::start() {
+    BatchRenderer<LineBatch>::start();
+    m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
+    m_sprite = dynamic_cast<Sprite*>(m_reference->getModel().get());
+    auto mboxes = m_sprite->getMaxBoxes();
+    for (auto i=0; i< mboxes*4; i++) {
+        _primitiveIds.push_back(_batch->getPrimitiveId());
+    }
+
+}
+
+void SpriteColliderRenderer::update(double dt) {
+
+	auto animation = m_reference->getAnimation();
+	auto frame = m_reference->getFrame();
+	const auto& a = m_sprite->getFrameInfo(animation, frame);
+	auto* f = m_sprite->getBoxData(animation, frame);
+
+	if (f == nullptr) {
+	    if (!_primitiveIds.empty()) {
+            _batch->hideLines(_primitiveIds[0], _primitiveIds.size());
+        }
+	} else {
+
+        auto mat = m_node->getWorldMatrix();
+
+        glm::vec3 bottomLeft = mat * glm::vec4(f[0], f[1], 1.f, 1.f);
+        glm::vec3 bottomRight = mat * glm::vec4(f[2], f[1], 1.f, 1.f);
+        glm::vec3 topLeft = mat * glm::vec4(f[0], f[3], 1.f, 1.f);
+        glm::vec3 topRight = mat * glm::vec4(f[2], f[3], 1.f, 1.f);
+        auto color = glm::vec4(1.f);
+
+        _batch->setLine(_primitiveIds[0], bottomLeft, bottomRight, color);
+        _batch->setLine(_primitiveIds[1], bottomRight, topRight, color);
+        _batch->setLine(_primitiveIds[2], topRight, topLeft, color);
+        _batch->setLine(_primitiveIds[3], topLeft, bottomLeft, color);
+    }
 }

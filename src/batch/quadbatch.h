@@ -28,10 +28,9 @@ public:
 
 	void innerConfigure() override;
 
-	void release(int index) override;
 
 	void setQuad (int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-			   int palette, bool fliph, bool flipv, unsigned cam, float scale, float zLayer);
+			   int palette, bool fliph, bool flipv, unsigned cam, float zLayer);
 
 	void setInvisible(int index) override;
 private:

@@ -140,12 +140,6 @@ QuadBatch::QuadBatch(int maxElements, SpriteSheet* sheet) : Batch(maxElements, 4
 
 }
 
-void QuadBatch::release(int index) {
-	IBatch::release(index);
-	//_deallocated.push_back(index);
-	int offset = index * _vertsPerElement;
-	memset(&_data[offset], 0, sizeof(QuadBatchVertexData) * 4);
-}
 
 void QuadBatch::setInvisible(int index) {
 	int offset = index * _vertsPerElement;
@@ -154,7 +148,7 @@ void QuadBatch::setInvisible(int index) {
 }
 
 void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-						int palette, bool fliph, bool flipv, unsigned cam, float scale, float zLayer)
+						int palette, bool fliph, bool flipv, unsigned cam, float zLayer)
 {
 
 	float txl = fliph ? textureRepeat.x : 0.f;
@@ -170,19 +164,19 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::ve
 	_data[offset].textureCoords = glm::vec2(txl, tyb);
 	_data[offset].camera = cam;
 
-	_data[offset+1].position = bottomLeft + scale * glm::vec3(size.x, 0.f, 0.f);
+	_data[offset+1].position = bottomLeft + glm::vec3(size.x, 0.f, 0.f);
 	_data[offset+1].textureBounds = textureBounds;
 	_data[offset+1].palette = palY;
 	_data[offset+1].textureCoords = glm::vec2(txr, tyb);
 	_data[offset+1].camera = cam;
 
-	_data[offset+2].position = bottomLeft + scale * glm::vec3(size.x, size.y, 0.f);
+	_data[offset+2].position = bottomLeft + glm::vec3(size.x, size.y, 0.f);
 	_data[offset+2].textureBounds = textureBounds;
 	_data[offset+2].palette = palY;
 	_data[offset+2].textureCoords = glm::vec2(txr, tyt);
 	_data[offset+2].camera = cam;
 
-	_data[offset+3].position = bottomLeft + scale * glm::vec3(0.f, size.y, 0.f);
+	_data[offset+3].position = bottomLeft + glm::vec3(0.f, size.y, 0.f);
 	_data[offset+3].textureBounds = textureBounds;
 	_data[offset+3].palette = palY;
 	_data[offset+3].textureCoords = glm::vec2(txl, tyt);

@@ -44,6 +44,9 @@ protected:
 	//GLuint m_paletteId;
 };
 
+inline std::shared_ptr<Model> Renderer::getModel() {
+	return m_model;
+}
 
 inline void Renderer::setZLayer(float z) {
 	_zLayer = z;
