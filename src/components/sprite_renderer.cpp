@@ -5,8 +5,8 @@
 #include "../engine.h"
 #include <iostream>
 
-SpriteRenderer::SpriteRenderer(IBatch* batch, const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(), m_frame(0), m_ticks(0) {
-    _batch = dynamic_cast<QuadBatch*>(batch);
+SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args), m_frame(0), m_ticks(0) {
+    //_batch = dynamic_cast<QuadBatch*>(batch);
     assert(_batch != nullptr);
     _paletteId = py_get_dict<unsigned>(args, "pal", 0);
     _camId = py_get_dict<unsigned>(args, "cam", 0);
@@ -94,7 +94,7 @@ void SpriteRenderer::updateBatch() {
                               _paletteId,
                               flipx,
                               quad.flipv,
-                              _camId, _zLayer);
+                              _zLayer);
     }
 }
 

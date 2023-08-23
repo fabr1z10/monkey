@@ -10,6 +10,7 @@
 #include "node.h"
 #include "room.h"
 #include "keylistener.h"
+#include "mouselistener.h"
 #include "batch.h"
 #include "enginedraw.h"
 
@@ -33,6 +34,7 @@ public:
     void shutdown();
     //std::shared_ptr<Node> getNode(int);
     //void addNode(std::shared_ptr<Node>);
+    //void addNode(std::shared_ptr<Node>);
     //Shader* getShader(int);
     double getDeviceAspectRatio() const;
     glm::ivec2 getDeviceSize() const;
@@ -47,8 +49,10 @@ public:
 	std::shared_ptr<Room> getRoom();
 
     // node handling
-    std::shared_ptr<Node> getNode(int);
+    Node* getNode(int);
+    std::unordered_set<Node*> getNodes(const std::string&);
     void addNode(std::shared_ptr<Node>);
+    void rmNode(Node*);
     void scheduleForRemoval(Node*);
     pybind11::object getConfig();
     bool isRunning() const;
@@ -57,7 +61,9 @@ public:
 
 	void registerToKeyboardEvent(KeyboardListener*);
 	void unregisterToKeyboardEvent(KeyboardListener*);
-    //IBatch* getBatch(int);
+	void registerToMouseEvent(MouseListener*);
+	void unregisterToMouseEvent(MouseListener*);
+	//IBatch* getBatch(int);
 
 
 private:
@@ -107,12 +113,13 @@ private:
     int m_pixelScaleFactor;
 
     // node management
-    std::unordered_map<int, std::weak_ptr<Node>> m_allNodes;
+    std::unordered_map<int, Node*> m_allNodes;
+    std::unordered_map<std::string, std::unordered_set<Node*>> m_labeledNodes;
     std::vector<Node*> m_scheduledForRemoval;
 
 
 	std::unordered_set<KeyboardListener*> m_keyboardListeners;
-
+	std::unordered_set<MouseListener*> m_mouseListeners;
 
 
     std::unique_ptr<EngineDraw> _engineDraw;

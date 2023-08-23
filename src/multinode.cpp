@@ -4,21 +4,21 @@
 #include "models/iquad.h"
 #include "assetmanager.h"
 
-MultiNode::MultiNode(const YAML::Node& n) : Node() {
+MultiNode::MultiNode(const YAML::Node& n, const std::string& sheetId) : Node(), _sheetId(sheetId) {
 	// root must be first node
 	_rootIndex = 0;
 	for (const auto& node : n["nodes"]) {
 		auto nodeId = node.first.as<std::string>();
 		_nodeMap[nodeId] = _nodes.size();
 		if (node.second && node.second["parent"]) {
-			auto n = std::make_shared<Node>(nodeId);
+			auto n = std::make_shared<Node>();
 			auto parent = node.second["parent"].as<std::string>();
 			auto joint = node.second["joint"].as<int>();
 			auto z = 0.f;// node.second["z"].as<float>(0.0f);
 			this->addTo(n, parent, joint, z, _nodes.size());
 		} else {
 			assert(_nodes.empty());
-			_label = nodeId;
+			//_label = nodeId;
 			_nodes.emplace_back(this);
 
 		}
@@ -52,50 +52,80 @@ MultiNode::MultiNode(const YAML::Node& n) : Node() {
 	}
 }
 
-void MultiNode::initialize() {
+void MultiNode::initialize(const std::string& batch) {
 	for (const auto& model : _defaultModels) {
 		auto node = model.first;
 		auto modelId = model.second;
-		setNodeModel(node, modelId);
+		setNodeModel(node, modelId, batch);
 	}
+
 }
 
-void MultiNode::setNodeModel(const std::string &node, const std::string &modelId) {
+void MultiNode::setNodeModel(const std::string &node, const std::string &modelId, const std::string& batch) {
 	const auto& p = _availableModels.at(node).at(modelId);
+	pybind11::kwargs args;
 	auto& n = _nodes[_nodeMap.at(node)];
 	if (p.model.empty()) {
 		n.node->setModel(nullptr);
 		n.renderer = nullptr;
 		n.model = nullptr;
 	} else {
-		auto model = AssetManager::instance().getSprite(p.model);
+		auto model = AssetManager::instance().getSprite(_sheetId + "/" + p.model);
 		n.model =static_cast<Sprite*>(model.get());
-		n.node->setModel(model);
+		args["batch"] = batch;
+		n.node->setModel(model, args);
 		n.node->setPalette(p.palette);
 		n.renderer = static_cast<SpriteRenderer*>(n.node->getComponent<Renderer>());
 		n.renderer->setZLayer(p.zLayer);
 	}
+
 	if (!_currentAnim.empty())
 		setAnimation(_currentAnim);
+
+	this->startRecursive();
 }
 
 
-MultiNode::MultiNode(const MultiNode& other) : Node(other) {
+MultiNode::MultiNode(const MultiNode& other) : Node(other), _sheetId(other._sheetId) {
 	_nodes = other._nodes;
 	_nodeMap = other._nodeMap;
 	std::list<Node*> l{this};
+	std::list<const Node*> m{&other};
+	std::vector<Node*> mms;
+	std::vector<const Node*> mms2;
+	std::unordered_map<const Node*, Node*> o2n;
 	while (!l.empty()) {
 		auto* current = l.front();
 		l.pop_front();
-		auto& n = _nodes[_nodeMap.at(current->getLabel())];
-		n.node = current;
-		n.renderer = nullptr;
-		n.model = nullptr;
+		mms.push_back(current);
+//		auto& n = _nodes[_nodeMap.at(current->getLabel())];
+//		n.node = current;
+//		n.renderer = nullptr;
+//		n.model = nullptr;
 		for (const auto& child : current->getChildren()) {
 			l.push_back(child.second.get());
 		}
-
 	}
+
+	while (!m.empty()) {
+		auto* current = m.front();
+		m.pop_front();
+		mms2.push_back(current);
+		for (const auto& c : current->getChildren()) {
+			m.push_back(c.second.get());
+		}
+	}
+	for (size_t i = 0; i < mms2.size(); ++i) {
+		o2n[mms2[i]] = mms[i];
+	}
+
+	for (auto& n : _nodes) {
+		n.node = o2n.at(n.node);
+		n.renderer = nullptr;
+		n.model = nullptr;
+	}
+
+
 
 //	for (const auto& child : getChildren()) {
 //		auto label = child.second->getLabel();
@@ -111,6 +141,7 @@ MultiNode::MultiNode(const MultiNode& other) : Node(other) {
 	_defaultAnim = other._defaultAnim;
 	_availableModels = other._availableModels;
 	_defaultModels = other._defaultModels;
+	_currentAnim = _defaultAnim;
 }
 
 std::shared_ptr<Node> MultiNode::clone() {
@@ -118,11 +149,12 @@ std::shared_ptr<Node> MultiNode::clone() {
 }
 
 void MultiNode::setAnimation(const std::string & anim) {
-	std::cout << "called multinode::setanimation\n";
+	std::cout << "called multinode::setanimation " << anim << "\n";
 	auto& a = _animations.at(anim);
 	for (const auto& b : a) {
 		auto n = _nodes[_nodeMap.at(b.first)];
 		if (n.renderer != nullptr) {
+			std::cout << " * " << b.first << ", " << b.second << n.renderer << "\n";
 			n.renderer->setAnimationForce(b.second);
 		}
 	}
@@ -131,7 +163,7 @@ void MultiNode::setAnimation(const std::string & anim) {
 
 
 void MultiNode::start() {
-	setAnimation(_defaultAnim);
+	setAnimation(_currentAnim);
 	Node::start();
 }
 
@@ -176,13 +208,13 @@ void MultiNode::postProcess() {
 			auto pos = /*parentInfo.node->getScale() **/ (-f.quads[0].anchorPoint + f.joints[info.joint]);
 			info.node->setPosition(pos.x, pos.y, 0.f);
 		}
-		std::cout << "node: " << current << ", " << info.node->getLocalPosition().x << ", " << info.node->getLocalPosition().y << "\n";
+		//std::cout << "node: " << current << ", " << info.node->getLocalPosition().x << ", " << info.node->getLocalPosition().y << "\n";
 		for (auto i : info.children) {
 			li.push_front(i);
 		}
 
 	}
-	std::cout << "---\n";
+	//std::cout << "---\n";
 
 }
 
@@ -192,7 +224,7 @@ void MultiNode::addTo(std::shared_ptr<Node> node, const std::string &parent, int
 	parentInfo.node->add(node);
 	parentInfo.children.push_back(index);
 
-	_nodeMap[node->getLabel()] = index;
+	_nodeMap[node->getTag()] = index;
 
 
 }

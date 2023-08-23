@@ -11,7 +11,7 @@ SpriteCollider::SpriteCollider(int flag, int mask, int tag, const pybind11::kwar
 	m_sprite(nullptr), m_renderer(nullptr) {
 	m_castMask = py_get_dict<int>(args, "cast_mask", 0);
 	m_castTag = py_get_dict<int>(args, "cast_tag", 0);
-
+	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
 void SpriteCollider::start() {
@@ -53,19 +53,24 @@ std::shared_ptr<Shape> SpriteCollider::getShape() {
 }
 
 void SpriteCollider::generateDebugMesh() {
-//	if (m_debugNode != nullptr) {
-//		m_debugNode->remove();
-//	}
+	if (m_debugNode != nullptr) {
+		m_debugNode->remove();
+	}
 //	auto model = m_sprite->generateDebugModel();
 //
+	if (_batchId.empty()) {
+		return;
+	}
 	auto node = std::make_shared<Node>();
 //	node->setNodeModel(model);
-	auto renderer = std::make_shared<SpriteColliderRenderer>();
+	pybind11::kwargs args;
+	args["batch"] = _batchId;
+	auto renderer = std::make_shared<SpriteColliderRenderer>(args);
 
 	//renderer->setNodeModel(model);
 	node->addComponent(renderer);
 	m_node->add(node);
-//	m_debugNode = node.get();
+	m_debugNode = node.get();
 }
 
 
@@ -138,9 +143,7 @@ void SpriteCollider::setCollisionOverride(const std::string & id , int flag, int
 
 
 
-SpriteColliderRenderer::SpriteColliderRenderer() : BatchRenderer<LineBatch>() {
-    //_lineBatch = Engine::instance().getRoom()->getLineBatch();
-    _batch = Engine::instance().getRoom()->getLineBatch();
+SpriteColliderRenderer::SpriteColliderRenderer(const pybind11::kwargs& args) : BatchRenderer<LineBatch>(args) {
 }
 
 std::type_index SpriteColliderRenderer::getType() {
@@ -163,9 +166,11 @@ void SpriteColliderRenderer::update(double dt) {
 
 	auto animation = m_reference->getAnimation();
 	auto frame = m_reference->getFrame();
+	std::cout << "scr: "<< m_reference  << animation << "," << frame << "\n";
 	const auto& a = m_sprite->getFrameInfo(animation, frame);
 	auto* f = m_sprite->getBoxData(animation, frame);
 
+	std::cout << "ok\n";
 	if (f == nullptr) {
 	    if (!_primitiveIds.empty()) {
             _batch->hideLines(_primitiveIds[0], _primitiveIds.size());

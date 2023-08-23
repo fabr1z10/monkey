@@ -5,9 +5,11 @@
 
 #include "../shapes/compound.h"
 #include "../shapes/aabb.h"
+#include "../shapes/polygon.h"
 #include "../pyhelper.h"
 #include "../models/multi.h"
 #include "../models/lines.h"
+
 #include "lines.h"
 
 
@@ -20,6 +22,7 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
     _dss[std::type_index(typeid(ConvexPoly))] = &ModelMaker::makeConvexPoly;
     _dss[std::type_index(typeid(CompoundShape))] = &ModelMaker::makeCompoundShape;
     _dss[std::type_index(typeid(AABB))] = &ModelMaker::makeAABB;
+    _dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
 
 //
 //    m_builders[std::type_index(typeid(Rect))] = &ModelMaker::makeConvexPoly; // [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeConvexPoly(s, color, ft); };
@@ -54,6 +57,20 @@ std::shared_ptr<Model> ModelMaker::makeCompoundShape(const std::shared_ptr<Shape
 //        model->addModel(this->make(shape, color, ft));
 //    }
 //    return model;
+}
+
+std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
+	auto* p = static_cast<Polygon*>(s.get());
+	const auto& outline = p->getOutline();
+	std::vector<float> data;
+	for (const auto& point : outline) {
+		data.push_back(point.x);
+		data.push_back(point.y);
+		data.push_back(0.f);
+	}
+	auto lines = std::make_shared<PolyChain>();
+	lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
+	return lines;
 }
 
 std::shared_ptr<Model> ModelMaker::makeAABB(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft) {

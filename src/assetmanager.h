@@ -25,7 +25,7 @@ public:
 	std::shared_ptr<SpriteSheet> getSpritesheet (const std::string& id);
 
     std::shared_ptr<Sprite> getSprite(const std::string&);
-    std::shared_ptr<MultiNode> getMulti(const std::string&);
+    std::shared_ptr<MultiNode> getMulti(const std::string&, const std::string& batch);
     //std::shared_ptr<TiledModel> getTiled(const std::string&);
     std::shared_ptr<Tex> getTex(const std::string&);
     std::shared_ptr<Palette> getPalette(const std::string&);

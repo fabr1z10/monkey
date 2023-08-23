@@ -4,13 +4,13 @@
 #include "util.h"
 #include "components/statemachine.h"
 
-Node::Node(const std::string& label) : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
+Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
-    _label(label), m_model(nullptr), _scale(1.0f) {
+    m_model(nullptr), _scale(1.0f) {
 }
 
 Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nullptr) {
-	_label = other._label;
+	_tag = other._tag;
 	_scale = other._scale;
 	for (const auto& child : other.m_children) {
 		add(child.second->clone());
@@ -33,14 +33,19 @@ std::shared_ptr<Node> Node::clone() {
 }
 
 
-std::string Node::getLabel() const {
-	return _label;
+std::string Node::getTag() const {
+	return _tag;
+}
+
+void Node::setTag(const std::string& tag) {
+	_tag = tag;
 }
 
 Node::~Node() {
-    // TODO
+
     m_components.clear();
     m_children.clear();
+    Engine::instance().rmNode(this);
 }
 
 void Node::setAnimation(const std::string& animId) {
@@ -60,7 +65,7 @@ void Node::add(std::shared_ptr<Node> node) {
     engine.addNode(node);
     // call start if engine is running (node added on the fly)
     if (engine.isRunning()) {
-        node->start();
+        node->startRecursive();
     }
 }
 
@@ -88,6 +93,13 @@ void Node::start() {
 	for (auto& c : m_components){
 		c.second->start();
 	}
+}
+
+void Node::startRecursive() {
+    Node::start();
+    for (const auto& c : m_children) {
+        c.second->start();
+    }
 }
 
 void Node::update(double dt) {

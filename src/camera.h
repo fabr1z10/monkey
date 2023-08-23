@@ -22,6 +22,8 @@ public:
     const glm::mat4& getProjectionMatrix() const;
     bool isInViewport(float, float);
     virtual Bounds getViewingBounds() const = 0;
+    //std::string getCameraName() const;
+    glm::vec4 getViewport() const;
 protected:
     glm::vec3 m_fwd;
     glm::vec3 m_up;
@@ -34,6 +36,7 @@ protected:
     glm::mat4 m_viewMatrix;
     glm::vec4 m_viewport;
     glm::vec4 m_screenViewport;
+    //std::string _id;
 };
 
 inline const glm::mat4 & Camera::getViewMatrix() const {

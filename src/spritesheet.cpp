@@ -87,10 +87,10 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string &directory) : 
 		// now loop through multi-sprites
 		if (f["multi_sprites"]) {
 			for (const auto& ms : f["multi_sprites"]) {
-				auto id = ms.first.as<std::string>();
+				auto ms_id = ms.first.as<std::string>();
 				//std::cout << " reading multisprite: " << id << std::endl;
 				//std::shared_ptr<MultiNode> root;
-				_multiSprites[id] = std::make_shared<MultiNode>(ms.second);
+				_multiSprites[ms_id] = std::make_shared<MultiNode>(ms.second, id);
 			}
 		}
 
@@ -120,11 +120,11 @@ std::string SpriteSheet::toString() {
 }
 
 std::shared_ptr<QuadBatch> SpriteSheet::getBatch() {
-	if (_batch == nullptr) {
-		_batch = std::make_shared<QuadBatch>(10000, this);
-	}
-
-	return _batch;
+//	if (_batch == nullptr) {
+//		_batch = std::make_shared<QuadBatch>(10000, this);
+//	}
+//
+//	return _batch;
 
 }
 
@@ -132,9 +132,9 @@ std::shared_ptr<Sprite> SpriteSheet::getSprite(const std::string& id) {
 	return _sprites.at(id);
 }
 
-std::shared_ptr<MultiNode> SpriteSheet::getMultiNode(const std::string& id) {
+std::shared_ptr<MultiNode> SpriteSheet::getMultiNode(const std::string& id, const std::string& batch) {
 	auto node = std::dynamic_pointer_cast<MultiNode>(_multiSprites.at(id)->clone());
-	node->initialize();
+	node->initialize(batch);
 	return node;
 }
 

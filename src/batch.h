@@ -92,7 +92,9 @@ public:
 
 
     void configure(Shader* s) override {
-
+		if (s->getShaderType() != _shaderType) {
+			return;
+		}
 		auto totalVertices = _maxElements * _vertsPerElement;
     	_data.resize(totalVertices);
 

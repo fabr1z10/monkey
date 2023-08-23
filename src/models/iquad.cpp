@@ -4,7 +4,7 @@
 #include "../spritesheet.h"
 
 std::shared_ptr<Renderer> IQuad::getRenderer(const pybind11::kwargs& args) {
-    return std::make_shared<SpriteRenderer>(_sheet->getBatch().get(), args);
+    return std::make_shared<SpriteRenderer>(args);
 
 }
 

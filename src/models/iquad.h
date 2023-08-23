@@ -41,7 +41,7 @@ class SpriteSheet;
 
 class IQuad : public Model {
 public:
-    IQuad(SpriteSheet* sheet) : _quadCount(0), _sheet(sheet) {}
+    IQuad() : _quadCount(0) {}
     virtual ~IQuad() {}
     // returns information for rendering a frame (used by the renderer - which is responsibile
     // for keeping track of current animation and frame
@@ -57,7 +57,7 @@ protected:
     int _quadCount; // the number of quads to book -> this is the # pf quads of the frame with the highest n of quads
     std::string _defaultAnimation;
     //QuadBatch* _batch;
-	SpriteSheet* _sheet;
+	//SpriteSheet* _sheet;
 };
 
 inline std::string IQuad::getDefaultAnimation() const {

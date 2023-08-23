@@ -86,16 +86,17 @@ void QuadBatch::innerConfigure() {
 
 }
 
-QuadBatch::QuadBatch(int maxElements, SpriteSheet* sheet) : Batch(maxElements, 4, 6) {
+QuadBatch::QuadBatch(int maxElements, const std::string& sheetId) : Batch(maxElements, 4, 6) {
 	_prim = GL_TRIANGLES;
 	_shaderType = ShaderType::QUAD_SHADER;
+	_sheet = AssetManager::instance().getSpritesheet(sheetId).get();
     //_sheet = sheet;
 
     //_maxPrimitives = py_get_dict<int>(args, "max_quads");
     //_shaderType = static_cast<ShaderType>(py_get_dict<int>(args, "shader_type"));
 
     //auto& am = AssetManager::instance();
-    auto tex = sheet->getTex();// am.getTex(_sheet);
+    auto tex = _sheet->getTex();// am.getTex(_sheet);
 
     if (!tex->hasPalette()) {
         //std::cerr << "texture " << _sheet << " has no palette as required by spritebatch!";
@@ -148,7 +149,7 @@ void QuadBatch::setInvisible(int index) {
 }
 
 void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-						int palette, bool fliph, bool flipv, unsigned cam, float zLayer)
+						int palette, bool fliph, bool flipv, float zLayer)
 {
 
 	float txl = fliph ? textureRepeat.x : 0.f;
@@ -162,25 +163,21 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::ve
 	_data[offset].textureBounds = textureBounds;
 	_data[offset].palette = palY;
 	_data[offset].textureCoords = glm::vec2(txl, tyb);
-	_data[offset].camera = cam;
 
 	_data[offset+1].position = bottomLeft + glm::vec3(size.x, 0.f, 0.f);
 	_data[offset+1].textureBounds = textureBounds;
 	_data[offset+1].palette = palY;
 	_data[offset+1].textureCoords = glm::vec2(txr, tyb);
-	_data[offset+1].camera = cam;
 
 	_data[offset+2].position = bottomLeft + glm::vec3(size.x, size.y, 0.f);
 	_data[offset+2].textureBounds = textureBounds;
 	_data[offset+2].palette = palY;
 	_data[offset+2].textureCoords = glm::vec2(txr, tyt);
-	_data[offset+2].camera = cam;
 
 	_data[offset+3].position = bottomLeft + glm::vec3(0.f, size.y, 0.f);
 	_data[offset+3].textureBounds = textureBounds;
 	_data[offset+3].palette = palY;
 	_data[offset+3].textureCoords = glm::vec2(txl, tyt);
-	_data[offset+3].camera = cam;
 
 	for (int i = 0; i < 4; i++) {
 		_data[offset + i].position.z += zLayer * 0.01f;

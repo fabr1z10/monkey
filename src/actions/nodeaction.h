@@ -9,4 +9,5 @@ public:
 protected:
 	Node* m_node;
 	int m_nodeId;
+	std::string _tag;
 };

@@ -16,7 +16,7 @@
 #include "../spritesheet.h"
 
 // construct from YAML
-Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad(sheet) {
+Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 
 	//_batch = Engine::instance().getRoom()->addSpriteBatch(sheet);
 

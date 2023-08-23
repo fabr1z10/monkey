@@ -11,7 +11,7 @@
 
 class Node {
 public:
-    Node(const std::string& label = std::string());
+    Node();
     Node(const Node&);
     virtual std::shared_ptr<Node> clone();
     ~Node();
@@ -27,6 +27,7 @@ public:
 
     // node lifetime
     virtual void start();
+    void startRecursive();
     void update(double) ;
     virtual void postProcess() {}
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
@@ -71,7 +72,9 @@ public:
     // --- events ---
 	Event<Node*> onMove;						// fires when this node moves
 	Event<Node*> onRemove;                      // fires when node is deleted
-	std::string getLabel() const;
+	void setTag(const std::string&);
+	std::string getTag() const;
+
 	void setScale(float);
 	float getScale() const;
 protected:
@@ -90,7 +93,8 @@ protected:
     std::shared_ptr<Camera> m_camera;
 	std::shared_ptr<Model> m_model;
 protected:
-	std::string _label;
+	std::string _tag;
+
 };
 
 inline long Node::getId() const {

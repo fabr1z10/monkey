@@ -24,7 +24,9 @@ private:
     std::shared_ptr<Model> makeCircle(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
     std::shared_ptr<Model> makeCompoundShape(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
     std::shared_ptr<Model> makeAABB(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
-    //std::shared_ptr<Model> makeAABB3D(std::shared_ptr<Shape> s, const pybind11::kwargs& args);
+	std::shared_ptr<Model> makePoly(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
+
+	//std::shared_ptr<Model> makeAABB3D(std::shared_ptr<Shape> s, const pybind11::kwargs& args);
     //std::shared_ptr<Model> makePrism(std::shared_ptr<Shape> s, const pybind11::kwargs& args);
     typedef std::shared_ptr<Model> (ModelMaker::*funcPtrOne)(const std::shared_ptr<Shape>&, glm::vec4, FillType);
     std::unordered_map<std::type_index, funcPtrOne> _dss;

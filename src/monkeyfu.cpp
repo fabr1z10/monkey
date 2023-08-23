@@ -13,12 +13,12 @@ std::shared_ptr<Sprite> getSprite(const std::string& id) {
 
 
 
-std::shared_ptr<MultiNode> getMulti(const std::string& id) {
+std::shared_ptr<MultiNode> getMulti(const std::string& id, const std::string& batch) {
 	auto& am = AssetManager::instance();
-	return am.getMulti(id);
+	return am.getMulti(id, batch);
 }
 
-std::shared_ptr<Node> getNode(int id) {
+Node* getNode(int id) {
 	return Engine::instance().getNode(id);
 }
 

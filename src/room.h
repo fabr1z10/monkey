@@ -24,18 +24,20 @@ public:
     Room();
     void addSpritesheet(const std::string& sheet);
     void setClearColor(int r, int g, int b);
-    void addCamera(std::shared_ptr<Camera>);
-    QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
-    void addLinesBatch(int maxElements = 1000);
-	LineBatch* getLineBatch() {
-		return _lineBatch.get();
-	}
+    void addCamera( std::shared_ptr<Camera>);
+    //QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
+    //void addLinesBatch(int maxElements = 1000);
+    void addBatch(int cameraId, const std::string& batchId, std::shared_ptr<IBatch>);
+    IBatch* getBatch(const std::string&);
+//	LineBatch* getLineBatch() {
+//		return _lineBatch.get();
+//	}
     //IBatch* getBatch(int shader, int id);
     Camera* getCamera(int id);
     ~Room();
     void update(double);
     void configure(Shader*, int);
-    void draw(Shader*, int);
+    void draw(Shader*);
     std::string id() const;
     std::shared_ptr<Node> getRoot();
     void iterate_dfs(std::function<void(Node*)> f);
@@ -78,10 +80,11 @@ private:
     pybind11::function m_onEnd;
 
 	std::list<pybind11::function> _callbacks;
-    std::shared_ptr<LineBatch> _lineBatch;
+    //std::shared_ptr<LineBatch> _lineBatch;
 
-    std::unordered_map<std::string, std::shared_ptr<QuadBatch>> _quadBatches;
-
+    //std::unordered_map<std::string, std::shared_ptr<QuadBatch>> _quadBatches;
+	std::vector<std::vector<std::shared_ptr<IBatch>>> _batches;
+	std::unordered_map<std::string, IBatch*> _batchMap;
 };
 
 inline const CurrentCamera & Room::getCurrentCamera() {

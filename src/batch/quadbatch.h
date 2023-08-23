@@ -14,13 +14,13 @@ struct QuadBatchVertexData {
 	glm::vec4 textureBounds;
 	glm::vec2 textureCoords;
 	float palette;
-	unsigned camera;
+	//unsigned camera;
 } ;
 
 
 class QuadBatch : public Batch<QuadBatchVertexData> {
 public:
-    QuadBatch(int maxElements, SpriteSheet*);
+    QuadBatch(int maxElements, const std::string& sheetId);
 
     void initDraw(Shader* s) override;
 
@@ -30,7 +30,7 @@ public:
 
 
 	void setQuad (int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-			   int palette, bool fliph, bool flipv, unsigned cam, float zLayer);
+			   int palette, bool fliph, bool flipv, float zLayer);
 
 	void setInvisible(int index) override;
 private:
@@ -39,6 +39,7 @@ private:
     GLuint _paletteId;
     int _paletteCount;
     float _invPaletteCount;
+    SpriteSheet* _sheet;
 };
 
 //inline std::string QuadBatch::getSheet() const {

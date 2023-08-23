@@ -48,6 +48,10 @@
 #include "models/text.h"
 #include "multinode.h"
 #include "nodes/itemlist.h"
+#include "components/hotspot.h"
+#include "runners/hotspotmanager.h"
+#include "nodes/walkarea.h"
+#include "actions/walk.h"
 
 
 namespace py = pybind11;
@@ -115,14 +119,14 @@ PYBIND11_MODULE(monkey, m) {
         .def("add_spritesheet", &Room::addSpritesheet)
 		.def("add_runner", &Room::addRunner)
 		.def("add_camera", &Room::addCamera)
-		.def("add_sprite_batch", &Room::addSpriteBatch)
-        .def("add_line_batch", &Room::addLinesBatch)
+		.def("add_batch", &Room::addBatch)
+        //.def("add_line_batch", &Room::addLinesBatch)
 		.def("set_clear_color", &Room::setClearColor)
 		.def("set_main_cam", &Room::setMainCam)
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
-        .def(py::init<const std::string&>(), py::arg("lebel")="")
+        .def(py::init<>())
         .def("get_camera", &Node::getCamera)
         .def("set_camera", &Node::setCamera)
 		.def_property("scale", &Node::getScale, &Node::setScale)
@@ -131,7 +135,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("get_parent",&Node::getParent, py::return_value_policy::reference)
         .def("get_children", &Node::getChildren)
         .def_property_readonly("id", &Node::getId)
-        .def_property_readonly("label", &Node::getLabel)
+        .def_property("tag", &Node::getTag, &Node::setTag)
         .def("add", &Node::add)
         .def("move_to", &Node::moveTo)
         .def("set_position", &Node::setPosition)
@@ -159,16 +163,20 @@ PYBIND11_MODULE(monkey, m) {
 		.def("clear", &ItemList::clear);
 		//.def(py::init<const std::string&>())
 
+	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "walkarea")
+		.def(py::init<const pybind11::kwargs&>());
+
+
 
     py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
         //.def("add", &IBatch::add);
 	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
     py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
 
-//    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
-//        .def(py::init<int, std::shared_ptr<Camera>, const std::string&>());
-//    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
-//        .def(py::init<int, std::shared_ptr<Camera>>());
+    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
+        .def(py::init<int, const std::string&>());
+    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
+        .def(py::init<int>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -203,7 +211,7 @@ PYBIND11_MODULE(monkey, m) {
 	/// --- models ---
     py::module_ mm = m.def_submodule("models");
 	mm.def("make_plane", &ModelMaker::pippo);
-	mm.def("make", &ModelMaker::makeModel);
+	mm.def("from_shape", &ModelMaker::makeModel);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
         //.def(py::init<>());
 //    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
@@ -240,7 +248,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<>())
 		.def("set_ambient", &Lighting::setAmbient)
 		.def("add_light", &Lighting::addLight);
-
+	py::class_<HotSpotManager, Runner, std::shared_ptr<HotSpotManager>>(m, "hotspot_manager")
+		.def(py::init<>());
 
 	/// --- lights ---
 	py::class_<Light, std::shared_ptr<Light>>(m, "light");
@@ -275,10 +284,19 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
 		.def(py::init<const pybind11::kwargs&>());
+	py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "walk")
+		.def(py::init<const pybind11::kwargs&>());
 
 
 	/// --- components ---
 	py::class_<Component, std::shared_ptr<Component>>(m, "component");
+
+	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "hotspot")
+		.def(py::init<std::shared_ptr<Shape>, const pybind11::kwargs&>())
+		.def("set_on_enter", &HotSpot::setOnEnter)
+		.def("set_on_leave", &HotSpot::setOnLeave)
+		.def("set_on_click", &HotSpot::setOnClick);
+
 
 	py::class_<Collider, Component, std::shared_ptr<Collider>>(m, "icollider")
 		.def_property_readonly("bounds", &Collider::bounds)

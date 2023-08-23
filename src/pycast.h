@@ -35,7 +35,7 @@ namespace PYBIND11_NAMESPACE { namespace detail {
              * ignored by implicit casters.
              */
             static handle cast(glm::vec2 src, return_value_policy /* policy */, handle /* parent */) {
-                return PyTuple_Pack(2, src.x, src.y);// PyLong_FromLong(src.long_value);
+                return PyTuple_Pack(2, PyFloat_FromDouble(src.x), PyFloat_FromDouble(src.y));// PyLong_FromLong(src.long_value);
             }
         };
 		template <> struct type_caster<glm::vec3> {

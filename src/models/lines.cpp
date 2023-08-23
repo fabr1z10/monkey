@@ -25,7 +25,7 @@ void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
 }
 
 std::shared_ptr<Renderer> LineModel::getRenderer(const pybind11::kwargs& args) {
-    return std::make_shared<LinesRenderer>();
+    return std::make_shared<LinesRenderer>(args);
 }
 
 
@@ -74,9 +74,9 @@ void PolyChain::initChain(const glm::vec4 &color, const std::vector<float> &data
 //
 //}
 
-LinesRenderer::LinesRenderer() : BatchRenderer<LineBatch>() {
+LinesRenderer::LinesRenderer(const pybind11::kwargs& args) : BatchRenderer<LineBatch>(args) {
     //assert(_lineBatch);
-	_batch = Engine::instance().getRoom()->getLineBatch();
+
 }
 
 

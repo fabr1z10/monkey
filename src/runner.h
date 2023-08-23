@@ -4,8 +4,9 @@
 
 class Runner {
 public:
-    Runner() {}
-    virtual ~Runner() {}
+    Runner() = default;
+    virtual ~Runner() = default;
+    virtual void start() {}
     virtual void update(double) = 0;
     virtual std::type_index getType();
 };

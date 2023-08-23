@@ -13,7 +13,7 @@ public:
 	Tex* getTex();
 	std::shared_ptr<QuadBatch> getBatch();
 	std::shared_ptr<Sprite> getSprite(const std::string&);
-	std::shared_ptr<MultiNode>  getMultiNode(const std::string&);
+	std::shared_ptr<MultiNode>  getMultiNode(const std::string&, const std::string& batch);
 	std::shared_ptr<Font> getFont(const std::string&);
 	std::string toString();
 	std::string getId() const;

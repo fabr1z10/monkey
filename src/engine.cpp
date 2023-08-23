@@ -261,14 +261,25 @@ void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action,
 }
 
 void Engine::mouse_button_callback(GLFWwindow* win, int button, int action, int mods) {
-
+	for (auto &listener : Engine::instance().m_mouseListeners) {
+		listener->mouseButtonCallback(win, button, action, mods);
+	}
 }
 
 void Engine::cursor_pos_callback(GLFWwindow * win, double xpos, double ypos) {
-
+	for (auto &listener : Engine::instance().m_mouseListeners) {
+		listener->cursorPosCallback(win, xpos, ypos);
+	}
 }
 
+void Engine::registerToMouseEvent(MouseListener* listener) {
+	m_mouseListeners.insert(listener);
+}
 
+void Engine::unregisterToMouseEvent(MouseListener * listener) {
+	m_mouseListeners.erase(listener);
+
+}
 
 
 // width and height will be pixels!!
@@ -338,17 +349,41 @@ void Engine::setActualDeviceViewport(glm::vec4 viewport) {
 }
 
 void Engine::addNode(std::shared_ptr<Node> node) {
-    m_allNodes[node->getId()] = node;
+    m_allNodes[node->getId()] = node.get();
+    auto label = node->getTag();
+    if (!label.empty()) {
+    	if (m_labeledNodes.count(label) == 0) {
+    		m_labeledNodes[label] = std::unordered_set<Node*>();
+    	}
+    	m_labeledNodes.at(label).insert(node.get());
+    }
 }
 
-std::shared_ptr<Node> Engine::getNode(int id) {
+void Engine::rmNode(Node* node) {
+	auto label = node->getTag();
+	m_allNodes.erase(node->getId());
+
+	if (!label.empty()) {
+		m_labeledNodes.at(label).erase(node);
+	}
+
+}
+
+Node* Engine::getNode(int id) {
     auto it = m_allNodes.find(id);
     if (it != m_allNodes.end()) {
-        if (auto d = it->second.lock()) {
-            return d;
-        }
+       return it->second;
     }
     return nullptr;
+}
+
+std::unordered_set<Node *> Engine::getNodes(const std::string & label) {
+	auto it = m_labeledNodes.find(label);
+	if (it != m_labeledNodes.end()) {
+		return m_labeledNodes.at(label);
+	}
+	return std::unordered_set<Node*>();
+
 }
 
 void Engine::scheduleForRemoval(Node * node) {

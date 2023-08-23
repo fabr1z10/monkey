@@ -45,7 +45,7 @@ void BasicEngineDraw::draw(Room* room) {
     for (size_t i = 0; i < m_shaders.size(); ++i) {
         auto current = m_shaders[i].get();
         current->use();
-        room->draw(current, i);
+        room->draw(current);
     }
 
     glfwSwapBuffers(window);
@@ -134,7 +134,7 @@ void FrameBufferEngineDraw::draw(Room *room) {
     for (size_t i = 0; i < m_shaders.size(); ++i) {
         auto current = m_shaders[i].get();
         current->use();
-        room->draw(current, i);
+        room->draw(current);
     }
     auto vp = Engine::instance().getWindowViewport();
 

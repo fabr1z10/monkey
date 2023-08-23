@@ -38,11 +38,11 @@ void AssetManager::readSpritesheet(const std::string &id, const std::string &dir
 
 }
 
-std::shared_ptr<MultiNode> AssetManager::getMulti(const std::string & id) {
+std::shared_ptr<MultiNode> AssetManager::getMulti(const std::string & id, const std::string& batch) {
 	auto u = id.find('/');
 	auto sheet = id.substr(0, u);
 	auto sprite = id.substr(u+1);
-	return m_spritesheets.at(sheet)->getMultiNode(sprite);
+	return m_spritesheets.at(sheet)->getMultiNode(sprite, batch);
 
 }
 

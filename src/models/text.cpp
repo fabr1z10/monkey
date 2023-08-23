@@ -7,10 +7,10 @@
 #include <iostream>
 
 std::shared_ptr<Renderer> Text::getRenderer(const pybind11::kwargs & args) {
-	return std::make_shared<SpriteRenderer>(_font->getBatch(), args);
+	return std::make_shared<SpriteRenderer>(args);
 }
 
-Text::Text(const pybind11::kwargs & args) : IQuad(nullptr) {
+Text::Text(const pybind11::kwargs & args) : IQuad() {
 
 	auto halign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
 

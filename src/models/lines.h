@@ -42,7 +42,7 @@ public:
 
 class LinesRenderer : public BatchRenderer<LineBatch> {
 public:
-    explicit LinesRenderer();
+    explicit LinesRenderer(const pybind11::kwargs&);
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     //void start() override;

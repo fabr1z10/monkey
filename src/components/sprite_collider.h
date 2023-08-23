@@ -22,12 +22,13 @@ private:
 	SpriteRenderer* m_renderer;
 	Sprite* m_sprite;
 	void generateDebugMesh() override;
+	std::string _batchId;
 };
 
 
 class SpriteColliderRenderer : public BatchRenderer<LineBatch> {
 public:
-	SpriteColliderRenderer();
+	SpriteColliderRenderer(const pybind11::kwargs& args);
 	//void draw(Shader * s) override;
 	void start() override;
 	std::type_index getType() override;
@@ -37,6 +38,7 @@ public:
 private:
 	SpriteRenderer* m_reference;
 	Sprite* m_sprite;
+	std::string _batchId;
 
 
 };

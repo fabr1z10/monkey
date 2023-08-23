@@ -10,17 +10,24 @@
 // viewport is 4 numbers: first two is the bottom left position of the rectangle,
 // and the last 2 are the size (width and height)
 Camera::Camera(const py::kwargs& kwargs) {
+	//_id = py_get_dict<std::string>(kwargs, "name");
     auto deviceSize = Engine::instance().getDeviceSize();
 
     m_viewport = py_get_dict<glm::vec4>(kwargs, "viewport", glm::vec4(0, 0, deviceSize[0], deviceSize[1]));
 
     auto t = std::numeric_limits<float>::infinity();
-    m_xBounds = glm::vec2(-t, t);
-    m_yBounds = m_xBounds;
-    m_zBounds = m_xBounds;
+
+    m_xBounds = py_get_dict<glm::vec2>(kwargs, "bounds_x", glm::vec2(-t, t));
+
+    m_yBounds = py_get_dict<glm::vec2>(kwargs, "bounds_y", glm::vec2(-t, t));
+    m_zBounds = py_get_dict<glm::vec2>(kwargs, "bounds_z", glm::vec2(-t, t));
     setPosition(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
+}
+
+glm::vec4 Camera::getViewport() const {
+	return m_viewport;
 }
 
 OrthoCamera::OrthoCamera(float width, float height, const py::kwargs& kwargs) : Camera(kwargs), m_orthoWidth(width), m_orthoHeight(height) {
@@ -31,12 +38,8 @@ OrthoCamera::OrthoCamera(float width, float height, const py::kwargs& kwargs) : 
 }
 
 glm::vec2 OrthoCamera::getWorldCooridnates(float x, float y) {
-    float x0 = -m_viewMatrix[3][0] - m_orthoWidth * 0.5f;
-    float y0 = -m_viewMatrix[3][1] - m_orthoHeight * 0.5f;
-    float winHeight = Engine::instance().getWindowSize().y;
-    float ty = winHeight - y;
-    float xw = x0 + (x - m_screenViewport.x) * (m_orthoWidth / (m_screenViewport[2] - m_screenViewport[0]));
-    float yw = y0 + (ty - m_screenViewport.y) * (m_orthoHeight / (m_screenViewport[3] - m_screenViewport[1]));
+    float xw = -m_viewMatrix[3][0] - (m_orthoWidth * 0.5f) + (x - m_viewport.x) * (m_orthoWidth / m_viewport[2]);
+    float yw = -m_viewMatrix[3][1] - (m_orthoHeight * 0.5f) + (y - m_viewport.y) * (m_orthoHeight / m_viewport[3]);
     return glm::vec2(xw, yw);
 }
 

@@ -7,7 +7,7 @@ layout (location = 1) in vec4 vColor;
 
 //uniform mat4 view;
 //uniform mat4 projection;
-uniform mat4 pv_mat[2];
+uniform mat4 pv_mat;
 
 
 out vec4 Color;
@@ -15,7 +15,7 @@ out vec4 Color;
 void main() {
 
     // calculate position
-    gl_Position = pv_mat[0] * vec4(vPosition, 1);
+    gl_Position = pv_mat * vec4(vPosition, 1);
     Color = vColor;
 }
 

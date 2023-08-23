@@ -2,13 +2,18 @@
 
 
 #include "renderer.h"
+#include "../room.h"
+#include "../engine.h"
 
 
 template<typename BATCH>
 class BatchRenderer : public Renderer {
 public:
-	BatchRenderer() : Renderer() {
-
+	BatchRenderer(const pybind11::kwargs& args) : Renderer() {
+		assert(args["batch"]);
+		_batchId = args["batch"].cast<std::string>();
+		_batch = dynamic_cast<BATCH*>(Engine::instance().getRoom()->getBatch(_batchId));
+		assert(_batch != nullptr);
 	}
 
 	~BatchRenderer() {
@@ -40,6 +45,7 @@ public:
 protected:
 	std::vector<int> _primitiveIds{};
 	BATCH* _batch;
+	std::string _batchId;
 //    std::shared_ptr<M> _m;
 //    std::vector<int> _primitiveIds;
 };
