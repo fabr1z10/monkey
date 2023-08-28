@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 
+
 class Error : public std::exception {
 public:
 	Error(const std::string& file, long line, const std::string& msg = "") {
@@ -26,3 +27,8 @@ private:
 }
 
 
+
+#define M_Assert(Expr, Msg) \
+    __M_Assert(#Expr, Expr, __FILE__, __LINE__, Msg)
+
+void __M_Assert(const char* expr_str, bool expr, const char* file, int line, const char* msg);

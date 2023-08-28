@@ -3,10 +3,18 @@
 #include "../room.h"
 #include <iostream>
 
+HotSpotManager::HotSpotManager() : Runner() {}
 
 void HotSpotManager::start() {
-	m_camera = dynamic_cast<OrthoCamera*>(Engine::instance().getRoom()->getCamera(0));
-	assert(m_camera != nullptr);
+	auto room = Engine::instance().getRoom();
+	for (size_t i = 0; i <room->getCameraCount(); ++i) {
+		auto cam = dynamic_cast<OrthoCamera*>(room->getCamera(i));
+		if (cam != nullptr) {
+			_items[i] = CamData{cam, std::unordered_set<HotSpot*>()};
+		}
+	}
+
+	assert(!_items.empty());
 	m_previous = nullptr;
 	_deviceSize = Engine::instance().getDeviceSize();
 }
@@ -27,10 +35,9 @@ void HotSpotManager::updateCurrent(HotSpot* hotspot) {
 void HotSpotManager::cursorPosCallback(GLFWwindow *, double x, double y) {
 	// first check if we are within the device coordinates
 	auto wvp = Engine::instance().getWindowViewport();
-
 	if (x < wvp[0] || x > wvp[0] + wvp[2] || y < wvp[1] || y > wvp[1] + wvp[3]) {
 		// do nothing except
-		std::cout << "outside device\n";
+		std::cout << "outside window " << _camId << "\n";
 		updateCurrent(nullptr);
 		return;
 	}
@@ -38,31 +45,36 @@ void HotSpotManager::cursorPosCallback(GLFWwindow *, double x, double y) {
 	// convert window coordinates into device coordinates
 	float dev_x = (x - wvp[0]) * (_deviceSize.x / wvp[2]);
 	float dev_y = (winHeight - y - wvp[1]) * (_deviceSize.y / wvp[3]);
-	auto cvp = m_camera->getViewport();
-	if (dev_x < cvp[0] || dev_x > cvp[0] + cvp[2] || dev_y < cvp[1] || dev_y > cvp[1] + cvp[3]) {
-		// outside camera viewport
-		std::cout << "outside camera\n";
-		updateCurrent(nullptr);
-		return;
-	}
-	// convert device coordinates into camera coordinates
-	auto wc = m_camera->getWorldCooridnates(dev_x, dev_y);
-	//std::cout << x << ", " << y << " --- " << wc.x << ", " << wc.y << "\n";
-	glm::vec3 P(wc.x, wc.y, 0.f);
-	_lastPosition = glm::vec2(wc.x, wc.y);
-	HotSpot* selected = nullptr;
-	float zSelected = 0.f;
-	for (const auto& hotspot : m_hotspot) {
-		if (hotspot->getShape()->isInside(P)) {
 
-			auto z = hotspot->getNode()->getWorldPosition().z;
-			if (selected == nullptr || z > zSelected) {
-				selected = hotspot;
-				zSelected = z;
+	HotSpot *selected = nullptr;
+	for (const auto& [id, data] : _items) {
+		auto cvp = data.cam->getViewport();
+		if (dev_x < cvp[0] || dev_x > cvp[0] + cvp[2] || dev_y < cvp[1] || dev_y > cvp[1] + cvp[3]) {
+			// outside camera viewport
+			//std::cout << "outside camera " << id << "\n";
+			continue;
+		}
+
+		// convert device coordinates into camera coordinates
+		auto wc = data.cam->getWorldCooridnates(dev_x, dev_y);
+		//std::cout << x << ", " << y << " --- " << wc.x << ", " << wc.y << "\n";
+		glm::vec3 P(wc.x, wc.y, 0.f);
+		_lastPosition = glm::vec2(wc.x, wc.y);
+
+		float zSelected = 0.f;
+		for (const auto &hotspot : data.hotspots) {
+			// transorm world coords in local coords
+			glm::vec3 lP = P - hotspot->getNode()->getWorldPosition();
+			if (hotspot->getShape()->isInside(lP)) {
+
+				auto z = hotspot->getNode()->getWorldPosition().z;
+				if (selected == nullptr || z > zSelected) {
+					selected = hotspot;
+					zSelected = z;
+				}
 			}
 		}
 	}
-
 	updateCurrent(selected);
 
 
@@ -77,9 +89,13 @@ void HotSpotManager::mouseButtonCallback(GLFWwindow * window, int button, int ac
 }
 
 void HotSpotManager::add(HotSpot * h) {
-	m_hotspot.insert(h);
+	auto room = Engine::instance().getRoom();
+	auto camId = room->getBatch(h->getBatch())->getCameraId();
+	_items.at(camId).hotspots.insert(h);
 }
 
 void HotSpotManager::remove(HotSpot * h) {
-	m_hotspot.erase(h);
+	auto room = Engine::instance().getRoom();
+	auto camId = room->getBatch(h->getBatch())->getCameraId();
+	_items.at(camId).hotspots.erase(h);
 }

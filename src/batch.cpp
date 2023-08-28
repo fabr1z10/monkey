@@ -1,6 +1,12 @@
 #include "batch.h"
 #include "components/renderer.h"
+#include "pyhelper.h"
 
+
+IBatch::IBatch(int verticesPerElement, const pybind11::kwargs& args) : _vertsPerElement(verticesPerElement), _nPrimitive(0) {
+	_maxElements = py_get_dict<int>(args, "max_elements");
+	_camId = py_get_dict<int>(args, "cam");
+}
 
 //void IBatch::add(Node * node, const pybind11::kwargs& args) {
 //    auto model = node->getModel();

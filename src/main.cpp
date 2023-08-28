@@ -52,6 +52,8 @@
 #include "runners/hotspotmanager.h"
 #include "nodes/walkarea.h"
 #include "actions/walk.h"
+#include "components/scummcharacter.h"
+#include "components/texthotspot.h"
 
 
 namespace py = pybind11;
@@ -87,7 +89,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("read", &read_png);
 	m.def("get_sprite", &getSprite);
 	m.def("get_multi", &getMulti);
-	m.def("get_node", &getNode);
+	m.def("get_node", &getNode, py::return_value_policy::reference);
 	//m.def("get_batch", &getBatch, py::return_value_policy::reference);
     m.def("get_camera", &getCamera, py::return_value_policy::reference);
 	m.def("close_room", &closeRoom);
@@ -136,6 +138,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("get_children", &Node::getChildren)
         .def_property_readonly("id", &Node::getId)
         .def_property("tag", &Node::getTag, &Node::setTag)
+        .def_property("text", &Node::getText, &Node::setText)
         .def("add", &Node::add)
         .def("move_to", &Node::moveTo)
         .def("set_position", &Node::setPosition)
@@ -174,9 +177,9 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
 
     py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
-        .def(py::init<int, const std::string&>());
+        .def(py::init<const pybind11::kwargs&>());
     py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
-        .def(py::init<int>());
+        .def(py::init<const pybind11::kwargs&>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -297,6 +300,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def("set_on_leave", &HotSpot::setOnLeave)
 		.def("set_on_click", &HotSpot::setOnClick);
 
+	py::class_<TextHotSpot, HotSpot, std::shared_ptr<TextHotSpot>>(m, "text_hotspot")
+		.def(py::init<pybind11::kwargs&>());
+
 
 	py::class_<Collider, Component, std::shared_ptr<Collider>>(m, "icollider")
 		.def_property_readonly("bounds", &Collider::bounds)
@@ -322,7 +328,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 
 	py::class_<Follow, Component, std::shared_ptr<Follow>>(m, "follow")
-		.def(py::init<std::shared_ptr<Camera>, pybind11::tuple&, pybind11::tuple&>());
+		.def(py::init<const pybind11::kwargs&>());
 
 	py::class_<Platform, Component, std::shared_ptr<Platform>>(m, "platform")
 		.def(py::init<>());
@@ -343,6 +349,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def("play", &ScriptPlayer::play)
 		.def(py::init<>());
 
+	py::class_<ScummCharacter, Component, std::shared_ptr<ScummCharacter>>(m, "scumm_char")
+		.def(py::init<const pybind11::kwargs&>());
 	/// --- states ---
 	py::class_<State, std::shared_ptr<State>>(m, "state");
 	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");

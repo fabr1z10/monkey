@@ -3,6 +3,7 @@
 #include "components/renderer.h"
 #include "util.h"
 #include "components/statemachine.h"
+#include "models/text.h"
 
 Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
@@ -166,6 +167,13 @@ void Node::move(glm::vec3 delta) {
 	notifyMove();
 }
 
+void Node::movea(glm::vec3 delta) {
+	m_modelMatrix[3][0] += delta.x;
+	m_modelMatrix[3][1] += delta.y;
+	m_modelMatrix[3][2] += delta.z;
+	notifyMove();
+}
+
 void Node::notifyMove() {
 	if (m_parent != nullptr) {
 		m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
@@ -241,14 +249,14 @@ Bounds Node::getBounds() {
 
 
 bool Node::getFlipX() const {
-	return m_modelMatrix[0][0] < 0.f;
+	return m_worldMatrix[0][0] < 0.f;
 }
 
 void Node::setFlipX(bool value) {
 	m_modelMatrix[0][0] = (value ? -1.f : 1.f) * abs(m_modelMatrix[0][0]);
-	if (m_parent != nullptr)
-		m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
-
+	//if (m_parent != nullptr)
+	//	m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
+	notifyMove();
 }
 
 std::string Node::getState() const {
@@ -285,4 +293,14 @@ void Node::setScale(float scale) {
 
 float Node::getScale() const {
 	return fabs(m_worldMatrix[0][0]);
+}
+
+std::string Node::getText() const {
+	return std::dynamic_pointer_cast<Text>(m_model)->getText();
+}
+
+void Node::setText(const std::string & text) {
+	std::dynamic_pointer_cast<Text>(m_model)->setText(text);
+
+
 }

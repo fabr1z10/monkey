@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-LineBatch::LineBatch(int maxElements) : Batch(maxElements, 2, 2) {
+LineBatch::LineBatch(const pybind11::kwargs& args) : Batch(2, 2, args) {
 	_prim = GL_LINES;
 	_shaderType = ShaderType::LINE_SHADER;
 //

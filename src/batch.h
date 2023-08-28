@@ -9,7 +9,7 @@ class Shader;
 
 class IBatch {
 public:
-	IBatch(int maxElements, int verticesPerElement) : _maxElements(maxElements), _vertsPerElement(verticesPerElement), _nPrimitive(0) {}
+	IBatch(int verticesPerElement, const pybind11::kwargs&);
 	virtual void draw(Shader* s) = 0;
 	virtual void cleanUp() = 0;
 	ShaderType getShaderType() const;
@@ -26,10 +26,11 @@ public:
 
 	virtual void setInvisible(int index) = 0;
 
+	int getCameraId() const;
 protected:
 	int _maxElements; 			// max number of elements (e.g quads or lines)
 	int _vertsPerElement;		// vertices per element
-
+	int _camId;
 	ShaderType _shaderType;
 	//std::shared_ptr<Camera> _cam;
 
@@ -41,14 +42,18 @@ inline ShaderType IBatch::getShaderType() const {
 	return _shaderType;
 }
 
+inline int IBatch::getCameraId() const {
+	return _camId;
+}
+
 
 // implements batch rendering
 template<typename VERTEXDATA>
 class Batch : public IBatch{
 public:
-    Batch(int maxElements, int vertsPerElement, int indicesPerElement) : IBatch(maxElements, vertsPerElement),
+    Batch(int vertsPerElement, int indicesPerElement, const pybind11::kwargs& args) : IBatch(vertsPerElement, args),
     	_indicesPerElement(indicesPerElement)  {
-    	_data.resize(maxElements * vertsPerElement);
+    	_data.resize(_maxElements * vertsPerElement);
     }
 
     virtual ~Batch() {

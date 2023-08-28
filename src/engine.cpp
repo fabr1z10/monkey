@@ -163,9 +163,10 @@ void Engine::run() {
         std::cout << " loading room: " << m_roomId << std::endl;
         loadRoom();
         // start up all nodes and components
+		m_room->start();
         m_room->iterate_dfs([](Node *n) { n->start(); });
         m_run = true;
-        m_room->start();
+
         do {
             double currentTime = glfwGetTime();
             /// note: if I run the update only every frame time CPU goes to 100%. If I run it on

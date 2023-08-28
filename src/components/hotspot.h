@@ -20,7 +20,9 @@ public:
 	void setOnEnter(pybind11::function);
 	void setOnLeave(pybind11::function);
 	void setOnClick(pybind11::function);
-private:
+
+	std::string getBatch() const;
+protected:
 	std::shared_ptr<Shape> _shape;
 	std::string _batchId;
 
@@ -43,4 +45,8 @@ inline void HotSpot::setOnLeave(pybind11::function f) {
 
 inline void HotSpot::setOnClick(pybind11::function f) {
 	_onClick = f;
+}
+
+inline std::string HotSpot::getBatch() const {
+	return _batchId;
 }

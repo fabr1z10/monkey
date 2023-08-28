@@ -9,7 +9,7 @@ class OrthoCamera;
 
 class HotSpotManager : public Runner, public MouseListener {
 public:
-	HotSpotManager() = default;
+	HotSpotManager();
 	virtual ~HotSpotManager() {}
 	void cursorPosCallback(GLFWwindow*, double, double) override;
 	void mouseButtonCallback(GLFWwindow*, int, int, int) override;
@@ -19,10 +19,17 @@ public:
 	void add(HotSpot*);
 	void remove(HotSpot*);
 private:
+	struct CamData {
+		OrthoCamera* cam;
+		std::unordered_set<HotSpot*> hotspots;
+	};
 	glm::vec2 _lastPosition;
 	void updateCurrent(HotSpot*);
-	OrthoCamera* m_camera;
-	std::unordered_set<HotSpot*> m_hotspot;
+
+	//std::unordered_set<HotSpot*> m_hotspot;
+
+	std::unordered_map<int, CamData> _items;
 	HotSpot* m_previous;
 	glm::vec2 _deviceSize;
+	int _camId;
 };

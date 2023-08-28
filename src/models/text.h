@@ -26,8 +26,29 @@ public:
     //void initFromPy(const pybind11::kwargs&) override;
     //void initFromYAML(const YAML::Node &node, const YAML::Node &globals) override { throw; }
     void setText(const std::string& value);
+    std::string getText() const;
 	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
-
+	glm::vec2 getSize() const;
+	glm::vec2 getBottomLeft() const;
 private:
+	void buildQuads();
 	Font* _font;
+	glm::vec2 _size;
+	glm::vec2 _bottomLeft;
+	HAlign _hAlign;
+	VAlign _vAlign;
+	std::string _text;
+
 };
+
+inline glm::vec2 Text::getSize() const {
+	return _size;
+}
+
+inline glm::vec2 Text::getBottomLeft() const {
+	return _bottomLeft;
+}
+
+inline std::string Text::getText() const {
+	return _text;
+}

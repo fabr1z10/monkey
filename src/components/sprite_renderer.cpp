@@ -77,7 +77,7 @@ void SpriteRenderer::updateBatch() {
     int qid = 0;
 
     for (const auto& quad : a.quads) {
-        auto flipx = m_node->getFlipX() ^ quad.fliph;
+        auto flipx = m_node->getFlipX();
 
         auto bottomLeft = worldTransform * glm::vec4(m_shift + quad.location - glm::vec3(quad.anchorPoint, 0.f), 1.f);
         //glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);

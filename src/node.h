@@ -49,6 +49,7 @@ public:
     void setPosition(float, float, float);
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
+	void movea(glm::vec3 delta);
 	std::shared_ptr<Model> getModel();
 	virtual void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());
 
@@ -74,7 +75,8 @@ public:
 	Event<Node*> onRemove;                      // fires when node is deleted
 	void setTag(const std::string&);
 	std::string getTag() const;
-
+	std::string getText() const;
+	void setText(const std::string&);
 	void setScale(float);
 	float getScale() const;
 protected:

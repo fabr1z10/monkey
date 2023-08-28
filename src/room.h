@@ -27,7 +27,7 @@ public:
     void addCamera( std::shared_ptr<Camera>);
     //QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
     //void addLinesBatch(int maxElements = 1000);
-    void addBatch(int cameraId, const std::string& batchId, std::shared_ptr<IBatch>);
+    void addBatch(const std::string& batchId, std::shared_ptr<IBatch>);
     IBatch* getBatch(const std::string&);
 //	LineBatch* getLineBatch() {
 //		return _lineBatch.get();
@@ -65,6 +65,7 @@ public:
     void setMainCam(std::shared_ptr<Camera>);
 
     const CurrentCamera& getCurrentCamera();
+    int getCameraCount() const;
     void addCallback(pybind11::function f) {_callbacks.push_back(f);}
 private:
 	CurrentCamera _currentCamera;
@@ -93,4 +94,8 @@ inline const CurrentCamera & Room::getCurrentCamera() {
 
 inline std::string Room::id() const {
     return m_id;
+}
+
+inline int Room::getCameraCount() const {
+	return m_cameras.size();
 }

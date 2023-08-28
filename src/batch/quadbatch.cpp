@@ -86,9 +86,10 @@ void QuadBatch::innerConfigure() {
 
 }
 
-QuadBatch::QuadBatch(int maxElements, const std::string& sheetId) : Batch(maxElements, 4, 6) {
+QuadBatch::QuadBatch(const pybind11::kwargs& args) : Batch(4, 6, args) {
 	_prim = GL_TRIANGLES;
 	_shaderType = ShaderType::QUAD_SHADER;
+	auto sheetId = py_get_dict<std::string>(args, "sheet");
 	_sheet = AssetManager::instance().getSpritesheet(sheetId).get();
     //_sheet = sheet;
 
@@ -148,33 +149,35 @@ void QuadBatch::setInvisible(int index) {
 
 }
 
-void QuadBatch::setQuad(int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
+void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
 						int palette, bool fliph, bool flipv, float zLayer)
 {
 
-	float txl = fliph ? textureRepeat.x : 0.f;
-	float txr = fliph ? 0.f : textureRepeat.x;
+	float dx = fliph ? -size.x : size.x;
+
+	float txl = 0.f; //fliph ? textureRepeat.x : 0.f;
+	float txr = textureRepeat.x; //fliph ? 0.f : textureRepeat.x;
 	float tyb = flipv ? 0.f : textureRepeat.y;
 	float tyt = flipv ? textureRepeat.y : 0.f;
 	float palY = _invPaletteCount * (0.5f + palette);
 	int offset = index * _vertsPerElement;
 
-	_data[offset].position = bottomLeft;
+	_data[offset].position = bottomBack;
 	_data[offset].textureBounds = textureBounds;
 	_data[offset].palette = palY;
 	_data[offset].textureCoords = glm::vec2(txl, tyb);
 
-	_data[offset+1].position = bottomLeft + glm::vec3(size.x, 0.f, 0.f);
+	_data[offset+1].position = bottomBack + glm::vec3(dx, 0.f, 0.f);
 	_data[offset+1].textureBounds = textureBounds;
 	_data[offset+1].palette = palY;
 	_data[offset+1].textureCoords = glm::vec2(txr, tyb);
 
-	_data[offset+2].position = bottomLeft + glm::vec3(size.x, size.y, 0.f);
+	_data[offset+2].position = bottomBack + glm::vec3(dx, size.y, 0.f);
 	_data[offset+2].textureBounds = textureBounds;
 	_data[offset+2].palette = palY;
 	_data[offset+2].textureCoords = glm::vec2(txr, tyt);
 
-	_data[offset+3].position = bottomLeft + glm::vec3(0.f, size.y, 0.f);
+	_data[offset+3].position = bottomBack + glm::vec3(0.f, size.y, 0.f);
 	_data[offset+3].textureBounds = textureBounds;
 	_data[offset+3].palette = palY;
 	_data[offset+3].textureCoords = glm::vec2(txl, tyt);
