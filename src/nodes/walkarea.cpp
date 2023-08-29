@@ -12,8 +12,11 @@
 
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-WalkArea::WalkArea(const pybind11::kwargs &args) : Node() {
+WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _scaleFunc(nullptr) {
 	_margin = py_get_dict<float>(args, "margin", 0.1f);
+
+
+
 	// REQUIREMENT:
 	// polygon outline must be provided ccw
 	// holes cw order
@@ -223,4 +226,31 @@ std::vector<glm::vec2> WalkArea::getPath(glm::vec2 A, glm::vec2 B) {
 	_graph->removeNode(0);
 	_graph->removeNode(1);
 	return path;
+}
+
+void WalkArea::postProcess() {
+	// apply z
+	if (_zFunc) {
+		for (const auto& child : m_children) {
+			auto pos = child.second->getWorldPosition();
+			auto z = _zFunc->evaluate(pos.x, pos.y);
+			child.second->setZ(z);
+		}
+	}
+
+	if (_scaleFunc) {
+		for (const auto& child : m_children) {
+			auto pos = child.second->getWorldPosition();
+			auto z = _scaleFunc->evaluate(pos.x, pos.y);
+			child.second->setScale(z);
+		}
+	}
+}
+
+void WalkArea::setZFunction(std::shared_ptr<FuncXY> f) {
+	_zFunc = f;
+}
+
+void WalkArea::setScaleFunction(std::shared_ptr<FuncXY> f) {
+	_scaleFunc = f;
 }

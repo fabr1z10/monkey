@@ -54,6 +54,7 @@
 #include "actions/walk.h"
 #include "components/scummcharacter.h"
 #include "components/texthotspot.h"
+#include "math/funcxy.h"
 
 
 namespace py = pybind11;
@@ -167,6 +168,8 @@ PYBIND11_MODULE(monkey, m) {
 		//.def(py::init<const std::string&>())
 
 	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "walkarea")
+		.def("set_z_function", &WalkArea::setZFunction)
+		.def("set_scale_function", &WalkArea::setScaleFunction)
 		.def(py::init<const pybind11::kwargs&>());
 
 
@@ -366,5 +369,10 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<>());
     py::class_<Attack, State, std::shared_ptr<Attack>>(m, "attack")
             .def(py::init<>());
+
+	/// --- other ---
+	py::class_<FuncXY, std::shared_ptr<FuncXY>>(m, "funcxy");
+	py::class_<PiecewiseLinearYFunc, FuncXY, std::shared_ptr<PiecewiseLinearYFunc>>(m, "func_ply")
+		.def(py::init<const std::vector<float>&>());
 
 }

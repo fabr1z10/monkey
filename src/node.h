@@ -61,6 +61,7 @@ public:
     float getX() const;
     float getY() const;
 	float getZ() const;
+	void setZ(float);
     template <typename T>
     T* getComponent() const {
         auto it = m_components.find(std::type_index(typeid(typename T::Base)));

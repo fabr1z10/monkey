@@ -3,6 +3,7 @@
 #include "../node.h"
 #include "../shapes/polygon.h"
 #include "../math/graph.h"
+#include "../math/funcxy.h"
 
 class WalkArea : public Node {
 public:
@@ -10,6 +11,9 @@ public:
 	void onClick(glm::vec2 P, int, int);
 	glm::vec2 closestPointIn(glm::vec2 P);
 	std::vector<glm::vec2> getPath(glm::vec2 A, glm::vec2 B);
+	void postProcess() override;
+	void setZFunction(std::shared_ptr<FuncXY> f);
+	void setScaleFunction(std::shared_ptr<FuncXY> f);
 private:
 	struct EdgeData {
 		glm::vec2 unitVec;
@@ -29,6 +33,9 @@ private:
 
 	std::shared_ptr<Graph<int, glm::vec2>> _graph;
 	std::vector<EdgeData> _edgeData;
+
+	std::shared_ptr<FuncXY> _zFunc;
+	std::shared_ptr<FuncXY> _scaleFunc;
 	float _margin;
 };
 

@@ -145,7 +145,11 @@ void Engine::initialize() {
 		AssetManager::instance().readSpritesheet(id, file);
 
 	}
-
+	// check game initialization function
+	auto onStartup = py_get<pybind11::function>(m_game, "on_startup", pybind11::function());
+	if (onStartup) {
+		onStartup();
+	}
 
 
 }

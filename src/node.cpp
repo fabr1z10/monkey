@@ -145,6 +145,11 @@ void Node::setCamera(std::shared_ptr<Camera> cam) {
     m_camera = cam;
 }
 
+void Node::setZ(float z) {
+	m_modelMatrix[3][2] = z;
+	notifyMove();
+}
+
 void Node::setPosition(float x, float y, float z) {
     m_modelMatrix[3][0] = x;
     m_modelMatrix[3][1] = y;
@@ -283,6 +288,8 @@ float Node::getY() const {
 float Node::getZ() const {
 	return m_worldMatrix[3][2];
 }
+
+
 
 void Node::setScale(float scale) {
     for (int i = 0; i < 3; ++i) {
