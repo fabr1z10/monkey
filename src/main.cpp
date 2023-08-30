@@ -55,6 +55,7 @@
 #include "components/scummcharacter.h"
 #include "components/texthotspot.h"
 #include "math/funcxy.h"
+#include "actions/turn.h"
 
 
 namespace py = pybind11;
@@ -291,6 +292,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "walk")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "turn")
 		.def(py::init<const pybind11::kwargs&>());
 
 
