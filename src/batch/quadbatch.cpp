@@ -88,7 +88,6 @@ void QuadBatch::innerConfigure() {
 
 QuadBatch::QuadBatch(const pybind11::kwargs& args) : Batch(4, 6, args) {
 	_prim = GL_TRIANGLES;
-	_shaderType = ShaderType::QUAD_SHADER;
 	auto sheetId = py_get_dict<std::string>(args, "sheet");
 	_sheet = AssetManager::instance().getSpritesheet(sheetId).get();
     //_sheet = sheet;
@@ -98,16 +97,28 @@ QuadBatch::QuadBatch(const pybind11::kwargs& args) : Batch(4, 6, args) {
 
     //auto& am = AssetManager::instance();
     auto tex = _sheet->getTex();// am.getTex(_sheet);
-
+	_texId = tex->getTexId();
     if (!tex->hasPalette()) {
         //std::cerr << "texture " << _sheet << " has no palette as required by spritebatch!";
-        exit(1);
-    }
+        _hasPalette = false;
+		_shaderType = ShaderType::QUAD_SHADER;
+		//_texId = 0;
+		_paletteId = GL_INVALID_VALUE;
+		_paletteCount = 1;
+		_invPaletteCount = 1.f;
+	}  else {
+    	_hasPalette = true;
+		_shaderType = ShaderType::QUAD_SHADER_PALETTE;
 
-    _texId = tex->getTexId();
-    _paletteId = tex->getDefaultPaletteId();
-    _paletteCount = tex->getPaletteCount();
-    _invPaletteCount = 1.0f / _paletteCount;
+		_paletteId = tex->getDefaultPaletteId();
+		_paletteCount = tex->getPaletteCount();
+		_invPaletteCount = 1.0f / _paletteCount;
+	}
+
+
+
+
+
 
     // vertices forming a quad
 //    glm::vec2 vertices[] = {
@@ -190,10 +201,11 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::ve
 void QuadBatch::initDraw(Shader* s) {
 
 	// initialize texture and palette texture
-
-	s->setInt("tex_pal", 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, _paletteId);
+	if (_hasPalette) {
+		s->setInt("tex_pal", 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, _paletteId);
+	}
 
     s->setInt("tex_main", 0);
     glActiveTexture(GL_TEXTURE0);

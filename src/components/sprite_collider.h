@@ -32,7 +32,7 @@ public:
 	//void draw(Shader * s) override;
 	void start() override;
 	std::type_index getType() override;
-	//void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
+	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	void update(double) override;
 
 private:

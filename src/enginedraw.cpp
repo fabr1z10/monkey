@@ -9,8 +9,9 @@
 extern GLFWwindow* window;
 
 EngineDraw::EngineDraw() {
-	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return std::make_shared<Shader>(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
+	m_shaderBuilders[ShaderType::QUAD_SHADER_PALETTE] = [&] () { return std::make_shared<Shader>(ShaderType::QUAD_SHADER_PALETTE, quad_vs, quad_fs, "2f1I"); };
     m_shaderBuilders[ShaderType::LINE_SHADER] = [&] () { return std::make_shared<Shader>(ShaderType::LINE_SHADER, line_vs, line_fs, "1f1I"); };
+	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return std::make_shared<Shader>(ShaderType::QUAD_SHADER, quad_vs_nopal, quad_fs_nopal, "2f1I"); };
 }
 
 void EngineDraw::init(Room * room) {
@@ -53,8 +54,11 @@ void BasicEngineDraw::draw(Room* room) {
 }
 
 void FrameBufferEngineDraw::loadShaders() {
-    auto quad_shader = m_shaderBuilders[ShaderType::QUAD_SHADER]();
+    auto quad_shader = m_shaderBuilders[ShaderType::QUAD_SHADER_PALETTE]();
     m_shaders.push_back(quad_shader);
+
+	auto quad_shader_nopal= m_shaderBuilders[ShaderType::QUAD_SHADER]();
+	m_shaders.push_back(quad_shader_nopal);
 
     auto line_shader = m_shaderBuilders[ShaderType::LINE_SHADER]();
     m_shaders.push_back(line_shader);

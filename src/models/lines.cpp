@@ -14,10 +14,10 @@ LineModel::LineModel(const pybind11::kwargs & args) : LineModel() {
 
 void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
     for (size_t i = 0; i < data.size(); i += 6) {
-        size_t offset = 6 * i;
+        size_t offset = i;
         Segment s;
-        s.P0 = glm::vec3(data[offset+1], data[offset+2], data[offset+3]);
-        s.P1 = glm::vec3(data[offset+4], data[offset+5], data[offset+6]);
+        s.P0 = glm::vec3(data[offset], data[offset+1], data[offset+2]);
+        s.P1 = glm::vec3(data[offset+3], data[offset+4], data[offset+5]);
         s.color = color;
         _segments.push_back(s);
         _lineCount++;

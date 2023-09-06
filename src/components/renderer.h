@@ -12,10 +12,10 @@ public:
     //virtual void draw(Shader*);
 
 
-    std::shared_ptr<Model> getModel();
-    virtual void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args = pybind11::kwargs());
-    void setMultColor(glm::vec4);
-    void setAddColor(glm::vec4);
+    //std::shared_ptr<Model> getModel();
+    virtual void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) {}
+    //void setMultColor(glm::vec4);
+    //void setAddColor(glm::vec4);
     const glm::mat4& getRendererTransform() const;
     void flipHorizontal(bool);
     bool getFlipHorizontal() const;
@@ -31,9 +31,9 @@ public:
     void setZLayer(float);
 protected:
 
-    std::shared_ptr<Model> m_model;
-    glm::vec4 m_multColor;
-    glm::vec4 m_addColor;
+    //std::shared_ptr<Model> m_model;
+    //glm::vec4 m_multColor;
+    //glm::vec4 m_addColor;
     glm::mat4 m_rendererTransform;
     int m_offset;
     int m_count;
@@ -44,9 +44,9 @@ protected:
 	//GLuint m_paletteId;
 };
 
-inline std::shared_ptr<Model> Renderer::getModel() {
-	return m_model;
-}
+//inline std::shared_ptr<Model> Renderer::getModel() {
+//	return m_model;
+//}
 
 inline void Renderer::setZLayer(float z) {
 	_zLayer = z;

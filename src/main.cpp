@@ -56,6 +56,7 @@
 #include "components/texthotspot.h"
 #include "math/funcxy.h"
 #include "actions/turn.h"
+#include "actions/say.h"
 
 
 namespace py = pybind11;
@@ -168,10 +169,15 @@ PYBIND11_MODULE(monkey, m) {
 		.def("clear", &ItemList::clear);
 		//.def(py::init<const std::string&>())
 
-	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "walkarea")
+	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "_walkarea")
 		.def("set_z_function", &WalkArea::setZFunction)
-		.def("set_scale_function", &WalkArea::setScaleFunction)
+		.def("set_scale_function", &WalkArea::setScaleFunction);
+
+	py::class_<WalkAreaPolygon, WalkArea, std::shared_ptr<WalkAreaPolygon>>(m, "walkarea")
 		.def(py::init<const pybind11::kwargs&>());
+	py::class_<WalkAreaPolyline, WalkArea, std::shared_ptr<WalkAreaPolyline>>(m, "walkarea_line")
+		.def(py::init<const pybind11::kwargs&>());
+
 
 
 
@@ -235,6 +241,8 @@ PYBIND11_MODULE(monkey, m) {
 		//.def(py::init<const pybind11::kwargs&>());
 	py::class_<Text, Model, std::shared_ptr<Text>>(mm, "text")
 		.def(py::init<const pybind11::kwargs&>());
+	py::class_<StaticQuad, Model, std::shared_ptr<StaticQuad>>(mm, "quad")
+		.def(py::init<const pybind11::kwargs&>());
 
 
 //    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
@@ -294,6 +302,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "walk")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "turn")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<Say, NodeAction, std::shared_ptr<Say>>(ma, "say")
 		.def(py::init<const pybind11::kwargs&>());
 
 

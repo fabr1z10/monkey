@@ -14,6 +14,9 @@ public:
 	}
 
 	void removeNode(K key) {
+		if (m_nodes.count(key) == 0) {
+			return;
+		}
 		m_nodes.erase(key);
 		// check all edges from key
 		auto it = m_edges.find(key);

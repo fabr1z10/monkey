@@ -33,6 +33,8 @@ public:
 			   int palette, bool fliph, bool flipv, float zLayer);
 
 	void setInvisible(int index) override;
+
+	SpriteSheet* getSheet();
 private:
     //std::string _sheet;
     GLuint _texId;
@@ -40,7 +42,12 @@ private:
     int _paletteCount;
     float _invPaletteCount;
     SpriteSheet* _sheet;
+    bool _hasPalette;
 };
+
+inline SpriteSheet * QuadBatch::getSheet() {
+	return _sheet;
+}
 
 //inline std::string QuadBatch::getSheet() const {
 //    return _sheet;

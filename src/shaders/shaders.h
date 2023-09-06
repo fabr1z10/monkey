@@ -52,6 +52,15 @@ const std::string quad_fs =
 #include "glsl/batchshader.fs"
 ;
 
+const std::string quad_vs_nopal =
+#include "glsl/batchshadernopal.vs"
+;
+
+const std::string quad_fs_nopal =
+#include "glsl/batchshadernopal.fs"
+;
+
+
 const std::string line_vs =
 #include "glsl/batchline.vs"
 ;

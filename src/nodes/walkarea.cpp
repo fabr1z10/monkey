@@ -9,10 +9,83 @@
 #include "../error.h"
 #include "../runners/scheduler.h"
 #include "../actions/walk.h"
+#include "../models/lines.h"
 
 using namespace pybind11::literals; // to bring in the `_a` literal
 
+void WalkArea::postProcess() {
+	// apply z
+	if (_zFunc) {
+		for (const auto& child : m_children) {
+			auto pos = child.second->getWorldPosition();
+			auto z = _zFunc->evaluate(pos.x, pos.y);
+			child.second->setZ(z);
+		}
+	}
+
+	if (_scaleFunc) {
+		for (const auto& child : m_children) {
+			auto pos = child.second->getWorldPosition();
+			auto z = _scaleFunc->evaluate(pos.x, pos.y);
+			child.second->setScale(z);
+		}
+	}
+}
+
+void WalkArea::setZFunction(std::shared_ptr<FuncXY> f) {
+	_zFunc = f;
+}
+
+void WalkArea::setScaleFunction(std::shared_ptr<FuncXY> f) {
+	_scaleFunc = f;
+}
+
 WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _scaleFunc(nullptr) {
+
+	_graph = std::make_shared<Graph<int, glm::vec2>>();
+
+
+}
+
+WalkAreaPolyline::WalkAreaPolyline(const pybind11::kwargs &args) : WalkArea(args) {
+	auto nodes = args["nodes"].cast<pybind11::dict>();
+	for (const auto& node : nodes) {
+		auto id = node.first.cast<int>();
+		auto point = node.second.cast<glm::vec2>();
+		_graph->addNode(id, point);
+	}
+	auto edges = args["edges"].cast<std::vector<int>>();
+	int edgeId = 0;
+	for (size_t i = 0; i < edges.size(); i+=2) {
+		glm::vec2 A = _graph->getNode(edges[i]);
+		glm::vec2 B = _graph->getNode(edges[i+1]);
+		auto dist = glm::distance(A, B);
+		_graph->addEdge(edges[i], edges[i+1], dist);
+		EdgeData edge;
+		edge.istart = edges[i];
+		edge.iend = edges[i+1];
+		edge.start = A;
+		edge.end = B;
+		edge.unitVec = glm::normalize(B - A);
+		edge.normal = rot90(edge.unitVec, false);
+		edge.length = dist;
+		_edgeData.push_back(edge);
+		_edgeEndPoints[edgeId] = {edges[i], edges[i+1]};
+		edgeId++;
+	}
+	auto batchId = py_get_dict<std::string>(args, "batch", "");
+	if (!batchId.empty()) {
+		std::vector<float> rawData;
+		for (const auto& edge : _edgeData) {
+			rawData.insert(rawData.end(), { edge.start.x, edge.start.y, 0.f, edge.end.x, edge.end.y, 0.f});
+		}
+		auto model = std::make_shared<LineModel>(pybind11::dict("color"_a=glm::vec4(1.f), "points"_a=rawData));
+		Node::setModel(model, pybind11::dict("batch"_a = batchId));
+	}
+
+}
+
+WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) {
 	_margin = py_get_dict<float>(args, "margin", 0.1f);
 
 
@@ -43,7 +116,7 @@ WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _sca
 
 
 	// create graph
-	_graph = std::make_shared<Graph<int, glm::vec2>>();
+	//_graph = std::make_shared<Graph<int, glm::vec2>>();
 	int offset = 10;
 	const auto& outline = _poly->getOutline();
 	addPath(outline, false, offset);
@@ -59,11 +132,15 @@ WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _sca
 	glm::vec2 uvec = glm::normalize(outline.front() - outline.back());
 	for (size_t i = 0; i < outline.size(); ++i) {
 		EdgeData edge;
-		edge.start = outline[i];
-		edge.end = outline[i+1];
-		edge.unitVec = glm::normalize(outline[i+1] - outline[i]);
+		glm::vec2 A = outline[i];
+		glm::vec2 B = outline[(i+1) % outline.size()];
+		edge.start = A;
+		edge.end = B;
+		edge.istart =-1;
+		edge.iend =-1;
+		edge.unitVec = glm::normalize(B-A);
 		edge.normal = rot90(edge.unitVec, false);
-		edge.length = glm::length(outline[i+1] - outline[i]);
+		edge.length = glm::length(B-A);
 		edge.normalInAtStart = glm::normalize(edge.unitVec - uvec);
 		if (i > 0)
 			_edgeData.back().normalInAtEnd = edge.normalInAtStart;
@@ -73,36 +150,36 @@ WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _sca
 
 }
 
-void WalkArea::onClick(glm::vec2 P, int button, int action) {
-	std::cout << " clicked walkarea at " << P.x << ", " << P.y << ", " << button << ", " << action << "\n";
+//void WalkArea::onClick(glm::vec2 P, int button, int action) {
+//	std::cout << " clicked walkarea at " << P.x << ", " << P.y << ", " << button << ", " << action << "\n";
+////
+////	// check if player is on this walkarea
+////	const auto& player = Engine::instance().getNodes("player");
+////	if (player.empty() || player.size() > 2) {
+////		GLIB_FAIL("There must be one and only one item tagged <player>!");
+////	}
+////	auto node = (*player.begin());
+////	if (node->getParent() == this) {
+////		std::cout << "ok\n";
+//		// crea lo script
+//		//
+//	auto script = std::make_shared<Script>( pybind11::dict("id"_a = "_player"));
 //
-//	// check if player is on this walkarea
-//	const auto& player = Engine::instance().getNodes("player");
-//	if (player.empty() || player.size() > 2) {
-//		GLIB_FAIL("There must be one and only one item tagged <player>!");
-//	}
-//	auto node = (*player.begin());
-//	if (node->getParent() == this) {
-//		std::cout << "ok\n";
-		// crea lo script
-		//
-	auto script = std::make_shared<Script>( pybind11::dict("id"_a = "_player"));
-
-	script->add(
-			std::make_shared<Walk>(pybind11::dict("tag"_a = "player", "target"_a = P)),
-			pybind11::dict());
-	auto scheduler = Engine::instance().getRoom()->getRunner<Scheduler>();
-	scheduler->add(script);
-
+//	script->add(
+//			std::make_shared<Walk>(pybind11::dict("tag"_a = "player", "target"_a = P)),
+//			pybind11::dict());
+//	auto scheduler = Engine::instance().getRoom()->getRunner<Scheduler>();
+//	scheduler->add(script);
 //
-//		//node->setPosition(P.x, P.y, 0.f);
-//	} else {
-//		std::cout << "ko\n";
-//	}
+////
+////		//node->setPosition(P.x, P.y, 0.f);
+////	} else {
+////		std::cout << "ko\n";
+////	}
+//
+//}
 
-}
-
-void WalkArea::addPath(const std::vector<glm::vec2>& path, bool isHole, int offset) {
+void WalkAreaPolygon::addPath(const std::vector<glm::vec2>& path, bool isHole, int offset) {
 	// consider special case of path made of only 2 points (segment)
 
 	size_t ip = path.size() - 1;
@@ -117,7 +194,7 @@ void WalkArea::addPath(const std::vector<glm::vec2>& path, bool isHole, int offs
 			glm::vec2 u = glm::normalize(edgeNext);
 			glm::vec2 v = glm::normalize(-edgePrev);
 			glm::vec2 w = glm::normalize(u+v);
-			addNode(offset, path[ic] - w * _margin);
+			addNode(offset, path[ic] - w * _margin, -1);
 			offset++;
 		}
 		ip = ic;
@@ -128,7 +205,7 @@ void WalkArea::addPath(const std::vector<glm::vec2>& path, bool isHole, int offs
 }
 
 
-int WalkArea::addNode(int id, glm::vec2 point) {
+int WalkAreaPolygon::addNode(int id, glm::vec2 point, int edgeId) {
 	// adds a node to the graph
 	// and an edge from the new node to every other node that is in line of sight with it
 	//int id = m_graph->getVertexCount();
@@ -145,6 +222,18 @@ int WalkArea::addNode(int id, glm::vec2 point) {
 			}
 		}
 	}
+	return id;
+}
+
+int WalkAreaPolyline::addNode(int id, glm::vec2 point, int edgeId) {
+	_graph->addNode(id, point);
+	auto endPoints = _edgeEndPoints.at(edgeId);
+	//float distance = glm::length(point - )
+	_graph->addEdge(id, endPoints.first, glm::length(point - _graph->getNode(endPoints.first)));
+	_graph->addEdge(id, endPoints.second, glm::length(point - _graph->getNode(endPoints.second)));
+	// adding two edges only, one for each segment
+	// we need to recover the end points id for the edge
+
 	return id;
 }
 
@@ -177,44 +266,61 @@ int WalkArea::addNode(int id, glm::vec2 point) {
 //
 //}
 
-glm::vec2 WalkArea::closestPointIn(glm::vec2 P) {
+WalkArea::ClosestPointResult WalkAreaPolygon::closestPointIn(glm::vec2 P) const {
 	glm::vec3 p(P.x, P.y, 0.f);
 	if (_poly->isInside(p)) {
-		return P;
+		return ClosestPointResult{P, glm::vec2(0.f), -1};
 	}
-	// if we get here P is not inside the poly
-	glm::vec2 closestPointSoFar;
-	float distanceSoFar = std::numeric_limits<float>::infinity();
-	for (const auto& edge : _edgeData) {
-		auto dp = glm::dot(P - edge.start, edge.unitVec);
-		glm::vec2 currentPoint;
-		float currentLength;
-		glm::vec2 currentNormal;
-		if (dp <= 0.f) {
-			currentPoint = edge.start;
-			currentNormal = edge.normalInAtStart;
-		} else if (dp >= edge.length) {
-			currentPoint = edge.end;
-			currentNormal = edge.normalInAtEnd;
-		} else {
-			currentPoint = edge.start + dp * edge.unitVec;
-			currentNormal = edge.normal;
-		}
-		currentLength = glm::length(P - currentPoint);
-		if (currentLength < distanceSoFar) {
-			closestPointSoFar = currentPoint + currentNormal * _margin;
-			distanceSoFar = currentLength;
-		}
-	}
-	return closestPointSoFar;
-
+	// adjust inside
+	auto result =WalkArea::closestPointIn(P);
+	result.closestPoint += _margin * result.normalInward;
+	return result;
 }
 
-std::vector<glm::vec2> WalkArea::getPath(glm::vec2 A, glm::vec2 B) {
+WalkArea::ClosestPointResult WalkArea::closestPointIn(glm::vec2 P) const {
+	ClosestPointResult result;
+	float incumbentDistance = std::numeric_limits<float>::infinity();
+	size_t edgeId = 0;
+	for (const auto& edge : _edgeData) {
+		// projection on the line AB
+		auto projection = glm::dot(P - edge.start, edge.unitVec);
+		glm::vec2 currentClosestPoint;
+		glm::vec2 currentNormal;
+		int nodeId {-1};
+		if (projection <= 0.f) {
+			currentClosestPoint = edge.start;
+			currentNormal = edge.normalInAtStart;
+			nodeId = edge.istart;
+		} else if (projection >= edge.length) {
+			currentClosestPoint = edge.end;
+			currentNormal = edge.normalInAtEnd;
+			nodeId = edge.iend;
+		} else {
+			currentClosestPoint = edge.start + projection * edge.unitVec;
+			currentNormal = edge.normal;
+		}
+		float currentLength = glm::distance(currentClosestPoint, P);
+		if (currentLength < incumbentDistance) {
+			incumbentDistance = currentLength;
+			result.closestPoint = currentClosestPoint;
+			result.normalInward = currentNormal;
+			result.edgeId = edgeId;
+			result.nodeIndex = nodeId;
+		}
+		edgeId++;
+	}
+	return result;
+}
+
+std::vector<glm::vec2> WalkAreaPolygon::getPath(glm::vec2 A, glm::vec2 B) {
 	auto A1 = closestPointIn(A);
 	auto B1 = closestPointIn(B);
-	addNode(0, A1);
-	addNode(1, B1);
+	// 0 marks the start point, 1 marks the end point
+	addNode(0, A1.closestPoint, A1.edgeId);
+	addNode(1, B1.closestPoint, B1.edgeId);
+
+
+
 	std::vector<int> p;
 	_graph->shortestPath(0, 1, p);
 	std::vector<glm::vec2> path;
@@ -228,29 +334,39 @@ std::vector<glm::vec2> WalkArea::getPath(glm::vec2 A, glm::vec2 B) {
 	return path;
 }
 
-void WalkArea::postProcess() {
-	// apply z
-	if (_zFunc) {
-		for (const auto& child : m_children) {
-			auto pos = child.second->getWorldPosition();
-			auto z = _zFunc->evaluate(pos.x, pos.y);
-			child.second->setZ(z);
+std::vector<glm::vec2> WalkAreaPolyline::getPath(glm::vec2 A, glm::vec2 B) {
+	auto A1 = closestPointIn(A);
+	auto B1 = closestPointIn(B);
+	// 0 marks the start point, 1 marks the end point
+	if (A1.edgeId == B1.edgeId) {
+		if (A1.nodeIndex == B1.nodeIndex && A1.nodeIndex != -1) {
+			return {};
+		} else {
+			return {A1.closestPoint, B1.closestPoint};
 		}
 	}
-
-	if (_scaleFunc) {
-		for (const auto& child : m_children) {
-			auto pos = child.second->getWorldPosition();
-			auto z = _scaleFunc->evaluate(pos.x, pos.y);
-			child.second->setScale(z);
-		}
+	int startIndex = 0;
+	int endIndex = 1;
+	if (A1.nodeIndex != -1) {
+		startIndex = A1.nodeIndex;
+	} else {
+		addNode(0, A1.closestPoint, A1.edgeId);
 	}
+	if (B1.nodeIndex != -1) {
+		endIndex = B1.nodeIndex;
+	} else {
+		addNode(1, B1.closestPoint, B1.edgeId);
+	}
+	std::vector<int> p;
+	_graph->shortestPath(startIndex, endIndex, p);
+	std::vector<glm::vec2> path;
+	for (auto it = p.rbegin(); it != p.rend(); it++) {
+		auto p = _graph->getNode(*it);
+		path.push_back(p);
+	}
+	std::cout << "\n";
+	_graph->removeNode(0);
+	_graph->removeNode(1);
+	return path;
 }
 
-void WalkArea::setZFunction(std::shared_ptr<FuncXY> f) {
-	_zFunc = f;
-}
-
-void WalkArea::setScaleFunction(std::shared_ptr<FuncXY> f) {
-	_scaleFunc = f;
-}

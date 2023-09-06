@@ -15,7 +15,7 @@ public:
 	ScummCharacter(const pybind11::kwargs& args);
 	void setAnimation(const std::string&);
 	float getSpeed() const;
-
+	int getTextPalette() const;
 	void setDirection(glm::vec2);
 	using Base = ScummCharacter;
 private:
@@ -23,8 +23,8 @@ private:
 	float _speed;
 	// the direction actor is facing
 	glm::vec2 _direction;
-	// text color
-	glm::vec4 _textColor;
+	// text pal
+	int _textPalette;
 };
 
 inline float ScummCharacter::getSpeed() const {
@@ -33,4 +33,8 @@ inline float ScummCharacter::getSpeed() const {
 
 inline void ScummCharacter::setDirection(glm::vec2 dir) {
 	_direction = dir;
+}
+
+inline int ScummCharacter::getTextPalette() const {
+	return _textPalette;
 }

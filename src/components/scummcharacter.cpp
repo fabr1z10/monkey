@@ -5,6 +5,7 @@
 ScummCharacter::ScummCharacter(const pybind11::kwargs &args) {
 	_speed = py_get_dict<float>(args, "speed");
 	_charType = static_cast<CharType>(py_get_dict<int>(args, "type", 1));
+	_textPalette = py_get_dict<int>(args, "text_pal", 0);
 }
 
 void ScummCharacter::setAnimation(const std::string & anim) {

@@ -5,6 +5,8 @@
 #include "../engine.h"
 #include <iostream>
 
+
+
 SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args), m_frame(0), m_ticks(0) {
     //_batch = dynamic_cast<QuadBatch*>(batch);
     assert(_batch != nullptr);
@@ -18,6 +20,7 @@ SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<Qua
 }
 
 
+
 void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 	Renderer::setModel(model, args);
     m_sprite = std::dynamic_pointer_cast<IQuad>(model);
@@ -28,6 +31,10 @@ void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwar
 	m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
 	_paletteId = py_get_dict<int>(args, "pal", 0);
 }
+
+
+
+
 
 const std::string & SpriteRenderer::getAnimation() const {
 	return m_animation;
@@ -52,6 +59,8 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 	m_ticks = 0;
 	m_animation = anim;
 }
+
+
 
 
 
@@ -114,6 +123,8 @@ bool SpriteRenderer::updateTick(int tick) {
     return false;
 
 }
+
+
 void SpriteRenderer::update(double dt) {
 
 	//_spriteBatch->setQuad(_quadId, bottomLeft, a.size, a.texture_coordinates, glm::vec2(1, 1), a.paletteIndex, flipx, false);
@@ -165,6 +176,8 @@ void SpriteRenderer::update(double dt) {
 std::type_index SpriteRenderer::getType() {
 	return std::type_index(typeid(Renderer));
 }
+
+
 
 bool SpriteRenderer::isComplete() const {
 	return m_complete;

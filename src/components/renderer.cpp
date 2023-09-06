@@ -2,15 +2,15 @@
 #include "../node.h"
 #include "../assetmanager.h"
 
-Renderer::Renderer() : Component(), m_multColor(glm::vec4(1.0f)), m_addColor(0.0f), m_rendererTransform(1.f),
+Renderer::Renderer() : Component(), m_rendererTransform(1.f),
     m_offset(0), m_count(0), m_shift(glm::vec3(0.f)), _zLayer(0.f) {
 
 }
 
 ShaderType Renderer::getShaderType() const {
-    if (m_model == nullptr) {
-        return ShaderType::NONE;
-    }
+//    if (m_model == nullptr) {
+//        return ShaderType::NONE;
+//    }
     //return m_model->getShaderType();
 }
 
@@ -55,19 +55,19 @@ void Renderer::setPalette(unsigned palId) {
 //    m_model->draw(s, m_offset, m_count);
 //}
 
-void Renderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
-    m_model = model;
-}
-
-void Renderer::setMultColor(glm::vec4 multColor) {
-    m_multColor = multColor;
-}
-
-
-
-void Renderer::setAddColor(glm::vec4 addColor) {
-    m_addColor = addColor;
-}
+//void Renderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
+//    m_model = model;
+//}
+//
+//void Renderer::setMultColor(glm::vec4 multColor) {
+//    m_multColor = multColor;
+//}
+//
+//
+//
+//void Renderer::setAddColor(glm::vec4 addColor) {
+//    m_addColor = addColor;
+//}
 
 void Renderer::flipHorizontal(bool value) {
     m_rendererTransform[0] = abs(m_rendererTransform[0]) * (value ? -1.f : 1.f);

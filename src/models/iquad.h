@@ -68,3 +68,36 @@ inline int IQuad::getQuadCount() const {
     return _quadCount;
 }
 
+
+class StaticQuad : public Model {
+public:
+	StaticQuad(const pybind11::kwargs&);
+	glm::vec2 getAnchorPoint() const;
+	glm::vec2 getSize() const;
+	glm::vec4 getTexCoords() const;
+	glm::vec2 getRepeat() const;
+	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
+
+private:
+	glm::vec2 _anchorPoint;
+	glm::vec2 _size;
+	glm::vec4 _textureCoordinates;
+	glm::vec2 _repeat;
+
+};
+
+
+inline glm::vec2 StaticQuad::getAnchorPoint() const {
+	return _anchorPoint;
+}
+inline glm::vec2 StaticQuad::getSize() const {
+	return _size;
+}
+
+inline glm::vec4 StaticQuad::getTexCoords() const {
+	return _textureCoordinates;
+}
+
+inline glm::vec2 StaticQuad::getRepeat() const {
+	return _repeat;
+}

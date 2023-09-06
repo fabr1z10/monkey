@@ -75,7 +75,9 @@ void SpriteCollider::generateDebugMesh() {
 
 
 
+void SpriteColliderRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs &args) {
 
+}
 
 
 //void SpriteColliderRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
@@ -154,7 +156,7 @@ std::type_index SpriteColliderRenderer::getType() {
 void SpriteColliderRenderer::start() {
     BatchRenderer<LineBatch>::start();
     m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
-    m_sprite = dynamic_cast<Sprite*>(m_reference->getModel().get());
+    m_sprite = dynamic_cast<Sprite*>(m_reference->getSprite()); //m_reference->getModel().get());
     auto mboxes = m_sprite->getMaxBoxes();
     for (auto i=0; i< mboxes*4; i++) {
         _primitiveIds.push_back(_batch->getPrimitiveId());

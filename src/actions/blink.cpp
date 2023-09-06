@@ -14,7 +14,7 @@ void Blink::start() {
 }
 
 void Blink::end() {
-	m_renderer->setMultColor(glm::vec4(1.f));
+	//m_renderer->setMultColor(glm::vec4(1.f));
 
 }
 
@@ -24,7 +24,7 @@ int Blink::run(double dt) {
 		return 0.f;
 	}
 	int a = static_cast<int>(m_time / m_period) % 2;
-	m_renderer->setMultColor(a == 0 ? glm::vec4(1.f) : glm::vec4(0.f));
+	//m_renderer->setMultColor(a == 0 ? glm::vec4(1.f) : glm::vec4(0.f));
 
 	return 1.f;
 }

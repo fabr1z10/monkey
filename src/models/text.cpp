@@ -12,7 +12,7 @@ std::shared_ptr<Renderer> Text::getRenderer(const pybind11::kwargs & args) {
 
 void Text::buildQuads() {
 	auto s32 = getString32(_text);
-
+	_size = glm::vec2(0.f);
 
 	//_batch = font->getBatch();
 

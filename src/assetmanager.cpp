@@ -8,7 +8,7 @@
 #include "globals.h"
 #include "yamlexp.h"
 #include "spritesheet.h"
-
+#include "pyhelper.h"
 std::shared_ptr<Tex> AssetManager::getTex(const std::string & file) {
     auto it = m_tex.find(file);
     if (it == m_tex.end()) {
@@ -21,9 +21,25 @@ std::shared_ptr<Tex> AssetManager::getTex(const std::string & file) {
 
 
 std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id) {
+
+	//	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
+//	for (const auto& sheet : sheets) {
+//
+//		auto id = sheet.first.cast<std::string>();
+//		auto file = sheet.second.cast<std::string>();
+//		std::cout << "READING SPRITESHEET " << id << " AT " << file << "\n";
+//		AssetManager::instance().readSpritesheet(id, file);
+//
+//	}
+
 	auto it = m_spritesheets.find(id);
 	if (it == m_spritesheets.end()) {
-		GLIB_FAIL("don't know spritesheet: " << id);
+		auto settings = Engine::instance().getConfig();
+		auto sheets = py_get<pybind11::dict>(settings, "spritesheets", pybind11::dict());
+		auto file = py_get_dict<std::string>(sheets, id);
+		readSpritesheet(id, file);
+		return m_spritesheets.at(id);
+		//GLIB_FAIL("don't know spritesheet: " << id);
 	}
 	return it->second;
 }

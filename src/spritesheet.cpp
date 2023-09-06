@@ -6,8 +6,9 @@
 #include <iostream>
 #include "yamlexp.h"
 
-SpriteSheet::SpriteSheet(const std::string& id, const std::string &directory) : _id(id) {
-	std::string fileName = directory + "/main.yaml";
+SpriteSheet::SpriteSheet(const std::string& id, const std::string &file) : _id(id) {
+	std::string directory = file.substr(0, file.rfind('/'));
+	std::string fileName = file + ".yaml";
 	std::cout << fileName << "\n";
 
 

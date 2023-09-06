@@ -136,15 +136,16 @@ void Engine::start() {
 }
 
 void Engine::initialize() {
-	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
-	for (const auto& sheet : sheets) {
-
-		auto id = sheet.first.cast<std::string>();
-		auto file = sheet.second.cast<std::string>();
-		std::cout << "READING SPRITESHEET " << id << " AT " << file << "\n";
-		AssetManager::instance().readSpritesheet(id, file);
-
-	}
+	// WHY LOADING ALL SPRITESHEETS? no sense
+//	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
+//	for (const auto& sheet : sheets) {
+//
+//		auto id = sheet.first.cast<std::string>();
+//		auto file = sheet.second.cast<std::string>();
+//		std::cout << "READING SPRITESHEET " << id << " AT " << file << "\n";
+//		AssetManager::instance().readSpritesheet(id, file);
+//
+//	}
 	// check game initialization function
 	auto onStartup = py_get<pybind11::function>(m_game, "on_startup", pybind11::function());
 	if (onStartup) {
