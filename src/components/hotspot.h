@@ -20,7 +20,7 @@ public:
 	void setOnEnter(pybind11::function);
 	void setOnLeave(pybind11::function);
 	void setOnClick(pybind11::function);
-
+	int getPriority() const;
 	std::string getBatch() const;
 protected:
 	std::shared_ptr<Shape> _shape;
@@ -29,8 +29,12 @@ protected:
 	pybind11::function _onEnter;
 	pybind11::function _onLeave;
 	pybind11::function _onClick;
+	int _priority;
 };
 
+inline int HotSpot::getPriority() const {
+	return _priority;
+}
 inline const Shape *const HotSpot::getShape() const {
 	return _shape.get();
 }

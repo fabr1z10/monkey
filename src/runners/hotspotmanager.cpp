@@ -62,15 +62,18 @@ void HotSpotManager::cursorPosCallback(GLFWwindow *, double x, double y) {
 		_lastPosition = glm::vec2(wc.x, wc.y);
 
 		float zSelected = 0.f;
+		int prioritySelected = 0;
 		for (const auto &hotspot : data.hotspots) {
 			// transorm world coords in local coords
 			glm::vec3 lP = P - hotspot->getNode()->getWorldPosition();
 			if (hotspot->getShape()->isInside(lP)) {
 
 				auto z = hotspot->getNode()->getWorldPosition().z;
-				if (selected == nullptr || z > zSelected) {
+				int currentPriority = hotspot->getPriority();
+				if (selected == nullptr || currentPriority > prioritySelected || (currentPriority == prioritySelected && z > zSelected)) {
 					selected = hotspot;
 					zSelected = z;
+					prioritySelected = currentPriority;
 				}
 			}
 		}

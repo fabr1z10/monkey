@@ -9,7 +9,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 
 HotSpot::HotSpot(std::shared_ptr<Shape> shape, const pybind11::kwargs& args) : Component(), _shape(shape) {
 	_batchId = py_get_dict<std::string>(args, "batch");
-
+	_priority = py_get_dict<int>(args, "priority", 0);
 }
 
 HotSpot::~HotSpot() noexcept {

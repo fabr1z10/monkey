@@ -147,7 +147,7 @@ void Engine::initialize() {
 //
 //	}
 	// check game initialization function
-	auto onStartup = py_get<pybind11::function>(m_game, "on_startup", pybind11::function());
+	auto onStartup = py_get<pybind11::function>(m_settings, "on_startup", pybind11::function());
 	if (onStartup) {
 		onStartup();
 	}

@@ -10,6 +10,7 @@ public:
 	Say(const pybind11::kwargs&);
 	void start() override;
 	int run(double) override;
+	void end() override;
 private:
 	std::string _text;
 	std::string _fontId;

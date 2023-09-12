@@ -20,6 +20,7 @@ Say::Say(const pybind11::kwargs & args) : NodeAction(args) {
 
 
 void Say::start() {
+	_textNode = nullptr;
 	NodeAction::start();
 	_sc = m_node->getComponent<ScummCharacter>();
 	auto pal = _sc->getTextPalette();
@@ -43,6 +44,12 @@ void Say::start() {
 	_timer = 0.0;
 	_textNode = textNode.get();
 
+}
+
+void Say::end() {
+	if (_textNode) {
+		_textNode->remove();
+	}
 }
 
 int Say::run(double dt) {

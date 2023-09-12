@@ -116,7 +116,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
             desc.textureCoordinates[0] = texc[0] / texw;
             desc.textureCoordinates[1] = (texc[0] + texc[2]) / texw;
             desc.textureCoordinates[2] = texc[1] / texh;
-            desc.textureCoordinates[3] = (texc[1] + texc[3]) / texw;
+            desc.textureCoordinates[3] = (texc[1] + texc[3]) / texh;
 			desc.repeat = el["repeat"].as<glm::vec2>(glm::vec2(1.f, 1.f));
             desc.anchorPoint = el["anchor"].as<glm::vec2>(glm::vec2(0.f));
             //desc.location = el["pos"]. py_get_dict<glm::vec3>(el, "pos", glm::vec3(0.f));
