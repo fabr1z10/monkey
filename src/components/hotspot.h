@@ -9,28 +9,40 @@
 class HotSpot : public Component {
 public:
 	HotSpot(std::shared_ptr<Shape>, const pybind11::kwargs& args);
-	virtual ~HotSpot();
+	~HotSpot() override;
 	//void update(double) override;
 	void start() override;
 	const Shape* const getShape() const;
-	virtual void onEnter ();
-	virtual void onLeave ();
-	virtual void onClick (glm::vec2 pos, int button, int action);
+	virtual void onEnter () = 0;
+	virtual void onLeave () = 0;
+	virtual void onClick (glm::vec2 pos, int button, int action) = 0;
 
-	void setOnEnter(pybind11::function);
-	void setOnLeave(pybind11::function);
-	void setOnClick(pybind11::function);
 	int getPriority() const;
 	std::string getBatch() const;
 protected:
 	std::shared_ptr<Shape> _shape;
 	std::string _batchId;
 
+	int _priority;
+};
+
+class PyHotSpot : public HotSpot {
+public:
+	PyHotSpot(std::shared_ptr<Shape>, const pybind11::kwargs& args);
+	void setOnEnter(pybind11::function);
+	void setOnLeave(pybind11::function);
+	void setOnClick(pybind11::function);
+	void onEnter () override;
+	void onLeave () override;
+	void onClick (glm::vec2 pos, int button, int action) override;
+private:
 	pybind11::function _onEnter;
 	pybind11::function _onLeave;
 	pybind11::function _onClick;
-	int _priority;
+
 };
+
+
 
 inline int HotSpot::getPriority() const {
 	return _priority;
@@ -39,15 +51,15 @@ inline const Shape *const HotSpot::getShape() const {
 	return _shape.get();
 }
 
-inline void HotSpot::setOnEnter(pybind11::function f) {
+inline void PyHotSpot::setOnEnter(pybind11::function f) {
 	_onEnter = f;
 }
 
-inline void HotSpot::setOnLeave(pybind11::function f) {
+inline void PyHotSpot::setOnLeave(pybind11::function f) {
 	_onLeave = f;
 }
 
-inline void HotSpot::setOnClick(pybind11::function f) {
+inline void PyHotSpot::setOnClick(pybind11::function f) {
 	_onClick = f;
 }
 

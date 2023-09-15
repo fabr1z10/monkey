@@ -135,3 +135,9 @@ void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) 
 //    std::cout << "###\n";
 //    Batch::draw(s);
 //}
+
+void LineBatch::setInvisible(int index) {
+	int offset = index * _vertsPerElement;
+	for (size_t i = 0; i < 4; ++i) _data[offset+i].color.a = 0;
+
+}

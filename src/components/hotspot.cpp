@@ -12,6 +12,9 @@ HotSpot::HotSpot(std::shared_ptr<Shape> shape, const pybind11::kwargs& args) : C
 	_priority = py_get_dict<int>(args, "priority", 0);
 }
 
+PyHotSpot::PyHotSpot(std::shared_ptr<Shape> shape, const pybind11::kwargs &args) : HotSpot(shape, args) {}
+
+
 HotSpot::~HotSpot() noexcept {
 	Engine::instance().getRoom()->getRunner<HotSpotManager>()->remove(this);
 }
@@ -31,7 +34,7 @@ void HotSpot::start() {
 	Engine::instance().getRoom()->getRunner<HotSpotManager>()->add(this);
 }
 
-void HotSpot::onEnter() {
+void PyHotSpot::onEnter() {
 	std::cout << "entering ...\n";
 	if (_onEnter) {
 		_onEnter(m_node);
@@ -39,7 +42,7 @@ void HotSpot::onEnter() {
 
 }
 
-void HotSpot::onLeave() {
+void PyHotSpot::onLeave() {
 	std::cout << "leaving ...\n";
 	if (_onLeave) {
 		_onLeave(m_node);
@@ -47,7 +50,7 @@ void HotSpot::onLeave() {
 
 }
 
-void HotSpot::onClick(glm::vec2 pos, int button, int action) {
+void PyHotSpot::onClick(glm::vec2 pos, int button, int action) {
 	std::cout << "clicking\n";
 	if (_onClick) {
 		_onClick(m_node, pos,button,action); //(pos, button, action);

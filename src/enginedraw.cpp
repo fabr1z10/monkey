@@ -147,7 +147,7 @@ void FrameBufferEngineDraw::draw(Room *room) {
     glViewport(vp.x, vp.y, vp.z, vp.w);
     glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 
-    glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_blitShader->use();
     glBindVertexArray(quadVAO);
     m_blitShader->setInt("screenTexture", 0);

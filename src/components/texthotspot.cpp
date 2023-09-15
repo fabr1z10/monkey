@@ -2,7 +2,7 @@
 #include "../shapes/aabb.h"
 #include "../node.h"
 
-TextHotSpot::TextHotSpot(const pybind11::kwargs &args) : HotSpot(nullptr, args) {
+TextHotSpot::TextHotSpot(const pybind11::kwargs &args) : PyHotSpot(nullptr, args) {
 
 }
 

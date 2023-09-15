@@ -2,7 +2,7 @@
 
 #include "hotspot.h"
 
-class TextHotSpot : public HotSpot {
+class TextHotSpot : public PyHotSpot {
 public:
 	TextHotSpot(const pybind11::kwargs& args);
 

@@ -23,7 +23,7 @@ void Text::buildQuads() {
 	int lineCount = 1;
 	std::vector<int> rowStart {0};
 
-	glm::vec3 position(0.f, -_font->getLineHeight(), 0.f);
+	glm::vec3 position(0.f, -_lineHeight, 0.f);
 	for (const auto& c : s32) {
 		//font->get
 		// one quad per character
@@ -34,7 +34,7 @@ void Text::buildQuads() {
 			rowLength.push_back(position.x);
 			_size.x = std::max(_size.x, position.x);
 			position.x = 0;
-			position.y -= _font->getLineHeight();
+			position.y -= _lineHeight;
 			rowStart.push_back(_quadCount);
 			lineCount++;
 			continue;
@@ -61,8 +61,8 @@ void Text::buildQuads() {
 	}
 	rowLength.push_back(position.x);
 	_size.x = std::max(_size.x, position.x);
-	_size.y = _font->getLineHeight() * rowLength.size();
-
+	_size.y = _lineHeight * rowLength.size();
+	_lines = lineCount;
 	rowStart.push_back(_quadCount);
 	_bottomLeft.x = 0.f;
 	_bottomLeft.y = -_size.y;
@@ -78,7 +78,7 @@ void Text::buildQuads() {
 	}
 	if (_vAlign != VAlign::TOP) {
 		for (auto& quad : frame.quads) {
-			quad.anchorPoint.y -= (lineCount * _font->getLineHeight()) * (_vAlign == VAlign::CENTER ? 0.5f : 1.0f);
+			quad.anchorPoint.y -= (lineCount * _lineHeight) * (_vAlign == VAlign::CENTER ? 0.5f : 1.0f);
 		}
 		_bottomLeft.y += _size.y * (_vAlign == VAlign::CENTER ? 0.5f : 1.f);
 	}
@@ -89,7 +89,7 @@ void Text::buildQuads() {
 	_animations["main"] = anim;
 }
 
-Text::Text(const pybind11::kwargs & args) : IQuad() {
+Text::Text(const pybind11::kwargs & args) : IQuad(), _lines(0) {
 
 	_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
 
@@ -100,6 +100,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad() {
 	_font = font.get();
 
     _text = py_get_dict<std::string>(args, "text");
+    _lineHeight = py_get_dict<float>(args, "line_height", font->getLineHeight());
 	buildQuads();
 
 }

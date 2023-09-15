@@ -11,6 +11,7 @@ Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMa
 }
 
 Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nullptr) {
+	m_active = other.m_active;
 	_tag = other._tag;
 	_scale = other._scale;
 	for (const auto& child : other.m_children) {
@@ -68,6 +69,10 @@ void Node::add(std::shared_ptr<Node> node) {
     if (engine.isRunning()) {
         node->startRecursive();
     }
+	if (!m_active) {
+		node->setActive(m_active);
+	}
+
 }
 
 // relocate a node in the node-tree
@@ -118,6 +123,9 @@ void Node::setActive(bool active) {
     m_active = active;
     for (const auto& comp : m_components) {
         comp.second->setActive(active);
+    }
+    for (const auto& c : m_children) {
+    	c.second->setActive(active);
     }
 }
 

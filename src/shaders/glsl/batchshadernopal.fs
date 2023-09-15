@@ -15,9 +15,9 @@ void main()
     vec2 tc = vec2(TexBounds[0] + fract(TexCoords.x) * (TexBounds[1] - TexBounds[0]),
                    TexBounds[2] + fract(TexCoords.y) * (TexBounds[3] - TexBounds[2]));
     vec4 texColor = texture(tex_main, tc);
-    //if (texColor.a < 0.5) {
-    //    discard;
-    //}
+    if (texColor.a < 0.5) {
+        discard;
+    }
     FragColor=texColor;
 }
 

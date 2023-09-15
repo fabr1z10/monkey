@@ -30,6 +30,7 @@ public:
 	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
 	glm::vec2 getSize() const;
 	glm::vec2 getBottomLeft() const;
+	int getLines() const;
 private:
 	void buildQuads();
 	Font* _font;
@@ -38,8 +39,14 @@ private:
 	HAlign _hAlign;
 	VAlign _vAlign;
 	std::string _text;
+	int _lines;
+	float _lineHeight;
 
 };
+
+inline int Text::getLines() const {
+	return _lines;
+}
 
 inline glm::vec2 Text::getSize() const {
 	return _size;

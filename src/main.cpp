@@ -310,13 +310,15 @@ PYBIND11_MODULE(monkey, m) {
 	/// --- components ---
 	py::class_<Component, std::shared_ptr<Component>>(m, "component");
 
-	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "hotspot")
-		.def(py::init<std::shared_ptr<Shape>, const pybind11::kwargs&>())
-		.def("set_on_enter", &HotSpot::setOnEnter)
-		.def("set_on_leave", &HotSpot::setOnLeave)
-		.def("set_on_click", &HotSpot::setOnClick);
+	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");
 
-	py::class_<TextHotSpot, HotSpot, std::shared_ptr<TextHotSpot>>(m, "text_hotspot")
+	py::class_<PyHotSpot, HotSpot, std::shared_ptr<PyHotSpot>>(m, "hotspot")
+		.def(py::init<std::shared_ptr<Shape>, const pybind11::kwargs&>())
+		.def("set_on_enter", &PyHotSpot::setOnEnter)
+		.def("set_on_leave", &PyHotSpot::setOnLeave)
+		.def("set_on_click", &PyHotSpot::setOnClick);
+
+	py::class_<TextHotSpot, PyHotSpot, std::shared_ptr<TextHotSpot>>(m, "text_hotspot")
 		.def(py::init<pybind11::kwargs&>());
 
 
