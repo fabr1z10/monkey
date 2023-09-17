@@ -7,7 +7,7 @@ class ItemList : public Node {
 public:
 	ItemList(const pybind11::kwargs& args);
 
-	void addItem (const std::string& text);
+	void addItem (const pybind11::kwargs& args);
 	void clear();
 	void start() override;
 	void down();
@@ -42,6 +42,7 @@ private:
 	pybind11::function _callback;
 	pybind11::function _onEnter;
 	pybind11::function _onLeave;
+	pybind11::function _onClick;
 	int _arrowPalUnselected;
 	int _arrowPalSelected;
 	int _firstVisibleItem;

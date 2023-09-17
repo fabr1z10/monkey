@@ -47,6 +47,7 @@ ItemList::ItemList(const pybind11::kwargs& inargs) : Node(), _itemCount(0), _row
 	if (_useMouse) {
 		_onEnter = py_get_dict<pybind11::function>(inargs, "on_enter", pybind11::function());
 		_onLeave = py_get_dict<pybind11::function>(inargs, "on_leave", pybind11::function());
+		_onClick = py_get_dict<pybind11::function>(inargs, "on_click", pybind11::function());
 	}
 
 
@@ -185,10 +186,12 @@ void ItemList::updateIndices() {
 	}
 }
 
-void ItemList::addItem(const std::string &text) {
+void ItemList::addItem(const pybind11::kwargs& kwargs) {
 
 	pybind11::kwargs args;
 	pybind11::kwargs args1;
+	auto text = py_get_dict<std::string>(kwargs, "text");
+	auto obj = py_get_dict<pybind11::object>(kwargs, "user_data", pybind11::object());
 	args["font"] = _font;
 	args["text"] = text;
 	args1["batch"] = _batch;
@@ -212,7 +215,13 @@ void ItemList::addItem(const std::string &text) {
 		if (_onLeave) {
 			textHotspot->setOnLeave(_onLeave);
 		}
+		if (_onClick) {
+			textHotspot->setOnClick(_onClick);
+		}
 		node->addComponent(textHotspot);
+	}
+	if (obj) {
+		node->setUserData(obj);
 	}
 	add(node);
 	_items.push_back(item);
