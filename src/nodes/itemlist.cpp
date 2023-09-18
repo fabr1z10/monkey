@@ -158,6 +158,7 @@ void ItemList::down() {
 }
 
 void ItemList::updateIndices() {
+	if (!m_active) return;
 	_cursor->setPosition(0.f, -(_rowSelected-_rowTop)*_lineHeight, 0.f);
 	_firstVisibleItem = -1;
 	_lastVisibleItem = -1;
