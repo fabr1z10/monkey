@@ -15,7 +15,7 @@ Move::Move(const pybind11::kwargs& args) : NodeAction(args) {
 	m_tickCount = 0;
 }
 
-int Move::run(double) {
+int Move::process(double) {
 	if (m_tickCount == m_ticks[m_next]) {
 		const auto& pos = m_positions[m_next];
 		m_node->setPosition(pos.x, pos.y, pos.z);
@@ -50,7 +50,7 @@ void MoveBy::start() {
 }
 
 
-int MoveBy::run(double dt) {
+int MoveBy::process(double dt) {
 	auto dtf = static_cast<float>(dt);
 	auto dist = m_speed * dtf;
 	m_distanceTraveled += dist;

@@ -10,7 +10,7 @@ public:
 	explicit MoveDynamics(const pybind11::kwargs&);
 	void start() override;
 
-	int run(double) override;
+	int process(double) override;
 
 private:
 	glm::vec3 m_initialVelocity;

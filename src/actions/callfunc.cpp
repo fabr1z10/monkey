@@ -6,7 +6,7 @@ CallFunc::CallFunc(pybind11::function f) {
 
 
 
-int CallFunc::run(double) {
+int CallFunc::process(double) {
 	m_func();
 	return 0;
 }

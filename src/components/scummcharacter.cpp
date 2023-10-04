@@ -4,8 +4,13 @@
 
 ScummCharacter::ScummCharacter(const pybind11::kwargs &args) {
 	_speed = py_get_dict<float>(args, "speed");
-	_charType = static_cast<CharType>(py_get_dict<int>(args, "type", 1));
+		_charType = static_cast<CharType>(py_get_dict<int>(args, "type", 1));
 	_textPalette = py_get_dict<int>(args, "text_pal", 0);
+	_direction = py_get_dict<glm::vec2>(args, "direction", glm::vec2(0.f));
+}
+
+void ScummCharacter::start() {
+	setAnimation("idle");
 }
 
 void ScummCharacter::setAnimation(const std::string & anim) {

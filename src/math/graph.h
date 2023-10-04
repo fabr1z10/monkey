@@ -113,6 +113,12 @@ public:
 	std::unordered_map<int, std::unordered_map<int, float>>& getEdges() {
 		return m_edges;
 	}
+
+	void clear() {
+		m_nodes.clear();
+		m_edges.clear();
+		m_next = 0;
+	}
 private:
 	std::unordered_map<K, std::unordered_map<int, float>> m_edges;
 	std::unordered_map<K, T> m_nodes;

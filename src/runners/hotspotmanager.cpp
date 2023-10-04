@@ -65,6 +65,9 @@ void HotSpotManager::cursorPosCallback(GLFWwindow *, double x, double y) {
 		int prioritySelected = 0;
 		for (const auto &hotspot : data.hotspots) {
 			// transorm world coords in local coords
+			if (!hotspot->isActive()) {
+				continue;
+			}
 			glm::vec3 lP = P - hotspot->getNode()->getWorldPosition();
 			if (hotspot->getShape()->isInside(lP)) {
 
@@ -101,4 +104,7 @@ void HotSpotManager::remove(HotSpot * h) {
 	auto room = Engine::instance().getRoom();
 	auto camId = room->getBatch(h->getBatch())->getCameraId();
 	_items.at(camId).hotspots.erase(h);
+	if (m_previous == h) {
+		m_previous = nullptr;
+	}
 }

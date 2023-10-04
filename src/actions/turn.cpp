@@ -32,6 +32,6 @@ void Turn::start() {
 
 }
 
-int Turn::run(double dt) {
+int Turn::process(double dt) {
 	return 0;
 }

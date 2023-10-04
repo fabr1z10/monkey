@@ -165,6 +165,7 @@ void Engine::run() {
     // main loop
     while (!m_shutdown) {
         m_roomId = py_get<std::string>(m_settings, "room");
+		m_scheduledForRemoval.clear();
         std::cout << " loading room: " << m_roomId << std::endl;
         loadRoom();
         // start up all nodes and components

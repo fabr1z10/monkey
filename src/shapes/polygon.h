@@ -18,7 +18,7 @@ public:
 	const std::vector<glm::vec2>& getOutline() const;
 	const std::vector<glm::vec2>& getHoleOutline(int index) const;
 	int getHoleCount() const;
-
+	void addHole(const std::vector<float>& points);
 private:
 	std::vector<glm::vec2> _points;
 	std::vector<std::vector<glm::vec2>> _holes;

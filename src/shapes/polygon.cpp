@@ -7,6 +7,15 @@ Polygon::Polygon(const std::vector<float> &points) {
 	}
 }
 
+void Polygon::addHole(const std::vector<float> &points) {
+	std::vector<glm::vec2> p;
+	for (size_t i = 0; i < points.size(); i+=2) {
+		p.emplace_back(points[i], points[i+1]);
+	}
+	_holes.push_back(p);
+
+}
+
 bool Polygon::isInside(glm::vec3 P) const {
 	if (pnpoly(_points, P)) {
 		for (const auto& hole : _holes) {

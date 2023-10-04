@@ -11,7 +11,7 @@ struct EdgeData {
 	glm::vec2 start, end;
 	glm::vec2 normalInAtStart;
 	glm::vec2 normalInAtEnd;
-	glm::vec2 normal;
+	glm::vec2 normal;					// normal directed ** inside ** the polygon
 	float length;
 	bool isHole;
 };
@@ -43,6 +43,12 @@ protected:
 
 
 class WalkAreaPolygon : public WalkArea {
+private:
+	struct Wall {
+		glm::vec2 A;
+		glm::vec2 B;
+		bool active;
+	};
 public:
 	explicit WalkAreaPolygon(const pybind11::kwargs& args);
 	//void onClick(glm::vec2 P, int, int);
@@ -50,7 +56,9 @@ public:
 	int addNode(int, glm::vec2 point, int edgeId) override;
 	std::vector<glm::vec2> getPath(glm::vec2 A, glm::vec2 B) override;
 private:
-
+	bool intersectWalls(glm::vec2 A, glm::vec2 B);
+	void addEdges(const std::vector<glm::vec2>&, bool isHole);
+	void createGraph();
 
 
 
@@ -58,7 +66,7 @@ private:
 
 
 	std::shared_ptr<Polygon> _poly;
-
+	std::vector<Wall> _walls;
 
 
 

@@ -44,6 +44,14 @@ WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _sca
 
 	_graph = std::make_shared<Graph<int, glm::vec2>>();
 
+	auto zFunc = py_get_dict<std::vector<float>>(args, "z_func", std::vector<float>());
+	auto scaleFunc = py_get_dict<std::vector<float>>(args, "scale_func", std::vector<float>());
+	if (!zFunc.empty()) {
+		setZFunction(std::make_shared<PiecewiseLinearYFunc>(zFunc));
+	}
+	if (!scaleFunc.empty()) {
+		setScaleFunction(std::make_shared<PiecewiseLinearYFunc>(scaleFunc));
+	}
 
 }
 
@@ -85,6 +93,27 @@ WalkAreaPolyline::WalkAreaPolyline(const pybind11::kwargs &args) : WalkArea(args
 
 }
 
+void WalkAreaPolygon::addEdges(const std::vector<glm::vec2> & outline, bool isHole) {
+	glm::vec2 uvec = glm::normalize(outline.front() - outline.back());
+	for (size_t i = 0; i < outline.size(); ++i) {
+		EdgeData edge;
+		glm::vec2 A = outline[i];
+		glm::vec2 B = outline[(i+1) % outline.size()];
+		edge.start = A;
+		edge.end = B;
+		edge.istart =-1;
+		edge.iend =-1;
+		edge.unitVec = glm::normalize(B-A);
+		edge.normal = rot90(edge.unitVec, isHole);
+		edge.length = glm::length(B-A);
+		edge.normalInAtStart = glm::normalize(edge.unitVec - uvec);
+		if (i > 0)
+			_edgeData.back().normalInAtEnd = edge.normalInAtStart;
+		uvec = edge.unitVec;
+		_edgeData.push_back(edge);
+	}
+}
+
 WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) {
 	_margin = py_get_dict<float>(args, "margin", 0.1f);
 
@@ -96,7 +125,25 @@ WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) 
 	auto polygon = py_get_dict<std::vector<float>>(args, "poly");
 	assert(polygon.size() % 2 == 0);
 
+
+
 	_poly = std::make_shared<Polygon>(polygon);
+	if (args["holes"] && !args["holes"].is_none()) {
+		for (const auto& hole : args["holes"]) {
+			_poly->addHole(hole.cast<std::vector<float>>());
+		}
+	}
+
+	if (args["walls"] && !args["walls"].is_none()) {
+		for (const auto& wall : args["walls"]) {
+			Wall w;
+			w.A = py_get_dict<glm::vec2>(wall, "A");
+			w.B = py_get_dict<glm::vec2>(wall, "B");
+			w.active = py_get_dict<bool>(wall, "active", true);
+			_walls.push_back(w);
+		}
+
+	}
 
 	auto batchId = py_get_dict<std::string>(args, "batch", "");
 	if (!batchId.empty()) {
@@ -114,38 +161,27 @@ WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) 
 //	});
 //	addComponent(hotspot);
 
+	createGraph();
 
-	// create graph
-	//_graph = std::make_shared<Graph<int, glm::vec2>>();
+
+
+
+}
+
+void WalkAreaPolygon::createGraph() {
+	_graph->clear();
+	_edgeData.clear();
 	int offset = 10;
 	const auto& outline = _poly->getOutline();
 	addPath(outline, false, offset);
 	offset += outline.size();
+	addEdges(outline, false);
 	int holeCount = _poly->getHoleCount();
 	for (size_t i =0 ; i< holeCount; ++i) {
-		const auto& outline = _poly->getHoleOutline(i);
-		addPath(outline, true, offset);
-		offset += outline.size();
-	}
-
-	// prepare edge data
-	glm::vec2 uvec = glm::normalize(outline.front() - outline.back());
-	for (size_t i = 0; i < outline.size(); ++i) {
-		EdgeData edge;
-		glm::vec2 A = outline[i];
-		glm::vec2 B = outline[(i+1) % outline.size()];
-		edge.start = A;
-		edge.end = B;
-		edge.istart =-1;
-		edge.iend =-1;
-		edge.unitVec = glm::normalize(B-A);
-		edge.normal = rot90(edge.unitVec, false);
-		edge.length = glm::length(B-A);
-		edge.normalInAtStart = glm::normalize(edge.unitVec - uvec);
-		if (i > 0)
-			_edgeData.back().normalInAtEnd = edge.normalInAtStart;
-		uvec = edge.unitVec;
-		_edgeData.push_back(edge);
+		const auto& holeOutline = _poly->getHoleOutline(i);
+		addPath(holeOutline, true, offset);
+		offset += holeOutline.size();
+		addEdges(holeOutline, true);
 	}
 
 }
@@ -179,6 +215,10 @@ WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) 
 //
 //}
 
+
+// adds nodes to the graph:
+// - Every ‘concave vertex’ (a vertex with an interior angle greater than 180°, so an inward pointing vertex) is a node
+// - For holes, all convex vertices in the inner polygon are nodes in the graph instead of the concave vertices.
 void WalkAreaPolygon::addPath(const std::vector<glm::vec2>& path, bool isHole, int offset) {
 	// consider special case of path made of only 2 points (segment)
 
@@ -189,6 +229,7 @@ void WalkAreaPolygon::addPath(const std::vector<glm::vec2>& path, bool isHole, i
 		glm::vec2 edgeNext = path[in] - path[ic];
 		glm::vec2 edgePrev = path[ic] - path[ip];
 		float flip = isHole ? -1.0f : 1.0f;
+		// cross product is proportional to sin(theta), so theta > 180 (concave vertex) means f < 0
 		auto f = cross2D(edgePrev, edgeNext) * flip;
 		if (f < 0) {
 			glm::vec2 u = glm::normalize(edgeNext);
@@ -204,6 +245,19 @@ void WalkAreaPolygon::addPath(const std::vector<glm::vec2>& path, bool isHole, i
 	} while (ic != 0);
 }
 
+bool WalkAreaPolygon::intersectWalls(glm::vec2 A, glm::vec2 B) {
+	float t{0.f};
+	for (const auto& wall : _walls) {
+		if (wall.active) {
+			seg2seg(A, B, wall.A, wall.B, t);
+			if (t >= 0 && t <= 1) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 
 int WalkAreaPolygon::addNode(int id, glm::vec2 point, int edgeId) {
 	// adds a node to the graph
@@ -216,7 +270,7 @@ int WalkAreaPolygon::addNode(int id, glm::vec2 point, int edgeId) {
 	for (const auto& node : _graph->getNodes()) {
 		if (node.first != id) {
 			glm::vec2 P = node.second;
-			if (!_poly->intersectSegment(point, P, t)) {
+			if (!_poly->intersectSegment(point, P, t) && !intersectWalls(point, P)) {
 				_graph->addEdge(id, node.first, glm::length(point-P));
 				std::cout << "Added edge from node " << id << " to node " << node.first << "\n";
 			}

@@ -8,6 +8,13 @@ void Action::setId(long id) {
 	_id = id;
 }
 
+int Action::run(double dt) {
+	if (_status == 2) {
+		return 0;
+	}
+	return process(dt);
+}
+
 //
 //void Scheduler::start() {
 //    for (auto& b : m_actions) {
@@ -49,7 +56,35 @@ void Script::kill() {
 	m_done = true;
 	// maybe do something more?
 	for (auto& action : m_current) {
-		action->end();
+		action->stop();
+	}
+	// stop all actions ...
+	while (!m_current.empty()) {
+		std::vector<int> complete;
+		for (auto it = m_current.begin(); it != m_current.end();) {
+			(*it)->onEnd();
+			for (const auto& edge : m_edges.at((*it)->getId())) {
+				m_inDegree[edge]--;
+			}
+			complete.push_back((*it)->getId());
+			it = m_current.erase(it);
+		}
+
+		// check for new actions
+		auto it = m_inDegree.begin();
+		while (it != m_inDegree.end()) {
+			// Check if in degree is 0
+			if (it->second == 0) {
+				// erase() function returns the iterator of the next
+				// to last deleted element.
+				auto action = m_actions.at(it->first);
+				action->start();
+				m_current.push_back(action);
+				it = m_inDegree.erase(it);
+			} else {
+				it++;
+			}
+		}
 	}
 }
 
@@ -61,7 +96,7 @@ void Script::update(double dt) {
 	for (auto it = m_current.begin(); it != m_current.end();) {
 		if ((*it)->run(dt) == 0) {
 			// action is completed
-			(*it)->end();
+			(*it)->onEnd();
 			for (const auto& edge : m_edges.at((*it)->getId())) {
 				m_inDegree[edge]--;
 			}
@@ -73,7 +108,7 @@ void Script::update(double dt) {
 	}
 
 	// check for new actions
-	std::unordered_map<long, int>::iterator it = m_inDegree.begin();
+	auto it = m_inDegree.begin();
 	while (it != m_inDegree.end()) {
 		// Check if in degree is 0
 		if (it->second == 0) {

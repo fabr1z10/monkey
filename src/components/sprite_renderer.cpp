@@ -7,7 +7,7 @@
 
 
 
-SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args), m_frame(0), m_ticks(0) {
+SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args), m_frame(0), m_ticks(0), _currentFrameTicks(0) {
     //_batch = dynamic_cast<QuadBatch*>(batch);
     assert(_batch != nullptr);
     _paletteId = py_get_dict<unsigned>(args, "pal", 0);
@@ -65,7 +65,10 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 
 
 void SpriteRenderer::start() {
+	m_frame = 0;
 	m_animInfo = m_sprite->getAnimationInfo(m_animation);
+	_currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
+
 }
 
 void SpriteRenderer::updateBatch() {
@@ -109,9 +112,9 @@ void SpriteRenderer::updateBatch() {
 
 
 bool SpriteRenderer::updateTick(int tick) {
-    const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
-    int tck = tick % a.ticks;
-    if (tck >= a.ticks) {
+    //const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
+    int tck = tick % _currentFrameTicks;
+    if (tck >= _currentFrameTicks) {
         // increment frame. if this animation is
         m_frame++;
         if (m_frame >= m_animInfo->frames.size()) {
@@ -119,6 +122,8 @@ bool SpriteRenderer::updateTick(int tick) {
             m_complete = true;
             return true;
         }
+        _currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
+
     }
     return false;
 
@@ -130,9 +135,9 @@ void SpriteRenderer::update(double dt) {
 	//_spriteBatch->setQuad(_quadId, bottomLeft, a.size, a.texture_coordinates, glm::vec2(1, 1), a.paletteIndex, flipx, false);
 
     updateBatch();
-    const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
+    //const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
 
-    if (m_ticks >= a.ticks) {
+    if (m_ticks >= _currentFrameTicks) {
         // increment frame. if this animation is
         m_frame++;
         if (m_frame >= m_animInfo->frames.size()) {
@@ -140,7 +145,9 @@ void SpriteRenderer::update(double dt) {
 			m_complete = true;
         }
         m_ticks = 0;
-    } else {
+		_currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
+
+	} else {
         // if it's not time to update frame, increment current frame length
         m_ticks++;
     }

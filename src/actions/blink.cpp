@@ -13,12 +13,12 @@ void Blink::start() {
 	m_time = 0.f;
 }
 
-void Blink::end() {
+void Blink::onEnd() {
 	//m_renderer->setMultColor(glm::vec4(1.f));
 
 }
 
-int Blink::run(double dt) {
+int Blink::process(double dt) {
 	m_time += static_cast<float>(dt);
 	if (m_time > m_duration) {
 		return 0.f;

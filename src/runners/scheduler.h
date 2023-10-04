@@ -10,18 +10,26 @@ class Node;
 
 class Action {
 public:
-	Action() : _status(0), _id(-1) {}
+	Action() : _status(0), _id(-1), _forcedStop(false) {}
 	// return 0 when completed
 	virtual void start();
-	virtual int run(double) = 0;
-	virtual void end();
+	int run(double);
+	// stop current action
+	void stop();
+	void init(Node*);
+	// virtual stuff
+	virtual int process(double) = 0;
+
+	// wrap up code goes here
+	virtual void onEnd() {}
+
 	long getId() const;
 	void setId(long);
-	void init(Node*);
-
 protected:
+
 	int _status; // 0 not started, 1 running, 2 done
 	long _id;
+	bool _forcedStop;
 
 };
 
@@ -29,9 +37,11 @@ inline void Action::start() {
 	_status = 1;
 }
 
-inline void Action::end() {
+inline void Action::stop() {
 	_status = 2;
 }
+
+
 
 class Script {
 public:

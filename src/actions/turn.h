@@ -7,9 +7,9 @@
 
 class Turn : public NodeAction {
 public:
-	Turn(const pybind11::kwargs&);
+	explicit Turn(const pybind11::kwargs&);
 	void start() override;
-	int run(double) override;
+	int process(double) override;
 private:
 	glm::vec2 _dir;
 	ScummCharacter* _sc;

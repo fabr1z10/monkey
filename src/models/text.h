@@ -40,6 +40,7 @@ private:
 	VAlign _vAlign;
 	std::string _text;
 	int _lines;
+	float _width;
 	float _lineHeight;
 
 };

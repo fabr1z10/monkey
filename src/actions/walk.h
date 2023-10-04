@@ -9,7 +9,7 @@ class Walk : public NodeAction {
 public:
 	Walk(const pybind11::kwargs&);
 	void start() override;
-	int run(double) override;
+	int process(double) override;
 private:
 	struct WalkSegment {
 		// unit vector

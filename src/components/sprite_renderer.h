@@ -48,6 +48,7 @@ private:
 	std::shared_ptr<IQuad> m_sprite;
 	int m_ticks;
 	bool m_complete;
+	int _currentFrameTicks;
 
 };
 

@@ -3,22 +3,50 @@
 #include "nodeaction.h"
 #include <glm/glm.hpp>
 #include "../components/scummcharacter.h"
+#include "../mouselistener.h"
 
 
-class Say : public NodeAction {
+class ShowMessageBase : public NodeAction {
 public:
-	Say(const pybind11::kwargs&);
-	void start() override;
-	int run(double) override;
-	void end() override;
-private:
+	ShowMessageBase(const pybind11::kwargs&);
+	int process(double) override;
+	void onEnd() override;
+protected:
+	void createTextNode(float x, float y, unsigned);
 	std::string _text;
 	std::string _fontId;
 	std::string _batchId;
 	float _timeout;
-	ScummCharacter* _sc;
 	glm::vec2 _margin;
-	float _offset;
 	double _timer;
 	Node* _textNode;
+	Node* _msgParentNode;
+	float _width;
+	int _removeEvents;
+	std::shared_ptr<MouseListener> _mouseListener;
+};
+
+class Say : public ShowMessageBase {
+public:
+	Say(const pybind11::kwargs&);
+	void start() override;
+private:
+	ScummCharacter* _sc;
+	float _offset;
+};
+
+class ShowMessage : public ShowMessageBase {
+public:
+	ShowMessage(const pybind11::kwargs&);
+	void start() override;
+private:
+	glm::vec2 _position;
+	unsigned _palette;
+};
+
+
+class OnClickRemove : public MouseListener {
+public:
+	void cursorPosCallback(GLFWwindow*, double, double) override {}
+	void mouseButtonCallback(GLFWwindow*, int, int, int) override;
 };

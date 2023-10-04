@@ -23,6 +23,10 @@ void StaticQuadRenderer::setModel(std::shared_ptr<Model> model, const pybind11::
 }
 
 void StaticQuadRenderer::start() {
+
+}
+
+void StaticQuadRenderer::update(double) {
 	auto worldTransform = m_node->getWorldMatrix();
 
 	auto bottomLeft = worldTransform * glm::vec4(m_shift - glm::vec3(_model->getAnchorPoint(), 0.f), 1.f);
@@ -42,7 +46,7 @@ void StaticQuadRenderer::start() {
 
 
 
- 	_batch->setQuad(_primitiveIds[0],
+	_batch->setQuad(_primitiveIds[0],
 					bottomLeft,
 					_model->getSize(),
 					glm::vec4(tx0, tx1, ty0, ty1),

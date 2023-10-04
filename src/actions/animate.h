@@ -7,7 +7,7 @@ class Animate : public NodeAction {
 public:
 	Animate(const pybind11::kwargs&);
 	void start() override;
-	int run(double) override;
+	int process(double) override;
 private:
 	SpriteRenderer* m_renderer;
 	std::string m_animation;

@@ -53,7 +53,7 @@ void Walk::start() {
 
 }
 
-int Walk::run(double dt) {
+int Walk::process(double dt) {
 	if (_segments.empty()) {
 		return 0;
 	}

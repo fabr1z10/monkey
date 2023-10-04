@@ -13,19 +13,24 @@ struct Desc {
     glm::vec2 size;
     glm::vec2 repeat;
     glm::vec4 textureCoordinates;
+    float advance;
     bool flipv;
     bool fliph;
     //unsigned paletteIndex;
 };
 
 struct Frame {
-    Frame() : ticks(0), boxId(-1) {
+    Frame() : ticks(0), boxId(-1), tickMin(-1), maxTicks(0) {
         for (int i = 0; i < MAX_JOINTS; ++i) {
             joints[i] = glm::vec2(0.f, 0.f);
         }
     }
     std::vector<Desc> quads;
     int ticks;
+    int tickMin;
+    int maxTicks;
+	int getTicks() const;
+
     int boxId;
     std::array<glm::vec2, MAX_JOINTS> joints;
 };

@@ -6,7 +6,7 @@
 class Move : public NodeAction {
 public:
 	explicit Move(const pybind11::kwargs&);
-	int run(double) override;
+	int process(double) override;
 
 private:
 	int m_next;
@@ -18,7 +18,7 @@ private:
 class MoveBy : public NodeAction {
 public:
 	explicit MoveBy(const pybind11::kwargs&);
-	int run(double) override;
+	int process(double) override;
 	void start() override;
 
 private:

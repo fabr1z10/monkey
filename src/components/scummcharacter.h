@@ -18,6 +18,7 @@ public:
 	int getTextPalette() const;
 	void setDirection(glm::vec2);
 	using Base = ScummCharacter;
+	void start() override;
 private:
 	CharType _charType;
 	float _speed;

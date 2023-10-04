@@ -2,6 +2,15 @@
 #include "../components/quad_renderer.h"
 #include "../pyhelper.h"
 #include "../spritesheet.h"
+#include "../math/random.h"
+
+int Frame::getTicks() const {
+	if (tickMin == -1) {
+		return ticks;
+	}
+	return Random::instance().getUniform(tickMin, tickMin + maxTicks);
+
+}
 
 std::shared_ptr<Renderer> IQuad::getRenderer(const pybind11::kwargs& args) {
     return std::make_shared<SpriteRenderer>(args);

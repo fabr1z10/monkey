@@ -70,6 +70,18 @@ std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm
 	}
 	auto lines = std::make_shared<PolyChain>();
 	lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
+
+	for (size_t i = 0; i < p->getHoleCount(); ++i) {
+		auto& c = p->getHoleOutline(i);
+		std::vector<float> d;
+		for (const auto& point : c) {
+			d.push_back(point.x);
+			d.push_back(point.y);
+			d.push_back(0.f);
+		}
+		lines->initChain(color, d, true);//1, pts, glm::vec4(1.f));
+
+	}
 	return lines;
 }
 

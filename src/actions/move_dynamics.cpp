@@ -19,7 +19,7 @@ void MoveDynamics::start() {
 
 }
 
-int MoveDynamics::run(double dt) {
+int MoveDynamics::process(double dt) {
 	auto dtf = static_cast<float>(dt);
 
 	m_dyn->m_velocity += m_acceleration * dtf;

@@ -5,8 +5,8 @@
 
 class Delay : public Action {
 public:
-	Delay(float t);
-	int run(double) override;
+	explicit Delay(float t);
+	int process(double) override;
 	void start() override;
 private:
 	float m_time;

@@ -106,6 +106,7 @@ void ItemList::clear() {
 	_nextRow = 0;
 	_rowSelected=0;
 	_rowTop=0;
+	_items.clear();
 	updateIndices();
 
 }

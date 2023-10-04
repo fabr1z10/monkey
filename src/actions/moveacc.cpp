@@ -11,7 +11,7 @@ MoveAccelerated::MoveAccelerated(const pybind11::kwargs& args) : NodeAction(args
 }
 
 
-int MoveAccelerated::run(double dt) {
+int MoveAccelerated::process(double dt) {
 	auto dtf = static_cast<float>(dt);
 	if (m_time > m_timeOut) {
 		return 0;

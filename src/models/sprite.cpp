@@ -93,6 +93,8 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 				animInfo.loop = frameCount;
 			}
 			frameInfo.ticks = el["ticks"].as<int>(defaultTicks);
+			frameInfo.tickMin = el["tick_min"].as<int>(-1);
+			frameInfo.maxTicks = el["max_ticks"].as<int>(0);
 			frameInfo.boxId = el["box"].as<int>(defaultBox);
 			//int boxFrame = el["box"].as<int>(boxAnim);
 			//bool fliph = el["fliph"].as<bool>(false);

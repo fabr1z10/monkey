@@ -12,11 +12,11 @@ void Animate::start() {
 	NodeAction::start();
 	m_renderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
 	assert(m_renderer != nullptr);
-	m_renderer->setAnimation(m_animation);
+	m_renderer->setAnimationForce(m_animation);
 
 }
 
-int Animate::run(double) {
+int Animate::process(double) {
 	if (!m_sync) {
 		return 0;
 	}

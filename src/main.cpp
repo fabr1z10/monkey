@@ -57,6 +57,7 @@
 #include "math/funcxy.h"
 #include "actions/turn.h"
 #include "actions/say.h"
+#include "models/paramcurve.h"
 
 
 namespace py = pybind11;
@@ -125,6 +126,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_runner", &Room::addRunner)
 		.def("add_camera", &Room::addCamera)
 		.def("add_batch", &Room::addBatch)
+		.def_property("on_start", nullptr, &Room::setOnStart)
         //.def("add_line_batch", &Room::addLinesBatch)
 		.def("set_clear_color", &Room::setClearColor)
 		.def("set_main_cam", &Room::setMainCam)
@@ -232,7 +234,8 @@ PYBIND11_MODULE(monkey, m) {
     //py::class_<Lines, Model, std::shared_ptr<Lines>>(mm)
     py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")
         .def(py::init<const pybind11::kwargs&>());
-
+	py::class_<ParametricCurve, Model, std::shared_ptr<ParametricCurve>>(mm, "curve")
+		.def(py::init<const pybind11::kwargs&>());
 //    py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
 //        .def(py::init<const pybind11::kwargs&>());
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
@@ -303,8 +306,12 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "turn")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<Say, NodeAction, std::shared_ptr<Say>>(ma, "say")
+	py::class_<ShowMessageBase, NodeAction, std::shared_ptr<ShowMessageBase>>(ma, "show_msg");
+	py::class_<Say, ShowMessageBase, std::shared_ptr<Say>>(ma, "say")
 		.def(py::init<const pybind11::kwargs&>());
+	py::class_<ShowMessage, ShowMessageBase, std::shared_ptr<ShowMessage>>(ma, "msg")
+		.def(py::init<const pybind11::kwargs&>());
+
 
 
 	/// --- components ---

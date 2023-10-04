@@ -6,7 +6,7 @@
 class MoveAccelerated : public NodeAction {
 public:
 	explicit MoveAccelerated(const pybind11::kwargs&);
-	int run(double) override;
+	int process(double) override;
 
 private:
 	float m_time;

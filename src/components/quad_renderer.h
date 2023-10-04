@@ -13,7 +13,7 @@ public:
 	void start() override;
 
 	// nothing to do in update! (no animation)
-	void update(double) override {}
+	void update(double) override ;
 private:
 	unsigned _camId;
 	StaticQuad* _model;

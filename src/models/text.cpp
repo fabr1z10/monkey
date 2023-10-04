@@ -24,10 +24,13 @@ void Text::buildQuads() {
 	std::vector<int> rowStart {0};
 
 	glm::vec3 position(0.f, -_lineHeight, 0.f);
+
+	size_t indexBeginCurrentWord = 0;
 	for (const auto& c : s32) {
 		//font->get
 		// one quad per character
 		Desc quad;
+
 
 		if (c == '\n') {
 			std::cout << " suca newline\n";
@@ -37,6 +40,7 @@ void Text::buildQuads() {
 			position.y -= _lineHeight;
 			rowStart.push_back(_quadCount);
 			lineCount++;
+			indexBeginCurrentWord = frame.quads.size();
 			continue;
 		}
 
@@ -45,9 +49,31 @@ void Text::buildQuads() {
 		//std::cout << "ciao " << charInfo.advance << "\n";
 		if (c == 0x20) {
 			position.x += charInfo.advance;
+			indexBeginCurrentWord = frame.quads.size();
 			continue;
+		}
 
-
+		if (position.x > _width) {
+			// reset location of current word
+			// get x of first letter
+			float x = position.x;
+			position.x = 0;
+			position.y -= _lineHeight;
+			if (indexBeginCurrentWord < frame.quads.size()) {
+				glm::vec3 pos = frame.quads[indexBeginCurrentWord].location;
+				rowStart.push_back(indexBeginCurrentWord);
+				if (pos.x > 0) {
+					x = pos.x;
+					for (size_t i = indexBeginCurrentWord; i < frame.quads.size(); ++i) {
+						frame.quads[i].location.x -= pos.x;
+						frame.quads[i].location.y = position.y;
+						position.x += frame.quads[i].advance;
+					}
+				}
+			} else {
+				rowStart.push_back(_quadCount);
+			}
+			rowLength.push_back(x);
 		}
 
 		quad.textureCoordinates = glm::vec4(charInfo.tx, charInfo.tx + charInfo.tw, charInfo.ty, charInfo.ty + charInfo.th);
@@ -55,6 +81,7 @@ void Text::buildQuads() {
 		quad.location = position;
 		quad.anchorPoint = glm::vec3(0.f, -charInfo.oy, 0.f);
 		position.x += charInfo.advance;
+		quad.advance = charInfo.advance;
 		quad.repeat = glm::vec2(1, 1);
 		frame.quads.push_back(quad);
 		_quadCount++;
@@ -101,6 +128,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad(), _lines(0) {
 
     _text = py_get_dict<std::string>(args, "text");
     _lineHeight = py_get_dict<float>(args, "line_height", font->getLineHeight());
+    _width = py_get_dict<float>(args, "width", std::numeric_limits<float>::infinity());
 	buildQuads();
 
 }

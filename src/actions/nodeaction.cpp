@@ -11,7 +11,7 @@ NodeAction::NodeAction(const pybind11::kwargs& args) {
 		// TAG
 		_tag = py_get_dict<std::string>(args, "tag", "");
 		if (_tag.empty()) {
-			m_node = args["node"].cast<std::shared_ptr<Node>>().get();
+			m_node = py_get_dict<std::shared_ptr<Node>>(args, "node", nullptr).get();
 		}
 	}
 }
