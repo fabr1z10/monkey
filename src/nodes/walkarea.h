@@ -16,7 +16,15 @@ struct EdgeData {
 	bool isHole;
 };
 
+
+struct Wall {
+	glm::vec2 A;
+	glm::vec2 B;
+	bool active;
+};
+
 class WalkArea : public Node {
+
 public:
 	struct ClosestPointResult {
 
@@ -33,22 +41,20 @@ public:
 	void setZFunction(std::shared_ptr<FuncXY> f);
 	void setScaleFunction(std::shared_ptr<FuncXY> f);
 	virtual int addNode(int newNodeId, glm::vec2 point, int edgeId) = 0;
+	void setWall(int wallId, bool active);
 protected:
 	std::shared_ptr<FuncXY> _zFunc;
 	std::shared_ptr<FuncXY> _scaleFunc;
 
 	std::shared_ptr<Graph<int, glm::vec2>> _graph;
 	std::vector<EdgeData> _edgeData;
+	std::vector<Wall> _walls;
+	virtual void createGraph() = 0;
 };
 
 
 class WalkAreaPolygon : public WalkArea {
-private:
-	struct Wall {
-		glm::vec2 A;
-		glm::vec2 B;
-		bool active;
-	};
+
 public:
 	explicit WalkAreaPolygon(const pybind11::kwargs& args);
 	//void onClick(glm::vec2 P, int, int);
@@ -58,7 +64,7 @@ public:
 private:
 	bool intersectWalls(glm::vec2 A, glm::vec2 B);
 	void addEdges(const std::vector<glm::vec2>&, bool isHole);
-	void createGraph();
+	void createGraph() override;
 
 
 
@@ -66,7 +72,6 @@ private:
 
 
 	std::shared_ptr<Polygon> _poly;
-	std::vector<Wall> _walls;
 
 
 
@@ -79,6 +84,7 @@ public:
 	explicit WalkAreaPolyline(const pybind11::kwargs& args);
 	std::vector<glm::vec2> getPath(glm::vec2 A, glm::vec2 B) override;
 	int addNode(int, glm::vec2 point, int edgeId) override;
+	void createGraph() override {}
 private:
 	std::unordered_map<int, std::pair<int, int>> _edgeEndPoints;
 };

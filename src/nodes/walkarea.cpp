@@ -36,6 +36,15 @@ void WalkArea::setZFunction(std::shared_ptr<FuncXY> f) {
 	_zFunc = f;
 }
 
+void WalkArea::setWall(int wallId, bool active) {
+	if (wallId > _walls.size() -1 || _walls[wallId].active == active) {
+		return;
+	}
+	_walls[wallId].active = active;
+	// rebuild graph
+	createGraph();
+}
+
 void WalkArea::setScaleFunction(std::shared_ptr<FuncXY> f) {
 	_scaleFunc = f;
 }
@@ -52,7 +61,16 @@ WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _sca
 	if (!scaleFunc.empty()) {
 		setScaleFunction(std::make_shared<PiecewiseLinearYFunc>(scaleFunc));
 	}
+	if (args["walls"] && !args["walls"].is_none()) {
+		for (const auto& wall : args["walls"]) {
+			Wall w;
+			w.A = py_get_dict<glm::vec2>(wall, "A");
+			w.B = py_get_dict<glm::vec2>(wall, "B");
+			w.active = py_get_dict<bool>(wall, "active", true);
+			_walls.push_back(w);
+		}
 
+	}
 }
 
 WalkAreaPolyline::WalkAreaPolyline(const pybind11::kwargs &args) : WalkArea(args) {
@@ -134,16 +152,7 @@ WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) 
 		}
 	}
 
-	if (args["walls"] && !args["walls"].is_none()) {
-		for (const auto& wall : args["walls"]) {
-			Wall w;
-			w.A = py_get_dict<glm::vec2>(wall, "A");
-			w.B = py_get_dict<glm::vec2>(wall, "B");
-			w.active = py_get_dict<bool>(wall, "active", true);
-			_walls.push_back(w);
-		}
 
-	}
 
 	auto batchId = py_get_dict<std::string>(args, "batch", "");
 	if (!batchId.empty()) {
@@ -378,9 +387,31 @@ std::vector<glm::vec2> WalkAreaPolygon::getPath(glm::vec2 A, glm::vec2 B) {
 	std::vector<int> p;
 	_graph->shortestPath(0, 1, p);
 	std::vector<glm::vec2> path;
-	for (auto it = p.rbegin(); it != p.rend(); it++) {
-		auto p = _graph->getNode(*it);
-		path.push_back(p);
+	if (p.size() <= 1) {
+		float t{1.f};
+		glm::vec2 unit = glm::normalize(B1.closestPoint - A1.closestPoint);
+		for (const auto& e : _edgeData) {
+			float u {std::numeric_limits<float>::infinity()};
+			if (seg2seg(A1.closestPoint, B1.closestPoint, e.start, e.end, u)) {
+				if (u > 0 && u < t) t = u;
+			}
+		}
+		for (const auto& w : _walls) {
+			if (w.active) {
+				float u {std::numeric_limits<float>::infinity()};
+				if (seg2seg(A1.closestPoint, B1.closestPoint, w.A, w.B, u)) {
+					if (u > 0 && u < t) t = u;
+				}
+			}
+		}
+		path.push_back(A1.closestPoint);
+		path.push_back(A1.closestPoint + t * (B1.closestPoint - A1.closestPoint) - 10.f * unit);
+	} else {
+
+		for (auto it = p.rbegin(); it != p.rend(); it++) {
+			auto p = _graph->getNode(*it);
+			path.push_back(p);
+		}
 	}
 	std::cout << "\n";
 	_graph->removeNode(0);

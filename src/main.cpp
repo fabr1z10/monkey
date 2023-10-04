@@ -173,6 +173,7 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "_walkarea")
 		.def("set_z_function", &WalkArea::setZFunction)
+		.def("set_wall", &WalkArea::setWall)
 		.def("set_scale_function", &WalkArea::setScaleFunction);
 
 	py::class_<WalkAreaPolygon, WalkArea, std::shared_ptr<WalkAreaPolygon>>(m, "walkarea")
