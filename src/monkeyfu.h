@@ -12,6 +12,7 @@ Engine& getEngine();
 std::shared_ptr<Sprite> getSprite(const std::string& id);
 std::shared_ptr<MultiNode> getMulti(const std::string& id, const std::string& batch);
 Node* getNode(int id);
+std::unordered_set<Node*> getNodes(const std::string& tag);
 IBatch* getBatch(int shader, int batch);
 Camera* getCamera(int id);
 

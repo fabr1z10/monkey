@@ -3,12 +3,14 @@
 #include "../component.h"
 #include "../shape.h"
 #include <memory>
+#include <pybind11/pybind11.h>
+
 
 class CollisionEngine;
 
 class Collider : public Component {
 public:
-    Collider(int flag, int mask, int tag);
+    Collider(const pybind11::kwargs& args);
     virtual ~Collider();
     Bounds getStaticBounds() const;
     glm::vec4 bounds() const;
@@ -31,6 +33,8 @@ protected:
     int m_flag;
     int m_mask;
     int m_tag;
+	std::string _batchId;
+
 };
 
 inline int Collider::getCollisionTag() const {
@@ -48,7 +52,7 @@ inline int Collider::getCollisionMask() const {
 
 class SimpleCollider : public Collider {
 public:
-    SimpleCollider(std::shared_ptr<Shape>, int flag, int mask, int tag);
+    SimpleCollider(const pybind11::kwargs&); //std::shared_ptr<Shape>, int flag, int mask, int tag);
     std::shared_ptr<Shape> getShape() override;
 private:
     void generateDebugMesh() override;

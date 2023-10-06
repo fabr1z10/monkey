@@ -18,7 +18,9 @@ public:
     long getId() const;
     Node* getParent();
     void setParent(Node*);
+    std::string getAnimation() const;
     virtual void setAnimation(const std::string&);
+
     virtual void add(std::shared_ptr<Node>);
     void moveTo(std::shared_ptr<Node> node);
     void removeChild(long);

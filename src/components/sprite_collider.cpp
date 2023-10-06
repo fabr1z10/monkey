@@ -7,11 +7,10 @@
 #include <iostream>
 
 
-SpriteCollider::SpriteCollider(int flag, int mask, int tag, const pybind11::kwargs& args) : Collider(flag, mask, tag),
+SpriteCollider::SpriteCollider(const pybind11::kwargs& args) : Collider(args),
 	m_sprite(nullptr), m_renderer(nullptr) {
 	m_castMask = py_get_dict<int>(args, "cast_mask", 0);
 	m_castTag = py_get_dict<int>(args, "cast_tag", 0);
-	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
 void SpriteCollider::start() {

@@ -375,13 +375,18 @@ WalkArea::ClosestPointResult WalkArea::closestPointIn(glm::vec2 P) const {
 	return result;
 }
 
-std::vector<glm::vec2> WalkAreaPolygon::getPath(glm::vec2 A, glm::vec2 B) {
+std::vector<glm::vec2> WalkAreaPolygon::getPath(glm::vec2 A, glm::vec2 B, int& out) {
+	out = 0;
 	auto A1 = closestPointIn(A);
 	auto B1 = closestPointIn(B);
 	// 0 marks the start point, 1 marks the end point
 	addNode(0, A1.closestPoint, A1.edgeId);
 	addNode(1, B1.closestPoint, B1.edgeId);
 
+	auto length = glm::length(B1.closestPoint-A1.closestPoint);
+	if (length < 0.1f) {
+		return std::vector<glm::vec2>();
+	}
 
 
 	std::vector<int> p;
@@ -404,8 +409,13 @@ std::vector<glm::vec2> WalkAreaPolygon::getPath(glm::vec2 A, glm::vec2 B) {
 				}
 			}
 		}
+		out = 1;
+		if (t * length <= 10.f) {
+			return std::vector<glm::vec2>();
+		}
 		path.push_back(A1.closestPoint);
 		path.push_back(A1.closestPoint + t * (B1.closestPoint - A1.closestPoint) - 10.f * unit);
+
 	} else {
 
 		for (auto it = p.rbegin(); it != p.rend(); it++) {
@@ -419,7 +429,8 @@ std::vector<glm::vec2> WalkAreaPolygon::getPath(glm::vec2 A, glm::vec2 B) {
 	return path;
 }
 
-std::vector<glm::vec2> WalkAreaPolyline::getPath(glm::vec2 A, glm::vec2 B) {
+std::vector<glm::vec2> WalkAreaPolyline::getPath(glm::vec2 A, glm::vec2 B, int& out) {
+	out = 0;
 	auto A1 = closestPointIn(A);
 	auto B1 = closestPointIn(B);
 	// 0 marks the start point, 1 marks the end point

@@ -40,6 +40,7 @@ struct Animation {
 
     std::vector<Frame> frames;
     int loop;   // -1 no loop
+    std::string next;
 };
 
 class SpriteSheet;

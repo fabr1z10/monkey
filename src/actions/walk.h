@@ -26,5 +26,6 @@ private:
 	int _current;
 	float _currentLength;			// distance walked in current segment
 	float _speed;
+	int _returnValue;
 	ScummCharacter* _sc;
 };

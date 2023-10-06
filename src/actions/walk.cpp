@@ -25,15 +25,21 @@ void Walk::start() {
 
 		//std::cout << " target: " << actualTarget.x << ", " << actualTarget.y << "\n";
 		glm::vec2 startPosition = m_node->getWorldPosition();
-		auto path = walkarea->getPath(startPosition, _target);
+		int out{0};
+		auto path = walkarea->getPath(startPosition, _target, out);
+		_returnValue = (out == 0 ? 0 : 2);
 
 		std::cout << "---\n";
 		for (size_t i = 1; i < path.size(); ++i) {
 			//std::cout << p.x << ", " << p.y << "\n";
 			WalkSegment seg;
 			glm::vec2 displacement = path[i] - path[i - 1];
-			seg.direction = glm::normalize(displacement);
 			seg.length = glm::length(displacement);
+			if (seg.length == 0.f) {
+				continue;
+			}
+			seg.direction = glm::normalize(displacement);
+
 			seg.endPoint = path[i];
 			_segments.push_back(seg);
 		}
@@ -55,7 +61,7 @@ void Walk::start() {
 
 int Walk::process(double dt) {
 	if (_segments.empty()) {
-		return 0;
+		return _returnValue;
 	}
 
 	const auto& cseg = _segments[_current];
@@ -66,6 +72,7 @@ int Walk::process(double dt) {
 
 
 	_currentLength += _speed * dtf;
+	std::cerr << "abc = " << cseg.length << "\n";
 	if (_currentLength >= cseg.length) {
 		m_node->setPosition(cseg.endPoint.x, cseg.endPoint.y, 0.f);
 		_current++;
@@ -73,7 +80,7 @@ int Walk::process(double dt) {
 		if (_current >= _segments.size()) {
 			// end and set idle animation
 			_sc->setAnimation("idle");
-			return 0;
+			return _returnValue;
 		} else {
 			_sc->setDirection(_segments[_current].direction);
 			_sc->setAnimation("walk");

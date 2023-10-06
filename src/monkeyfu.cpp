@@ -22,6 +22,10 @@ Node* getNode(int id) {
 	return Engine::instance().getNode(id);
 }
 
+std::unordered_set<Node*> getNodes(const std::string& tag) {
+	return Engine::instance().getNodes(tag);
+}
+
 Camera* getCamera(int id) {
     return Engine::instance().getRoom()->getCamera(id);
 }

@@ -140,9 +140,14 @@ void SpriteRenderer::update(double dt) {
     if (m_ticks >= _currentFrameTicks) {
         // increment frame. if this animation is
         m_frame++;
+
         if (m_frame >= m_animInfo->frames.size()) {
-            m_frame = m_animInfo->loop == -1 ? m_animInfo->frames.size() - 1 : m_animInfo->loop;
-			m_complete = true;
+        	if (!m_animInfo->next.empty()) {
+        		setAnimation(m_animInfo->next);
+        	} else {
+				m_frame = m_animInfo->loop == -1 ? m_animInfo->frames.size() - 1 : m_animInfo->loop;
+				m_complete = true;
+			}
         }
         m_ticks = 0;
 		_currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();

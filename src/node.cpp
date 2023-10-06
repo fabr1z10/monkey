@@ -50,6 +50,11 @@ Node::~Node() {
     Engine::instance().rmNode(this);
 }
 
+
+std::string Node::getAnimation() const {
+	return getComponent<Renderer>()->getAnimation();
+}
+
 void Node::setAnimation(const std::string& animId) {
 	getComponent<Renderer>()->setAnimation(animId);
 }

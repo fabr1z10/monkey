@@ -94,6 +94,7 @@ PYBIND11_MODULE(monkey, m) {
 	m.def("get_sprite", &getSprite);
 	m.def("get_multi", &getMulti);
 	m.def("get_node", &getNode, py::return_value_policy::reference);
+	m.def("get_nodes", &getNodes, py::return_value_policy::reference);
 	//m.def("get_batch", &getBatch, py::return_value_policy::reference);
     m.def("get_camera", &getCamera, py::return_value_policy::reference);
 	m.def("close_room", &closeRoom);
@@ -149,6 +150,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_position", &Node::setPosition)
         .def("set_model", &Node::setModel)
         .def("set_palette", &Node::setPalette)
+        .def_property_readonly("anim", &Node::getAnimation)
         .def("set_animation", &Node::setAnimation)
         .def("add_component", &Node::addComponent)
 		.def("set_state", &Node::setState)
@@ -335,11 +337,11 @@ PYBIND11_MODULE(monkey, m) {
 		.def("set_collision_flag", &Collider::setCollisionFlag);
 
 	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "collider")
-		.def(py::init<std::shared_ptr<Shape>, int, int, int>());
+		.def(py::init<const pybind11::kwargs&>());
 
 	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "sprite_collider")
 		.def("set_override", &SpriteCollider::setCollisionOverride)
-		.def(py::init<int, int, int, const pybind11::kwargs&>());
+		.def(py::init<const pybind11::kwargs&>());
 
 	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "controller")
 		.def_property_readonly("grounded", &Controller::grounded)

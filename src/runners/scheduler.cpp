@@ -94,12 +94,17 @@ void Script::update(double dt) {
 
 	std::vector<int> complete;
 	for (auto it = m_current.begin(); it != m_current.end();) {
-		if ((*it)->run(dt) == 0) {
+			auto retval = (*it)->run(dt);
+		if (retval == 0) {
 			// action is completed
 			(*it)->onEnd();
-			for (const auto& edge : m_edges.at((*it)->getId())) {
+			for (const auto &edge : m_edges.at((*it)->getId())) {
 				m_inDegree[edge]--;
 			}
+			complete.push_back((*it)->getId());
+			it = m_current.erase(it);
+		} else if (retval == 2) {
+			// action canceled
 			complete.push_back((*it)->getId());
 			it = m_current.erase(it);
 		} else {

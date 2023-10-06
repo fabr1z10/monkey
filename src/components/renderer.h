@@ -25,11 +25,13 @@ public:
     ShaderType getShaderType() const;
     void setPalette(unsigned paletteId);
 	using Base = Renderer;
+	std::string getAnimation() const;
     virtual void setAnimation(const std::string&) {}
     virtual bool isComplete();
     void setShift(glm::vec3);
     void setZLayer(float);
 protected:
+	std::string m_animation;
 
     //std::shared_ptr<Model> m_model;
     //glm::vec4 m_multColor;
@@ -50,4 +52,8 @@ protected:
 
 inline void Renderer::setZLayer(float z) {
 	_zLayer = z;
+}
+
+inline std::string Renderer::getAnimation() const {
+	return m_animation;
 }

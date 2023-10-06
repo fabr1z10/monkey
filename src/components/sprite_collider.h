@@ -6,7 +6,7 @@
 
 class SpriteCollider : public Collider {
 public:
-	SpriteCollider(int flag, int mask, int tag, const pybind11::kwargs& args);
+	SpriteCollider(const pybind11::kwargs& args);
 	std::shared_ptr<Shape> getShape() override;
 	void setCollisionOverride(const std::string&, int, int, int);
 	void start() override;
@@ -22,7 +22,6 @@ private:
 	SpriteRenderer* m_renderer;
 	Sprite* m_sprite;
 	void generateDebugMesh() override;
-	std::string _batchId;
 };
 
 

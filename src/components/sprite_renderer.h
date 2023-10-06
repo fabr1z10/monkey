@@ -43,7 +43,6 @@ private:
     unsigned _camId;
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const Animation* m_animInfo;
-	std::string m_animation;
 	int m_frame;
 	std::shared_ptr<IQuad> m_sprite;
 	int m_ticks;

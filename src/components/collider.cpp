@@ -6,8 +6,13 @@
 #include "../node.h"
 #include "../models/modelmake.h"
 
-Collider::Collider(int flag, int mask, int tag) : m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr), m_flag(flag), m_mask(mask), m_tag(tag) {
+using namespace pybind11::literals; // to bring in the `_a` literal
 
+Collider::Collider(const pybind11::kwargs& args) : m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr) {
+	m_flag = py_get_dict<int>(args, "flag");
+	m_mask = py_get_dict<int>(args, "mask");
+	m_tag = py_get_dict<int>(args, "tag");
+	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
 Collider::~Collider() {
@@ -70,7 +75,8 @@ std::type_index Collider::getType() {
 
 
 
-SimpleCollider::SimpleCollider(std::shared_ptr<Shape> shape, int flag, int mask, int tag) : Collider(flag, mask, tag), m_shape(shape) {
+SimpleCollider::SimpleCollider(const pybind11::kwargs& args) : Collider(args) {//std::shared_ptr<Shape> shape, int flag, int mask, int tag) : Collider(flag, mask, tag), m_shape(shape) {
+	m_shape = py_get_dict<std::shared_ptr<Shape>>(args, "shape");
     m_staticBounds = m_shape->getBounds();
 }
 
@@ -81,7 +87,7 @@ void SimpleCollider::generateDebugMesh() {
     auto& modelMaker = ModelMaker::instance();
     auto model = modelMaker.make(m_shape, glm::vec4(1.f), FillType::OUTLINE);
     auto node = std::make_shared<Node>();
-    node->setModel(model);
+    node->setModel(model, pybind11::dict("batch"_a = _batchId));
     m_node->add(node);
     m_debugNode = node.get();
 }

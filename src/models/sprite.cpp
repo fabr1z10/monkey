@@ -78,6 +78,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 		Animation animInfo;
 		std::vector<Frame> frameInfos;
 		animInfo.loop = a["loop"].as<int>(0);
+		animInfo.next = a["next"].as<std::string>("");
 		defaultBox = a["box"].as<int>(-1);
 		//animInfo.loopFrame = anit->second["loop_frame"].as<int>(0);
 		//int boxAnim = anit->second["box"].as<int>(-1);
