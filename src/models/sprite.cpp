@@ -79,6 +79,11 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 		std::vector<Frame> frameInfos;
 		animInfo.loop = a["loop"].as<int>(0);
 		animInfo.next = a["next"].as<std::string>("");
+
+		auto onEnd = a["on_end"].as<std::string>("");
+		if (!onEnd.empty()) {
+			animInfo._onEnd = Engine::instance().getScript(onEnd);
+		}
 		defaultBox = a["box"].as<int>(-1);
 		//animInfo.loopFrame = anit->second["loop_frame"].as<int>(0);
 		//int boxAnim = anit->second["box"].as<int>(-1);

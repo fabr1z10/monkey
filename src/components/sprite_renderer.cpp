@@ -142,6 +142,9 @@ void SpriteRenderer::update(double dt) {
         m_frame++;
 
         if (m_frame >= m_animInfo->frames.size()) {
+        	if (m_animInfo->_onEnd) {
+        		m_animInfo->_onEnd(m_node);
+        	}
         	if (!m_animInfo->next.empty()) {
         		setAnimation(m_animInfo->next);
         	} else {

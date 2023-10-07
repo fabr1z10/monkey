@@ -65,7 +65,7 @@ public:
 	void unregisterToMouseEvent(MouseListener*);
 	//IBatch* getBatch(int);
 
-
+	pybind11::function getScript(const std::string& name) const;
 private:
 
 
@@ -82,6 +82,7 @@ private:
     void loadShaders();
     pybind11::object m_game;
     pybind11::object m_settings;
+    pybind11::object m_scripts;
     std::string m_title;
     std::string m_roomId;
     glm::ivec2 m_windowSize;
