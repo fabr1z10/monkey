@@ -80,6 +80,7 @@ void Text::buildQuads() {
 		quad.size = glm::vec2(charInfo.w, charInfo.h);
 		quad.location = position;
 		quad.anchorPoint = glm::vec3(0.f, -charInfo.oy, 0.f);
+		quad.palette = _pal;
 		position.x += charInfo.advance;
 		quad.advance = charInfo.advance;
 		quad.repeat = glm::vec2(1, 1);
@@ -129,6 +130,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad(), _lines(0) {
     _text = py_get_dict<std::string>(args, "text");
     _lineHeight = py_get_dict<float>(args, "line_height", font->getLineHeight());
     _width = py_get_dict<float>(args, "width", std::numeric_limits<float>::infinity());
+    _pal = py_get_dict<int>(args, "pal", 0);
 	buildQuads();
 
 }

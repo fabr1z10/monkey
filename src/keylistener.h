@@ -17,6 +17,8 @@ struct KeyboardEvent {
 	}
 };
 
+
+
 namespace std {
 	template<>
 	struct hash<KeyboardEvent> {

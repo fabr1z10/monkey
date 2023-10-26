@@ -9,7 +9,7 @@ class Node;
 
 class Walk2D : public State {
 public:
-	Walk2D() : State() {}
+	Walk2D(const pybind11::kwargs&);
 	void start() override;
 	void init(const pybind11::kwargs& args) override;
 	void setParent(StateMachine*, const pybind11::kwargs&) override;
@@ -36,7 +36,9 @@ protected:
 	bool m_left;
 	bool m_right;
 	bool m_up;
+	bool m_down;
 	bool m_jmp;
+
 };
 
 

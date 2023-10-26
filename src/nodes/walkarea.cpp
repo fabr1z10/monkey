@@ -53,13 +53,13 @@ WalkArea::WalkArea(const pybind11::kwargs &args) : Node(), _zFunc(nullptr), _sca
 
 	_graph = std::make_shared<Graph<int, glm::vec2>>();
 
-	auto zFunc = py_get_dict<std::vector<float>>(args, "z_func", std::vector<float>());
-	auto scaleFunc = py_get_dict<std::vector<float>>(args, "scale_func", std::vector<float>());
-	if (!zFunc.empty()) {
-		setZFunction(std::make_shared<PiecewiseLinearYFunc>(zFunc));
+	auto zFunc = py_get_dict<std::shared_ptr<FuncXY>>(args, "z_func", nullptr);
+	auto scaleFunc = py_get_dict<std::shared_ptr<FuncXY>>(args, "scale_func", nullptr);
+	if (zFunc != nullptr) {
+		setZFunction(zFunc);
 	}
-	if (!scaleFunc.empty()) {
-		setScaleFunction(std::make_shared<PiecewiseLinearYFunc>(scaleFunc));
+	if (scaleFunc != nullptr) {
+		setScaleFunction(scaleFunc);
 	}
 	if (args["walls"] && !args["walls"].is_none()) {
 		for (const auto& wall : args["walls"]) {

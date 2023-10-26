@@ -42,7 +42,7 @@ private:
 	int _lines;
 	float _width;
 	float _lineHeight;
-
+    int _pal;
 };
 
 inline int Text::getLines() const {

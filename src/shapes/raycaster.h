@@ -23,6 +23,7 @@ class RayCaster2D : public RayCaster {
 public:
 	RayCaster2D();
 private:
+    RayCastHit rayCastAABB(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
 	RayCastHit rayCastPoly(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
 	void updateRaycastHit(RayCastHit& r, glm::vec2 ray, glm::vec2 line, float u, int si);
 };

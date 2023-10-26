@@ -9,7 +9,7 @@ class Node;
 
 class FoeWalk2D : public Walk2D {
 public:
-	FoeWalk2D() : Walk2D() {}
+	FoeWalk2D(const pybind11::kwargs& kwargs);
 
     void setParent(StateMachine*, const pybind11::kwargs&) override;
 

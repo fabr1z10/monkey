@@ -103,7 +103,7 @@ void SpriteRenderer::updateBatch() {
                               size,
                               quad.textureCoordinates,
                               quad.repeat,
-                              _paletteId,
+                              quad.palette,
                               flipx,
                               quad.flipv,
                               _zLayer);

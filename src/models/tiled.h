@@ -1,6 +1,7 @@
-//#pragma once
-//
-//#include "../model.h"
+#pragma once
+
+
+#include "iquad.h"
 //#include "../components/renderer.h"
 //
 //struct TiledFrameInfo {
@@ -10,7 +11,11 @@
 //    int ticks;
 //};
 //
-//class TiledModel : public Model {
+class TiledModel : public IQuad {
+public:
+    TiledModel(const pybind11::kwargs&);
+
+};
 //public:
 //    TiledModel();
 //    explicit TiledModel(const pybind11::kwargs&);

@@ -24,6 +24,7 @@ int Action::run(double dt) {
 
 Script::Script(const pybind11::kwargs& args) : m_done(false), _nextId(0), _lastAddedId(-1), _loopId(-1) {
 	m_scriptId = py_get_dict<std::string>(args, "id", "");
+	//_loopId = py_get_dict<long>(args, "loop", -1);
 }
 
 

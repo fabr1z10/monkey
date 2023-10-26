@@ -17,6 +17,7 @@ public:
 	std::shared_ptr<Font> getFont(const std::string&);
 	std::string toString();
 	std::string getId() const;
+	glm::ivec2 getTileSize() const;
 private:
 	std::shared_ptr<Tex> _texture;
 	std::shared_ptr<Palette> _palette;
@@ -25,8 +26,12 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<Font>> _fonts;
 	std::shared_ptr<QuadBatch> _batch;
 	std::string _id;
-
+    glm::ivec2 _tileSize;
 };
+
+inline glm::ivec2 SpriteSheet::getTileSize() const {
+    return _tileSize;
+}
 
 inline std::string SpriteSheet::getId() const {
 	return _id;

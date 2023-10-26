@@ -7,12 +7,15 @@
 #include "platform.h"
 #include <glm/gtx/transform.hpp>
 //#include "../shapes/shapemodel.h"
+using namespace pybind11::literals; // to bring in the `_a` literal
 
 
 Controller::Controller(const pybind11::kwargs& args) : m_debugShape(nullptr) {
 	m_size = py_get_dict<glm::vec3>(args, "size", glm::vec3(0.f));
 	m_center = py_get_dict<glm::vec3>(args, "center", glm::vec3(m_size.x * 0.5f, 0.f, 0.f));
-	computeCoordinates();
+    _batchId = py_get_dict<std::string>(args, "batch", "");
+
+    computeCoordinates();
 }
 
 
@@ -32,8 +35,9 @@ void Controller::setDebugShape() {
 		}
 		auto node = std::make_shared<Node>();
 		auto model = getDebugModel();
-		node->setModel(model);
-		m_node->add(node);
+		//node->setModel(model);
+        node->setModel(model, pybind11::dict("batch"_a = _batchId));
+        m_node->add(node);
 		m_debugShape = node.get();
 	}
 }

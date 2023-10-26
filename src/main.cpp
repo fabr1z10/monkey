@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include "pyhelper.h"
 #include "png.h"
 #include "engine.h"
 #include "node.h"
@@ -58,6 +59,7 @@
 #include "actions/turn.h"
 #include "actions/say.h"
 #include "models/paramcurve.h"
+#include "components/cursor.h"
 
 
 namespace py = pybind11;
@@ -146,6 +148,7 @@ PYBIND11_MODULE(monkey, m) {
         .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("text", &Node::getText, &Node::setText)
         .def("add", &Node::add)
+        .def("move", &Node::movea)
         .def("move_to", &Node::moveTo)
         .def("set_position", &Node::setPosition)
         .def("set_model", &Node::setModel)
@@ -239,8 +242,8 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<const pybind11::kwargs&>());
 	py::class_<ParametricCurve, Model, std::shared_ptr<ParametricCurve>>(mm, "curve")
 		.def(py::init<const pybind11::kwargs&>());
-//    py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
-//        .def(py::init<const pybind11::kwargs&>());
+    py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
+        .def(py::init<const pybind11::kwargs&>());
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
@@ -379,13 +382,19 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<ScummCharacter, Component, std::shared_ptr<ScummCharacter>>(m, "scumm_char")
 		.def(py::init<const pybind11::kwargs&>());
+
+	py::class_<Cursor, Component, std::shared_ptr<Cursor>>(m, "cursor")
+		.def(py::init<const pybind11::kwargs&>());
+
+
+
 	/// --- states ---
 	py::class_<State, std::shared_ptr<State>>(m, "state");
 	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
 	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
-		.def(py::init<>());
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<FoeWalk2D, State, std::shared_ptr<FoeWalk2D>>(m, "walk_2d_foe")
-		.def(py::init<>());
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Climb, State, std::shared_ptr<Climb>>(m, "climb")
 		.def(py::init<>());
 	py::class_<Idle, State, std::shared_ptr<Idle>>(m, "idle")
@@ -397,7 +406,11 @@ PYBIND11_MODULE(monkey, m) {
 
 	/// --- other ---
 	py::class_<FuncXY, std::shared_ptr<FuncXY>>(m, "funcxy");
-	py::class_<PiecewiseLinearYFunc, FuncXY, std::shared_ptr<PiecewiseLinearYFunc>>(m, "func_ply")
-		.def(py::init<const std::vector<float>&>());
+	py::class_<FuncConst, FuncXY, std::shared_ptr<FuncConst>>(m, "func_const")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<PiecewiseLinearFunc, FuncXY, std::shared_ptr<PiecewiseLinearFunc>>(m, "func_pl")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<GridFunction, FuncXY, std::shared_ptr<GridFunction>>(m, "func_grid")
+		.def(py::init<const pybind11::kwargs&>());
 
 }

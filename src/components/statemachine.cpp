@@ -60,6 +60,9 @@ void StateMachine::start() {
 void StateMachine::addState(const std::string& id, std::shared_ptr<State> state, const pybind11::kwargs& args) {
     state->setParent(this, args);
     m_states.insert(std::make_pair(id, state));
+    if (m_initialState.empty()) {
+    	m_initialState = id;
+    }
 }
 
 

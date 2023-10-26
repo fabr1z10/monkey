@@ -21,6 +21,7 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string &file) : _id(i
 		}
 
 		auto sheet = f["sheet"].as<std::string>();
+		_tileSize = f["tile_size"].as<glm::ivec2>(glm::ivec2(1, 1));
 		_texture = std::make_shared<Tex>(directory + "/" + sheet);
 
 		if (_texture->hasPalette()) {

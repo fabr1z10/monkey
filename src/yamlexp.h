@@ -36,6 +36,29 @@ namespace YAML
 		}
 	};
 
+    template<>
+    struct convert<glm::ivec2>
+    {
+        static Node encode(const glm::ivec2& rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            return node;
+        }
+
+        static bool decode(const Node& node, glm::ivec2& rhs)
+        {
+            if (!node.IsSequence() || node.size() != 2)
+                return false;
+
+            rhs.x = node[0].as<int>();
+            rhs.y = node[1].as<int>();
+            return true;
+        }
+    };
+
+
 	template<>
 	struct convert<glm::vec3>
 	{

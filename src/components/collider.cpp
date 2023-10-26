@@ -43,7 +43,7 @@ void Collider::start() {
     //m_engine = Engine::get().GetRunner<ICollisionEngine>();
     if (m_engine == nullptr) {
 
-        //GLIB_FAIL("The room has a collider component but no collision engine is loaded.");
+        GLIB_FAIL("The room has a collider component but no collision engine is loaded.");
     } else {
         m_engine->add(this);
         m_callbackHandle = m_node->onMove.reg([&] (Node* e) { m_engine->move(this); } );

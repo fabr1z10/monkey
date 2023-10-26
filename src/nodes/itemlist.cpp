@@ -54,15 +54,15 @@ ItemList::ItemList(const pybind11::kwargs& inargs) : Node(), _itemCount(0), _row
 	auto f = AssetManager::instance().getFont(_font);
 	_lineHeight = py_get_dict<float>(inargs, "line_height", f->getLineHeight());
 
-	auto cursor = std::make_shared<Node>();
-	pybind11::kwargs args;
-	args["text"] = "A";
-	args["font"] = _font;
-	cursor->setModel(std::make_shared<Text>(args), pybind11::dict("batch"_a = _batch));
-	add(cursor);
-	cursor->setPosition(0.f, 0.f, 0.f);
+//	auto cursor = std::make_shared<Node>();
+//	pybind11::kwargs args;
+//	args["text"] = "A";
+//	args["font"] = _font;
+//	cursor->setModel(std::make_shared<Text>(args), pybind11::dict("batch"_a = _batch));
+//	add(cursor);
+//	cursor->setPosition(0.f, 0.f, 0.f);
+//	_cursor = cursor.get();
 	_offsetx=8;
-	_cursor = cursor.get();
 	_listener = std::make_unique<ItemListKeyListener>(this);
 	_arrowPalUnselected = py_get_dict<int>(inargs, "arrow_palette", 0);
 	_arrowPalSelected = py_get_dict<int>(inargs, "arrow_palette_selected", 0);
@@ -160,7 +160,7 @@ void ItemList::down() {
 
 void ItemList::updateIndices() {
 	if (!m_active) return;
-	_cursor->setPosition(0.f, -(_rowSelected-_rowTop)*_lineHeight, 0.f);
+	//_cursor->setPosition(0.f, -(_rowSelected-_rowTop)*_lineHeight, 0.f);
 	_firstVisibleItem = -1;
 	_lastVisibleItem = -1;
 	int id{0};

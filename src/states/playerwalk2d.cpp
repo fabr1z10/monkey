@@ -4,7 +4,9 @@
 
 extern GLFWwindow* window;
 
+PlayerWalk2D::PlayerWalk2D(const pybind11::kwargs &kwargs) : Walk2D(kwargs) {
 
+}
 
 void PlayerWalk2D::control() {
 	if (m_controller->grounded() && !m_wasGroudned) {

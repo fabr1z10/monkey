@@ -1,7 +1,8 @@
-//#include "tiled.h"
+#include "tiled.h"
 //#include "../engine.h"
-//#include "../pyhelper.h"
-//#include "../assetmanager.h"
+#include "../pyhelper.h"
+#include "../assetmanager.h"
+#include "../spritesheet.h"
 //#include "../components/anim_tiled_renderer.h"
 //#include <stack>
 //
@@ -9,7 +10,122 @@
 //
 //}
 //
-//TiledModel::TiledModel(const pybind11::kwargs& args) : Model(ShaderType::SHADER_TEXTURE), m_i0(0) {
+TiledModel::TiledModel(const pybind11::kwargs& args) : IQuad() {
+    auto sheetId = py_get_dict<std::string>(args, "sheet");
+    auto sheet = AssetManager::instance().getSpritesheet(sheetId);
+    auto * tex = sheet->getTex();
+    auto ts = sheet->getTileSize();
+    float texw = tex->getWidth();
+    float texh = tex->getHeight();
+    int width = py_get_dict<int>(args, "width");
+    int height = py_get_dict<int>(args, "height");
+    _quadCount = width * height;
+    int tile_rows = texh / ts[1];
+    int tile_cols = texw / ts[0];
+    float tsxnorm = ts[0] / static_cast<float>(texw);
+    float tsynorm = ts[1] / static_cast<float>(texh);
+    // order can be bottom to top (0) or top to bottom (1)
+    int tile_order = py_get_dict<int>(args, "tile_order", 0);
+    pybind11::dict d = args["animations"];
+    for (const auto& py_anim : d) {
+        auto animId = py_anim.first.cast<std::string>();
+        if (_defaultAnimation.empty()) _defaultAnimation = animId;
+        Animation animInfo;
+        std::vector<Frame> frameInfos;
+        animInfo.loop = py_get_dict<bool>(py_anim.second, "loop", 0);
+        animInfo.next = "";
+        std::string onEnd = "";
+        if (!onEnd.empty()) {
+            animInfo._onEnd = Engine::instance().getScript(onEnd);
+        }
+        int frameCount = 0;
+
+        for (const auto& el : py_anim.second["frames"]) {
+            // for each frame I have width * height desc
+
+            Frame frameInfo;
+            frameInfo.ticks = 10;
+            float x = 0;
+            float y0 = (tile_order == 0) ? 0 : -ts[1];
+            float rowDelta = (tile_order == 0) ? ts[1] : -ts[1];
+            for (int i = 0; i < _quadCount; ++i) {
+                int rowNumber = i / width;
+                x = (i % width) * ts[0];
+                float y = y0 + rowNumber * rowDelta;
+                Desc d;
+                d.location = {x, y, 0};
+                d.size = {ts[0], ts[1]};
+                frameInfo.quads.push_back(d);
+            }
+            auto data = py_get_dict<std::vector<int>>(el, "data");
+            int i = 0;
+            std::list<glm::ivec3> repeat;
+            int j = 0;
+            int pal = 0;
+            while (i < data.size()) {
+                int cmd = (data[i] & 0xF0000) >> 16;
+                if (cmd == 1) {
+                    // start loop
+                    repeat.emplace_back(0, data[i] & 0x0FFFF, i+1);
+                    i++;
+                    continue;
+                }
+                if (cmd == 2) {
+                    // end loop
+                    if (repeat.size() == 0) {
+                        throw;
+                    }
+                    auto& f = repeat.front();
+                    f[0] ++;
+                    if (f[0] >= f[1]) {
+                        repeat.pop_front();
+                        i++;
+                    } else {
+                        i = f[2];
+                    }
+                    continue;
+                }
+                int value = data[i];
+                bool fliph{false};
+                bool flipv{false};
+                if (cmd == 3) {
+                    value = data[i] & 0x0FFFF;
+                    fliph = true;
+                }
+                if (cmd == 4) {
+                    value = data[i] & 0x0FFFF;
+                    flipv = true;
+                }
+                if (cmd == 5) {
+                    // change current pal
+                    pal = data[i] & 0x0FFFF;
+                    i++;
+                    continue;
+                }
+                if (cmd == 6) {
+                    auto inc = data[i] & 0x0FFFF;
+                    i++;
+                    j += inc;
+                    continue;
+                }
+                int y = value / tile_cols;
+                int x = value % tile_cols;
+                float tx0 = x * tsxnorm;
+                float tx1 = (x+1)*tsxnorm;
+                float ty0 = y * tsynorm;
+                float ty1 = (y+1)*tsynorm;
+                if (fliph) std::swap(tx0, tx1);
+                if (flipv) std::swap(ty0, ty1);
+                frameInfo.quads[j].textureCoordinates = glm::vec4(tx0, tx1, ty0, ty1);
+                frameInfo.quads[j].palette = pal;
+                i++; j++;
+            }
+            animInfo.frames.push_back(frameInfo);
+
+        }
+        _animations.insert(std::make_pair(animId, animInfo));
+    }
+}
 //    // Vector of string to save tokens
 //    readSheet(args);
 //    std::vector<GLfloat> vertices;

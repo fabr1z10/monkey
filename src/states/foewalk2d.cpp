@@ -2,6 +2,11 @@
 #include "../pyhelper.h"
 #include "../node.h"
 
+FoeWalk2D::FoeWalk2D(const pybind11::kwargs &kwargs) : Walk2D(kwargs) {
+    m_flipHorizontally = py_get_dict<bool>(kwargs, "flip", false);
+    m_flipOnEdge = py_get_dict<bool>(kwargs, "flip_on_edge", false);
+}
+
 void FoeWalk2D::control() {
 
 	// hit wall
@@ -41,8 +46,7 @@ void FoeWalk2D::control() {
 void FoeWalk2D::setParent(StateMachine* sm, const pybind11::kwargs& kwargs) {
     Walk2D::setParent(sm, kwargs);
 	m_left = py_get_dict<bool>(kwargs, "left", true);
-	m_flipHorizontally = py_get_dict<bool>(kwargs, "flip", false);
-	m_flipOnEdge = py_get_dict<bool>(kwargs, "flip_on_edge", false);
+
 	m_right = !m_left;
 	m_up = py_get_dict<bool>(kwargs, "up", false);
 }

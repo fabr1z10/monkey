@@ -29,4 +29,6 @@ protected:
 	glm::vec3 m_localTopBack;
 	glm::vec3 m_localBottomFwd;
 	glm::vec3 m_localBottomBack;
+    std::string _batchId;
+
 };

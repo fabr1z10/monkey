@@ -57,7 +57,7 @@ void HotSpotManager::cursorPosCallback(GLFWwindow *, double x, double y) {
 
 		// convert device coordinates into camera coordinates
 		auto wc = data.cam->getWorldCooridnates(dev_x, dev_y);
-		//std::cout << x << ", " << y << " --- " << wc.x << ", " << wc.y << "\n";
+		std::cout << x << ", " << y << " --- " << wc.x << ", " << wc.y << "\n";
 		glm::vec3 P(wc.x, wc.y, 0.f);
 		_lastPosition = glm::vec2(wc.x, wc.y);
 

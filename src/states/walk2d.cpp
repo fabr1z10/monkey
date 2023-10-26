@@ -3,25 +3,35 @@
 #include "../util.h"
 
 
-void Walk2D::setParent(StateMachine * sm, const pybind11::kwargs & kwargs) {
-    m_jmp = false;
-    State::setParent(sm, kwargs);
-	m_gravity = py_get_dict<float>(kwargs, "gravity", m_sm->getProperty<float>("gravity"));
-	m_jumpHeight = py_get_dict<float>(kwargs, "jump_height", m_sm->getProperty<float>("jump_height"));
-	m_timeToJumpApex = py_get_dict<float>(kwargs, "time_to_jump_apex", m_sm->getProperty<float>("time_to_jump_apex"));
-	m_jumpVelocity = (m_jumpHeight + 0.5f * m_gravity * m_timeToJumpApex * m_timeToJumpApex) / m_timeToJumpApex;
-	m_maxSpeedGround = py_get_dict<float>(kwargs, "speed", m_sm->getProperty<float>("speed"));
+Walk2D::Walk2D(const pybind11::kwargs & kwargs) : State(), m_controller(nullptr), m_dynamics(nullptr),
+    m_node(nullptr), m_animatedRenderer(nullptr), m_left(false), m_right(false), m_up(false), m_down(false) {
+
+    m_gravity = py_get_dict<float>(kwargs, "gravity", 0.f);
+
+    // can jump ?
+    m_jumpHeight = py_get_dict<float>(kwargs, "jump_height", 0.f);
+    m_timeToJumpApex = py_get_dict<float>(kwargs, "time_to_jump_apex", 0.f);
+
+    m_jumpVelocity = m_timeToJumpApex == 0.f ? 0.f : (m_jumpHeight + 0.5f * m_gravity * m_timeToJumpApex * m_timeToJumpApex) / m_timeToJumpApex;
+
+    m_maxSpeedGround = py_get_dict<float>(kwargs, "speed", 10.f);
     m_maxSpeedAir = py_get_dict<float>(kwargs, "speed_air", m_maxSpeedGround);
-    m_accelerationTime = py_get_dict<float>(kwargs, "acc_time", m_sm->getProperty<float>("acc_time"));
+    m_accelerationTime = py_get_dict<float>(kwargs, "acc_time", 0.1f);
     if (m_accelerationTime == 0.f)
         m_acceleration = 0.f;
     else
         m_acceleration = m_maxSpeedGround / m_accelerationTime;
-	m_idleAnim = m_sm->getProperty<std::string>("idle_anim", "idle");
-	m_walkAnim = m_sm->getProperty<std::string>("walk_anim", "walk");
-	m_jumpAnim = m_sm->getProperty<std::string>("jump_anim", "jump");
-    m_fallAnim = py_get_dict<std::string>(kwargs, "fall_anim", m_jumpAnim);
-	// fall animation
+
+    m_idleAnim = py_get_dict<std::string>(kwargs, "idle", "idle");
+    m_walkAnim = py_get_dict<std::string>(kwargs, "walk", "walk");
+    m_jumpAnim = py_get_dict<std::string>(kwargs, "jump", "jump");
+    m_fallAnim = py_get_dict<std::string>(kwargs, "fall_anim", "jump");
+}
+
+
+void Walk2D::setParent(StateMachine * sm, const pybind11::kwargs & kwargs) {
+    m_jmp = false;
+    State::setParent(sm, kwargs);
 
 }
 

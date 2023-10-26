@@ -1,5 +1,6 @@
 #include "raycaster.h"
 #include "../shapes/convexpoly.h"
+#include "../shapes/aabb.h"
 #include "../util.h"
 
 RayCaster2D::RayCaster2D() {
@@ -12,6 +13,10 @@ RayCaster2D::RayCaster2D() {
 	m_functionMap[std::type_index(typeid(Segment))] = [&] (const glm::vec3& A, const glm::vec3& B, const Shape* s, const glm::mat4& t) {
 		return rayCastPoly(A, B, s, t);
 	};
+    m_functionMap[std::type_index(typeid(AABB))] = [&] (const glm::vec3& A, const glm::vec3& B, const Shape* s, const glm::mat4& t) {
+        return rayCastAABB(A, B, s, t);
+    };
+
 };
 
 RayCastHit RayCaster::raycast(glm::vec3 A, glm::vec3 B, const Shape* s, const glm::mat4& t) {
@@ -37,6 +42,34 @@ void RayCaster2D::updateRaycastHit(RayCastHit& r, glm::vec2 ray, glm::vec2 line,
 	}
 }
 
+RayCastHit RayCaster2D::rayCastAABB(const glm::vec3 &A, const glm::vec3 &B, const Shape *s, const glm::mat4 &t) {
+    auto b = s->getBounds();
+    b.translate(t[3]);
+
+    RayCastHit r;
+    bool Aout = A.x >= b.max.x || A.x <= b.min.x || A.y >= b.max.y || A.y <= b.min.y;
+    bool Bout = B.x >= b.max.x || B.x <= b.min.x || B.y >= b.max.y || B.y <= b.min.y;
+    if (Aout == Bout) {
+        return r;
+    }
+    r.collide = true;
+    //auto length = glm::length(B-A);
+    auto dir = B-A;
+    glm::vec2 bx(b.min.x, b.max.x);
+    glm::vec2 by(b.min.y, b.max.y);
+    float u[4] = { (bx[0] - A.x)/dir.x, (bx[1]-A.x) / dir.x, (by[0]-A.y)/dir.y, (by[1]-A.y)/dir.y};
+    glm::vec3 n[2] = {glm::vec3(dir.x > 0 ? -1 : 1, 0.f, 0.f), glm::vec3(0.f, dir.y > 0 ? -1 : 1, 0.f) };
+    float umin{2.0f};
+    for (size_t i = 0; i < 4; ++i) {
+        if (u[i] >= 0 && u[i] <= 1 && u[i] < umin) {
+            umin = u[i];
+            r.length = umin;
+            r.normal = n[i / 2];
+        }
+    }
+    return r;
+
+}
 
 RayCastHit RayCaster2D::rayCastPoly(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t) {
 	RayCastHit out;

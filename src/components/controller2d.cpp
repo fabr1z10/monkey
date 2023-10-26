@@ -5,6 +5,7 @@
 #include "../node.h"
 #include "../util.h"
 
+
 Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs) {
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
