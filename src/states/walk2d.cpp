@@ -4,7 +4,7 @@
 
 
 Walk2D::Walk2D(const pybind11::kwargs & kwargs) : State(), m_controller(nullptr), m_dynamics(nullptr),
-    m_node(nullptr), m_animatedRenderer(nullptr), m_left(false), m_right(false), m_up(false), m_down(false) {
+    m_node(nullptr), m_animatedRenderer(nullptr), m_left(false), m_right(false), m_up(false), m_down(false), m_jumpVelocity(0.f) {
 
     m_gravity = py_get_dict<float>(kwargs, "gravity", 0.f);
 
@@ -12,7 +12,15 @@ Walk2D::Walk2D(const pybind11::kwargs & kwargs) : State(), m_controller(nullptr)
     m_jumpHeight = py_get_dict<float>(kwargs, "jump_height", 0.f);
     m_timeToJumpApex = py_get_dict<float>(kwargs, "time_to_jump_apex", 0.f);
 
-    m_jumpVelocity = m_timeToJumpApex == 0.f ? 0.f : (m_jumpHeight + 0.5f * m_gravity * m_timeToJumpApex * m_timeToJumpApex) / m_timeToJumpApex;
+
+    if (m_jumpHeight > 0.f) {
+
+        // override gravity and jump velocity
+        m_gravity = (2.0f * m_jumpHeight) / (m_timeToJumpApex * m_timeToJumpApex);
+        m_jumpVelocity = (2.0f * m_jumpHeight) / m_timeToJumpApex;
+    }
+
+    //m_jumpVelocity = m_timeToJumpApex == 0.f ? 0.f : (m_jumpHeight + 0.5f * m_gravity * m_timeToJumpApex * m_timeToJumpApex) / m_timeToJumpApex;
 
     m_maxSpeedGround = py_get_dict<float>(kwargs, "speed", 10.f);
     m_maxSpeedAir = py_get_dict<float>(kwargs, "speed_air", m_maxSpeedGround);
@@ -37,7 +45,7 @@ void Walk2D::setParent(StateMachine * sm, const pybind11::kwargs & kwargs) {
 
 void Walk2D::start() {
     auto node = m_sm->getNode();
-
+    m_node = node;
     m_controller = dynamic_cast<Controller2D*>(node->getComponent<Controller>());
     assert(m_controller != nullptr);
 

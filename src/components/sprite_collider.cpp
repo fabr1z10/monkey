@@ -18,8 +18,11 @@ void SpriteCollider::start() {
 	m_renderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
 	assert(m_renderer != nullptr);
 
-//	m_sprite = m_renderer->getSprite();
-//	m_staticBounds = m_sprite->getStaticBounds();
+    m_sprite = dynamic_cast<Sprite*>(m_renderer->getSprite());
+    assert(m_sprite != nullptr);
+	m_staticBounds = m_sprite->getStaticBounds();
+
+
 	Collider::start();
 }
 
@@ -48,7 +51,7 @@ void SpriteCollider::update(double) {
 
 
 std::shared_ptr<Shape> SpriteCollider::getShape() {
-	//return m_sprite->getShape(m_renderer->getAnimation(), m_renderer->getFrame());
+	return m_sprite->getShape(m_renderer->getAnimation(), m_renderer->getFrame());
 }
 
 void SpriteCollider::generateDebugMesh() {

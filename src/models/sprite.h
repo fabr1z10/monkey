@@ -22,7 +22,7 @@ public:
 
     //const AnimInfo* getAnimInfo(const std::string& anim);
 //
-//	std::shared_ptr<Shape> getShape (const std::string& anim, int frame) const;
+	std::shared_ptr<Shape> getShape (const std::string& anim, int frame) const;
 //	std::shared_ptr<Shape> getShapeCast (const std::string& anim, int frame) const;
 //	bool hasCollision(const std::string&) const;
 //	//const SpriteCollisionInfo& getCollisionInfo(const std::string& anim) const;
@@ -36,6 +36,7 @@ public:
 	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 	ulong getMaxBoxes() const;
 	const float* getBoxData(const std::string& anim, int frame);
+	Bounds getStaticBounds() const;
 private:
     //QuadBatch* _batch;
 	Bounds m_attackRange;
@@ -57,6 +58,7 @@ private:
 	std::vector<float> _boxData;
 	std::vector<std::pair<unsigned, unsigned>> _boxOffset;
 	ulong _maxBoxes;
+	Bounds _staticBounds;
 };
 
 inline ulong Sprite::getMaxBoxes() const {
@@ -71,9 +73,9 @@ inline ulong Sprite::getMaxBoxes() const {
 //	return m_defaultAnimation;
 //}
 //
-//inline Bounds Sprite::getStaticBounds() const {
-//	return m_collisionBounds;
-//}
+inline Bounds Sprite::getStaticBounds() const {
+	return _staticBounds;
+}
 //
 //inline const AnimInfo * Sprite::getAnimInfo(const std::string &anim) {
 //	auto it = m_animInfo.find(anim);

@@ -33,12 +33,23 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 	float z = node["z"].as<float>(0.f);
 	// read collision boxes
 	_maxBoxes = 0;
+	_staticBounds = Bounds();
 	for (const auto& n : node["boxes"]) {
 		auto a = n.as<std::vector<float>>();
 		assert(a.size() % 4 == 0);
 		_maxBoxes = std::max(_maxBoxes, a.size() / 4);
 		_boxOffset.emplace_back(_boxData.size(), a.size() / 4);
 		_boxData.insert(_boxData.end (), a.begin(), a.end ());
+		for (size_t i = 0; i < a.size(); i+=4) {
+		    _staticBounds.min.x = std::min(_staticBounds.min.x, a[i]);
+            _staticBounds.max.x = std::max(_staticBounds.max.x, a[i+2]);
+            _staticBounds.min.y = std::min(_staticBounds.min.y, a[i+1]);
+            _staticBounds.max.y = std::max(_staticBounds.max.y, a[i+3]);
+		}
+		// create a shape
+		if (a.size() == 4) {
+		    m_shapes.push_back(std::make_shared<AABB>(a[0], a[2], a[1], a[3]));
+		}
 	}
 
 
@@ -202,7 +213,9 @@ std::shared_ptr<Shape> Sprite::getRect(int mode, int x0, int x1, int y0, int y1)
 //
 //}
 
-//std::shared_ptr<Shape> Sprite::getShape (const std::string& anim, int frame) const {
+std::shared_ptr<Shape> Sprite::getShape (const std::string& anim, int frame) const {
+    return m_shapes[_animations.at(anim).frames[frame].boxId];
+}
 //	auto it = m_frameToShape.find(std::make_pair(anim, frame));
 //	if (it == m_frameToShape.end())
 //		return nullptr;
