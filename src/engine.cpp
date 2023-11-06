@@ -126,7 +126,12 @@ void Engine::start() {
     // Dark blue background
     //loadShaders();
 
-    _engineDraw->loadShaders();
+    auto shaders = py_get<std::vector<int>>(settings, "shaders");
+    for (const auto& shader : shaders) {
+		_engineDraw->addShader(shader);
+    }
+
+    _engineDraw->initShaders();
 
 //    // load fonts
 //    auto fonts = py_get<py::dict>(m_settings, "fonts", py::dict());
@@ -260,7 +265,9 @@ void Engine::loadRoom() {
 
 }
 
-
+Shader* Engine::getShader(ShaderType type) {
+	return _engineDraw->getShader(type);
+}
 
 
 

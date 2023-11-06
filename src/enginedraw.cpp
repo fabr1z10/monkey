@@ -4,14 +4,35 @@
 #include "enginedraw.h"
 #include "engine.h"
 #include "shaders/shaders.h"
+#include "error.h"
 
 
 extern GLFWwindow* window;
 
 EngineDraw::EngineDraw() {
-	m_shaderBuilders[ShaderType::QUAD_SHADER_PALETTE] = [&] () { return std::make_shared<Shader>(ShaderType::QUAD_SHADER_PALETTE, quad_vs, quad_fs, "2f1I"); };
-    m_shaderBuilders[ShaderType::LINE_SHADER] = [&] () { return std::make_shared<Shader>(ShaderType::LINE_SHADER, line_vs, line_fs, "1f1I"); };
-	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return std::make_shared<Shader>(ShaderType::QUAD_SHADER, quad_vs_nopal, quad_fs_nopal, "2f1I"); };
+	m_shaderBuilders[ShaderType::BATCH_QUAD_PALETTE] = [&] () {
+		return std::make_shared<BatchShader>(ShaderType::BATCH_QUAD_PALETTE, quad_vs, quad_fs, "2f1I"); };
+    m_shaderBuilders[ShaderType::BATCH_LINES] = [&] () {
+    	return std::make_shared<BatchShader>(ShaderType::BATCH_LINES, line_vs, line_fs, "1f1I"); };
+	m_shaderBuilders[ShaderType::BATCH_QUAD_NO_PALETTE] = [&] () {
+		return std::make_shared<BatchShader>(ShaderType::BATCH_QUAD_NO_PALETTE, quad_vs_nopal, quad_fs_nopal, "2f1I"); };
+	m_shaderBuilders[ShaderType::SHADER_SKELETAL] = [&] () {
+		return std::make_shared<BatchShader>(ShaderType::SHADER_SKELETAL, skeletal_vs, skeletal_fs, "3f2f3f"); };
+
+}
+
+Shader * EngineDraw::getShader(ShaderType type) {
+	auto it = _indices.find(type);
+	if (it == _indices.end()) {
+		GLIB_FAIL("Shader " << type << " not loaded.");
+	}
+	return m_shaders[it->second].get();
+}
+
+void EngineDraw::addShader(int type) {
+	auto shader = m_shaderBuilders[type]();
+	_indices.insert(std::make_pair(static_cast<ShaderType>(type), m_shaders.size()));
+	m_shaders.push_back(shader);
 }
 
 void EngineDraw::init(Room * room) {
@@ -26,15 +47,15 @@ void EngineDraw::init(Room * room) {
     }
 }
 
-void BasicEngineDraw::loadShaders() {
-
-    auto quad_shader = m_shaderBuilders[ShaderType::QUAD_SHADER]();
-    m_shaders.push_back(quad_shader);
-
-    auto line_shader = m_shaderBuilders[ShaderType::LINE_SHADER]();
-    m_shaders.push_back(line_shader);
-
-}
+//void BasicEngineDraw::loadShaders() {
+//
+//    auto quad_shader = m_shaderBuilders[ShaderType::BATCH_QUAD_PALETTE]();
+//    m_shaders.push_back(quad_shader);
+//
+//    auto line_shader = m_shaderBuilders[ShaderType::BATCH_LINES]();
+//    m_shaders.push_back(line_shader);
+//
+//}
 
 
 
@@ -53,17 +74,17 @@ void BasicEngineDraw::draw(Room* room) {
     glfwPollEvents();
 }
 
-void FrameBufferEngineDraw::loadShaders() {
-    auto quad_shader = m_shaderBuilders[ShaderType::QUAD_SHADER_PALETTE]();
-    m_shaders.push_back(quad_shader);
+void FrameBufferEngineDraw::initShaders() {
+//    auto quad_shader = m_shaderBuilders[ShaderType::BATCH_QUAD_PALETTE]();
+//    m_shaders.push_back(quad_shader);
+//
+//	auto quad_shader_nopal= m_shaderBuilders[ShaderType::BATCH_QUAD_NO_PALETTE]();
+//	m_shaders.push_back(quad_shader_nopal);
+//
+//    auto line_shader = m_shaderBuilders[ShaderType::BATCH_LINES]();
+//    m_shaders.push_back(line_shader);
 
-	auto quad_shader_nopal= m_shaderBuilders[ShaderType::QUAD_SHADER]();
-	m_shaders.push_back(quad_shader_nopal);
-
-    auto line_shader = m_shaderBuilders[ShaderType::LINE_SHADER]();
-    m_shaders.push_back(line_shader);
-
-    m_blitShader = std::make_shared<Shader>(ShaderType::SHADER_TEXTURE, blit_vs, blit_fs, "2f2f");
+    m_blitShader = std::make_shared<Shader>(ShaderType::BLIT, blit_vs, blit_fs, "2f2f");
 
     auto deviceSize = Engine::instance().getDeviceSize();
 
@@ -138,7 +159,8 @@ void FrameBufferEngineDraw::draw(Room *room) {
     for (size_t i = 0; i < m_shaders.size(); ++i) {
         auto current = m_shaders[i].get();
         current->use();
-        room->draw(current);
+        current->draw();
+        //room->draw(current);
     }
     auto vp = Engine::instance().getWindowViewport();
 

@@ -10,7 +10,10 @@ std::shared_ptr<Sprite> getSprite(const std::string& id) {
 	auto& am = AssetManager::instance();
 	return am.getSprite(id);
 }
-
+std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id) {
+	auto& am = AssetManager::instance();
+	return am.getPolyMesh(id);
+}
 
 
 std::shared_ptr<MultiNode> getMulti(const std::string& id, const std::string& batch) {

@@ -23,7 +23,7 @@ Room::Room() : m_mainCamera(nullptr), m_clearColor(0.f, 0.f, 0.f, 255.f) {
 }
 
 void Room::addBatch(const std::string &batchId, std::shared_ptr<IBatch> batch) {
-	_batches[batch->getCameraId()].push_back(batch);
+	_batches.push_back(batch);
 	_batchMap[batchId] = batch.get();
 }
 
@@ -72,7 +72,7 @@ void Room::setMainCam(std::shared_ptr<Camera> cam) {
 
 void Room::addCamera(std::shared_ptr<Camera> cam) {
     m_cameras.push_back(cam);
-    _batches.emplace_back();
+    //_batches.emplace_back();
 }
 
 //QuadBatch* Room::addSpriteBatch(const std::string &spriteSheet, int maxElements) {
@@ -95,9 +95,7 @@ void Room::addCamera(std::shared_ptr<Camera> cam) {
 //    return _batches[shader][id].get();
 //}
 
-Camera* Room::getCamera(int id) {
-    return m_cameras[id].get();
-}
+
 
 
 void Room::update(double dt) {
@@ -150,9 +148,7 @@ void Room::update(double dt) {
 void Room::configure(Shader * s, int i ) {
 
 	for (auto& batch : _batches) {
-		for (auto& b : batch) {
-			b->configure(s);
-		}
+		batch->configure(s);
 	}
 
 //    for (const auto& batch : _quadBatches) {
@@ -165,17 +161,19 @@ void Room::configure(Shader * s, int i ) {
 }
 void Room::draw(Shader* s) {
 
-	for (size_t i = 0; i < _batches.size(); ++i) {
-		// setup camera
-		auto vp = m_cameras[i]->getViewport();
-		glViewport(vp.x, vp.y, vp.z, vp.w);
-		int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "pv_mat");
-		auto pvMatrix = m_cameras[i]->getProjectionMatrix() * m_cameras[i]->getViewMatrix();
-		glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(pvMatrix[0]));
-		for (auto& batch : _batches[i]) {
-			batch->draw(s);
-		}
-	}
+//	for (size_t i = 0; i < _batches.size(); ++i) {
+//		// setup camera
+//		auto vp = m_cameras[i]->getViewport();
+//		glViewport(vp.x, vp.y, vp.z, vp.w);
+//		int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "pv_mat");
+//		auto pvMatrix = m_cameras[i]->getProjectionMatrix() * m_cameras[i]->getViewMatrix();
+//		glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(pvMatrix[0]));
+//		for (auto& batch : _batches[i]) {
+//			batch->draw(s);
+//		}
+//	}
+
+
 
 //	auto vp = Engine::instance().getActualDeviceViewport();
 //	glViewport(vp.x, vp.y, vp.z, vp.w);
@@ -272,6 +270,7 @@ void Room::start() {
 		runner.second->start();
 	}
     if (m_onStart) m_onStart();
+
 }
 void Room::end() {
     if (m_onEnd) m_onEnd();

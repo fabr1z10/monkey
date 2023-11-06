@@ -12,10 +12,11 @@ uniform vec4 additive;
 void main()
 {
     vec4 diffuseColor = texture(texture_diffuse1, pass_texCoord);
-	diffuseColor *= mult_color;
+	//diffuseColor *= mult_color;
 	//diffuseColor += additive;\n"
 
     fragColor = diffuseColor;
+    //fragColor = vec4(1.0, 1.0, 1.0, 1.0);
 
 }
 )"

@@ -170,11 +170,11 @@ void SpriteColliderRenderer::update(double dt) {
 
 	auto animation = m_reference->getAnimation();
 	auto frame = m_reference->getFrame();
-	std::cout << "scr: "<< m_reference  << animation << "," << frame << "\n";
+	//std::cout << "scr: "<< m_reference  << animation << "," << frame << "\n";
 	const auto& a = m_sprite->getFrameInfo(animation, frame);
 	auto* f = m_sprite->getBoxData(animation, frame);
 
-	std::cout << "ok\n";
+	//std::cout << "ok\n";
 	if (f == nullptr) {
 	    if (!_primitiveIds.empty()) {
             _batch->hideLines(_primitiveIds[0], _primitiveIds.size());

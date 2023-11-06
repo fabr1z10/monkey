@@ -35,7 +35,7 @@ public:
     //std::shared_ptr<Node> getNode(int);
     //void addNode(std::shared_ptr<Node>);
     //void addNode(std::shared_ptr<Node>);
-    //Shader* getShader(int);
+    Shader* getShader(ShaderType);
     double getDeviceAspectRatio() const;
     glm::ivec2 getDeviceSize() const;
     glm::ivec2 getWindowSize() const;

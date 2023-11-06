@@ -60,6 +60,8 @@
 #include "actions/say.h"
 #include "models/paramcurve.h"
 #include "components/cursor.h"
+#include "models/skeletal.h"
+#include "cam25.h"
 
 
 namespace py = pybind11;
@@ -94,6 +96,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("add", &add);
     m.def("read", &read_png);
 	m.def("get_sprite", &getSprite);
+	m.def("get_polymesh", &getPolyMesh);
 	m.def("get_multi", &getMulti);
 	m.def("get_node", &getNode, py::return_value_policy::reference);
 	m.def("get_nodes", &getNodes, py::return_value_policy::reference);
@@ -103,12 +106,13 @@ PYBIND11_MODULE(monkey, m) {
 	m.def("play", &playScript);
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
-    m.attr("SHADER_COLOR") = static_cast<int>(ShaderType::SHADER_COLOR);
-    m.attr("SHADER_TEXTURE") = static_cast<int>(ShaderType::SHADER_TEXTURE);
-    m.attr("SHADER_TEXTURE_PALETTE") = static_cast<int>(ShaderType::SHADER_TEXTURE_PALETTE);
-	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
-    m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
-    m.attr("SHADER_LINEBATCH") = static_cast<int>(ShaderType::LINE_SHADER);
+    m.attr("SHADER_BATCH_QUAD_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_PALETTE);
+    m.attr("SHADER_BATCH_QUAD_NO_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_NO_PALETTE);
+    m.attr("SHADER_BATCH_LINES") = static_cast<int>(ShaderType::BATCH_LINES);
+	m.attr("SHADER_SKELETAL") = static_cast<int>(ShaderType::SHADER_SKELETAL);
+//	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
+//    m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
+//    m.attr("SHADER_LINEBATCH") = static_cast<int>(ShaderType::LINE_SHADER);
     m.attr("ALIGN_LEFT") = static_cast<int>(HAlign::LEFT);
 	m.attr("ALIGN_CENTER") = static_cast<int>(HAlign::CENTER);
 	m.attr("ALIGN_RIGHT") = static_cast<int>(HAlign::RIGHT);
@@ -194,10 +198,13 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
     py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
 
+
     py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
         .def(py::init<const pybind11::kwargs&>());
     py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
         .def(py::init<const pybind11::kwargs&>());
+	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
+		.def(py::init<const pybind11::kwargs&>());
 
     py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -209,6 +216,9 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<PerspectiveCamera, Camera, std::shared_ptr<PerspectiveCamera>>(m, "camera_perspective")
         .def(py::init<const py::kwargs&>());
+
+	py::class_<Camera25, OrthoCamera, std::shared_ptr<Camera25>>(m, "camera_25")
+		.def(py::init<float, float, const py::kwargs&>());
 
     py::class_<Shape, std::shared_ptr<Shape>>(m, "shape")
         .def(py::init<>());
@@ -247,12 +257,14 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
+	py::class_<PolyMesh, Model, std::shared_ptr<PolyMesh>>(mm, "polymesh");
 		//.def(py::init<const pybind11::kwargs&>());
 	py::class_<Text, Model, std::shared_ptr<Text>>(mm, "text")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<StaticQuad, Model, std::shared_ptr<StaticQuad>>(mm, "quad")
 		.def(py::init<const pybind11::kwargs&>());
-
+	py::class_<SkeletalModel, Model, std::shared_ptr<SkeletalModel>>(mm, "skeletal_model")
+		.def(py::init<const pybind11::kwargs&>());
 
 //    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
 //        //.def(py::init<std::shared_ptr<IBatch>>())

@@ -10,6 +10,7 @@ class Shader;
 class IBatch {
 public:
 	IBatch(int verticesPerElement, const pybind11::kwargs&);
+	virtual void setupUniforms(Shader* s);
 	virtual void draw(Shader* s) = 0;
 	virtual void cleanUp() = 0;
 	ShaderType getShaderType() const;
@@ -32,7 +33,7 @@ protected:
 	int _vertsPerElement;		// vertices per element
 	int _camId;
 	ShaderType _shaderType;
-	//std::shared_ptr<Camera> _cam;
+	Camera* _cam;
 
     int _nPrimitive;			// next element to be allocated
     std::list<int> _deallocated;
@@ -135,5 +136,20 @@ protected:
 
     std::vector<VERTEXDATA> _data;
 
+
+};
+
+
+class ProvaBatch : public IBatch {
+public:
+	ProvaBatch(const pybind11::kwargs& kwargs);
+	void draw(Shader* s) override;
+	void cleanUp() {}
+	void configure(Shader* s) override {}
+	void setInvisible(int index) override {}
+	void addRenderer(Renderer*);
+	void removeRenderer(Renderer*);
+private:
+	std::unordered_map<int, Renderer*> _renderers;
 
 };

@@ -10,9 +10,10 @@ layout (location = 2) in vec3 vWeight;
 
 out vec2 pass_texCoord;
 
-uniform mat4 view;
+//uniform mat4 view;
 uniform mat4 model;
-uniform mat4 projection;
+//uniform mat4 projection;
+uniform mat4 pv_mat;
 uniform mat4 local_to_model;
 uniform ivec3 weightIndex;
 uniform float z;
@@ -29,8 +30,8 @@ void main()
     totalLocalPos += localPosition0 * vWeight[0] + localPosition1 * vWeight[1] + localPosition2 * vWeight[2];
     totalLocalPos.z = z;//modelpos.z;
     pass_texCoord= vTexture;
-    //totalLocalPos = vec4(vPosition, 1.0);
-    gl_Position = projection * view * model * totalLocalPos;
+    totalLocalPos = vec4(vPosition, 1.0);
+    gl_Position = pv_mat * model * totalLocalPos;
     //gl_Position.z =z;
 }
 )"

@@ -29,11 +29,13 @@ public:
     //void addLinesBatch(int maxElements = 1000);
     void addBatch(const std::string& batchId, std::shared_ptr<IBatch>);
     IBatch* getBatch(const std::string&);
+    int getBatchCount() const;
 //	LineBatch* getLineBatch() {
 //		return _lineBatch.get();
 //	}
     //IBatch* getBatch(int shader, int id);
     Camera* getCamera(int id);
+	const std::vector<std::shared_ptr<IBatch>>& getBatches();
     ~Room();
     void update(double);
     void configure(Shader*, int);
@@ -84,7 +86,9 @@ private:
     //std::shared_ptr<LineBatch> _lineBatch;
 
     //std::unordered_map<std::string, std::shared_ptr<QuadBatch>> _quadBatches;
-	std::vector<std::vector<std::shared_ptr<IBatch>>> _batches;
+
+    /// batches
+	std::vector<std::shared_ptr<IBatch>> _batches;
 	std::unordered_map<std::string, IBatch*> _batchMap;
 };
 
@@ -98,4 +102,16 @@ inline std::string Room::id() const {
 
 inline int Room::getCameraCount() const {
 	return m_cameras.size();
+}
+
+inline Camera* Room::getCamera(int id) {
+	return m_cameras[id].get();
+}
+
+inline const std::vector<std::shared_ptr<IBatch>>& Room::getBatches() {
+	return _batches;
+}
+
+inline int Room::getBatchCount() const {
+	return _batches.size();
 }

@@ -155,3 +155,35 @@ std::shared_ptr<Font> AssetManager::getFont(const std::string& id) {
 //    }
 //    return it->second;
 }
+
+
+std::shared_ptr<PolyMesh> AssetManager::getPolyMesh(const std::string& id) {
+	auto it = m_polymesh.find(id);
+	if (it == m_polymesh.end()) {
+		std::cout << " --- not cached. Create new!\n";
+		auto u = id.find_last_of('/');
+		if (u == std::string::npos) {
+			std::cerr << " --- wrong asset format. must have a /";
+			exit(1);
+		}
+		auto meshName = id.substr(u + 1);
+		auto sheetName = id.substr(0, u);
+		std::string file = sheetName + ".yaml";
+		auto f = YAML::LoadFile(file);
+		for(YAML::const_iterator it2 = f.begin(); it2 != f.end(); ++it2) {
+			auto currId = it2->first.as<std::string>();
+			if (currId == meshName) {
+				std::cout << " --- mesh: " << id << "\n";
+				m_polymesh[id] = std::make_shared<PolyMesh>(it2->second);
+			}
+		}
+		if (m_polymesh.count(id) == 0) {
+			std::cerr << " looks like sprite: " << id << " does not exist!" << std::endl;
+			exit(1);
+		}
+		return m_polymesh.at(id);
+	} else {
+		return it->second;
+	}
+
+}

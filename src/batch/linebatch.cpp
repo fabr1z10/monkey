@@ -5,7 +5,7 @@
 
 LineBatch::LineBatch(const pybind11::kwargs& args) : Batch(2, 2, args) {
 	_prim = GL_LINES;
-	_shaderType = ShaderType::LINE_SHADER;
+	_shaderType = ShaderType::BATCH_LINES;
 //
 //	_maxPrimitives = py_get_dict<int>(args, "max_lines");
 //    _shaderType = ShaderType::LINE_SHADER;

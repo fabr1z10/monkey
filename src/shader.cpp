@@ -1,5 +1,8 @@
 #include "shader.h"
 #include <iostream>
+#include "engine.h"
+#include "components/renderer.h"
+
 
 std::unordered_map<char, std::pair<GLenum, size_t>> Shader::m_types {
         {'b', {GL_BYTE, sizeof(GLbyte)}},
@@ -152,3 +155,44 @@ void Shader::setVec3(const std::string &name, const glm::vec3 &value) const
 {
     glUniform3fv(glGetUniformLocation(m_programId, name.c_str()), 1, &value[0]);
 }
+
+BatchShader::BatchShader(ShaderType type, const std::string &vertexCode, const std::string &fragmentCode,
+						 const std::string &vertexFormat) : Shader(type, vertexCode, fragmentCode, vertexFormat) {
+}
+
+void BatchShader::draw() {
+	auto room = Engine::instance().getRoom();
+	const auto& b = room->getBatches();
+	for (const auto& batch : b) {
+		batch->setupUniforms(this);
+		batch->draw(this);
+	}
+}
+
+
+//SimpleShader::SimpleShader(ShaderType type, const std::string &vertexCode, const std::string &fragmentCode,
+//						 const std::string &vertexFormat) : Shader(type, vertexCode, fragmentCode, vertexFormat) {
+//}
+//
+//void SimpleShader::draw() {
+//	auto root = Engine::instance().getRoom()->getRoot();
+//	auto room = Engine::instance().getRoom();
+//
+//	std::list<Node*> nodes{root.get()};
+//
+//	while (!nodes.empty()) {
+//		auto* current = nodes.front();
+//		nodes.pop_front();
+//		auto renderer = current->getComponent<Renderer>();
+//		if (renderer != nullptr && renderer->getShaderType() == m_shaderType) {
+//			renderer->draw(this);
+//		}
+//
+//		for (const auto& children : current->getChildren()) {
+//			nodes.push_back(children.second.get());
+//		}
+//
+//	}
+//
+//
+//}

@@ -101,14 +101,14 @@ QuadBatch::QuadBatch(const pybind11::kwargs& args) : Batch(4, 6, args) {
     if (!tex->hasPalette()) {
         //std::cerr << "texture " << _sheet << " has no palette as required by spritebatch!";
         _hasPalette = false;
-		_shaderType = ShaderType::QUAD_SHADER;
+		_shaderType = ShaderType::BATCH_QUAD_NO_PALETTE;
 		//_texId = 0;
 		_paletteId = GL_INVALID_VALUE;
 		_paletteCount = 1;
 		_invPaletteCount = 1.f;
 	}  else {
     	_hasPalette = true;
-		_shaderType = ShaderType::QUAD_SHADER_PALETTE;
+		_shaderType = ShaderType::BATCH_QUAD_PALETTE;
 
 		_paletteId = tex->getDefaultPaletteId();
 		_paletteCount = tex->getPaletteCount();

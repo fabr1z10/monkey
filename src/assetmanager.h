@@ -7,8 +7,7 @@
 #include "palette.h"
 #include "font.h"
 #include "multinode.h"
-
-
+#include "models/polymesh.h"
 
 
 class AssetManager {
@@ -30,6 +29,7 @@ public:
     std::shared_ptr<Tex> getTex(const std::string&);
     std::shared_ptr<Palette> getPalette(const std::string&);
     std::shared_ptr<Font> getFont(const std::string&);
+	std::shared_ptr<PolyMesh> getPolyMesh(const std::string&);
 private:
 	std::pair<std::string, std::string> splitFileAsset(const std::string&);
 
@@ -39,4 +39,5 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Font>> m_fonts;
     std::unordered_map<std::string, std::shared_ptr<MultiNode>> m_multiSprites;
     std::unordered_map<std::string, std::shared_ptr<SpriteSheet>> m_spritesheets;
+	std::unordered_map<std::string, std::shared_ptr<PolyMesh>> m_polymesh;
 };

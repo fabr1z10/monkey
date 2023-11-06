@@ -1,17 +1,12 @@
-    #include "renderer.h"
+
+#include <glm/gtc/type_ptr.hpp>
+#include "renderer.h"
 #include "../node.h"
 #include "../assetmanager.h"
 
 Renderer::Renderer() : Component(), m_rendererTransform(1.f),
     m_offset(0), m_count(0), m_shift(glm::vec3(0.f)), _zLayer(0.f) {
 
-}
-
-ShaderType Renderer::getShaderType() const {
-//    if (m_model == nullptr) {
-//        return ShaderType::NONE;
-//    }
-    //return m_model->getShaderType();
 }
 
 
@@ -96,4 +91,19 @@ bool Renderer::isComplete() {
 
 void Renderer::setShift(glm::vec3 shift) {
 	m_shift = shift;
+}
+
+BasicRenderer::BasicRenderer(ShaderType type) : Renderer() {
+	_shaderType = type;
+}
+
+void BasicRenderer::draw(Shader * s) {
+	auto worldMatrix = m_node->getWorldMatrix();
+	int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "model");
+	glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix[0]));
+	m_model->draw(s);
+}
+void BasicRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs &args) {
+	m_model = std::dynamic_pointer_cast<DrawableModel>(model);
+	assert(m_model != nullptr);
 }

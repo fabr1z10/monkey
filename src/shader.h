@@ -33,7 +33,9 @@ public:
     [[nodiscard]] ShaderType getShaderType() const;
     [[nodiscard]] GLuint getProgId() const;
     virtual void init(Node*) { }
-private:
+
+    virtual void draw() {}
+protected:
     GLuint m_programId;
     GLuint m_vao;
     ShaderType m_shaderType;
@@ -50,3 +52,15 @@ inline GLuint Shader::getProgId() const {
 inline ShaderType Shader::getShaderType() const {
     return m_shaderType;
 }
+
+//class SimpleShader : public Shader {
+//public:
+//	SimpleShader(ShaderType, const std::string& vertexCode, const std::string& fragmentCode, const std::string& vertexFormat);
+//	void draw() override;
+//};
+
+class BatchShader : public Shader {
+public:
+	BatchShader(ShaderType, const std::string& vertexCode, const std::string& fragmentCode, const std::string& vertexFormat);
+    void draw() override;
+};

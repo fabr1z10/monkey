@@ -22,7 +22,6 @@ public:
 
 	Bounds getBounds() const;
 protected:
-    //ShaderType m_shaderType;
     //GLuint m_size;
 	Bounds m_modelBounds;
 };
