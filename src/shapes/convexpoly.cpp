@@ -9,19 +9,34 @@ ConvexPoly::ConvexPoly(const py::array_t<float>& input) {
     m_bounds.max.y = m_bounds.min.y;
     for (size_t i = 0; i < input.size(); i+=2) {
         glm::vec2 current(input.at(i), input.at(i+1));
-        m_points.push_back(current);
-        m_bounds.addPoint(current);
-        if (i > 0) {
-            addEdge(previous, current);
-        }
-        previous = current;
+        addPoint(current);
+//        m_points.push_back(current);
+//        m_bounds.addPoint(current);
+//        if (i > 0) {
+//            addEdge(previous, current);
+//        }
+//        previous = current;
     }
-    addEdge(m_points.back(), m_points.front());
+    closeLoop();
+	//addEdge(m_points.back(), m_points.front());
+}
+
+void ConvexPoly::addPoint(glm::vec2 P) {
+	m_bounds.addPoint(P);
+	if (!m_points.empty()) {
+		addEdge(m_points.back(), P);
+	}
+	m_points.push_back(P);
+}
+
+void ConvexPoly::closeLoop() {
+	addEdge(m_points.back(), m_points.front());
 }
 
 void ConvexPoly::addEdge(glm::vec2 &A, glm::vec2 &B) {
+	_segments.push_back(Seg{A, B});
     auto edge = B - A;
-    m_edges.push_back(edge);
+    //m_edges.push_back(edge);
     // unit vector
     edge = glm::normalize(edge);
     // rotating 90 clockwise
@@ -44,11 +59,8 @@ glm::vec2 ConvexPoly::project(glm::vec2 axis, const glm::mat4 & t) const {
 }
 
 Segment::Segment(float x0, float y0, float x1, float y1) {
-    m_points.emplace_back(x0, y0);
-    m_points.emplace_back(x1, y1);
-    m_bounds = Bounds(glm::vec3(x0, y0, 0.f));
-    m_bounds.addPoint(glm::vec3(x1, y1, 0.f));
-    addEdge(m_points.back(), m_points.front());
+	addPoint(glm::vec2(x0, y0));
+	addPoint(glm::vec2(x1, y1));
 }
 
 Rect::Rect(float w, float h, const py::kwargs& kwargs) {
@@ -62,18 +74,10 @@ Rect::Rect(float w, float h, const py::kwargs& kwargs) {
             oy = kwargs["oy"].cast<float>();
         }
     }
-    m_points.emplace_back(ox, oy);
-    m_points.emplace_back(ox + w, oy);
-    m_points.emplace_back(ox + w, oy + h);
-    m_points.emplace_back(ox, oy + h);
-    m_edges.emplace_back(w, 0);
-    m_edges.emplace_back(0, h);
-    m_edges.emplace_back(-w, 0);
-    m_edges.emplace_back(0, -h);
-    m_normals.emplace_back(1.0f, 0.0f);
-    m_normals.emplace_back(0.0f, 1.0f);
-    m_bounds.min = glm::vec3(ox, oy, 0.f);
-    m_bounds.max = glm::vec3(ox + w, oy + h, 0.f);
+    addPoint(glm::vec2(ox, oy));
+	addPoint(glm::vec2(ox + w, oy));
+	addPoint(glm::vec2(ox + w, oy + h));
+	addPoint(glm::vec2(ox, oy + h));
 
 }
 

@@ -10,6 +10,7 @@ public:
 	void keyCallback(int key) override;
 private:
 	bool m_wasGroudned;
+	int _keyJump;
 };
 
 

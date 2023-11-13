@@ -8,13 +8,26 @@
 #include "../runners/collision.h"
 
 
+enum Direction {
+	X, Y, Z
+};
+
+
 class RayCaster {
 public:
-    RayCaster() = default;
+    RayCaster();
     virtual ~RayCaster() = default;
     RayCastHit raycast(glm::vec3 A, glm::vec3 B, const Shape*, const glm::mat4&);
+
+    /// cast a ray along an axis
+    RayCastHit raycastAxis(glm::vec3 P, Direction, float length, const Shape*, const glm::mat4&);
+
+
 protected:
+	static std::vector<glm::ivec3> _axes;
     std::unordered_map<std::type_index, std::function<RayCastHit(const glm::vec3& A, const glm::vec3& B, const Shape*, const glm::mat4&)>> m_functionMap;
+	std::unordered_map<std::type_index, std::function<RayCastHit(const glm::vec3& P,
+															  Direction, float, const Shape*, const glm::mat4&)>> m_functionAxisMap;
 
 
 };
@@ -25,5 +38,8 @@ public:
 private:
     RayCastHit rayCastAABB(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
 	RayCastHit rayCastPoly(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
+	// all shapes default to this, except circle and aabb that have special handlers
+	RayCastHit rayCastAxid2DGeneric(const glm::vec3& P, Direction, float, const Shape*, const glm::mat4& t);
+	RayCastHit rayCastAxid2DAABB(const glm::vec3& P, Direction, float, const Shape*, const glm::mat4& t);
 	void updateRaycastHit(RayCastHit& r, glm::vec2 ray, glm::vec2 line, float u, int si);
 };

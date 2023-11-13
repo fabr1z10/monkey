@@ -5,6 +5,7 @@
 
 #include "../shapes/compound.h"
 #include "../shapes/aabb.h"
+#include "../shapes3d/aabb3d.h"
 #include "../shapes/polygon.h"
 #include "../pyhelper.h"
 #include "../models/multi.h"
@@ -22,7 +23,8 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
     _dss[std::type_index(typeid(ConvexPoly))] = &ModelMaker::makeConvexPoly;
     _dss[std::type_index(typeid(CompoundShape))] = &ModelMaker::makeCompoundShape;
     _dss[std::type_index(typeid(AABB))] = &ModelMaker::makeAABB;
-    _dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
+	_dss[std::type_index(typeid(AABB3D))] = &ModelMaker::makeAABB3D;
+	_dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
 
 //
 //    m_builders[std::type_index(typeid(Rect))] = &ModelMaker::makeConvexPoly; // [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeConvexPoly(s, color, ft); };
@@ -98,6 +100,42 @@ std::shared_ptr<Model> ModelMaker::makeAABB(const std::shared_ptr<Shape>& s, glm
     lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
 
     return lines;
+}
+
+std::shared_ptr<Model> ModelMaker::makeAABB3D(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
+	auto b = s->getBounds();
+	std::vector<float> data = {
+		b.min.x, b.min.y, b.min.z,
+		b.max.x, b.min.y, b.min.z,
+		b.max.x, b.min.y, b.min.z,
+		b.max.x, b.min.y, b.max.z,
+		b.max.x, b.min.y, b.max.z,
+		b.min.x, b.min.y, b.max.z,
+		b.min.x, b.min.y, b.max.z,
+		b.min.x, b.min.y, b.min.z,
+		b.min.x, b.max.y, b.min.z,
+		b.max.x, b.max.y, b.min.z,
+		b.max.x, b.max.y, b.min.z,
+		b.max.x, b.max.y, b.max.z,
+		b.max.x, b.max.y, b.max.z,
+		b.min.x, b.max.y, b.max.z,
+		b.min.x, b.max.y, b.max.z,
+		b.min.x, b.max.y, b.min.z,
+		b.min.x, b.min.y, b.min.z,
+		b.min.x, b.max.y, b.min.z,
+		b.max.x, b.min.y, b.min.z,
+		b.max.x, b.max.y, b.min.z,
+		b.min.x, b.min.y, b.max.z,
+		b.min.x, b.max.y, b.max.z,
+		b.max.x, b.min.y, b.max.z,
+		b.max.x, b.max.y, b.max.z,
+
+	};
+	auto lines = std::make_shared<LineModel>();
+	lines->init(color, data);
+	//lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
+
+	return lines;
 }
 
 std::shared_ptr<Model> ModelMaker::pippo(const pybind11::kwargs& args) {

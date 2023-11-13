@@ -7,7 +7,7 @@
 #include "../shape.h"
 #include <array>
 
-class AABB : public Shape2D {
+class AABB : public ConvexShape {
 public:
     AABB(float xmin, float xmax, float ymin, float ymax);
     glm::vec2 project(glm::vec2, const glm::mat4&) const override;

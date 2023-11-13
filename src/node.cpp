@@ -1,4 +1,5 @@
 #include "node.h"
+#include <glm/gtx/transform.hpp>
 #include "engine.h"
 #include "components/renderer.h"
 #include "util.h"
@@ -322,5 +323,11 @@ std::string Node::getText() const {
 void Node::setText(const std::string & text) {
 	std::dynamic_pointer_cast<Text>(m_model)->setText(text);
 
+
+}
+
+void Node::rotate(float angle, glm::vec3 axis) {
+	m_modelMatrix *= glm::rotate(angle, axis);
+	notifyMove();
 
 }

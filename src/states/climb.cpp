@@ -22,7 +22,8 @@ void Climb::setParent(StateMachine * sm, const pybind11::kwargs& kwargs) {
 void Climb::start() {
     auto node = m_sm->getNode();
 
-    m_controller = dynamic_cast<Controller2D*>(node->getComponent<Controller>());
+    //m_controller = dynamic_cast<Controller2D*>(node->getComponent<Controller>());
+	m_controller = node->getComponent<Controller>();
     assert(m_controller != nullptr);
 
     m_dynamics =node->getComponent<Dynamics>();

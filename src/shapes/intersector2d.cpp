@@ -42,7 +42,7 @@ CollisionReport Intersector2D::SAT(const Shape * s1, const Shape * s2, const glm
     return performSAT(axes, cp1, cp2, t1, t2);
 }
 
-CollisionReport Intersector2D::performSAT(const std::vector<glm::vec2>& axes, const Shape2D* a, const Shape2D* b, const glm::mat4& t1, const glm::mat4& t2) {
+CollisionReport Intersector2D::performSAT(const std::vector<glm::vec2>& axes, const ConvexShape* a, const ConvexShape* b, const glm::mat4& t1, const glm::mat4& t2) {
     // axes are given in world coordinates
     // since dot products do not depend on coordinate systems, we transform axes from world to local
     CollisionReport report;
@@ -72,7 +72,7 @@ CollisionReport Intersector2D::performSAT(const std::vector<glm::vec2>& axes, co
 
 CollisionReport Intersector2D::SATCircle(const Shape * s1, const Shape * s2, const glm::mat4 & t1, const glm::mat4 & t2) {
     const auto* cp1 = static_cast<const ConvexPoly*>(s1);
-    const auto* sh2 = static_cast<const Shape2D*>(s2);
+    const auto* sh2 = static_cast<const ConvexShape*>(s2);
 
     // get circle center in world coordinates
     glm::vec2 centerWorld = t2 * glm::vec4(s2->getOffset(), 1.0f);
@@ -120,7 +120,7 @@ CollisionReport Intersector2D::compound(const Shape * s1, const Shape * s2, cons
 }
 
 CollisionReport Intersector2D::SATAABB(const Shape * s1, const Shape * s2, const glm::mat4 & t1, const glm::mat4 & t2) {
-	const auto* cp1 = static_cast<const Shape2D*>(s1);
+	const auto* cp1 = static_cast<const ConvexShape*>(s1);
 	const auto* cp2 = static_cast<const ConvexPoly*>(s2);
 	std::vector<glm::vec2> axes { glm::vec2(1.f, 0.f), glm::vec2(0.f, 1.f)};
 	for (const auto& t : cp2->getUnitNormals()) axes.push_back(t2 * glm::vec4(t, 0.f, 0.f));

@@ -14,7 +14,8 @@ Controller::Controller(const pybind11::kwargs& args) : m_debugShape(nullptr) {
 	m_size = py_get_dict<glm::vec3>(args, "size", glm::vec3(0.f));
 	m_center = py_get_dict<glm::vec3>(args, "center", glm::vec3(m_size.x * 0.5f, 0.f, 0.f));
     _batchId = py_get_dict<std::string>(args, "batch", "");
-
+	m_maskDown = py_get_dict<int>(args, "mask_down", 2);
+	m_maskUp = py_get_dict<int>(args, "mask_up", m_maskDown);
     computeCoordinates();
 }
 
@@ -60,7 +61,14 @@ void Controller::computeCoordinates() {
 }
 
 
+void Controller::setMask(int up, int down) {
+	m_maskUp = up;
+	m_maskDown = down;
+}
 
+glm::ivec2 Controller::getMask() const {
+	return glm::ivec2(m_maskUp, m_maskDown);
+}
 
 
 
@@ -72,3 +80,8 @@ void Controller::move(glm::vec3 & delta, bool) {
 glm::vec3 Controller::getSize() const {
 	return m_size;
 }
+
+void Controller::resetCollisions() {
+	m_collisionStatus = 0u;
+}
+

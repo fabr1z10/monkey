@@ -10,20 +10,20 @@ FoeWalk2D::FoeWalk2D(const pybind11::kwargs &kwargs) : Walk2D(kwargs) {
 void FoeWalk2D::control() {
 
 	// hit wall
-	if ( (m_left && m_controller->left()) || (m_right && m_controller->right())) {
-		m_left = !m_left;
-		m_right = !m_left;
+	if (_keys.x == -1 && m_controller->left()) {
+		_keys.x = 1;
+	} else if (_keys.x == 1 && m_controller->right()) {
+		_keys.x = -1;
 	}
 
 	// check if I reached the end of the platform
-	if (m_flipOnEdge && m_controller->grounded() && m_controller->isFalling(m_left ? -1.f : 1.f)) {
-		m_left = !m_left;
-		m_right = !m_left;
-
+	if (m_flipOnEdge && m_controller->grounded() && m_controller->isFalling(_keys.x)) {
+		// flip x direction
+		_keys.x *= -1;
 	}
 
 	if (m_flipHorizontally) {
-		m_node->setFlipX(m_left);
+		m_node->setFlipX(_keys.x == -1);
 	}
 
 
@@ -45,10 +45,9 @@ void FoeWalk2D::control() {
 
 void FoeWalk2D::setParent(StateMachine* sm, const pybind11::kwargs& kwargs) {
     Walk2D::setParent(sm, kwargs);
-	m_left = py_get_dict<bool>(kwargs, "left", true);
-
-	m_right = !m_left;
-	m_up = py_get_dict<bool>(kwargs, "up", false);
+	auto left = py_get_dict<bool>(kwargs, "left", true);
+	_keys.x = left ? -1 : 1;
+	//m_up = py_get_dict<bool>(kwargs, "up", false);
 }
 
 

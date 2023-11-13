@@ -1,7 +1,7 @@
 #include "circle.h"
 #include "../pyhelper.h"
 
-Circle::Circle(float radius, const py::kwargs& args) : Shape2D(), m_radius(radius) {
+Circle::Circle(float radius, const py::kwargs& args) : ConvexShape(), m_radius(radius) {
     auto ox = py_get_dict<float>(args, "ox", 0.0f);
     auto oy = py_get_dict<float>(args, "oy", 0.0f);
     m_offset = glm::vec3(ox, oy, 0.f);

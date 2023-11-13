@@ -1,43 +1,18 @@
-#include "walk2d.h"
-#include "../node.h"
+#include "walk3d.h"
 #include "../util.h"
 
-
-Walk2D::Walk2D(const pybind11::kwargs & kwargs) : Walk(kwargs) {
+Walk3D::Walk3D(const pybind11::kwargs & kwargs) : Walk(kwargs) {
 
 }
 
-
-
-//void Walk2D::start() {
-//    auto node = m_sm->getNode();
-//    m_node = node;
-//    m_controller = dynamic_cast<Controller2D*>(node->getComponent<Controller>());
-//    assert(m_controller != nullptr);
-//
-//    m_dynamics = node->getComponent<Dynamics>();
-//    assert(m_dynamics != nullptr);
-//
-//    //m_animatedRenderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
-//    m_animatedRenderer = node->getComponent<Renderer>();
-//}
-
-void Walk2D::init(const pybind11::kwargs &args) {
+void Walk3D::init(const pybind11::kwargs &args) {
 	State::init(args);
-	auto left = py_get_dict<bool>(args, "left", _keys.x == -1);
-	_keys.x = left ? -1 : 1;
+//	auto left = py_get_dict<bool>(args, "left", _keys.x == -1);
+//	_keys.x = left ? -1 : 1;
 
 }
-//
-//void Walk2D::setParent(StateMachine * sm) {
-//	State::setParent(sm);
-//	m_node = sm->getNode();
-//
-//
-//}
 
-
-void Walk2D::run(double dt) {
+void Walk3D::run(double dt) {
 	auto dtf = static_cast<float>(dt);
 
 	control();
@@ -78,12 +53,30 @@ void Walk2D::run(double dt) {
 		}
 	}
 
+	if (_keys.z != 0)
+	{
+		a.z = (-_keys.z) * m_acceleration;
+	} else {
+		if (fabs(m_dynamics->m_velocity.z) > 0.1f) {
+			a.z = - signf(m_dynamics->m_velocity.z) * m_acceleration;
+		} else {
+			a.z = 0.0f;
+			m_dynamics->m_velocity.z = 0.0f;
+		}
+	}
+
+
 	m_dynamics->m_velocity += a * dtf;
 
 	// limit horizontal vel to max speed
 	if (_keys.x != 0) {
 		if (fabs(m_dynamics->m_velocity.x) > maxSpeed) {
 			m_dynamics->m_velocity.x = signf(m_dynamics->m_velocity.x) * maxSpeed;
+		}
+	}
+	if (_keys.z != 0) {
+		if (fabs(m_dynamics->m_velocity.z) > maxSpeed) {
+			m_dynamics->m_velocity.z = signf(m_dynamics->m_velocity.z) * maxSpeed;
 		}
 	}
 
@@ -101,7 +94,7 @@ void Walk2D::run(double dt) {
 				m_animatedRenderer->setAnimation(m_walkAnim);
 			}
 		} else {
-		    // jump or fall anim?
+			// jump or fall anim?
 			m_animatedRenderer->setAnimation(m_isJumping ? m_jumpAnim : m_fallAnim);
 		}
 

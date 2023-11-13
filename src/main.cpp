@@ -62,6 +62,13 @@
 #include "components/cursor.h"
 #include "models/skeletal.h"
 #include "cam25.h"
+#include "components/controller3d.h"
+#include "shapes3d/aabb3d.h"
+#include "states/walk3d.h"
+#include "states/playerwalk3d.h"
+#include "states/top2d.h"
+#include "batch/trianglebatch.h"
+#include "nodes/road.h"
 
 
 namespace py = pybind11;
@@ -109,6 +116,8 @@ PYBIND11_MODULE(monkey, m) {
     m.attr("SHADER_BATCH_QUAD_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_PALETTE);
     m.attr("SHADER_BATCH_QUAD_NO_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_NO_PALETTE);
     m.attr("SHADER_BATCH_LINES") = static_cast<int>(ShaderType::BATCH_LINES);
+
+	//m.attr("SHADER_BATCH_COLOR_TRI") = static_cast<int>(ShaderType::BATCH_COLOR_TRI);
 	m.attr("SHADER_SKELETAL") = static_cast<int>(ShaderType::SHADER_SKELETAL);
 //	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
 //    m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
@@ -197,12 +206,15 @@ PYBIND11_MODULE(monkey, m) {
         //.def("add", &IBatch::add);
 	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
     py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
+	py::class_<Batch<TriBatchVertexData>, IBatch, std::shared_ptr<Batch<TriBatchVertexData>>>(m, "tbatch");
 
 
     py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
         .def(py::init<const pybind11::kwargs&>());
     py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
         .def(py::init<const pybind11::kwargs&>());
+	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "triangle_batch")
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
 		.def(py::init<const pybind11::kwargs&>());
 
@@ -238,6 +250,9 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<AABB, Shape, std::shared_ptr<AABB>>(m, "aabb")
 		.def(py::init<float, float, float, float>());
 
+	py::class_<AABB3D, Shape, std::shared_ptr<AABB3D>>(m, "aabb3d")
+		.def(py::init<float, float, float, float, float, float>());
+
 
 	/// --- models ---
     py::module_ mm = m.def_submodule("models");
@@ -254,6 +269,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
     py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
         .def(py::init<const pybind11::kwargs&>());
+	py::class_<RoadModel, Model, std::shared_ptr<RoadModel>>(mm, "road")
+		.def(py::init<const pybind11::kwargs&>())
+		.def("add_section", &RoadModel::addSection);
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
@@ -320,7 +338,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "walk")
+	py::class_<actions::Walk, NodeAction, std::shared_ptr<actions::Walk>>(ma, "walk")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "turn")
 		.def(py::init<const pybind11::kwargs&>());
@@ -366,6 +384,9 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "controller_2d")
 		.def(py::init<py::kwargs&>());
 
+	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
+		.def(py::init<py::kwargs&>());
+
 	py::class_<Dynamics, Component, std::shared_ptr<Dynamics>>(m, "dynamics")
 		.def("set_velocity", &Dynamics::setVelocity)
 		.def(py::init<const pybind11::kwargs&>());
@@ -402,8 +423,14 @@ PYBIND11_MODULE(monkey, m) {
 
 	/// --- states ---
 	py::class_<State, std::shared_ptr<State>>(m, "state");
+	py::class_<Top2D, State, std::shared_ptr<Top2D>>(m, "top_2d")
+		.def(py::init<const pybind11::kwargs&>());
+
 	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
+	py::class_<Walk3D, State, std::shared_ptr<Walk3D>>(m, "walk_3d");
 	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<PlayerWalk3D, State, std::shared_ptr<PlayerWalk3D>>(m, "walk_3d_player")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<FoeWalk2D, State, std::shared_ptr<FoeWalk2D>>(m, "walk_2d_foe")
 		.def(py::init<const pybind11::kwargs&>());

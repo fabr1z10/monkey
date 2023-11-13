@@ -7,7 +7,7 @@
 
 namespace py = pybind11;
 
-class Circle : public Shape2D {
+class Circle : public ConvexShape {
 public:
     explicit Circle(float radius, const py::kwargs&);
     glm::vec2 project(glm::vec2, const glm::mat4&) const override;

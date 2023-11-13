@@ -16,18 +16,17 @@ public:
 	virtual ~Controller2D();
 	void move(glm::vec3&, bool forced) override;
 	std::type_index getType() override;
-	void updateRaycastOrigins();
-	bool grounded() const override;
-	bool ceiling() const;
-	bool left() const;
-	bool right() const;
-	void setGrounded(bool);
+	void updateRaycastOrigins() override;
+	bool isFalling(float) override;
+
+	//	bool grounded() const override;
+//	bool ceiling() const;
+//	bool left() const;
+//	bool right() const;
 	void setPlatform(Platform*);
 	void resetPlatform();
-	bool isFalling(float);
 	void resetDetails();
-	glm::ivec2 getMask() const;
-	void setMask(int, int);
+	void resetCollisions() override;
 private:
 	std::shared_ptr<Model> getDebugModel() override;
 
@@ -49,7 +48,7 @@ private:
 	RaycastOrigins m_raycastOrigins;
 
 	bool m_wasGnd;
-	CollisionDetails m_details;
+	//CollisionDetails m_details;
 	float m_maxClimbAngle;
 	float m_maxDescendAngle;
 	float m_skinWidth;
@@ -58,28 +57,28 @@ private:
 	int m_verticalRayCount;
 	float m_horizontalRaySpacing;
 	float m_verticalRaySpacing;
-	int m_maskUp;
-	int m_maskDown;
+
 	// platforms on which I registered
 	Platform* m_platforms;
+
+	bool m_climbingSlope;
+	bool m_descendingSlope;
+	glm::vec3 m_velocityOld;
+	float m_slopeAngle, m_slopeAngleOld;
 };
 
-inline bool Controller2D::grounded() const {
-	return m_details.below;
-}
+//inline bool Controller2D::grounded() const {
+//	return m_details.below;
+//}
+//
+//inline bool Controller2D::ceiling () const {
+//	return m_details.above;
+//}
+//
+//inline bool Controller2D::left () const {
+//	return m_details.left;
+//}
+//inline bool Controller2D::right () const {
+//	return m_details.right;
+//}
 
-inline bool Controller2D::ceiling () const {
-	return m_details.above;
-}
-
-inline bool Controller2D::left () const {
-	return m_details.left;
-}
-inline bool Controller2D::right () const {
-	return m_details.right;
-}
-
-
-inline void Controller2D::setGrounded(bool value) {
-	m_details.below = value;
-}

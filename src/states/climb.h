@@ -17,7 +17,7 @@ public:
 	void end() override;
 
 private:
-	Controller2D* m_controller;
+	Controller* m_controller;
 	Dynamics* m_dynamics;
 	Node* m_node;
 	SpriteRenderer* m_animatedRenderer;

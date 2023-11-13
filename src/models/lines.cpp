@@ -97,12 +97,14 @@ std::type_index LinesRenderer::getType() {
 void LinesRenderer::update(double dt) {
 
     // get world pos
-    auto pos = m_node->getWorldPosition();
+    auto pos = m_node->getWorldMatrix();
 
 
     for (size_t i = 0; i < _primitiveIds.size(); ++i) {
         const auto& s = _lineModel->getSegment(i);
-        _batch->setLine(_primitiveIds[i], pos + s.P0, pos + s.P1, s.color);
+        auto a = glm::vec3(pos * glm::vec4(s.P0, 1.f));
+		auto b = glm::vec3(pos * glm::vec4(s.P1, 1.f));
+        _batch->setLine(_primitiveIds[i], a, b, s.color);
     }
 
 

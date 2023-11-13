@@ -51,6 +51,7 @@ public:
     void setPosition(float, float, float);
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
+	void rotate(float angle, glm::vec3 axis);
 	void movea(glm::vec3 delta);
 	std::shared_ptr<Model> getModel();
 	virtual void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());

@@ -14,17 +14,18 @@ Camera25::Camera25(float width, float height, const pybind11::kwargs& args) : Or
 //}
 
 void Camera25::setPosition(glm::vec3 eye, glm::vec3 dir, glm::vec3 up) {
-	m_eye.x = std::clamp(m_eye.x, m_xBounds[0], m_xBounds[1]);
-	m_eye.y = std::clamp(m_eye.y, m_yBounds[0], m_yBounds[1]);
-	m_eye.z = std::clamp(m_eye.z, m_zBounds[0], m_zBounds[1]);
+	m_eye.x = std::clamp(eye.x, m_xBounds[0], m_xBounds[1]);
+	m_eye.y = std::clamp(eye.y, m_yBounds[0], m_yBounds[1]);
+	m_eye.z = std::clamp(eye.z, m_zBounds[0], m_zBounds[1]);
 
 	//if (!isEqual(eye.x, m_eye.x) || !isEqual(eye.y, m_eye.y) || !isEqual(eye.z, m_eye.z)) {
 		m_fwd = dir;
 		m_up = up;
-		m_eye = eye;
+
 
 		m_viewMatrix = glm::mat4(1.0f);
 		m_viewMatrix[1][1] = 1.0f;
+		m_viewMatrix[2][0] = -m_sinAngle;
 		m_viewMatrix[2][1] = -m_sinAngle;
 		m_viewMatrix[3][0] = -m_eye.x;
 		m_viewMatrix[3][1] = -m_eye.y;

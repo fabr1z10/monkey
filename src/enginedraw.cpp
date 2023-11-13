@@ -13,7 +13,9 @@ EngineDraw::EngineDraw() {
 	m_shaderBuilders[ShaderType::BATCH_QUAD_PALETTE] = [&] () {
 		return std::make_shared<BatchShader>(ShaderType::BATCH_QUAD_PALETTE, quad_vs, quad_fs, "2f1I"); };
     m_shaderBuilders[ShaderType::BATCH_LINES] = [&] () {
-    	return std::make_shared<BatchShader>(ShaderType::BATCH_LINES, line_vs, line_fs, "1f1I"); };
+    	return std::make_shared<BatchShader>(ShaderType::BATCH_LINES, line_vs, line_fs, "3f4f"); };
+//	m_shaderBuilders[ShaderType::BATCH_COLOR_TRI] = [&] () {
+//		return std::make_shared<BatchShader>(ShaderType::BATCH_COLOR_TRI, line_vs, line_fs, "3f4f"); };
 	m_shaderBuilders[ShaderType::BATCH_QUAD_NO_PALETTE] = [&] () {
 		return std::make_shared<BatchShader>(ShaderType::BATCH_QUAD_NO_PALETTE, quad_vs_nopal, quad_fs_nopal, "2f1I"); };
 	m_shaderBuilders[ShaderType::SHADER_SKELETAL] = [&] () {

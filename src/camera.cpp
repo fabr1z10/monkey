@@ -21,7 +21,7 @@ Camera::Camera(const py::kwargs& kwargs) {
 
     m_yBounds = py_get_dict<glm::vec2>(kwargs, "bounds_y", glm::vec2(-t, t));
     m_zBounds = py_get_dict<glm::vec2>(kwargs, "bounds_z", glm::vec2(-t, t));
-    setPosition(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //setPosition(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
 }

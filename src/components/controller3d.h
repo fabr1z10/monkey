@@ -9,14 +9,16 @@ class ICollider;
 class PlatformComponent;
 
 struct CollisionDetails3D {
+	CollisionDetails3D();
+
 	bool above, below;
 	bool left, right;
 	bool front, back;
 
-	bool climbingSlope;
-	bool descendingSlope;
+	//bool climbingSlope;
+	//bool descendingSlope;
 
-	float slopeAngle, slopeAngleOld;
+	//float slopeAngle, slopeAngleOld;
 	void Reset();
 };
 
@@ -25,13 +27,15 @@ inline void CollisionDetails3D::Reset() {
 	left = right = false;
 	front = back  = false;
 
-	climbingSlope = false;
-	descendingSlope = false;
-	slopeAngleOld = slopeAngle;
-	slopeAngle = 0.0f;
+//	climbingSlope = false;
+//	descendingSlope = false;
+//	slopeAngleOld = slopeAngle;
+//	slopeAngle = 0.0f;
 }
 
 struct RaycastOrigins3D {
+	RaycastOrigins3D();
+
 	float fwd, rear;
 	float bottom, top;
 	float front, back;
@@ -45,9 +49,11 @@ public:
 	std::shared_ptr<Model> getDebugModel() override;
 	void move(glm::vec3&, bool forced) override;
 	void updateRaycastOrigins();
+	bool isFalling(float) override;
 
 	bool IsFalling(int x, int z);
 	//bool grounded() const override;
+	//bool ceiling() const override;
 	//bool ceiling () const override;
 	//bool side () const override {return false;}
 
@@ -69,14 +75,13 @@ private:
 	void verticalCollisions(glm::vec3& velocity);
 	void UpdateRaycastOrigins();
 	//ICollisionEngine * m_collision;
-	int m_maskUp;
-	int m_maskDown;
+	int _maskPlatform;
 
-	ICollider* m_cc;
-	ICollisionEngine * m_engine;
+
+	//ICollider* m_cc;
 	float m_skinWidth;
-	float m_maxClimbAngle;
-	float m_maxDescendAngle;
+	//float m_maxClimbAngle;
+	//float m_maxDescendAngle;
 
 };
 
@@ -84,3 +89,10 @@ inline std::type_index Controller3D::getType() {
 	return std::type_index(typeid(Controller));
 }
 
+//inline bool Controller3D::grounded() const {
+//	return m_details.below;
+//}
+//
+//inline bool Controller3D::ceiling() const {
+//	return m_details.above;
+//}

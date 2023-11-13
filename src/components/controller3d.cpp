@@ -5,8 +5,14 @@
 #include "../node.h"
 #include "../util.h"
 
-Controller3D::Controller3D(const pybind11::kwargs& kwargs) : Controller(kwargs) {
+
+CollisionDetails3D::CollisionDetails3D() : above(false), below(false), left(false), right(false), front(false), back(false) {}
+
+RaycastOrigins3D::RaycastOrigins3D() : fwd(0.f), rear(0.f), bottom(0.f), top(0.f), front(0.f), back(0.f) {}
+
+Controller3D::Controller3D(const pybind11::kwargs& kwargs) : Controller(kwargs), _maskPlatform(2) {
 	m_skinWidth = py_get_dict<float>(kwargs, "skinWidth", .015f);
+	_maskPlatform = py_get_dict<int>(kwargs, "mask_platform", 2);
 }
 
 std::shared_ptr<Model> Controller3D::getDebugModel() {
@@ -71,8 +77,8 @@ void Controller3D::verticalCollisions(glm::vec3 &velocity) {
 			glm::vec3(m_raycastOrigins.rear + velx, m_raycastOrigins.bottom,m_raycastOrigins.back + velz)};
 
 	for (const auto& r0 : raycastOrigins) {
-		int collMask = (directionY == -1 ? (m_maskDown) : m_maskUp);
-		RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(0, directionY, 0), rayLength, collMask);
+		//int collMask = (directionY == -1 ? (m_maskDown) : m_maskUp);
+		RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(0, directionY, 0), rayLength, _maskPlatform);
 		if (hit.collide) {
 			velocity.y = (hit.length - m_skinWidth) * directionY;
 			rayLength = hit.length;
@@ -101,7 +107,7 @@ void Controller3D::horizontalCollisions(glm::vec3& vel) {
 				glm::vec3(m_raycastOrigins.fwd, m_raycastOrigins.bottom, m_raycastOrigins.back)};
 
 		for (const auto &r0 : raycastOrigins) {
-			RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(dir_x, 0.f, 0.f), rayLength, 2 | 32);
+			RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(dir_x, 0.f, 0.f), rayLength, _maskPlatform);
 			if (hit.collide) {
 				vel.x = std::max(hit.length - m_skinWidth, 0.0f) * sign(vel.x);
 				rayLength = hit.length;
@@ -121,7 +127,7 @@ void Controller3D::horizontalCollisions(glm::vec3& vel) {
 				glm::vec3(m_raycastOrigins.back + dx, m_raycastOrigins.bottom, z)};
 		float rayLength = fabs(vel.z) + m_skinWidth;
 		for (const auto &r0 : raycastOrigins) {
-			RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(0.0f, 0.0f, 1.0f) * directionZ, rayLength, 2 | 32);
+			RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(0.0f, 0.0f, 1.0f) * directionZ, rayLength, _maskPlatform);
 			if (hit.collide) {
 				vel.z = std::max(hit.length - m_skinWidth, 0.0f) * sign(vel.z);
 				rayLength = hit.length;
@@ -130,4 +136,7 @@ void Controller3D::horizontalCollisions(glm::vec3& vel) {
 			}
 		}
 	}
+}
+bool Controller3D::isFalling(float dir) {
+	return false;
 }
