@@ -59,8 +59,10 @@ RoadRenderer::RoadRenderer(const pybind11::kwargs& args) : BatchRenderer<Triangl
 void RoadRenderer::update(double) {
 	// first of all, you need to know the current player coordinate
 	// then you need
+	float ds{0.f};
 	if (glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS) {
-		_s += 0.05;
+	    ds = 0.05f;
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT)==GLFW_PRESS) {
 		_x -= 0.05;
@@ -71,6 +73,7 @@ void RoadRenderer::update(double) {
 		//_s += +0.05;
 
 	}
+    _s += ds;
 	//float s=0;
 	int index = _s / _roadModel->getSegmentLength();
 	// find start section
@@ -83,25 +86,51 @@ void RoadRenderer::update(double) {
 	float z =  (_s - index * _roadModel->getSegmentLength());
 	int ti =0;
 	float y = 0.f;
-	const auto& section = _roadModel->_sections[isec];
+	const auto* section = &_roadModel->_sections[isec];
+	_x = 0.f;
 	float dz = _roadModel->getSegmentLength();
-	std::cout << _s << ", " << index << ", " << z << "\n";
-	for (size_t i = 0; i < _roadModel->getSegmentsToDraw(); ++i) {
+//
+	float rx= 0.f, ry=0.f;
+    float dx= 0.0f, dy = 0.0f;
+
+    std::cout << _s << ", " << index << ", " << z << "," << isec << "\n";
+
+    z=0.f;
+    for (size_t i = 0; i < _roadModel->getSegmentsToDraw(); ++i) {
+	    if (index > section->endIndex) {
+	        // next section
+	        isec++;
+	        if (isec >= _roadModel->_sections.size()) {
+	            break;
+	        }
+	        section = &_roadModel->_sections[isec];
+	    }
+
+	    auto length = (i == 0 ? (index + 1.f) * dz - _s : dz);
 		// two triangles for left terrain
+		float z1 = z - length;
 		int colorSchemeIndex = (index / _roadModel->getSegmentsPerColorSchemeChange()) % 2;
 		const auto& cs = _roadModel->getColorScheme(colorSchemeIndex);
-
-		_batch->setTriangle(ti++, glm::vec3(-_x -100.f, y, z), glm::vec3(-_x -section.width, y, z), glm::vec3(-_x-section.width, y, z-dz), cs.terrainColor);
-		_batch->setTriangle(ti++, glm::vec3(-_x -100.f, y, z), glm::vec3(-_x -section.width, y, z-dz), glm::vec3(-_x-100.f, y, z-dz), cs.terrainColor);
+        dx += length * section->curve;
+        dy += length * section->slope;
+        float rleft = rx - section->width;
+        float rright = rx + section->width;
+		_batch->setTriangle(ti++, glm::vec3(-_x -100.f, y, z), glm::vec3(-_x + rleft, y, z), glm::vec3(-_x + rleft + dx, y, z1), cs.terrainColor);
+		_batch->setTriangle(ti++, glm::vec3(-_x -100.f, y, z), glm::vec3(-_x + rleft + dx, y, z1), glm::vec3(-_x-100.f, y, z1), cs.terrainColor);
 		// two triangles for road
-		_batch->setTriangle(ti++, glm::vec3(-_x-section.width, y, z), glm::vec3(-_x+section.width, y, z), glm::vec3(-_x+section.width, y, z-dz), cs.roadColor);
-		_batch->setTriangle(ti++, glm::vec3(-_x-section.width, y, z), glm::vec3(-_x-section.width, y, z-dz), glm::vec3(-_x+section.width, y, z-dz), cs.roadColor);
+		_batch->setTriangle(ti++, glm::vec3(-_x+rleft, y, z), glm::vec3(-_x+rright, y, z), glm::vec3(-_x+rright+dx, y, z1), cs.roadColor);
+		_batch->setTriangle(ti++, glm::vec3(-_x+rleft, y, z), glm::vec3(-_x+rleft+dx, y, z1), glm::vec3(-_x+rright+dx, y, z1), cs.roadColor);
 		// two tri for right terrain
-		_batch->setTriangle(ti++, glm::vec3(-_x+section.width, y, z), glm::vec3(-_x+100.f, y, z), glm::vec3(-_x+100.f, y, z-dz), cs.terrainColor);
-		_batch->setTriangle(ti++, glm::vec3(-_x+section.width, y, z), glm::vec3(-_x+section.width, y, z-dz), glm::vec3(-_x+100.f, y, z-dz), cs.terrainColor);
+		_batch->setTriangle(ti++, glm::vec3(-_x+rright, y, z), glm::vec3(-_x+100.f, y, z), glm::vec3(-_x+100.f, y, z1), cs.terrainColor);
+		_batch->setTriangle(ti++, glm::vec3(-_x+rright, y, z), glm::vec3(-_x+rright+dx, y, z1), glm::vec3(-_x+100.f, y, z1), cs.terrainColor);
+        //rx += dx;
+        //ry += dy;
+        //rmid += dx;
+
 		// lines
 		// this stuff should be done by model maybe?
-		z -= dz;
+        rx += dx;
+		z = z1;
 		index++;
 	}
 }
