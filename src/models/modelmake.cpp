@@ -7,6 +7,7 @@
 #include "../shapes/aabb.h"
 #include "../shapes3d/aabb3d.h"
 #include "../shapes/polygon.h"
+#include "../shapes/polyline.h"
 #include "../pyhelper.h"
 #include "../models/multi.h"
 #include "../models/lines.h"
@@ -25,6 +26,7 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
     _dss[std::type_index(typeid(AABB))] = &ModelMaker::makeAABB;
 	_dss[std::type_index(typeid(AABB3D))] = &ModelMaker::makeAABB3D;
 	_dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
+	_dss[std::type_index(typeid(PolyLine))] = &ModelMaker::makePolyLine;
 
 //
 //    m_builders[std::type_index(typeid(Rect))] = &ModelMaker::makeConvexPoly; // [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeConvexPoly(s, color, ft); };
@@ -61,6 +63,23 @@ std::shared_ptr<Model> ModelMaker::makeCompoundShape(const std::shared_ptr<Shape
 //    return model;
 }
 
+
+std::shared_ptr<Model> ModelMaker::makePolyLine(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
+	auto* p = static_cast<PolyLine*>(s.get());
+	const auto& outline = p->getSegments();
+	std::vector<float> data;
+	for (const auto seg : *outline) {
+		data.push_back(seg.P0.x);
+		data.push_back(seg.P0.y);
+		data.push_back(0.f);
+	}
+	data.push_back(outline->back().P1.x);
+	data.push_back(outline->back().P1.y);
+	data.push_back(0.f);
+	auto lines = std::make_shared<PolyChain>();
+	lines->initChain(color, data, false);//1, pts, glm::vec4(1.f));
+	return lines;
+}
 std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
 	auto* p = static_cast<Polygon*>(s.get());
 	const auto& outline = p->getOutline();

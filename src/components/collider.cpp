@@ -39,7 +39,7 @@ void Collider::start() {
     auto& engine = Engine::instance();
     auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
     auto room = engine.getRoom();
-    m_engine = room->getRunner<CollisionEngine>();
+    m_engine = room->getRunner<ICollisionEngine>();
     //m_engine = Engine::get().GetRunner<ICollisionEngine>();
     if (m_engine == nullptr) {
 

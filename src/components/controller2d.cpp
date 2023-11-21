@@ -15,6 +15,8 @@ Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs) 
 	m_maskDown = py_get_dict<int>(kwargs, "mask_down", 2 | 32);
 	m_maskUp = py_get_dict<int>(kwargs, "mask_up", 2);
 	m_platforms = nullptr;
+	_platformFlag = 2 | 32;
+	_foeFlag = 1;
 }
 
 Controller2D::~Controller2D() {
@@ -86,7 +88,7 @@ void Controller2D::descendSlope(glm::vec3& velocity) {
 	bool goingForward = velocity.x > 0.0f;
 	auto directionX = signf(velocity.x);
 	auto r0 = directionX > 0.f ? m_raycastOrigins.bottomFwd : m_raycastOrigins.bottomBack;
-	RayCastHit hit = m_collisionEngine->rayCast(r0, glm::vec3(0.f, -1.0f, 0.f), 100.0f, m_maskDown);
+	RayCastHit hit = m_collisionEngine->rayCastY(r0, 100.0f, m_maskDown, m_node);
 	if (hit.collide) {
 		float slopeAngle = angle(hit.normal, glm::vec3(0.f, 1.f, 0.f));
 		if (slopeAngle != 0 && slopeAngle <= m_maxDescendAngle) {
@@ -113,34 +115,41 @@ void Controller2D::horizontalCollisions(glm::vec3& velocity) {
 	float dir_x = (goingForward == m_node->getFlipX()) ? -1.f : 1.f;
 	for (int i = 0; i < m_horizontalRayCount; i++) {
 		auto rayOrigin = r0 + glm::vec3(0.0f, i * m_horizontalRaySpacing, 0.0f);
-		RayCastHit hit = m_collisionEngine->rayCast(rayOrigin, glm::vec3(dir_x, 0.f, 0.f), rayLength, 2 | 32);
+		RayCastHit hit = m_collisionEngine->rayCastX(rayOrigin, rayLength * dir_x, 0, m_node);
 		if (hit.collide) {
-			float slopeAngle = angle(hit.normal, glm::vec3(0.f, 1.f, 0.f));
-			if (i == 0 && slopeAngle <= m_maxClimbAngle) {
-				if (m_descendingSlope) {
-					m_descendingSlope = false;
-					velocity = m_velocityOld;
+			int colliderFlag = hit.entity->getCollisionFlag();
+			if (colliderFlag == _foeFlag) {
+				// call responde by passing the direction ... so for instance you can know
+				// the directin from which the enemy is hit
+				// handle
+			} else if ((colliderFlag & _platformFlag)!= 0) {
+				float slopeAngle = angle(hit.normal, glm::vec3(0.f, 1.f, 0.f));
+				if (i == 0 && slopeAngle <= m_maxClimbAngle) {
+					if (m_descendingSlope) {
+						m_descendingSlope = false;
+						velocity = m_velocityOld;
+					}
+					float distanceToSlopeStart = 0;
+					if (slopeAngle != m_slopeAngleOld) {
+						distanceToSlopeStart = hit.length - m_skinWidth;
+						velocity.x -= distanceToSlopeStart * directionX;
+					}
+					climbSlope(velocity, slopeAngle);
+					velocity.x += distanceToSlopeStart * directionX;
 				}
-				float distanceToSlopeStart = 0;
-				if (slopeAngle != m_slopeAngleOld) {
-					distanceToSlopeStart = hit.length - m_skinWidth;
-					velocity.x -= distanceToSlopeStart * directionX;
-				}
-				climbSlope(velocity, slopeAngle);
-				velocity.x += distanceToSlopeStart * directionX;
-			}
-			if (!m_climbingSlope || slopeAngle > m_maxClimbAngle) {
-				velocity.x = std::max(hit.length - m_skinWidth, 0.0f) * directionX;
-				rayLength = hit.length;
-				if (m_climbingSlope) {
-					velocity.y = tan(m_slopeAngle)* fabs(velocity.x);
-				}
-				bool faceRight = !m_node->getFlipX();
-				auto dir_x = (goingForward == m_node->getFlipX()) ? -1 : 1;
-				if (dir_x == -1) {
-					setLeft();
-				} else {
-					setRight();
+				if (!m_climbingSlope || slopeAngle > m_maxClimbAngle) {
+					velocity.x = std::max(hit.length - m_skinWidth, 0.0f) * directionX;
+					rayLength = hit.length;
+					if (m_climbingSlope) {
+						velocity.y = tan(m_slopeAngle)* fabs(velocity.x);
+					}
+					bool faceRight = !m_node->getFlipX();
+					auto dir_x = (goingForward == m_node->getFlipX()) ? -1 : 1;
+					if (dir_x == -1) {
+						setLeft();
+					} else {
+						setRight();
+					}
 				}
 			}
 		}
@@ -167,7 +176,7 @@ void Controller2D::verticalCollisions(glm::vec3& velocity, bool forced) {
 	for (int i = 0; i < m_verticalRayCount; i++) {
 		auto rayOrigin = r0 + glm::vec3(i * m_verticalRaySpacing + dir_x * velocity.x, 0.f, 0.f) ;
 		int collMask = (directionY == -1 ? (m_maskDown) : m_maskUp);
-		RayCastHit hit = m_collisionEngine->rayCast(rayOrigin, glm::vec3(0.f, directionY, 0.f), rayLength, collMask);
+		RayCastHit hit = m_collisionEngine->rayCastY(rayOrigin, directionY * rayLength, 0, m_node);
 		bool ciao = grounded();
 		if (hit.collide) {
 			if (!m_wasGnd) {
@@ -254,7 +263,7 @@ bool Controller2D::isFalling(float dir) {
 	auto rayOrigin = m_raycastOrigins.bottomFwd; //(dir < 0.f ? m_raycastOrigins.bottomLeft : m_raycastOrigins.bottomRight);
 	rayOrigin.x += (m_node->getFlipX() ? -1.f : 1.f) * 8.f;
 	//glm::vec2 rayOrigin = (dir == -1) ? m_raycastOrigins.bottomLeft : m_raycastOrigins.bottomRight;
-	RayCastHit hit = m_collisionEngine->rayCast(rayOrigin, glm::vec3(0.f, -1.f, 0.f), 0.5f, 2|32);
+	RayCastHit hit = m_collisionEngine->rayCastY(rayOrigin, 0.5f, _platformFlag, m_node);
 	if (!hit.collide) {
 		return true;
 	}

@@ -4,27 +4,10 @@
 #include "../upair.h"
 #include "../shapes/convexpoly.h"
 #include "../shapes/intersector2d.h"
+//#include "../shapes/intersector3d.h"
 #include "../shapes3d/seg3d.h"
 
-// to specify a 2D engine, just set depth to 0
-CollisionEngine::CollisionEngine(float width, float height, float depth) : m_size(width, height, depth) {
-    assert(width > 0.f);
-    assert(height > 0.f);
-    assert(depth >= 0.f);
-    m_2d = depth == 0.f;
-    m_responseManager = std::make_shared<CollisionResponseManager>();
-
-    if (m_2d) {
-        m_intersector = std::make_shared<Intersector2D>();
-        m_raycast = std::make_shared<RayCaster2D>();
-    } else {
-        //m_intersector = std::make_shared<Intersector3D>();
-        //m_raycast = std::make_shared<RayCaster3D>();
-
-    }
-}
-
-void CollisionEngine::add(Collider * c) {
+void ICollisionEngine::add(Collider * c) {
     // this is called when a new collider starts. It registers with the engine
     // get the shape bounding box, transform it, map it
     auto aabb = c->getStaticBounds();
@@ -34,7 +17,176 @@ void CollisionEngine::add(Collider * c) {
     }
 }
 
-void CollisionEngine::remove(Collider * c) {
+ICollisionEngine::ICollisionEngine(float width, float height, float depth) : m_size(width, height, depth) {
+    m_responseManager = std::make_shared<CollisionResponseManager>();
+
+}
+
+std::type_index CollisionEngine2D::getType() {
+	return std::type_index(typeid(ICollisionEngine));
+}
+
+
+CollisionEngine2D::CollisionEngine2D(float width, float height) : ICollisionEngine(width, height, 0.f) {
+	assert(width > 0.f);
+	assert(height > 0.f);
+
+    m_intersector = std::make_shared<Intersector2D>();
+	m_raycast = std::make_shared<RayCaster2D>();
+}
+
+// to specify a 2D engine, just set depth to 0
+//CollisionEngine3D::CollisionEngine3D(float width, float height, float depth) : ICollisionEngine(width, height, depth) {
+//	assert(width > 0.f);
+//	assert(height > 0.f);
+//	assert(depth >= 0.f);
+//
+//    //m_intersector = std::make_shared<Intersector3D>();
+//    //m_raycast = std::make_shared<RayCaster3D>();
+//
+//}
+
+RayCastHit CollisionEngine2D::rayCastX(glm::vec3 origin, float length, int mask, Node* node) {
+	RayCastHit out;
+//	if (length == 0.f) {
+//		return out;
+//	}
+	float x0 = origin.x;
+	float x1 = origin.x + length;
+	int istart = (x0 >= 0.0f ? 0 : -1) + static_cast<int>(x0 / m_size.x);
+	int iend = (x1 >= 0.0f ? 0 : -1) + static_cast<int>(x1 / m_size.x);
+	// number of cells to examine
+	int cells = abs(iend - istart) + 1;
+	int inc = (x1 > x0) ? 1 : -1;
+	int j = (origin.y >= 0.0f ? 0 : -1) + static_cast<int>(origin.y / m_size.y);
+	for (auto n = 0, i=istart ; n < cells; ++n, i+=inc) {
+		glm::vec3 cellLocation(i, j, 0);
+		auto it = m_cells.find(cellLocation);
+		if (it != m_cells.end()) {
+			float x_seg_start = (n == 0 ? x0 : (i + (inc == 1 ? 0 : -1)) * m_size.x);
+			float x_seg_end = (n == cells - 1 ? x1 : (i + (inc == 1 ? 1 : 0)) * m_size.x);
+			float x_seg_min = x_seg_start, x_seg_max = x_seg_end;
+			if (inc == -1) {
+				std::swap(x_seg_min, x_seg_max);
+			}
+			Bounds segmentBounds(glm::vec3(x_seg_min, origin.y, 0.f), glm::vec3(x_seg_max, origin.y, 0.f));
+			for (const auto &c : it->second.colliders) {
+				if (!c->isActive() || node == c->getNode()) {
+					continue;
+				}
+				int flag = c->getCollisionFlag();
+				if (mask == 0 || (flag & mask) != 0) {
+					// try static bounds
+					auto shapeBounds = c->getStaticBounds();
+					if (aabbTest(segmentBounds, shapeBounds)) {
+						auto *shape = c->getShape().get();
+						if (shape->getShapeType() == ShapeType::AABB2D) {
+							float dist=0.0f;
+							if (length >= 0.0f) {
+								if (x0 < shapeBounds.min.x) {
+									dist = shapeBounds.min.x - x0;
+								} else {
+									dist = shapeBounds.max.x - x0;
+								}
+							} else {
+								if (x0 > shapeBounds.max.x) {
+									dist = x0 - shapeBounds.max.x;
+								} else {
+									dist = x0 - shapeBounds.min.x;
+								}
+							}
+							out.update(dist, c, glm::vec3(-inc, 0.f, 0.f), 0);
+						} else {
+							// otherwise do a proper check
+							auto report = m_raycast->raycastX(origin, length, shape, c->getNode()->getWorldMatrix());
+							if (report.collide) {
+								out.update(report.length, c, report.normal, report.segmentIndex);
+							}
+						}
+					}
+				}
+			}
+			if (out.collide) {
+				return out;
+			}
+		}
+	}
+}
+
+RayCastHit CollisionEngine2D::rayCastY(glm::vec3 origin, float length, int mask, Node* node) {
+	RayCastHit out;
+//	if (length == 0.f) {
+//		return out;
+//	}
+	float y0 = origin.y;
+	float y1 = origin.y + length;
+	int istart = (y0 >= 0.0f ? 0 : -1) + static_cast<int>(y0 / m_size.y);
+	int iend = (y1 >= 0.0f ? 0 : -1) + static_cast<int>(y1 / m_size.y);
+	// number of cells to examine
+	int cells = abs(iend - istart) + 1;
+	int inc = (y1 > y0) ? 1 : -1;
+	int j = (origin.x >= 0.0f ? 0 : -1) + static_cast<int>(origin.x / m_size.x);
+
+	for (auto n = 0, i=istart ; n < cells; ++n, i+=inc) {
+		glm::vec3 cellLocation(j, i, 0);
+		auto it = m_cells.find(cellLocation);
+		if (it != m_cells.end()) {
+			float y_seg_start = (n == 0 ? y0 : (i + (inc == 1 ? 0 : -1)) * m_size.y);
+			float y_seg_end = (n == cells - 1 ? y1 : (i + (inc == 1 ? 1 : 0)) * m_size.y);
+			float y_seg_min = y_seg_start, y_seg_max = y_seg_end;
+			if (inc == -1) {
+				std::swap(y_seg_min, y_seg_max);
+			}
+			Bounds segmentBounds(glm::vec3(origin.x, y_seg_min, 0.f), glm::vec3(origin.x, y_seg_max, 0.f));
+			for (const auto &c : it->second.colliders) {
+				if (!c->isActive() || node == c->getNode()) {
+					continue;
+				}
+				int flag = c->getCollisionFlag();
+				if (mask == 0 || (flag & mask) != 0) {
+					// try static bounds
+					auto shapeBounds = c->getStaticBounds();
+					if (aabbTest(segmentBounds, shapeBounds)) {
+						auto *shape = c->getShape().get();
+						if (shape->getShapeType() == ShapeType::AABB2D) {
+							float dist=0.0f;
+							if (length >= 0.0f) {
+								if (y0 < shapeBounds.min.y) {
+									dist = shapeBounds.min.y - y0;
+								} else {
+									dist = shapeBounds.max.y - y0;
+								}
+							} else {
+								if (y0 > shapeBounds.max.y) {
+									dist = y0 - shapeBounds.max.y;
+								} else {
+									dist = y0 - shapeBounds.min.y;
+								}
+							}
+							out.update(dist, c, glm::vec3(0.0f, -inc, 0.f), 0);
+						} else {
+							// otherwise do a proper check
+							auto report = m_raycast->raycastY(origin, length, shape, c->getNode()->getWorldMatrix());
+							if (report.collide) {
+								out.update(report.length, c, report.normal, report.segmentIndex);
+							}
+						}
+					}
+				}
+			}
+			if (out.collide) {
+				return out;
+			}
+		}
+	}
+}
+
+RayCastHit CollisionEngine2D::rayCastZ(glm::vec3 origin, float length, int mask, Node*) {
+	return RayCastHit();
+}
+
+
+void CollisionEngine2D::remove(Collider * c) {
     m_removed.insert(c);
     if (m_colliderLocations.find(c) != m_colliderLocations.end()) {
 		auto d = m_colliderLocations.at(c);
@@ -59,7 +211,7 @@ void CollisionEngine::remove(Collider * c) {
     }
 }
 
-void CollisionEngine::move(Collider * c) {
+void ICollisionEngine::move(Collider * c) {
     // TODO mark collider as DIRTY, and update collider position (cells occupied)
     // then at update time, go thorugh each dirty collider, and test it with other colliders in cells
     // to avoid double testing, keep track of tested pairs
@@ -69,7 +221,7 @@ void CollisionEngine::move(Collider * c) {
     //std::cout << "aabb: (" << aabb.min.x << ", " << aabb.min.y << "), (" << aabb.max.x << ", " << aabb.max.y << ")\n";
 }
 
-void CollisionEngine::update(double) {
+void ICollisionEngine::update(double) {
 
     std::unordered_map<std::pair<Collider*, Collider*>, CollisionInfo> currentlyCollidingPairs;
     std::unordered_set<glm::ivec3> cellsExamined;
@@ -163,7 +315,7 @@ void CollisionEngine::update(double) {
     }
 }
 
-void CollisionEngine::pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) {
+void CollisionEngine2D::pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) {
     auto it = m_colliderLocations.find(c);
     if (it != m_colliderLocations.end()) {
         if (it->second.min != m || it->second.max != M) {
@@ -190,214 +342,212 @@ void CollisionEngine::pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) {
 
 
 
-std::pair<glm::ivec3, glm::ivec3> CollisionEngine::getLocation(const Bounds &b) {
+std::pair<glm::ivec3, glm::ivec3> CollisionEngine2D::getLocation(const Bounds &b) {
     glm::ivec3 min(0);
     glm::ivec3 max(0);
-    min.x = getIndex(b.min.x, m_size[0]);
-    min.y = getIndex(b.min.y, m_size[1]);
-    min.z = getIndex(b.min.z, m_size[2]);
-    max.x = getIndex(b.max.x, m_size[0]);
-    max.y = getIndex(b.max.y, m_size[1]);
-    max.z = getIndex(b.max.z, m_size[2]);
+    min.x = getIndex(b.min.x, Direction::X);
+    min.y = getIndex(b.min.y, Direction::Y);
+    min.z = getIndex(b.min.z, Direction::Z);
+    max.x = getIndex(b.max.x, Direction::X);
+    max.y = getIndex(b.max.y, Direction::Y);
+    max.z = getIndex(b.max.z, Direction::Z);
     return std::make_pair(min, max);
 }
 
-int CollisionEngine::getIndex(float x, float s) {
-    return s == 0.f ? 0 : (-1 * (x < 0) + static_cast<int>(x / s));
-}
 
-void CollisionEngine::addResponse(int i, int j, const pybind11::kwargs& args) {
+
+void ICollisionEngine::addResponse(int i, int j, const pybind11::kwargs& args) {
     m_responseManager->add(i, j, args);
 }
 
-RayCastHit CollisionEngine::rayCast(glm::vec3 rayOrigin, glm::vec3 rayDir, float length, int mask) {
-    if (m_2d) {
-        rayOrigin.z = 0.f;
-        rayDir.z = 0.f;
-    }
-    glm::vec3 P = rayOrigin;
-    glm::vec3 P1 = P;
-    glm::vec3 P2 = P;
-    //float z = rayOrigin.z;
-
-    // initialize current cell
-    int i = getIndex(P.x, m_size[0]);
-    int j = getIndex(P.y, m_size[1]);
-    // for 2D coll engine --> k must always be 0 ?
-    int k = getIndex(P.z, m_size[2]);			// for 2D m_size[2] == 0 --> k = 0
-
-    int n = (rayDir.x > 0 ? 1 : 0);
-    int m = (rayDir.y > 0 ? 1 : 0);
-    int q = (rayDir.z > 0 ? 1 : 0);
-
-    // length traversed so far
-    float l = 0.0f;
-    bool endReached = false;
-
-    // increments
-    int id = 0, jd = 0, kd = 0;
-    RayCastHit out;
-    out.length = length;
-
-    // we can (and we MUST) exit the loop as soon as we find a collision
-    glm::ivec3 increments(rayDir.x > 0 ? 1 : -1, rayDir.y > 0 ? 1 : -1, rayDir.z > 0 ? 1 : -1);
-    while (!endReached && !out.collide) {
-
-        // gets the unit increments along the different axis to hit the cell boundary
-        // tx , ty and tz should always be positive: if say raidir.x < 0 also the numerator should be neg
-        // this allow us to see what is the next cell to examine
-        id = increments.x;
-        jd = 0;
-        kd = 0;
-        float tx = (rayDir.x == 0.0f) ? std::numeric_limits<float>::infinity() : ((i+n) * m_size.x - P.x) / rayDir.x;
-        float tbest = tx;
-        float ty = (rayDir.y == 0.0f) ? std::numeric_limits<float>::infinity() : ((j+m) * m_size.y - P.y) / rayDir.y;
-        if (ty <= tbest) {
-            id = 0;
-            jd = increments.y;
-            tbest = ty;
-        }
-        // for 2D tz must always be inf
-        float tz = (rayDir.z == 0.0f) ? std::numeric_limits<float>::infinity() : ((k+q) * m_size.z - P.z) / rayDir.z;
-        if (tz <= tbest) {
-            id = 0;
-            jd = 0;
-            kd = increments.z;
-            tbest = tz;
-        }
-
-        float tm {0.0f};
-        id = 0;
-        jd = 0;
-        kd = 0;
-        if (tx <= ty) {
-            tm = tx;
-            id = rayDir.x > 0 ? 1 : -1;
-        } else {
-            tm = ty;
-            jd = rayDir.y > 0 ? 1 : -1;
-        }
-
-        // advance by tm TODO are u sure?
-        if (l + tm < length) {
-            // need to add a tiny extra bit in case the colliding object is a line that lies exactly at the border
-            // of two neighboring cell!
-            P1 = P + (tm + 0.01f) * rayDir;
-            P2 = P + (tm - 0.01f) * rayDir;
-            // add tm to the cumulated length done
-            l += tm;
-        } else {
-            P1 = P + (length - l) * rayDir;
-            endReached = true;
-        }
-
-        // get the colliders at the current cell
-        auto it = m_cells.find(glm::ivec3(i, j, k));
-        Segment3D line(P, P1);
-        auto lineBounds = line.getBounds();
-        if (it != m_cells.end()) {
-            for (auto& c : it->second.colliders) {
-                if (!c->isActive())
-                    continue;
-                // aabb check
-                int flag = c->getCollisionFlag();
-                int fm = flag & mask;
-                if (fm != 0) {
-                    auto shapeBounds = c->getStaticBounds();
-                    if (aabbTest(lineBounds,shapeBounds)) {
-                        const auto& t = c->getNode()->getWorldMatrix();
-                        // if aabb intersect, then try to run proper intersection between the shapes (one of which is a seg)
-                        /// TODO restore following code
-                        auto report = m_raycast->raycast(glm::vec3(P.x, P.y, P.z), glm::vec3(P1.x, P1.y, P1.z), c->getShape().get(), c->getNode()->getWorldMatrix());
-
-                        // update output
-                        if (report.collide && (!out.collide || out.length > report.length)) {
-                            out.entity = c;
-                            out.length = report.length;
-                            out.collide = true;
-                            out.normal = report.normal;
-                        }
-                    }
-                }
-            }
-        }
-        P = P2;
-        i += id;
-        j += jd;
-        k += kd;
-    }
-
-    return out;
-
-
-}
+//RayCastHit CollisionEngine::rayCast(glm::vec3 rayOrigin, glm::vec3 rayDir, float length, int mask) {
+//    if (m_2d) {
+//        rayOrigin.z = 0.f;
+//        rayDir.z = 0.f;
+//    }
+//    glm::vec3 P = rayOrigin;
+//    glm::vec3 P1 = P;
+//    glm::vec3 P2 = P;
+//    //float z = rayOrigin.z;
+//
+//    // initialize current cell
+//    int i = getIndex(P.x, m_size[0]);
+//    int j = getIndex(P.y, m_size[1]);
+//    // for 2D coll engine --> k must always be 0 ?
+//    int k = getIndex(P.z, m_size[2]);			// for 2D m_size[2] == 0 --> k = 0
+//
+//    int n = (rayDir.x > 0 ? 1 : 0);
+//    int m = (rayDir.y > 0 ? 1 : 0);
+//    int q = (rayDir.z > 0 ? 1 : 0);
+//
+//    // length traversed so far
+//    float l = 0.0f;
+//    bool endReached = false;
+//
+//    // increments
+//    int id = 0, jd = 0, kd = 0;
+//    RayCastHit out;
+//    out.length = length;
+//
+//    // we can (and we MUST) exit the loop as soon as we find a collision
+//    glm::ivec3 increments(rayDir.x > 0 ? 1 : -1, rayDir.y > 0 ? 1 : -1, rayDir.z > 0 ? 1 : -1);
+//    while (!endReached && !out.collide) {
+//
+//        // gets the unit increments along the different axis to hit the cell boundary
+//        // tx , ty and tz should always be positive: if say raidir.x < 0 also the numerator should be neg
+//        // this allow us to see what is the next cell to examine
+//        id = increments.x;
+//        jd = 0;
+//        kd = 0;
+//        float tx = (rayDir.x == 0.0f) ? std::numeric_limits<float>::infinity() : ((i+n) * m_size.x - P.x) / rayDir.x;
+//        float tbest = tx;
+//        float ty = (rayDir.y == 0.0f) ? std::numeric_limits<float>::infinity() : ((j+m) * m_size.y - P.y) / rayDir.y;
+//        if (ty <= tbest) {
+//            id = 0;
+//            jd = increments.y;
+//            tbest = ty;
+//        }
+//        // for 2D tz must always be inf
+//        float tz = (rayDir.z == 0.0f) ? std::numeric_limits<float>::infinity() : ((k+q) * m_size.z - P.z) / rayDir.z;
+//        if (tz <= tbest) {
+//            id = 0;
+//            jd = 0;
+//            kd = increments.z;
+//            tbest = tz;
+//        }
+//
+//        float tm {0.0f};
+//        id = 0;
+//        jd = 0;
+//        kd = 0;
+//        if (tx <= ty) {
+//            tm = tx;
+//            id = rayDir.x > 0 ? 1 : -1;
+//        } else {
+//            tm = ty;
+//            jd = rayDir.y > 0 ? 1 : -1;
+//        }
+//
+//        // advance by tm TODO are u sure?
+//        if (l + tm < length) {
+//            // need to add a tiny extra bit in case the colliding object is a line that lies exactly at the border
+//            // of two neighboring cell!
+//            P1 = P + (tm + 0.01f) * rayDir;
+//            P2 = P + (tm - 0.01f) * rayDir;
+//            // add tm to the cumulated length done
+//            l += tm;
+//        } else {
+//            P1 = P + (length - l) * rayDir;
+//            endReached = true;
+//        }
+//
+//        // get the colliders at the current cell
+//        auto it = m_cells.find(glm::ivec3(i, j, k));
+//        Segment3D line(P, P1);
+//        auto lineBounds = line.getBounds();
+//        if (it != m_cells.end()) {
+//            for (auto& c : it->second.colliders) {
+//                if (!c->isActive())
+//                    continue;
+//                // aabb check
+//                int flag = c->getCollisionFlag();
+//                int fm = flag & mask;
+//                if (fm != 0) {
+//                    auto shapeBounds = c->getStaticBounds();
+//                    if (aabbTest(lineBounds,shapeBounds)) {
+//                        const auto& t = c->getNode()->getWorldMatrix();
+//                        // if aabb intersect, then try to run proper intersection between the shapes (one of which is a seg)
+//                        /// TODO restore following code
+//                        auto report = m_raycast->raycast(glm::vec3(P.x, P.y, P.z), glm::vec3(P1.x, P1.y, P1.z), c->getShape().get(), c->getNode()->getWorldMatrix());
+//
+//                        // update output
+//                        if (report.collide && (!out.collide || out.length > report.length)) {
+//                            out.entity = c;
+//                            out.length = report.length;
+//                            out.collide = true;
+//                            out.normal = report.normal;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        P = P2;
+//        i += id;
+//        j += jd;
+//        k += kd;
+//    }
+//
+//    return out;
+//
+//
+//}
 
 // returns true if bounds intersect
-bool CollisionEngine::aabbTest(const Bounds &b1, const Bounds &b2) {
+bool CollisionEngine2D::aabbTest(const Bounds &b1, const Bounds &b2) {
 
     return !(b1.min.x > b2.max.x || b1.max.x < b2.min.x ||
-             b1.min.y > b2.max.y || b1.max.y < b2.min.y ||
-             (!m_2d && (b1.min.z > b2.max.z || b1.max.z < b2.min.z)));
+             b1.min.y > b2.max.y || b1.max.y < b2.min.y);
+
 
 }
-
-std::vector<ShapeCastHit> CollisionEngine::shapeCast (Shape* shape, const glm::mat4& transform, int mask, bool onlyFirst) {
-    std::vector<ShapeCastHit> result;
-    auto aabb = shape->getBounds();
-    aabb.transform(transform);
-    //float z = transform[3][2];
-    auto loc = getLocation(aabb);
-    for (int i = loc.first.x; i <= loc.second.x; ++i) {
-        for (int j = loc.first.y; j <= loc.second.y; ++j) {
-            for (int k = loc.first.z; k <= loc.second.z; ++k) {
-                auto cell = m_cells.find(glm::vec3(i, j, k));
-                if (cell != m_cells.end()) {
-                    auto &colliders = cell->second.colliders;
-                    for (auto &c : colliders) {
-                        if (!c->isActive()) {
-                            continue;
-                        }
-                        int flag = c->getCollisionFlag();
-                        int m = flag & mask;
-                        if (m == 0) {
-                            continue;
-                        }
-                        auto b = c->getStaticBounds();
-                        // perform a aabb testing
-                        if (!aabbTest(aabb, b)) {
-                            continue;
-                        }
-                        auto s = c->getShape();
-                        if (s != nullptr) {
-                            const auto &t = c->getNode()->getWorldMatrix();
-                            //auto s1 = s->transform(t);
-                            //auto s2 = shape->transform(transform);
-                            // bounding boxes intersect, so let's make a proper collision test
-                            auto report = m_intersector->intersect(shape, s.get(), transform, t);
-                            if (report.collide) {
-                                Bounds bb = aabb.intersection(b);
-                                ShapeCastHit res;
-                                res.report = report;
-                                res.report.direction = bb.getCenter();
-                                res.entity = c;
-                                result.push_back(res);
-                                if (onlyFirst)
-                                    return result;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return result;
-
-}
-
-
+//
+//std::vector<ShapeCastHit> CollisionEngine::shapeCast (Shape* shape, const glm::mat4& transform, int mask, bool onlyFirst) {
+//    std::vector<ShapeCastHit> result;
+//    auto aabb = shape->getBounds();
+//    aabb.transform(transform);
+//    //float z = transform[3][2];
+//    auto loc = getLocation(aabb);
+//    for (int i = loc.first.x; i <= loc.second.x; ++i) {
+//        for (int j = loc.first.y; j <= loc.second.y; ++j) {
+//            for (int k = loc.first.z; k <= loc.second.z; ++k) {
+//                auto cell = m_cells.find(glm::vec3(i, j, k));
+//                if (cell != m_cells.end()) {
+//                    auto &colliders = cell->second.colliders;
+//                    for (auto &c : colliders) {
+//                        if (!c->isActive()) {
+//                            continue;
+//                        }
+//                        int flag = c->getCollisionFlag();
+//                        int m = flag & mask;
+//                        if (m == 0) {
+//                            continue;
+//                        }
+//                        auto b = c->getStaticBounds();
+//                        // perform a aabb testing
+//                        if (!aabbTest(aabb, b)) {
+//                            continue;
+//                        }
+//                        auto s = c->getShape();
+//                        if (s != nullptr) {
+//                            const auto &t = c->getNode()->getWorldMatrix();
+//                            //auto s1 = s->transform(t);
+//                            //auto s2 = shape->transform(transform);
+//                            // bounding boxes intersect, so let's make a proper collision test
+//                            auto report = m_intersector->intersect(shape, s.get(), transform, t);
+//                            if (report.collide) {
+//                                Bounds bb = aabb.intersection(b);
+//                                ShapeCastHit res;
+//                                res.report = report;
+//                                res.report.direction = bb.getCenter();
+//                                res.entity = c;
+//                                result.push_back(res);
+//                                if (onlyFirst)
+//                                    return result;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    return result;
+//
+//}
 
 
-const CollisionEngineCell* CollisionEngine::getColliders(glm::ivec3 pos) {
+
+
+const CollisionEngineCell* ICollisionEngine::getColliders(glm::ivec3 pos) {
     auto it = m_cells.find(pos);
     if (it == m_cells.end())
         return nullptr;
@@ -405,18 +555,18 @@ const CollisionEngineCell* CollisionEngine::getColliders(glm::ivec3 pos) {
 
 }
 
-void CollisionEngine::processCollisions(const std::vector<ShapeCastHit> & e, Node* node, int tag) {
-
-    if (m_responseManager == nullptr) {
-        return;
-    }
-
-    for (const auto& coll : e) {
-        auto currentNode = coll.entity->getNode();
-        if (m_responseManager->hasCollision(tag, coll.entity->getCollisionTag())) {
-            m_responseManager->onStart(node, currentNode, tag, coll.entity->getCollisionTag(), coll.report.direction);
-        }
-
-    }
-
-}
+//void CollisionEngine::processCollisions(const std::vector<ShapeCastHit> & e, Node* node, int tag) {
+//
+//    if (m_responseManager == nullptr) {
+//        return;
+//    }
+//
+//    for (const auto& coll : e) {
+//        auto currentNode = coll.entity->getNode();
+//        if (m_responseManager->hasCollision(tag, coll.entity->getCollisionTag())) {
+//            m_responseManager->onStart(node, currentNode, tag, coll.entity->getCollisionTag(), coll.report.direction);
+//        }
+//
+//    }
+//
+//}

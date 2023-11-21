@@ -14,7 +14,7 @@ Platform::~Platform() {
 void Platform::start() {
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
-	m_collisionEngine = room->getRunner<CollisionEngine>();
+	m_collisionEngine = room->getRunner<ICollisionEngine>();
 	m_node->onMove.reg([&](Node* node) { move(node); });
 	m_lastPosition = m_node->getWorldPosition();
 	auto coll = m_node->getComponent<Collider>();

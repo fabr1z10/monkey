@@ -5,12 +5,13 @@
 #include <vector>
 
 enum class ShapeType {
-    RECT, COMPOUND
+    RECT, COMPOUND, AABB2D, POLYLINE
 };
 
 struct Seg {
 	glm::vec2 P0;
 	glm::vec2 P1;
+	glm::vec2 n;
 };
 
 struct Face {

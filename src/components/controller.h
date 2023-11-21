@@ -52,7 +52,7 @@ protected:
 	glm::vec3 m_size;
 	glm::vec3 m_center;
 	bool m_debug;
-	CollisionEngine* m_collisionEngine;
+	ICollisionEngine* m_collisionEngine;
 	glm::vec3 m_localTopFwd;
 	glm::vec3 m_localTopBack;
 	glm::vec3 m_localBottomFwd;

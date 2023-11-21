@@ -26,6 +26,7 @@ private:
     std::shared_ptr<Model> makeAABB(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
 	std::shared_ptr<Model> makeAABB3D(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
 	std::shared_ptr<Model> makePoly(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
+	std::shared_ptr<Model> makePolyLine(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft);
 
 	//std::shared_ptr<Model> makeAABB3D(std::shared_ptr<Shape> s, const pybind11::kwargs& args);
     //std::shared_ptr<Model> makePrism(std::shared_ptr<Shape> s, const pybind11::kwargs& args);

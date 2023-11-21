@@ -24,7 +24,7 @@ private:
 	std::unordered_set<Controller2D*> m_characters;
 	std::vector<Controller2D*> m_removeBuffer;
 	glm::vec3 m_lastPosition;
-	CollisionEngine* m_collisionEngine;
+	ICollisionEngine* m_collisionEngine;
 	float m_platformWidth;
 	std::unordered_map<Controller2D*, int> m_pippo;
 };

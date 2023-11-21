@@ -69,6 +69,9 @@
 #include "states/top2d.h"
 #include "batch/trianglebatch.h"
 #include "nodes/road.h"
+#include "models/tilemap.h"
+#include "components/mariocontroller.h"
+#include "shapes/polyline.h"
 
 
 namespace py = pybind11;
@@ -237,7 +240,8 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "convex_poly")
         .def(py::init<const py::array_t<float>&>());
-
+	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(m, "polyline")
+		.def(py::init<const py::kwargs&>());
     py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "rect")
         .def(py::init<float, float, const py::kwargs&>());
 
@@ -272,6 +276,9 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<RoadModel, Model, std::shared_ptr<RoadModel>>(mm, "road")
 		.def(py::init<const pybind11::kwargs&>())
 		.def("add_section", &RoadModel::addSection);
+    py::class_<TileMap, Model, std::shared_ptr<TileMap>>(mm, "tilemap")
+        .def(py::init<const pybind11::kwargs&>())
+        .def("add", &TileMap::setTile);
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
 	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
@@ -292,9 +299,10 @@ PYBIND11_MODULE(monkey, m) {
 
 	/// --- runners ---
 	py::class_<Runner, std::shared_ptr<Runner>>(m, "runner");
-	py::class_<CollisionEngine, Runner, std::shared_ptr<CollisionEngine>>(m, "collision_engine")
-		.def("add_response", &CollisionEngine::addResponse)
-		.def(py::init<float, float, float>());
+	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
+	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "collision_engine_2d")
+		.def(py::init<float, float>())
+		.def("add_response", &CollisionEngine2D::addResponse);
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());
@@ -383,9 +391,11 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "controller_2d")
 		.def(py::init<py::kwargs&>());
-
-	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
+	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "mario_controller")
 		.def(py::init<py::kwargs&>());
+
+//	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
+//		.def(py::init<py::kwargs&>());
 
 	py::class_<Dynamics, Component, std::shared_ptr<Dynamics>>(m, "dynamics")
 		.def("set_velocity", &Dynamics::setVelocity)

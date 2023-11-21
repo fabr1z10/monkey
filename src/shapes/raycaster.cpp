@@ -1,6 +1,7 @@
 #include "raycaster.h"
 #include "../shapes/convexpoly.h"
 #include "../shapes/aabb.h"
+#include "../shapes/polyline.h"
 #include "../util.h"
 
 std::vector<glm::ivec3> RayCaster::_axes;
@@ -26,18 +27,20 @@ RayCaster2D::RayCaster2D() {
     };
 
     /// axis
-    m_functionAxisMap[std::type_index(typeid(ConvexPoly))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
-    	return rayCastAxid2DGeneric(P, d, length, aabb, t);
-	};
-	m_functionAxisMap[std::type_index(typeid(Rect))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
-		return rayCastAxid2DGeneric(P, d, length, aabb, t);
-	};
-	m_functionAxisMap[std::type_index(typeid(Segment))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
-		return rayCastAxid2DGeneric(P, d, length, aabb, t);
-	};
-	m_functionAxisMap[std::type_index(typeid(AABB))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
-		return rayCastAxid2DAABB(P, d, length, aabb, t);
-	};
+    m_functionsX[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastXGeneric(P, length, shape, t); };
+	m_functionsY[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastYGeneric(P, length, shape, t); };
+//    m_functionAxisMap[std::type_index(typeid(ConvexPoly))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
+//    	return rayCastAxid2DGeneric(P, d, length, aabb, t);
+//	};
+//	m_functionAxisMap[std::type_index(typeid(Rect))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
+//		return rayCastAxid2DGeneric(P, d, length, aabb, t);
+//	};
+//	m_functionAxisMap[std::type_index(typeid(Segment))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
+//		return rayCastAxid2DGeneric(P, d, length, aabb, t);
+//	};
+//	m_functionAxisMap[std::type_index(typeid(AABB))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
+//		return rayCastAxid2DAABB(P, d, length, aabb, t);
+//	};
 
 };
 
@@ -70,46 +73,92 @@ RayCastHit RayCaster2D::rayCastAxid2DAABB(const glm::vec3 &P, Direction d, float
 
 }
 
-RayCastHit RayCaster2D::rayCastAxid2DGeneric(const glm::vec3 &P, Direction d, float length, const Shape * s, const glm::mat4 &t) {
-	const auto& indices = _axes[d];
-	auto i0 = indices[0];
-	auto i1 = indices[1];
-	float u0 = length > 0 ? P[indices[0]] : P[indices[0]] - length;
-	float u1 = length > 0 ? P[indices[0]] + length : P[indices[0]];
-	// dont check against bounds as it is redundant
-	// we assume that callers already made this check before calling here
+RayCastHit RayCaster2D::rayCastXGeneric(const glm::vec3 &P, float length, const Shape * s, const glm::mat4 &t) {
 	const auto* s2d = static_cast<const Shape2D*>(s);
 	auto* segs = s2d->getSegments();
+	float xm = P.x, xM = P.x + length;
+	if (length < 0) std::swap(xm, xM);
 	RayCastHit out;
 	if (segs != nullptr) {
-		for (auto& s : *segs) {
-			auto s0 = t * glm::vec4(s.P0, 0, 1);
-			auto s1 = t * glm::vec4(s.P1, 0, 1);
-			if (s0[i1] > s1[i1]) {
-				if (P[i1] > s0[i1] || P[i1] < s1[i1]) {
-					continue;
-				}
-			} else if (s1[i1] > s0[i1]) {
-				if (P[i1] > s1[i1] || P[i1] < s0[i1]) {
-					continue;
-				}
-			} else {
+		for (auto& seg : *segs) {
+			// transform each point
+			auto s0 = t * glm::vec4(seg.P0, 0, 1);
+			auto s1 = t * glm::vec4(seg.P1, 0, 1);
+			float sxm = s0.x, sxM = s1.x;
+			float sym = s0.y, syM = s1.y;
+			if (sxm > sxM) std::swap(sxm, sxM);
+			if (sym > syM) std::swap(sym, syM);
+			if (P.y > syM || P.y < sym || xm > sxM || xM < sxm) {
 				continue;
 			}
 			// find intersection
-			float uInt = s0[i0] + (s1[i0] - s0[i0]) * ((P[i1] - s0[i1]) / (s1[i1] - s0[i1]));
-			if (uInt >= u0 && uInt <= u1) {
-				if (length > 0) {
-					out.length = uInt - u0;
-					out.collide = true;
-					// TODO normal
-					return out;
+			float xInt = 0.f;
+			// consider collision only if segment is not paraellel to x axis
+			if (s1.y - s0.y != 0.f) {
+				xInt = s0.x + (P.y - s0.y) * (s1.x - s0.x) / (s1.y - s0.y);
+				if (xInt >= xm && xInt <= xM) {
+					// collision
+					float len = (P.x < xInt ? (xInt - P.x) : (P.x - xInt));
+					auto normal = glm::vec3(seg.n, 0.f);
+					if (glm::dot(glm::vec3(len, 0.f, 0.f), out.normal) > 0) {
+						normal *= -1.f;
+					}
+					out.update(len, nullptr, normal, 0);
+					//out.length = (P.x < xInt ? (xInt - P.x) : (P.x - xInt));
+					//out.collide = true;
+					//out.normal =
+					//out.segmentIndex = 0;
+					//return out;
 				}
 			}
 		}
 	}
 	return out;
 }
+
+RayCastHit RayCaster2D::rayCastYGeneric(const glm::vec3 &P, float length, const Shape * s, const glm::mat4 &t) {
+	const auto* s2d = static_cast<const Shape2D*>(s);
+	auto* segs = s2d->getSegments();
+	float ym = P.y, yM = P.y + length;
+	if (length < 0) std::swap(ym, yM);
+	RayCastHit out;
+	if (segs != nullptr) {
+		for (auto& seg : *segs) {
+			// transform each point
+			auto s0 = t * glm::vec4(seg.P0, 0, 1);
+			auto s1 = t * glm::vec4(seg.P1, 0, 1);
+			float sxm = s0.x, sxM = s1.x;
+			float sym = s0.y, syM = s1.y;
+			if (sxm > sxM) std::swap(sxm, sxM);
+			if (sym > syM) std::swap(sym, syM);
+			if (ym > syM || yM < sym || P.x > sxM || P.x < sxm) {
+				continue;
+			}
+			// find intersection
+			float yInt = 0.f;
+			// consider collision only if segment is not parallel to y axis
+			if (s1.x - s0.x != 0.f) {
+				yInt = s0.y + (P.x - s0.x) * (s1.y - s0.y) / (s1.x - s0.x);
+				if (yInt >= ym && yInt <= yM) {
+					// collision
+					auto len = (P.y < yInt ? (yInt - P.y) : (P.y - yInt));
+					auto normal = glm::vec3(seg.n, 0.f);
+					if (glm::dot(glm::vec3(len, 0.f, 0.f), out.normal) > 0) {
+						normal *= -1.f;
+					}
+					out.update(len, nullptr, normal, 0);
+					//out.length = (P.y < yInt ? (yInt - P.y) : (P.y - yInt));
+					//out.collide = true;
+					//out.normal = glm::vec3(seg.n, 0.f);
+					//out.segmentIndex = 0;
+					//return out;
+				}
+			}
+		}
+	}
+	return out;
+}
+
 
 RayCastHit RayCaster::raycast(glm::vec3 A, glm::vec3 B, const Shape* s, const glm::mat4& t) {
 	auto it = m_functionMap.find(s->get_type_index());
@@ -124,9 +173,24 @@ RayCastHit RayCaster::raycast(glm::vec3 A, glm::vec3 B, const Shape* s, const gl
 	return out;
 }
 
-RayCastHit RayCaster::raycastAxis(glm::vec3 P, Direction, float length, const Shape *, const glm::mat4 &) {
-
+RayCastHit RayCaster::raycastX(glm::vec3 P, float length, const Shape * s, const glm::mat4 & t) {
+	auto it = m_functionsX.find(s->get_type_index());
+	if (it == m_functionsX.end()) {
+		return RayCastHit();
+	}
+	auto out = it->second(P, length, s, t);
+	return out;
 }
+
+RayCastHit RayCaster::raycastY(glm::vec3 P, float length, const Shape * s, const glm::mat4 & t) {
+	auto it = m_functionsY.find(s->get_type_index());
+	if (it == m_functionsY.end()) {
+		return RayCastHit();
+	}
+	auto out = it->second(P, length, s, t);
+	return out;
+}
+
 
 
 void RayCaster2D::updateRaycastHit(RayCastHit& r, glm::vec2 ray, glm::vec2 line, float u, int si) {

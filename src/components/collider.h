@@ -6,7 +6,7 @@
 #include <pybind11/pybind11.h>
 
 
-class CollisionEngine;
+class ICollisionEngine;
 
 class Collider : public Component {
 public:
@@ -28,7 +28,7 @@ protected:
     virtual void generateDebugMesh() {}
     int m_callbackHandle;
     Bounds m_staticBounds;
-    CollisionEngine* m_engine;
+    ICollisionEngine* m_engine;
     Node* m_debugNode;
     int m_flag;
     int m_mask;

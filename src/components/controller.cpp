@@ -23,7 +23,7 @@ Controller::Controller(const pybind11::kwargs& args) : m_debugShape(nullptr) {
 void Controller::start() {
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
-	m_collisionEngine = room->getRunner<CollisionEngine>();
+	m_collisionEngine = room->getRunner<ICollisionEngine>();
 	setDebugShape();
 }
 
