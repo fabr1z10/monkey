@@ -72,6 +72,7 @@
 #include "models/tilemap.h"
 #include "components/mariocontroller.h"
 #include "shapes/polyline.h"
+#include "components/controllers/sierra2d.h"
 
 
 namespace py = pybind11;
@@ -263,6 +264,7 @@ PYBIND11_MODULE(monkey, m) {
 	mm.def("make_plane", &ModelMaker::pippo);
 	mm.def("from_shape", &ModelMaker::makeModel);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
+	py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "itiled");
         //.def(py::init<>());
 //    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
 //        .def(py::init<const pybind11::kwargs&>());
@@ -271,8 +273,10 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<const pybind11::kwargs&>());
 	py::class_<ParametricCurve, Model, std::shared_ptr<ParametricCurve>>(mm, "curve")
 		.def(py::init<const pybind11::kwargs&>());
-    py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "tiled")
+    py::class_<StaticTiledModel, TiledModel, std::shared_ptr<StaticTiledModel>>(mm, "tiled")
         .def(py::init<const pybind11::kwargs&>());
+	py::class_<AnimatedTiledModel, TiledModel, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_anim")
+		.def(py::init<const pybind11::kwargs&>());
 	py::class_<RoadModel, Model, std::shared_ptr<RoadModel>>(mm, "road")
 		.def(py::init<const pybind11::kwargs&>())
 		.def("add_section", &RoadModel::addSection);
@@ -392,6 +396,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "controller_2d")
 		.def(py::init<py::kwargs&>());
 	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "mario_controller")
+		.def(py::init<py::kwargs&>());
+	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "sierra_controller")
 		.def(py::init<py::kwargs&>());
 
 //	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")

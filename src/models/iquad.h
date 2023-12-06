@@ -8,12 +8,13 @@ const int MAX_JOINTS = 2;
 // describe a single quad
 struct Desc {
 	Desc() : location(0.f), anchorPoint(0.f), size(0.f), repeat(1.f), textureCoordinates(0.f),
-	    flipv(false), fliph(false), palette(0) {}
+	    flipv(false), fliph(false), palette(0), texOffset(0.f) {}
 	glm::vec3 location;
     glm::vec2 anchorPoint;
     glm::vec2 size;
     glm::vec2 repeat;
     glm::vec4 textureCoordinates;
+    glm::vec2 texOffset;
     float advance;
     int palette;
     bool flipv;

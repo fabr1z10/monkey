@@ -161,15 +161,15 @@ void QuadBatch::setInvisible(int index) {
 }
 
 void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-						int palette, bool fliph, bool flipv, float zLayer)
+						int palette, bool fliph, bool flipv, float zLayer, glm::vec2 texOffset)
 {
 
 	float dx = fliph ? -size.x : size.x;
 
-	float txl = 0.f; //fliph ? textureRepeat.x : 0.f;
-	float txr = textureRepeat.x; //fliph ? 0.f : textureRepeat.x;
-	float tyb = flipv ? 0.f : textureRepeat.y;
-	float tyt = flipv ? textureRepeat.y : 0.f;
+	float txl = texOffset.x; //fliph ? textureRepeat.x : 0.f;
+	float txr = texOffset.x + textureRepeat.x; //fliph ? 0.f : textureRepeat.x;
+	float tyb = texOffset.y + (flipv ? 0.f : textureRepeat.y);
+	float tyt = texOffset.y + (flipv ? textureRepeat.y : 0.f);
 	float palY = _invPaletteCount * (0.5f + palette);
 	int offset = index * _vertsPerElement;
 
