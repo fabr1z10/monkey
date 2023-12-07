@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "../components/scummcharacter.h"
 #include "../mouselistener.h"
+#include "animate.h"
 
 
 class ShowMessageBase : public NodeAction {
@@ -11,6 +12,7 @@ public:
 	ShowMessageBase(const pybind11::kwargs&);
 	int process(double) override;
 	void onEnd() override;
+	void stop() override;
 protected:
 	void createTextNode(float x, float y, unsigned);
 	std::string _text;
@@ -24,6 +26,19 @@ protected:
 	float _width;
 	int _removeEvents;
 	std::shared_ptr<MouseListener> _mouseListener;
+	int _hAlign;
+	int _vAlign;
+private:
+	class MessageKeyListener : public KeyboardListener {
+	public:
+		MessageKeyListener(Action*);
+		void addKey(int);
+		void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
+	private:
+		Action* _action;
+		std::unordered_set<int> _keys;
+	};
+	std::unique_ptr<MessageKeyListener> _listener;
 };
 
 class Say : public ShowMessageBase {

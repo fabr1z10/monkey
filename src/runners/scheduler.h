@@ -11,11 +11,12 @@ class Node;
 class Action {
 public:
 	Action() : _status(0), _id(-1), _forcedStop(false) {}
+	Action(const pybind11::kwargs& args);
 	// return 0 when completed
 	virtual void start();
 	int run(double);
 	// stop current action
-	void stop();
+	virtual void stop();
 	void init(Node*);
 	// virtual stuff
 	virtual int process(double) = 0;
@@ -25,8 +26,9 @@ public:
 
 	long getId() const;
 	void setId(long);
-protected:
 
+protected:
+	pybind11::function _onEnd;
 	int _status; // 0 not started, 1 running, 2 done
 	long _id;
 	bool _forcedStop;
@@ -39,6 +41,10 @@ inline void Action::start() {
 
 inline void Action::stop() {
 	_status = 2;
+
+	if (_onEnd) {
+		_onEnd();
+	}
 }
 
 

@@ -21,12 +21,12 @@ public:
 			_batch->release(primitiveId);
 		}
 	}
-	void setActive(bool value) override {
-		Component::setActive(value);
-		for (const auto& quad : _primitiveIds) {
-			_batch->setInvisible(quad);
-		}
-	}
+//	void setActive(bool value) override {
+//		Component::setActive(value);
+//		for (const auto& quad : _primitiveIds) {
+//			_batch->setInvisible(quad);
+//		}
+//	}
 //    explicit BatchRenderer(B* b) : Renderer(0, 0), _batch(b) {
 //
 //    }

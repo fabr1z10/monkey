@@ -156,7 +156,7 @@ WalkAreaPolygon::WalkAreaPolygon(const pybind11::kwargs &args) : WalkArea(args) 
 
 	auto batchId = py_get_dict<std::string>(args, "batch", "");
 	if (!batchId.empty()) {
-		auto model = ModelMaker::makeModel(_poly, glm::vec4(1.0f, 1.f, 1.f, 1.f));
+		auto model = ModelMaker::makeModel(_poly, glm::vec4(1.0f, 1.f, 1.f, 1.f), FillType::OUTLINE);
 		Node::setModel(model, pybind11::dict("batch"_a = batchId));
 	}
 

@@ -60,6 +60,12 @@ inline Bounds Shape::getBounds() const {
     return m_bounds;
 }
 
+class Point : public Shape {
+public:
+	Point() : Shape() {}
+
+
+};
 
 
 
@@ -70,6 +76,8 @@ public:
     virtual const std::vector<Seg>* getSegments() const { return nullptr; }
 
 };
+
+
 
 class Shape3D : public Shape {
 public:

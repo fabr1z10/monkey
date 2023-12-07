@@ -73,6 +73,7 @@
 #include "components/mariocontroller.h"
 #include "shapes/polyline.h"
 #include "components/controllers/sierra2d.h"
+#include "actions/sierra.h"
 
 
 namespace py = pybind11;
@@ -133,6 +134,10 @@ PYBIND11_MODULE(monkey, m) {
 	m.attr("VALIGN_CENTER") = static_cast<int>(VAlign::CENTER);
 	m.attr("VALIGN_BOTTOM") = static_cast<int>(VAlign::BOTTOM);
 
+	py::enum_<FillType>(m, "FillType")
+		.value("Outline", FillType::OUTLINE)
+		.value("Solid", FillType::SOLID)
+		.export_values();
 
     py::class_<Engine>(m, "Engine")
         //.def(py::init<>())
@@ -238,11 +243,16 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<Shape, std::shared_ptr<Shape>>(m, "shape")
         .def(py::init<>());
+	py::class_<Point, Shape, std::shared_ptr<Point>>(m, "point")
+		.def(py::init<>());
 
     py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "convex_poly")
         .def(py::init<const py::array_t<float>&>());
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(m, "polyline")
 		.def(py::init<const py::kwargs&>());
+	py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(m, "polygon")
+		.def(py::init<const std::vector<float>&>());
+
     py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "rect")
         .def(py::init<float, float, const py::kwargs&>());
 
@@ -331,6 +341,7 @@ PYBIND11_MODULE(monkey, m) {
 	/// --- actions ---
 	py::module_ ma = m.def_submodule("actions");
 	py::class_<Action, std::shared_ptr<Action>>(ma, "action");
+
 	py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "node_action");
 	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "delay")
 		.def(py::init<float>());
@@ -358,6 +369,10 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Say, ShowMessageBase, std::shared_ptr<Say>>(ma, "say")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<ShowMessage, ShowMessageBase, std::shared_ptr<ShowMessage>>(ma, "msg")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "sierra_enable")
+		.def(py::init<const pybind11::kwargs&>());
+	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "sierra_change_anim")
 		.def(py::init<const pybind11::kwargs&>());
 
 

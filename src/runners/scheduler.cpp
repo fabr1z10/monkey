@@ -1,6 +1,11 @@
 #include "scheduler.h"
 #include "../pyhelper.h"
 
+
+Action::Action(const pybind11::kwargs &args) : _status(0), _id(-1), _forcedStop(false) {
+	_onEnd = py_get_dict<pybind11::function>(args, "on_end", pybind11::function());
+}
+
 long Action::getId() const {
 	return _id;
 }
@@ -14,6 +19,7 @@ int Action::run(double dt) {
 	}
 	return process(dt);
 }
+
 
 //
 //void Scheduler::start() {

@@ -13,6 +13,7 @@
 #include "../models/lines.h"
 
 #include "lines.h"
+#include "triangles.h"
 
 
 #include <cmath>
@@ -28,7 +29,10 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
 	_dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
 	_dss[std::type_index(typeid(PolyLine))] = &ModelMaker::makePolyLine;
 
-//
+	_dssolid[std::type_index(typeid(Polygon))] = &ModelMaker::makePolySolid;
+	_dssolid[std::type_index(typeid(AABB))] = &ModelMaker::makeAABBSolid;
+
+	//
 //    m_builders[std::type_index(typeid(Rect))] = &ModelMaker::makeConvexPoly; // [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeConvexPoly(s, color, ft); };
 //    m_builders[std::type_index(typeid(Segment))] = [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeConvexPoly(s, color, ft); };
 //    m_builders[std::type_index(typeid(Circle))] = [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeCircle(s, color, ft); };
@@ -40,17 +44,18 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
 
 }
 
-std::shared_ptr<Model> ModelMaker::makeModel(const std::shared_ptr<Shape> & shape, glm::vec4 color) {
-    return ModelMaker::instance().make(shape, color, FillType::OUTLINE);
+std::shared_ptr<Model> ModelMaker::makeModel(const std::shared_ptr<Shape> & shape, glm::vec4 color, FillType fillType) {
+    return ModelMaker::instance().make(shape, color, fillType);
 }
 
 std::shared_ptr<Model> ModelMaker::make(const std::shared_ptr<Shape>& shape, glm::vec4 color, FillType ft) {
 
-    auto it = _dss.find(shape->get_type_index());
-    if (it != _dss.end()) {
-        return ((*this).*(it->second))(shape, color, ft);
-    }
-    std::cout << " --- don't know how to build model for shape: " << shape->get_type_index().name() << "\n";
+	auto& op = ft == FillType::OUTLINE ? _dss : _dssolid;
+	auto it = op.find(shape->get_type_index());
+	if (it != op.end()) {
+		return ((*this).*(it->second))(shape, color, ft);
+	}
+	std::cout << " --- don't know how to build model for shape: " << shape->get_type_index().name() << "\n";
     return nullptr;
 
 }
@@ -80,6 +85,34 @@ std::shared_ptr<Model> ModelMaker::makePolyLine(const std::shared_ptr<Shape> &s,
 	lines->initChain(color, data, false);//1, pts, glm::vec4(1.f));
 	return lines;
 }
+
+
+std::shared_ptr<Model> ModelMaker::makeAABBSolid(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
+
+	auto bounds = s->getBounds();
+	std::vector<float> data {bounds.min.x, bounds.min.y, bounds.max.x, bounds.min.y,
+						  bounds.max.x, bounds.max.y, bounds.min.x, bounds.max.y};
+	auto triangles = std::make_shared<TrianglesModel>();
+	triangles->init(color, data);//1, pts, glm::vec4(1.f));
+	return triangles;
+
+}
+
+std::shared_ptr<Model> ModelMaker::makePolySolid(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
+
+	std::vector<float> data;
+	auto* p = static_cast<Polygon*>(s.get());
+	const auto& outline = p->getOutline();
+	for (const auto& point : outline) {
+		data.push_back(point.x);
+		data.push_back(point.y);
+	}
+
+	auto triangles = std::make_shared<TrianglesModel>();
+	triangles->init(color, data);//1, pts, glm::vec4(1.f));
+	return triangles;
+}
+
 std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
 	auto* p = static_cast<Polygon*>(s.get());
 	const auto& outline = p->getOutline();

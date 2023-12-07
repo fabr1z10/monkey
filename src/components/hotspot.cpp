@@ -26,7 +26,7 @@ void HotSpot::start() {
 	if (collDebug && !_batchId.empty()) {
 		auto debugNode = std::make_shared<Node>();
 
-		auto model = ModelMaker::makeModel(_shape, glm::vec4(1.0f, 1.f, 1.f, 1.f));
+		auto model = ModelMaker::makeModel(_shape, glm::vec4(1.0f, 1.f, 1.f, 1.f), FillType::OUTLINE);
 		debugNode->setModel(model, pybind11::dict("batch"_a = _batchId));
 		m_node->add(debugNode);
 

@@ -11,7 +11,13 @@ public:
 
 	void start() override;
 	void update(double) override;
+
+	void enable(bool);
+	void setAnim(const std::string& idle, const std::string& walk);
+	using Base = Sierra2DController;
+
 private:
+	bool _enableControls;
 	Renderer* m_animatedRenderer;
 	ICollisionEngine* m_collisionEngine;
 
@@ -19,5 +25,6 @@ private:
 	bool _lookingLeft;
 	float _halfWidth;
 	float _skinWidth;
-
+	std::string _idleAnimation;
+	std::string _walkAnimation;
 };

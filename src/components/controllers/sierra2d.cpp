@@ -6,9 +6,21 @@
 
 extern GLFWwindow* window;
 
-Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component() {
+Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component(), _enableControls(true) {
 	_halfWidth = py_get_dict<float>(args, "half_width");
 	_skinWidth = py_get_dict<float>(args, "skinWidth", .015f);
+	_idleAnimation = py_get_dict<std::string>(args, "idle", "idle");
+	_walkAnimation = py_get_dict<std::string>(args, "walk", "walk");
+}
+
+void Sierra2DController::setAnim(const std::string &idle, const std::string &walk) {
+	_idleAnimation = idle;
+	_walkAnimation = walk;
+}
+
+
+void Sierra2DController::enable(bool value) {
+	_enableControls = value;
 }
 
 void Sierra2DController::start() {
@@ -22,7 +34,9 @@ void Sierra2DController::start() {
 }
 
 void Sierra2DController::update(double) {
-
+	if (!_enableControls) {
+		return;
+	}
 	auto leftPressed = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
 	auto rightPressed = glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS;
 	auto upPressed = glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS;
@@ -51,26 +65,27 @@ void Sierra2DController::update(double) {
 	float dy = upPressed ? 1.f : (downPressed ? -1.f : 0.f);
 
 	m_node->setFlipX(_lookingLeft);
+	float dir_x = _lookingLeft ? -1.f : 1.f;
 	float dir_y = (dy > 0) ? 1.f : -1.f;
 	auto pos = m_node->getWorldPosition();
 	if (dx > 0) {
 		// check horizontal
-		glm::vec3 rayOrigin(pos.x + _lookingLeft ? -_halfWidth : _halfWidth, pos.y, 0.f);
+		glm::vec3 rayOrigin(pos.x + (_lookingLeft ? -_halfWidth : _halfWidth), pos.y, 0.f);
 		float rayLength = dx * (_lookingLeft ? -1.f : 1.f);
-		RayCastHit hit = m_collisionEngine->rayCastX(rayOrigin, rayLength, 0, m_node);
+		RayCastHit hit = m_collisionEngine->rayCastX(rayOrigin, rayLength, 2, m_node);
 		if (hit.collide) {
 			dx = hit.length - _skinWidth;
 		}
 	}
 
 	if (dy != 0.f) {
-		glm::vec3 rayOriginLeft(pos.x - _halfWidth, pos.y, 0.f);
-		glm::vec3 rayOriginRight(pos.x + _halfWidth, pos.y, 0.f);
-		auto hit_left = m_collisionEngine->rayCastY(rayOriginLeft, dy, 0, m_node);
+		glm::vec3 rayOriginLeft(pos.x + dx * dir_x - _halfWidth, pos.y, 0.f);
+		glm::vec3 rayOriginRight(pos.x + dx * dir_x + _halfWidth, pos.y, 0.f);
+		auto hit_left = m_collisionEngine->rayCastY(rayOriginLeft, dy, 2, m_node);
 		if (hit_left.collide) {
 			dy = dir_y * (hit_left.length - _skinWidth);
 		}
-		auto hit_right = m_collisionEngine->rayCastY(rayOriginRight, dy, 0, m_node);
+		auto hit_right = m_collisionEngine->rayCastY(rayOriginRight, dy, 2, m_node);
 		if (hit_right.collide) {
 			dy = dir_y * (hit_right.length - _skinWidth);
 		}
@@ -84,9 +99,9 @@ void Sierra2DController::update(double) {
 
 
 	if (anyPressed) {
-		m_animatedRenderer->setAnimation("walk_" + _dir);
+		m_animatedRenderer->setAnimation(_walkAnimation + "_" + _dir);
 	} else {
-		m_animatedRenderer->setAnimation("idle_" + _dir);
+		m_animatedRenderer->setAnimation(_idleAnimation + "_" + _dir);
 	}
 
 

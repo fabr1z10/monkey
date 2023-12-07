@@ -3,7 +3,7 @@
 #include "../pyhelper.h"
 
 
-NodeAction::NodeAction(const pybind11::kwargs& args) {
+NodeAction::NodeAction(const pybind11::kwargs& args) : Action(args) {
 	m_node = nullptr;
 	if (args.contains("id")) {
 		m_nodeId = args["id"].cast<int>();

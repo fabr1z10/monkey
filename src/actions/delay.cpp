@@ -1,6 +1,6 @@
 #include "delay.h"
 
-Delay::Delay(float t) : Action(), m_time(t), m_timer(0.f) {}
+Delay::Delay(float t) : Action(pybind11::kwargs()), m_time(t), m_timer(0.f) {}
 
 void Delay::start() {
 	Action::start();

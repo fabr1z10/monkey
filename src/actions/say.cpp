@@ -8,23 +8,49 @@
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 
+ShowMessageBase::MessageKeyListener::MessageKeyListener(Action * action) : KeyboardListener(), _action(action) {
+
+}
+
+void ShowMessageBase::MessageKeyListener::addKey(int key) {
+	_keys.insert(key);
+}
+void ShowMessageBase::MessageKeyListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+	if (action == GLFW_PRESS && _keys.count(key) > 0) {
+		_action->stop();
+	}
+}
+
 ShowMessageBase::ShowMessageBase(const pybind11::kwargs & args) : NodeAction(args) {
 	_text = py_get_dict<std::string>(args, "text");
 	auto settings = Engine::instance().getConfig();
 	_fontId = py_get_dict<std::string>(args, "font", py_get<std::string>(settings, "dialogue_font"));
 	_batchId = py_get_dict<std::string>(args, "batch", py_get<std::string>(settings, "dialogue_batch"));
-	_timeout = py_get_dict<float>(args, "timeout", py_get<float>(settings, "dialogue_timeout"));
+	_timeout = py_get_dict<float>(args, "timeout", 0.f);
 	_margin = py_get_dict<glm::vec2>(args, "margin", py_get<glm::vec2>(settings, "dialogue_margin"));
-	_msgParentNode = Engine::instance().getNode(py_get<int>(settings, "msg_parent_node"));
+	auto parentId = py_get_dict<int>(args, "parent", Engine::instance().getRoom()->getRoot()->getId());
+	_msgParentNode = Engine::instance().getNode(parentId);
 	_width = py_get_dict<float>(args, "width", py_get<float>(settings, "dialogue_width"));
 	_removeEvents = py_get_dict<int>(args, "remove", 0);
+	// halign: 0 = left, 1 = center, 2 = right
+	_hAlign = py_get_dict<int>(args, "halign", 0);
+	// valign: 0 = top, 1 = center, 2 = bottom
+	_vAlign = py_get_dict<int>(args, "valign", 0);
+
+}
+
+void ShowMessageBase::stop() {
+	Action::stop();
+	_textNode->remove();
 }
 
 int ShowMessageBase::process(double dt) {
-	_timer += dt;
-	if (_timer >= _timeout) {
-		_textNode->remove();
-		return 0;
+	if (_timeout > 0.f) {
+		_timer += dt;
+		if (_timer >= _timeout) {
+			_textNode->remove();
+			return 0;
+		}
 	}
 	return 1;
 }
@@ -48,7 +74,7 @@ void ShowMessageBase::createTextNode(float x, float y, unsigned pal) {
 	_textNode = nullptr;
 	auto textNode = std::make_shared<Node>();
 	auto textModel = std::make_shared<Text>(pybind11::dict("text"_a = _text,
-														   "font"_a = _fontId, "halign"_a=1, "width"_a=_width));
+														   "font"_a = _fontId, "halign"_a=0, "width"_a=_width));
 	textNode->setModel(textModel, pybind11::dict("batch"_a = _batchId));
 	auto size = textModel->getBounds().getSize();
 	auto cameraId = Engine::instance().getRoom()->getBatch(_batchId)->getCameraId();
@@ -56,6 +82,23 @@ void ShowMessageBase::createTextNode(float x, float y, unsigned pal) {
 
 	float pos_x = std::max(view_bounds.min.x + _margin.x + size.x * 0.5f, x);
 	float pos_y = std::min(view_bounds.max.y - _margin.y - size.y, y);
+	switch (_hAlign) {
+		case 1:
+			x -= 0.5f * size.x;
+			break;
+		case 2:
+			x -= size.x;
+			break;
+	}
+	switch (_vAlign) {
+		case 1:
+			y += 0.5f * size.y;
+			break;
+		case 2:
+			y += size.y;
+			break;
+	}
+
 	textNode->setPosition(x, y, 1.f);
 	textNode->setPalette(pal);
 	_msgParentNode->add(textNode);
@@ -69,7 +112,12 @@ void ShowMessageBase::createTextNode(float x, float y, unsigned pal) {
 				[&] (GLFWwindow*, double, double) {},
 				[&] (GLFWwindow*, int button, int action, int mods) { if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) stop(); });
 	}
+	if (_timeout == 0.f) {
+		_listener = std::make_unique<MessageKeyListener>(this);
+		_listener->addKey(GLFW_KEY_ENTER);
+		_listener->addKey(GLFW_KEY_ESCAPE);
 
+	}
 }
 
 

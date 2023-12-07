@@ -4,7 +4,9 @@
 Polygon::Polygon(const std::vector<float> &points) {
 	for (size_t i = 0; i < points.size(); i+=2) {
 		_points.emplace_back(points[i], points[i+1]);
+		m_bounds.addPoint(glm::vec3(points[i], points[i+1], 0.f));
 	}
+
 }
 
 void Polygon::addHole(const std::vector<float> &points) {

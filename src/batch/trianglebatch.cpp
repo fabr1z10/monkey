@@ -40,6 +40,8 @@ void TriangleBatch::setTriangle(int index, glm::vec3 P0, glm::vec3 P1, glm::vec3
 
 }
 
+
+
 void TriangleBatch::setTriangle(int index, glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec4 color) {
 	int offset = index * _vertsPerElement;
 
