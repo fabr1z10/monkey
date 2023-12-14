@@ -3,8 +3,8 @@
 #include "../components/controllers/sierra2d.h"
 #include "../pyhelper.h"
 
-EnableSierraController::EnableSierraController(const pybind11::kwargs &args) : NodeAction(args) {
-	_value = py_get_dict<bool>(args, "value");
+EnableSierraController::EnableSierraController(int id, bool value) : NodeAction(id), _value(value) {
+
 }
 
 void EnableSierraController::start() {
@@ -12,9 +12,9 @@ void EnableSierraController::start() {
 	m_node->getComponent<Sierra2DController>()->enable(_value);
 }
 
-ChangeSierraAnim::ChangeSierraAnim(const pybind11::kwargs &args) : NodeAction(args) {
-	_idle = py_get_dict<std::string>(args, "idle");
-	_walk = py_get_dict<std::string>(args, "walk");
+ChangeSierraAnim::ChangeSierraAnim(int id, const std::string& idle, const std::string& walk) : NodeAction(id) {
+	_idle = idle;
+	_walk = walk;
 
 }
 

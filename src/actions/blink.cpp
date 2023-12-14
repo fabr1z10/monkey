@@ -2,9 +2,9 @@
 #include "../node.h"
 #include "../components/renderer.h"
 
-Blink::Blink(const pybind11::kwargs & args) : NodeAction(args) {
-	m_duration = args["duration"].cast<float>();
-	m_period = args["period"].cast<float>();
+Blink::Blink(int id, float duration, float period) :
+	NodeAction(id), m_duration(duration), m_period(period) {
+
 }
 
 void Blink::start() {

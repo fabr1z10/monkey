@@ -5,7 +5,7 @@
 
 class MoveAccelerated : public NodeAction {
 public:
-	explicit MoveAccelerated(const pybind11::kwargs&);
+	explicit MoveAccelerated(int id, glm::vec3 velocity, glm::vec3 acceleration, float timeOut);
 	int process(double) override;
 
 private:

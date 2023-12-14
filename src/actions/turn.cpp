@@ -16,9 +16,9 @@ std::unordered_map<std::string, glm::vec2> Turn::m {
 	{ "sw", glm::vec2(-1.f, -1.f) }
 };
 
-Turn::Turn(const pybind11::kwargs & args) : NodeAction(args) {
-	auto d = py_get_dict<std::string>(args, "dir");
-	_dir = m.at(d);
+Turn::Turn(int id, const std::string& dir) : NodeAction(id) {
+
+	_dir = m.at(dir);
 }
 
 void Turn::start() {

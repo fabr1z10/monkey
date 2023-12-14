@@ -6,7 +6,7 @@
 
 class Keyboard : public Component, public KeyboardListener {
 public:
-	void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
+	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	void addFunction(int, int, int, pybind11::function f);
 private:
 	std::unordered_map<KeyboardEvent, pybind11::function> m_functions;

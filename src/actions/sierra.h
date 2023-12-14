@@ -4,7 +4,7 @@
 
 class EnableSierraController : public NodeAction {
 public:
-	EnableSierraController(const pybind11::kwargs& args) ;
+	EnableSierraController(int id, bool) ;
 	void start() override;
 	int process(double) override {return 0;}
 private:
@@ -13,7 +13,7 @@ private:
 
 class ChangeSierraAnim : public NodeAction {
 public:
-	ChangeSierraAnim(const pybind11::kwargs& args);
+	ChangeSierraAnim(int id, const std::string& idle, const std::string& walk);
 	void start() override;
 	int process(double) override {return 0;}
 private:

@@ -234,7 +234,7 @@ void ItemList::addItem(const pybind11::kwargs& kwargs) {
 
 }
 
-void ItemListKeyListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+int ItemListKeyListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
 
 	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 		switch (key) {
@@ -251,4 +251,5 @@ void ItemListKeyListener::keyCallback(GLFWwindow *, int key, int scancode, int a
 				break;
 		}
 	}
+	return 0;
 }

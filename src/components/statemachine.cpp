@@ -26,7 +26,7 @@ void State::keyCallback(int key) {
 
 }
 
-void StateMachine::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+int StateMachine::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		if (m_currentState != nullptr) m_currentState->keyCallback(key);
 	}

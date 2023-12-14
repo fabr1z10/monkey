@@ -74,6 +74,8 @@
 #include "shapes/polyline.h"
 #include "components/controllers/sierra2d.h"
 #include "actions/sierra.h"
+#include "nodes/textedit.h"
+using namespace pybind11::literals; // to bring in the `_a` literal
 
 
 namespace py = pybind11;
@@ -103,10 +105,15 @@ int read_png(const std::string& file) {
     return 0;
 }
 
+int add2(int i, int j) {
+	return i+j;
+}
 PYBIND11_MODULE(monkey, m) {
     m.doc() = "prova prova2"; // optional module docstring
     m.def("add", &add);
     m.def("read", &read_png);
+    m.def("test",&add2, "i"_a = 1, "j"_a = 3);
+    m.def("from_hex", &fromHex, py::arg("color"));
 	m.def("get_sprite", &getSprite);
 	m.def("get_polymesh", &getPolyMesh);
 	m.def("get_multi", &getMulti);
@@ -198,14 +205,18 @@ PYBIND11_MODULE(monkey, m) {
 		.def("clear", &ItemList::clear);
 		//.def(py::init<const std::string&>())
 
+	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")
+		.def(py::init<const pybind11::kwargs&>());
+
+
 	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "_walkarea")
 		.def("set_z_function", &WalkArea::setZFunction)
 		.def("set_wall", &WalkArea::setWall)
 		.def("set_scale_function", &WalkArea::setScaleFunction);
 
-	py::class_<WalkAreaPolygon, WalkArea, std::shared_ptr<WalkAreaPolygon>>(m, "walkarea")
+	py::class_<WalkAreaPolygon, WalkArea, std::shared_ptr<WalkAreaPolygon>>(m, "WalkArea")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<WalkAreaPolyline, WalkArea, std::shared_ptr<WalkAreaPolyline>>(m, "walkarea_line")
+	py::class_<WalkAreaPolyline, WalkArea, std::shared_ptr<WalkAreaPolyline>>(m, "WalkArea_Line")
 		.def(py::init<const pybind11::kwargs&>());
 
 
@@ -218,11 +229,11 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Batch<TriBatchVertexData>, IBatch, std::shared_ptr<Batch<TriBatchVertexData>>>(m, "tbatch");
 
 
-    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "sprite_batch")
+    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "SpriteBatch")
         .def(py::init<const pybind11::kwargs&>());
-    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "line_batch")
+    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "LineBatch")
         .def(py::init<const pybind11::kwargs&>());
-	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "triangle_batch")
+	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "TriangleBatch")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
 		.def(py::init<const pybind11::kwargs&>());
@@ -232,40 +243,40 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_position", &Camera::setPosition);
         //.def(py::init<const py::kwargs&>());
 
-    py::class_<OrthoCamera, Camera, std::shared_ptr<OrthoCamera>>(m, "camera_ortho")
+    py::class_<OrthoCamera, Camera, std::shared_ptr<OrthoCamera>>(m, "CamOrtho")
         .def(py::init<float, float, const py::kwargs&>());
 
-    py::class_<PerspectiveCamera, Camera, std::shared_ptr<PerspectiveCamera>>(m, "camera_perspective")
+    py::class_<PerspectiveCamera, Camera, std::shared_ptr<PerspectiveCamera>>(m, "CamPerspective")
         .def(py::init<const py::kwargs&>());
 
-	py::class_<Camera25, OrthoCamera, std::shared_ptr<Camera25>>(m, "camera_25")
+	py::class_<Camera25, OrthoCamera, std::shared_ptr<Camera25>>(m, "Cam25")
 		.def(py::init<float, float, const py::kwargs&>());
 
-    py::class_<Shape, std::shared_ptr<Shape>>(m, "shape")
+    py::class_<Shape, std::shared_ptr<Shape>>(m, "Shape")
         .def(py::init<>());
-	py::class_<Point, Shape, std::shared_ptr<Point>>(m, "point")
+	py::class_<Point, Shape, std::shared_ptr<Point>>(m, "Point")
 		.def(py::init<>());
 
-    py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "convex_poly")
+    py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "ConvexPoly")
         .def(py::init<const py::array_t<float>&>());
-	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(m, "polyline")
+	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(m, "PolyLine")
 		.def(py::init<const py::kwargs&>());
-	py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(m, "polygon")
+	py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(m, "Polygon")
 		.def(py::init<const std::vector<float>&>());
 
-    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "rect")
+    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
         .def(py::init<float, float, const py::kwargs&>());
 
-    py::class_<Circle, Shape, std::shared_ptr<Circle>>(m, "circle")
+    py::class_<Circle, Shape, std::shared_ptr<Circle>>(m, "Circle")
         .def(py::init<float, const py::kwargs&>());
 
-    py::class_<Segment, Shape, std::shared_ptr<Segment>>(m, "segment")
+    py::class_<Segment, Shape, std::shared_ptr<Segment>>(m, "Segment")
         .def(py::init<float, float, float, float>());
 
-	py::class_<AABB, Shape, std::shared_ptr<AABB>>(m, "aabb")
+	py::class_<AABB, Shape, std::shared_ptr<AABB>>(m, "AABB")
 		.def(py::init<float, float, float, float>());
 
-	py::class_<AABB3D, Shape, std::shared_ptr<AABB3D>>(m, "aabb3d")
+	py::class_<AABB3D, Shape, std::shared_ptr<AABB3D>>(m, "AABB3D")
 		.def(py::init<float, float, float, float, float, float>());
 
 
@@ -279,30 +290,30 @@ PYBIND11_MODULE(monkey, m) {
 //    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
 //        .def(py::init<const pybind11::kwargs&>());
     //py::class_<Lines, Model, std::shared_ptr<Lines>>(mm)
-    py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "lines")
+    py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "Lines")
         .def(py::init<const pybind11::kwargs&>());
-	py::class_<ParametricCurve, Model, std::shared_ptr<ParametricCurve>>(mm, "curve")
+	py::class_<ParametricCurve, Model, std::shared_ptr<ParametricCurve>>(mm, "Curve")
 		.def(py::init<const pybind11::kwargs&>());
-    py::class_<StaticTiledModel, TiledModel, std::shared_ptr<StaticTiledModel>>(mm, "tiled")
+    py::class_<StaticTiledModel, TiledModel, std::shared_ptr<StaticTiledModel>>(mm, "Tiled")
         .def(py::init<const pybind11::kwargs&>());
-	py::class_<AnimatedTiledModel, TiledModel, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_anim")
+	py::class_<AnimatedTiledModel, TiledModel, std::shared_ptr<AnimatedTiledModel>>(mm, "TiledAnim")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<RoadModel, Model, std::shared_ptr<RoadModel>>(mm, "road")
+	py::class_<RoadModel, Model, std::shared_ptr<RoadModel>>(mm, "Road")
 		.def(py::init<const pybind11::kwargs&>())
 		.def("add_section", &RoadModel::addSection);
-    py::class_<TileMap, Model, std::shared_ptr<TileMap>>(mm, "tilemap")
+    py::class_<TileMap, Model, std::shared_ptr<TileMap>>(mm, "TileMap")
         .def(py::init<const pybind11::kwargs&>())
         .def("add", &TileMap::setTile);
 //	py::class_<AnimatedTiledModel, Model, std::shared_ptr<AnimatedTiledModel>>(mm, "tiled_animated")
 //		.def(py::init<const pybind11::kwargs&>());
-	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "sprite");
-	py::class_<PolyMesh, Model, std::shared_ptr<PolyMesh>>(mm, "polymesh");
+	py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite");
+	py::class_<PolyMesh, Model, std::shared_ptr<PolyMesh>>(mm, "PolyMesh");
 		//.def(py::init<const pybind11::kwargs&>());
-	py::class_<Text, Model, std::shared_ptr<Text>>(mm, "text")
+	py::class_<Text, Model, std::shared_ptr<Text>>(mm, "Text")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<StaticQuad, Model, std::shared_ptr<StaticQuad>>(mm, "quad")
+	py::class_<StaticQuad, Model, std::shared_ptr<StaticQuad>>(mm, "Quad")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<SkeletalModel, Model, std::shared_ptr<SkeletalModel>>(mm, "skeletal_model")
+	py::class_<SkeletalModel, Model, std::shared_ptr<SkeletalModel>>(mm, "SkeletalModel")
 		.def(py::init<const pybind11::kwargs&>());
 
 //    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
@@ -312,68 +323,75 @@ PYBIND11_MODULE(monkey, m) {
 
 
 	/// --- runners ---
-	py::class_<Runner, std::shared_ptr<Runner>>(m, "runner");
+	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
 	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
-	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "collision_engine_2d")
+	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
 		.def(py::init<float, float>())
 		.def("add_response", &CollisionEngine2D::addResponse);
-	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "scheduler")
+	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());
-	py::class_<Lighting, Runner, std::shared_ptr<Lighting>>(m, "lighting")
+	py::class_<Lighting, Runner, std::shared_ptr<Lighting>>(m, "Lighting")
 		.def(py::init<>())
 		.def("set_ambient", &Lighting::setAmbient)
 		.def("add_light", &Lighting::addLight);
-	py::class_<HotSpotManager, Runner, std::shared_ptr<HotSpotManager>>(m, "hotspot_manager")
+	py::class_<HotSpotManager, Runner, std::shared_ptr<HotSpotManager>>(m, "HotSpotManager")
 		.def(py::init<>());
 
 	/// --- lights ---
-	py::class_<Light, std::shared_ptr<Light>>(m, "light");
+	py::class_<Light, std::shared_ptr<Light>>(m, "Light");
 	py::class_<DirectionalLight, Light, std::shared_ptr<DirectionalLight>>(m, "light_directional")
 		.def(py::init<const pybind11::kwargs&>());
 
 	/// --- scripts & actions
-	py::class_<Script, std::shared_ptr<Script>>(m, "script")
+	py::class_<Script, std::shared_ptr<Script>>(m, "Script")
 		.def("add", &Script::add)
 		.def(py::init<const pybind11::kwargs&>());
 
 
 	/// --- actions ---
 	py::module_ ma = m.def_submodule("actions");
-	py::class_<Action, std::shared_ptr<Action>>(ma, "action");
+	py::class_<Action, std::shared_ptr<Action>>(ma, "Action")
+		.def("set_on_end", &Action::setOnEnd, "function"_a);
 
-	py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "node_action");
-	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "delay")
-		.def(py::init<float>());
-	py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "animate")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "blink")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "callfunc")
-		.def(py::init<pybind11::function>());
-	py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "move_accelerated")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<MoveDynamics, NodeAction, std::shared_ptr<MoveDynamics>>(ma, "move_dynamics")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "move")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "move_by")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "remove")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<actions::Walk, NodeAction, std::shared_ptr<actions::Walk>>(ma, "walk")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "turn")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<ShowMessageBase, NodeAction, std::shared_ptr<ShowMessageBase>>(ma, "show_msg");
+	py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
+	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
+		.def(py::init<float>(), "time"_a);
+	py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
+		.def(py::init<int, const std::string&, bool>(), "id"_a, "anim"_a, "sync"_a=false);
+	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "Blink")
+		.def(py::init<int, float, float>(), "id"_a, "duration"_a, "period"_a);
+	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "CallFunc")
+		.def(py::init<pybind11::function>(), "function"_a);
+	py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "MoveAccelerated")
+		.def(py::init<int, glm::vec3, glm::vec3, float>(), "id"_a, "velocity"_a, "acceleration"_a, "timeout"_a);
+	py::class_<MoveDynamics, NodeAction, std::shared_ptr<MoveDynamics>>(ma, "MoveDynamics")
+		.def(py::init<int, glm::vec3, glm::vec3>(), "id"_a, "velocity"_a, "acceleration"_a);
+	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
+		.def(py::init<int, glm::vec3, float>(), "id"_a, "position"_a, "speed"_a);
+	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "MoveBy")
+		.def(py::init<int, glm::vec3, float, float>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
+	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "Remove")
+		.def(py::init<int>(), "id"_a);
+	py::class_<actions::Walk, NodeAction, std::shared_ptr<actions::Walk>>(ma, "Walk")
+		.def(py::init<int, glm::vec3>(), "id"_a, "pos"_a);
+	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "Turn")
+		.def(py::init<int, const std::string&>(), "id"_a, "direction"_a);
+	py::class_<ShowMessageBase, Action, std::shared_ptr<ShowMessageBase>>(ma, "ShowMsg");
+	py::class_<ShowMessage, ShowMessageBase, std::shared_ptr<ShowMessage>>(ma, "Msg")
+		.def(py::init<const std::string&, const std::string&, const std::string&, glm::vec3, int,
+	   		float, glm::vec2, int, float, int, int, const py::kwargs&>(), "font"_a, "text"_a, "batch"_a, "pos"_a,
+	   		"palette"_a,"timeout"_a=0, "margin"_a=glm::vec2(0.f), "parent"_a=0, "max_width"_a=0,
+	   		"halign"_a=0, "valign"_a=0, py::kw_only());
 	py::class_<Say, ShowMessageBase, std::shared_ptr<Say>>(ma, "say")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<ShowMessage, ShowMessageBase, std::shared_ptr<ShowMessage>>(ma, "msg")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "sierra_enable")
-		.def(py::init<const pybind11::kwargs&>());
-	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "sierra_change_anim")
-		.def(py::init<const pybind11::kwargs&>());
+		.def(py::init<const std::string&, const std::string&, const std::string&, glm::vec3, int,
+			 float, glm::vec2, int, float, int, int, const py::kwargs&>(), "font"_a, "text"_a, "batch"_a, "pos"_a,
+			 "palette"_a,"timeout"_a, "margin"_a, "parent"_a, "max_width"_a,
+			 "halign"_a, "valign"_a, py::kw_only());
+	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "SierraEnable")
+		.def(py::init<int, bool>(), "id"_a, "value"_a);
+	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "SierraChangeAnim")
+		.def(py::init<int, const std::string&, const std::string&>(), "id"_a, "idle"_a, "walk"_a);
 
 
 
@@ -382,13 +400,13 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");
 
-	py::class_<PyHotSpot, HotSpot, std::shared_ptr<PyHotSpot>>(m, "hotspot")
+	py::class_<PyHotSpot, HotSpot, std::shared_ptr<PyHotSpot>>(m, "Hotspot")
 		.def(py::init<std::shared_ptr<Shape>, const pybind11::kwargs&>())
 		.def("set_on_enter", &PyHotSpot::setOnEnter)
 		.def("set_on_leave", &PyHotSpot::setOnLeave)
 		.def("set_on_click", &PyHotSpot::setOnClick);
 
-	py::class_<TextHotSpot, PyHotSpot, std::shared_ptr<TextHotSpot>>(m, "text_hotspot")
+	py::class_<TextHotSpot, PyHotSpot, std::shared_ptr<TextHotSpot>>(m, "TextHotspot")
 		.def(py::init<pybind11::kwargs&>());
 
 
@@ -396,47 +414,47 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("bounds", &Collider::bounds)
 		.def("set_collision_flag", &Collider::setCollisionFlag);
 
-	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "collider")
+	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "Collider")
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "sprite_collider")
+	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "SpriteCollider")
 		.def("set_override", &SpriteCollider::setCollisionOverride)
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "controller")
+	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "Controller")
 		.def_property_readonly("grounded", &Controller::grounded)
 		.def_property_readonly("size", &Controller::getSize)
 		.def("set_size", &Controller::setSize);
 
-	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "controller_2d")
+	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "Controller2D")
 		.def(py::init<py::kwargs&>());
-	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "mario_controller")
+	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 		.def(py::init<py::kwargs&>());
-	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "sierra_controller")
+	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "SierraController")
 		.def(py::init<py::kwargs&>());
 
 //	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
 //		.def(py::init<py::kwargs&>());
 
-	py::class_<Dynamics, Component, std::shared_ptr<Dynamics>>(m, "dynamics")
+	py::class_<Dynamics, Component, std::shared_ptr<Dynamics>>(m, "Dynamics")
 		.def("set_velocity", &Dynamics::setVelocity)
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<Follow, Component, std::shared_ptr<Follow>>(m, "follow")
+	py::class_<Follow, Component, std::shared_ptr<Follow>>(m, "Follow")
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<Platform, Component, std::shared_ptr<Platform>>(m, "platform")
+	py::class_<Platform, Component, std::shared_ptr<Platform>>(m, "Platform")
 		.def(py::init<>());
 
-	py::class_<StateMachine, Component, std::shared_ptr<StateMachine>>(m, "state_machine")
+	py::class_<StateMachine, Component, std::shared_ptr<StateMachine>>(m, "StateMachine")
 		.def("add", &StateMachine::addState)
 		.def("set_initial_state", &StateMachine::setInitialState)
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<MoveTranslate, Component, std::shared_ptr<MoveTranslate>>(m, "move_translate")
+	py::class_<MoveTranslate, Component, std::shared_ptr<MoveTranslate>>(m, "MoveTranslate")
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(m, "keyboard")
+	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(m, "Keyboard")
 		.def("add", &Keyboard::addFunction)
 		.def(py::init<>());
 
@@ -447,18 +465,18 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<ScummCharacter, Component, std::shared_ptr<ScummCharacter>>(m, "scumm_char")
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<Cursor, Component, std::shared_ptr<Cursor>>(m, "cursor")
+	py::class_<Cursor, Component, std::shared_ptr<Cursor>>(m, "Cursor")
 		.def(py::init<const pybind11::kwargs&>());
 
 
 
 	/// --- states ---
-	py::class_<State, std::shared_ptr<State>>(m, "state");
+	py::class_<State, std::shared_ptr<State>>(m, "State");
 	py::class_<Top2D, State, std::shared_ptr<Top2D>>(m, "top_2d")
 		.def(py::init<const pybind11::kwargs&>());
 
-	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "walk_2d");
-	py::class_<Walk3D, State, std::shared_ptr<Walk3D>>(m, "walk_3d");
+	py::class_<Walk2D, State, std::shared_ptr<Walk2D>>(m, "Walk2D");
+	py::class_<Walk3D, State, std::shared_ptr<Walk3D>>(m, "Walk3D");
 	py::class_<PlayerWalk2D, State, std::shared_ptr<PlayerWalk2D>>(m, "walk_2d_player")
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<PlayerWalk3D, State, std::shared_ptr<PlayerWalk3D>>(m, "walk_3d_player")

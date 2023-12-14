@@ -2,9 +2,10 @@
 #include "../pyhelper.h"
 #include "../node.h"
 
-Animate::Animate(const pybind11::kwargs& args) : NodeAction(args) {
-	m_animation = args["anim"].cast<std::string>();
-	m_sync = py_get_dict<bool>(args, "sync", false);
+Animate::Animate(int id, const std::string& animation, bool sync) : NodeAction(id),
+	m_animation(animation), m_sync(sync) {
+
+
 
 }
 

@@ -52,7 +52,7 @@ public:
 	void start () override;
 	void update(double) override;
 	std::shared_ptr<State> getState() const;
-	void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
+	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	void setState(const std::string&, const pybind11::kwargs& kwargs = pybind11::kwargs());
 	void addState(const std::string& id, std::shared_ptr<State> state, const pybind11::kwargs& args);
 	void setInitialState(const std::string& id, const pybind11::kwargs& args);

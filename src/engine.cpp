@@ -1,7 +1,7 @@
 #include "engine.h"
 #include <iostream>
 #include "pyhelper.h"
-
+#include "monkeyfu.h"
 #include "shaders/lightshader.h"
 #include "batch/quadbatch.h"
 #include "assetmanager.h"
@@ -64,6 +64,11 @@ void Engine::start() {
 
 	if (pybind11::hasattr(settings, "init")) {
 		settings.attr("init").cast<pybind11::function>()();
+	}
+
+	auto dataFiles = py_get<pybind11::dict>(settings, "data", pybind11::dict());
+	for (const auto& d : dataFiles) {
+	    readDataFile(d.first.cast<std::string>(), d.second.cast<std::string>());
 	}
 	
 
@@ -273,7 +278,10 @@ Shader* Engine::getShader(ShaderType type) {
 
 void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	for (auto& s : Engine::instance().m_keyboardListeners) {
-		s->keyCallback(window, key, scancode, action, mods);
+		auto retval = s->keyCallback(window, key, scancode, action, mods);
+		if (retval == 1) {
+		    break;
+		}
 	}
 }
 

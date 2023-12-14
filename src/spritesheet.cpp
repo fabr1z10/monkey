@@ -6,14 +6,15 @@
 #include <iostream>
 #include "yamlexp.h"
 
-SpriteSheet::SpriteSheet(const std::string& id, const std::string &file) : _id(id) {
-	std::string directory = file.substr(0, file.rfind('/'));
-	std::string fileName = file + ".yaml";
-	std::cout << fileName << "\n";
+SpriteSheet::SpriteSheet(const std::string& fileName) {
+	std::string directory = fileName.substr(0, fileName.rfind('/'));
+	//std::string fileName = file + ".yaml";
+	//std::cout << fileName << "\n";
 
 
 	try {
 		auto f = YAML::LoadFile(fileName);
+		_id = f["id"].as<std::string>();
 		if (f.IsDefined()) {
 			std::cout << "Ok\n";
 		} else {
@@ -92,7 +93,7 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string &file) : _id(i
 				auto ms_id = ms.first.as<std::string>();
 				//std::cout << " reading multisprite: " << id << std::endl;
 				//std::shared_ptr<MultiNode> root;
-				_multiSprites[ms_id] = std::make_shared<MultiNode>(ms.second, id);
+				_multiSprites[ms_id] = std::make_shared<MultiNode>(ms.second, _id);
 			}
 		}
 

@@ -1,14 +1,23 @@
 #include "scheduler.h"
+
+#include <utility>
 #include "../pyhelper.h"
 
 
-Action::Action(const pybind11::kwargs &args) : _status(0), _id(-1), _forcedStop(false) {
-	_onEnd = py_get_dict<pybind11::function>(args, "on_end", pybind11::function());
+
+Action::Action() : _status(0), _id(-1), _forcedStop(false) {
+	//_onEnd = py_get_dict<pybind11::function>(args, "on_end", pybind11::function());
+}
+
+void Action::setOnEnd(pybind11::function f) {
+	_onEnd = f;
 }
 
 long Action::getId() const {
 	return _id;
 }
+
+
 void Action::setId(long id) {
 	_id = id;
 }

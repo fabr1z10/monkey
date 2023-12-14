@@ -1,5 +1,6 @@
 #include "sierra2d.h"
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include "../../node.h"
 #include "../../engine.h"
 #include "../../pyhelper.h"
@@ -11,6 +12,11 @@ Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component
 	_skinWidth = py_get_dict<float>(args, "skinWidth", .015f);
 	_idleAnimation = py_get_dict<std::string>(args, "idle", "idle");
 	_walkAnimation = py_get_dict<std::string>(args, "walk", "walk");
+	_dir = py_get_dict<std::string>(args, "dir", "e");
+	_yFront = py_get_dict<float>(args, "y_front");
+    _yBack = py_get_dict<float>(args, "y_back");
+    _a = 2.f / (_yFront - _yBack);
+    _b = (_yBack + _yFront) / (_yBack - _yFront);
 }
 
 void Sierra2DController::setAnim(const std::string &idle, const std::string &walk) {
@@ -24,7 +30,7 @@ void Sierra2DController::enable(bool value) {
 }
 
 void Sierra2DController::start() {
-	_dir = 'e';
+	//_dir = 'e';
 	_lookingLeft = false;
 	m_animatedRenderer = m_node->getComponent<Renderer>();
 
@@ -96,7 +102,10 @@ void Sierra2DController::update(double) {
 
 	m_node->move(glm::vec3(dx,dy,0));
 
+    // update z
+    float z = _a * m_node->getY() + _b;
 
+    m_node->setZ(z);
 
 	if (anyPressed) {
 		m_animatedRenderer->setAnimation(_walkAnimation + "_" + _dir);

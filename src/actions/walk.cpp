@@ -8,8 +8,8 @@
 
 using namespace actions;
 
-Walk::Walk(const pybind11::kwargs & args) : NodeAction(args) {
-	_target = py_get_dict<glm::vec2>(args, "target");
+Walk::Walk(int id, glm::vec3 targetPosition) : NodeAction(id), _target(targetPosition) {
+	//_target = py_get_dict<glm::vec2>(args, "target");
 
 
 }

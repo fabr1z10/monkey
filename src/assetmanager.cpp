@@ -9,6 +9,15 @@
 #include "yamlexp.h"
 #include "spritesheet.h"
 #include "pyhelper.h"
+
+
+AssetManager::AssetManager() {
+
+	auto settings = Engine::instance().getConfig();
+	_assetDirectory = py_get<std::string>(settings, "asset_directory");
+}
+
+
 std::shared_ptr<Tex> AssetManager::getTex(const std::string & file) {
     auto it = m_tex.find(file);
     if (it == m_tex.end()) {
@@ -20,8 +29,8 @@ std::shared_ptr<Tex> AssetManager::getTex(const std::string & file) {
 }
 
 
-std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id) {
-
+std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &file) {
+	std::cout << "ciaone\n";
 	//	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
 //	for (const auto& sheet : sheets) {
 //
@@ -31,28 +40,29 @@ std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id)
 //		AssetManager::instance().readSpritesheet(id, file);
 //
 //	}
-
-	auto it = m_spritesheets.find(id);
-	if (it == m_spritesheets.end()) {
-		auto settings = Engine::instance().getConfig();
-		auto sheets = py_get<pybind11::dict>(settings, "spritesheets", pybind11::dict());
-		auto file = py_get_dict<std::string>(sheets, id);
-		readSpritesheet(id, file);
-		return m_spritesheets.at(id);
-		//GLIB_FAIL("don't know spritesheet: " << id);
+    auto it = _spriteSheetMoniker.find(file);
+    if (it != _spriteSheetMoniker.end()) {
+        return m_spritesheets.at(it->second);
+    } else {
+	    std::string filename = _assetDirectory + '/' + file;
+        auto sheet = std::make_shared<SpriteSheet>(filename);
+        _spriteSheetMoniker[file] = sheet->getId();
+        m_spritesheets[sheet->getId()] = sheet;
+        return sheet;
 	}
-	return it->second;
+
 }
 
-void AssetManager::readSpritesheet(const std::string &id, const std::string &directory) {
-	if (m_spritesheets.count(id) == 0) {
-		auto sheet = std::make_shared<SpriteSheet>(id, directory);
-		m_spritesheets[id] = sheet;
-		std::cout << sheet->toString();
-	}
-	//return m_spritesheets.at(id);
-
-}
+//void AssetManager::readSpritesheet(const std::string &id, const std::string &fileName) {
+//
+//	auto sheet = std::make_shared<SpriteSheet>(fileName);
+//	return sheet;
+//		m_spritesheets[id] = sheet;
+//		std::cout << sheet->toString();
+//	}
+//	//return m_spritesheets.at(id);
+//
+//}
 
 std::shared_ptr<MultiNode> AssetManager::getMulti(const std::string & id, const std::string& batch) {
 	auto u = id.find('/');

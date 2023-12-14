@@ -7,9 +7,11 @@
 #include "animate.h"
 
 
-class ShowMessageBase : public NodeAction {
+class ShowMessageBase : public Action {
 public:
-	ShowMessageBase(const pybind11::kwargs&);
+	ShowMessageBase(const std::string& font, const std::string& text, const std::string& batchId, glm::vec3 pos, int palette = 0,
+				 float timeOut = 0.f, glm::vec2 margin = glm::vec2(0.f), int parentId = 0,
+				 float maxWidth = 0.f, int hAlign = 0, int vAlign = 0, const pybind11::kwargs& kw=pybind11::kwargs());
 	int process(double) override;
 	void onEnd() override;
 	void stop() override;
@@ -28,12 +30,15 @@ protected:
 	std::shared_ptr<MouseListener> _mouseListener;
 	int _hAlign;
 	int _vAlign;
+	pybind11::function _onCreate;
+	glm::vec3 _position;
+	unsigned _palette;
 private:
 	class MessageKeyListener : public KeyboardListener {
 	public:
 		MessageKeyListener(Action*);
 		void addKey(int);
-		void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
+		int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	private:
 		Action* _action;
 		std::unordered_set<int> _keys;
@@ -43,7 +48,9 @@ private:
 
 class Say : public ShowMessageBase {
 public:
-	Say(const pybind11::kwargs&);
+	Say(const std::string& font, const std::string& text, const std::string& batchId, glm::vec3 pos,
+		int palette = 0, float timeOut = 0.f, glm::vec2 margin = glm::vec2(0.f), int parentId = 0,
+		float maxWidth = 0.f, int hAlign = 0, int vAlign = 0, const pybind11::kwargs& kw=pybind11::kwargs());
 	void start() override;
 private:
 	ScummCharacter* _sc;
@@ -52,11 +59,12 @@ private:
 
 class ShowMessage : public ShowMessageBase {
 public:
-	ShowMessage(const pybind11::kwargs&);
+	ShowMessage(const std::string& font, const std::string& text, const std::string& batchId, glm::vec3 pos,
+				int palette = 0, float timeOut = 0.f, glm::vec2 margin = glm::vec2(0.f), int parentId = 0,
+				float maxWidth = 0.f, int hAlign = 0, int vAlign = 0, const pybind11::kwargs& kw=pybind11::kwargs());
 	void start() override;
 private:
-	glm::vec2 _position;
-	unsigned _palette;
+
 };
 
 

@@ -15,27 +15,35 @@ ShowMessageBase::MessageKeyListener::MessageKeyListener(Action * action) : Keybo
 void ShowMessageBase::MessageKeyListener::addKey(int key) {
 	_keys.insert(key);
 }
-void ShowMessageBase::MessageKeyListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+int ShowMessageBase::MessageKeyListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS && _keys.count(key) > 0) {
 		_action->stop();
+		return 1;
 	}
+	return 0;
 }
 
-ShowMessageBase::ShowMessageBase(const pybind11::kwargs & args) : NodeAction(args) {
-	_text = py_get_dict<std::string>(args, "text");
-	auto settings = Engine::instance().getConfig();
-	_fontId = py_get_dict<std::string>(args, "font", py_get<std::string>(settings, "dialogue_font"));
-	_batchId = py_get_dict<std::string>(args, "batch", py_get<std::string>(settings, "dialogue_batch"));
-	_timeout = py_get_dict<float>(args, "timeout", 0.f);
-	_margin = py_get_dict<glm::vec2>(args, "margin", py_get<glm::vec2>(settings, "dialogue_margin"));
-	auto parentId = py_get_dict<int>(args, "parent", Engine::instance().getRoom()->getRoot()->getId());
+ShowMessageBase::ShowMessageBase(const std::string& font, const std::string& text, const std::string& batchId,
+	glm::vec3 position, int palette, float timeOut, glm::vec2 margin, int parentId, float maxWidth, int hAlign,
+	int vAlign, const pybind11::kwargs& kw) : Action(), _text(text), _fontId(font), _batchId(batchId),
+	_timeout(timeOut), _margin(margin), _hAlign(hAlign), _vAlign(vAlign), _width(maxWidth),
+	_position(position), _palette(palette), _timer(0.f), _textNode(nullptr) {
+	//_text = py_get_dict<std::string>(args, "text");
+	//auto settings = Engine::instance().getConfig();
+	//_fontId = py_get_dict<std::string>(args, "font", py_get<std::string>(settings, "dialogue_font"));
+	//_batchId = py_get_dict<std::string>(args, "batch", py_get<std::string>(settings, "dialogue_batch"));
+	//_timeout = py_get_dict<float>(args, "timeout", 0.f);
+	//_margin = py_get_dict<glm::vec2>(args, "margin", py_get<glm::vec2>(settings, "dialogue_margin"));
+
+	//auto parentId = py_get_dict<int>(args, "parent", Engine::instance().getRoom()->getRoot()->getId());
 	_msgParentNode = Engine::instance().getNode(parentId);
-	_width = py_get_dict<float>(args, "width", py_get<float>(settings, "dialogue_width"));
-	_removeEvents = py_get_dict<int>(args, "remove", 0);
+	//_width = py_get_dict<float>(args, "width", py_get<float>(settings, "dialogue_width"));
+	//_removeEvents = py_get_dict<int>(args, "remove", 0);
 	// halign: 0 = left, 1 = center, 2 = right
-	_hAlign = py_get_dict<int>(args, "halign", 0);
+	//_hAlign = py_get_dict<int>(args, "halign", 0);
 	// valign: 0 = top, 1 = center, 2 = bottom
-	_vAlign = py_get_dict<int>(args, "valign", 0);
+	//_vAlign = py_get_dict<int>(args, "valign", 0);
+	_onCreate = py_get_dict<pybind11::function>(kw, "on_create", pybind11::function());
 
 }
 
@@ -62,19 +70,21 @@ void ShowMessageBase::onEnd() {
 }
 
 
-Say::Say(const pybind11::kwargs & args) : ShowMessageBase(args) {
+Say::Say(const std::string& font, const std::string& text, const std::string& batchId, glm::vec3 pos,
+		 int palette, float timeOut, glm::vec2 margin, int parentId, float maxWidth, int hAlign, int vAlign, const pybind11::kwargs& kwargs) :
+		ShowMessageBase(font, text, batchId, pos, palette, timeOut, margin, parentId, maxWidth, hAlign, vAlign, kwargs) {
 
 	// this could be globals...
 	auto settings = Engine::instance().getConfig();
 
-	_offset = py_get_dict<float>(args, "offset", py_get<float>(settings, "dialogue_offset"));
+	//_offset = py_get_dict<float>(args, "offset", py_get<float>(settings, "dialogue_offset"));
 }
 
 void ShowMessageBase::createTextNode(float x, float y, unsigned pal) {
 	_textNode = nullptr;
 	auto textNode = std::make_shared<Node>();
 	auto textModel = std::make_shared<Text>(pybind11::dict("text"_a = _text,
-														   "font"_a = _fontId, "halign"_a=0, "width"_a=_width));
+														   "font"_a = _fontId, "halign"_a=0, "width"_a=_width, "pal"_a=pal));
 	textNode->setModel(textModel, pybind11::dict("batch"_a = _batchId));
 	auto size = textModel->getBounds().getSize();
 	auto cameraId = Engine::instance().getRoom()->getBatch(_batchId)->getCameraId();
@@ -100,7 +110,7 @@ void ShowMessageBase::createTextNode(float x, float y, unsigned pal) {
 	}
 
 	textNode->setPosition(x, y, 1.f);
-	textNode->setPalette(pal);
+	//textNode->setPalette(pal);
 	_msgParentNode->add(textNode);
 	_timer = 0.0;
 	_textNode = textNode.get();
@@ -116,19 +126,25 @@ void ShowMessageBase::createTextNode(float x, float y, unsigned pal) {
 		_listener = std::make_unique<MessageKeyListener>(this);
 		_listener->addKey(GLFW_KEY_ENTER);
 		_listener->addKey(GLFW_KEY_ESCAPE);
+	}
 
+	if (_onCreate) {
+		_onCreate(_textNode, size.x, size.y);
 	}
 }
 
 
 
 void Say::start() {
-	NodeAction::start();
-
-	_sc = m_node->getComponent<ScummCharacter>();
+	Action::start();
+	/// TODO RESTORE
+	/*
+	  _sc = m_node->getComponent<ScummCharacter>();
 	auto pal = _sc->getTextPalette();
 	auto actorPosition = m_node->getWorldPosition();
 	createTextNode(actorPosition.x, actorPosition.y + _offset, pal);
+	 */
+	/// END
 	//auto textNode = std::make_shared<Node>();
 
 	//auto textModel = std::make_shared<Text>(pybind11::dict("text"_a = _text,
@@ -149,16 +165,18 @@ void Say::start() {
 
 
 void ShowMessage::start() {
-	NodeAction::start();
+	Action::start();
 
 	createTextNode(_position.x, _position.y, _palette);
 }
 
 
-ShowMessage::ShowMessage(const pybind11::kwargs & args) : ShowMessageBase(args) {
+ShowMessage::ShowMessage(const std::string& font, const std::string& text, const std::string& batchId, glm::vec3 pos,
+	int palette, float timeOut, glm::vec2 margin, int parentId, float maxWidth, int hAlign, int vAlign, const pybind11::kwargs& kw) :
+	ShowMessageBase(font, text, batchId, pos, palette, timeOut, margin, parentId, maxWidth, hAlign, vAlign, kw) {
 
-	_position = py_get_dict<glm::vec2>(args, "pos");
-	_palette = py_get_dict<unsigned>(args, "pal", 0);
+	//_position = py_get_dict<glm::vec2>(args, "pos");
+	//_palette = py_get_dict<unsigned>(args, "pal", 0);
 }
 
 

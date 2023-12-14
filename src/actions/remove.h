@@ -4,6 +4,6 @@
 
 class RemoveNode : public NodeAction {
 public:
-	explicit RemoveNode(const pybind11::kwargs& args) : NodeAction(args) {}
+	explicit RemoveNode(int id) : NodeAction(id) {}
 	int process(double) override;
 };

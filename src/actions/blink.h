@@ -6,7 +6,7 @@ class Renderer;
 
 class Blink : public NodeAction {
 public:
-	explicit Blink(const pybind11::kwargs&);
+	explicit Blink(int id, float duration, float period);
 	int process(double) override;
 	void start() override;
 	void onEnd() override;

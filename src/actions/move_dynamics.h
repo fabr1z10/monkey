@@ -7,7 +7,7 @@
 
 class MoveDynamics : public NodeAction {
 public:
-	explicit MoveDynamics(const pybind11::kwargs&);
+	explicit MoveDynamics(int id, glm::vec3 velocity, glm::vec3 acceleration);
 	void start() override;
 
 	int process(double) override;

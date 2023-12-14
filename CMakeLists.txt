@@ -10,7 +10,6 @@ ENDIF()
 
 project(monkey)
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(MONKEY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -19,7 +18,7 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(PNG REQUIRED)
 find_package(yaml-cpp REQUIRED)
-
+find_package (Python COMPONENTS Interpreter Development)
 add_subdirectory(pybind11)
 
 include_directories(${PYBIND_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${MONKEY_INCLUDE} ${PNG_INCLUDE_DIRS} ${YAML_INCLUDE_DIRS})
@@ -33,3 +32,10 @@ pybind11_add_module(monkey ${MONKEY_SOURCE})
 target_link_libraries(monkey PUBLIC ${OPENGL_LIBRARIES} ${PNG_LIBRARY} ${YAML_CPP_LIBRARIES} glfw GLEW::GLEW)
 target_compile_definitions(monkey
         PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+
+message("ciao")
+message("${Python_SITEARCH}")
+install(TARGETS monkey
+		COMPONENT python
+		LIBRARY DESTINATION "${Python_SITEARCH}"
+		)

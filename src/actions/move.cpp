@@ -3,41 +3,50 @@
 #include "../node.h"
 #include <glm/gtx/transform.hpp>
 
-Move::Move(const pybind11::kwargs& args) : NodeAction(args) {
-	for (const auto& p : args["frames"].cast<pybind11::dict>()) {
-		auto tick = p.first.cast<int>();
-		auto pos = p.second.cast<glm::vec3>();//py_get<glm::vec3>(p.second.cast<pybind11::object>());
-		m_ticks.push_back(tick);
-		m_positions.push_back(pos);
+Move::Move(int id, glm::vec3 pos, float speed) : NodeAction(id), _targetPos(pos), _speed(speed) {
 
-	}
-	m_next = 0;
-	m_tickCount = 0;
+
 }
 
-int Move::process(double) {
-	if (m_tickCount == m_ticks[m_next]) {
-		const auto& pos = m_positions[m_next];
-		m_node->setPosition(pos.x, pos.y, pos.z);
-		m_next ++;
-		if (m_next >= m_ticks.size()) return 0;
+void Move::start() {
+	NodeAction::start();
+	auto startPosition = m_node->getWorldPosition();
+	_dir = (_targetPos - startPosition);
+	if (_speed == 0.f) {
+		m_node->move(_dir);
+		stop();
+	} else {
+		_length = glm::length(_dir);
+		_dir = glm::normalize(_dir);
+		_distanceTraversed = 0.f;
 	}
-	m_tickCount ++;
+
+
+}
+
+
+int Move::process(double dt) {
+	glm::vec3 delta = _speed * static_cast<float>(dt) * _dir;
+	m_node->move(delta);
+	_distanceTraversed += glm::length(delta);
+
+	if (_distanceTraversed >= _length) {
+		m_node->setPosition(_targetPos.x, _targetPos.y, _targetPos.z);
+		return 0;
+
+	}
 	return 1;
 }
 
-MoveBy::MoveBy(const pybind11::kwargs& args) : NodeAction(args) {
-	auto dx = py_get_dict<float>(args, "x", 0.f);
-	auto dy = py_get_dict<float>(args, "y", 0.f);
-	auto dz = py_get_dict<float>(args, "z", 0.f);
-	auto t = py_get_dict<float>(args, "t", -1.f);
-	m_distance = sqrt(dx * dx + dy * dy);
-	m_delta = glm::vec3(dx, dy, 0.f);
+MoveBy::MoveBy(int id, glm::vec2 delta, float time, float speed) : NodeAction(id) {
+
+	m_distance = glm::length(delta);
+	m_delta = glm::vec3(delta, 0.f);
 	m_unitVec = glm::normalize(m_delta);
-	if (t < 0) {
-		m_speed = args["speed"].cast<float>();
+	if (time < 0) {
+		m_speed = speed;
 	} else {
-		m_speed = m_distance / t;
+		m_speed = m_distance / time;
 	}
 
 }

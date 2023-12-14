@@ -2,9 +2,8 @@
 #include "../pyhelper.h"
 #include "../node.h"
 
-MoveDynamics::MoveDynamics(const pybind11::kwargs& kwargs) : NodeAction(kwargs) {
-	m_initialVelocity = py_get_dict<glm::vec3>(kwargs, "velocity");
-	m_acceleration = py_get_dict<glm::vec3>(kwargs, "acceleration");
+MoveDynamics::MoveDynamics(int id, glm::vec3 velocity, glm::vec3 acceleration) : NodeAction(id),
+	m_initialVelocity(velocity), m_acceleration(acceleration) {
 }
 
 

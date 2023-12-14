@@ -35,7 +35,7 @@ void Text::buildQuads() {
 		if (c == '\n') {
 			std::cout << " suca newline\n";
 			rowLength.push_back(position.x);
-			_size.x = std::max(_size.x, position.x);
+			//_size.x = std::max(_size.x, position.x);
 			position.x = 0;
 			position.y -= _lineHeight;
 			rowStart.push_back(_quadCount);
@@ -60,6 +60,8 @@ void Text::buildQuads() {
 			position.x = 0;
 			position.y -= _lineHeight;
 			if (indexBeginCurrentWord < frame.quads.size()) {
+				// we need to push current word on next row
+				rowLength.push_back(frame.quads[indexBeginCurrentWord-1].location.x + frame.quads[indexBeginCurrentWord-1].size.x);
 				glm::vec3 pos = frame.quads[indexBeginCurrentWord].location;
 				rowStart.push_back(indexBeginCurrentWord);
 				if (pos.x > 0) {
@@ -72,8 +74,9 @@ void Text::buildQuads() {
 				}
 			} else {
 				rowStart.push_back(_quadCount);
+				rowLength.push_back(frame.quads.back().location.x + frame.quads.back().size.x);
 			}
-			rowLength.push_back(x);
+
 		}
 
 		quad.textureCoordinates = glm::vec4(charInfo.tx, charInfo.tx + charInfo.tw, charInfo.ty, charInfo.ty + charInfo.th);
@@ -88,7 +91,9 @@ void Text::buildQuads() {
 		_quadCount++;
 	}
 	rowLength.push_back(position.x);
-	_size.x = std::max(_size.x, position.x);
+
+	for (const auto& rl : rowLength) _size.x = std::max(_size.x, rl);
+	//_size.x = std::max(_size.x, position.x);
 	_size.y = _lineHeight * rowLength.size();
 	_lines = lineCount;
 	rowStart.push_back(_quadCount);
@@ -136,6 +141,7 @@ Text::Text(const pybind11::kwargs & args) : IQuad(), _lines(0) {
 }
 
 void Text::setText(const std::string &value) {
+	std::cout << "sucalo " << value<< "\n";
 	_text = value;
 	_animations.clear();
 	buildQuads();

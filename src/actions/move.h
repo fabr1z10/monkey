@@ -5,19 +5,22 @@
 
 class Move : public NodeAction {
 public:
-	explicit Move(const pybind11::kwargs&);
+	explicit Move(int id, glm::vec3 pos, float speed);
 	int process(double) override;
+	void start() override;
 
 private:
-	int m_next;
-	int m_tickCount;
-	std::vector<int> m_ticks;
-	std::vector<glm::vec3> m_positions;
+	float _time;
+	float _speed;
+	glm::vec3 _targetPos;
+	glm::vec3 _dir;
+	float _length;
+	float _distanceTraversed;
 };
 
 class MoveBy : public NodeAction {
 public:
-	explicit MoveBy(const pybind11::kwargs&);
+	explicit MoveBy(int id, glm::vec2 delta, float time, float speed);
 	int process(double) override;
 	void start() override;
 

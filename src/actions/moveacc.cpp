@@ -2,11 +2,11 @@
 #include "../pyhelper.h"
 #include "../node.h"
 
-MoveAccelerated::MoveAccelerated(const pybind11::kwargs& args) : NodeAction(args) {
-	m_initialVelocity = py_get_dict<glm::vec3>(args, "velocity");
+MoveAccelerated::MoveAccelerated(int id, glm::vec3 velocity, glm::vec3 acceleration, float timeOut) : NodeAction(id) {
+	m_initialVelocity = velocity;
 	m_velocity = m_initialVelocity;
-	m_acceleration = py_get_dict<glm::vec3>(args, "acceleration");
-	m_timeOut = py_get_dict<float>(args, "timeout", std::numeric_limits<float>::infinity());
+	m_acceleration = acceleration;
+	m_timeOut = timeOut;
 	m_time = 0.f;
 }
 

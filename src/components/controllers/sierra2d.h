@@ -27,4 +27,7 @@ private:
 	float _skinWidth;
 	std::string _idleAnimation;
 	std::string _walkAnimation;
+	float _yFront;
+	float _yBack;
+	float _a, _b;
 };

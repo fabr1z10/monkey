@@ -7,7 +7,7 @@
 
 class Turn : public NodeAction {
 public:
-	explicit Turn(const pybind11::kwargs&);
+	explicit Turn(int id, const std::string& dir);
 	void start() override;
 	int process(double) override;
 private:

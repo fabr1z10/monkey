@@ -54,7 +54,7 @@ private:
 class ItemListKeyListener : public KeyboardListener {
 public:
 	ItemListKeyListener(ItemList* li) : KeyboardListener(), _li(li) {}
-	void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
+	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 private:
 	ItemList* _li;
 };

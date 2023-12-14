@@ -8,7 +8,7 @@ namespace actions {
 
 	class Walk : public NodeAction {
 	public:
-		Walk(const pybind11::kwargs &);
+		Walk(int id, glm::vec3 pos);
 
 		void start() override;
 
