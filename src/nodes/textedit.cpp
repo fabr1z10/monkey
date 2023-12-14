@@ -34,7 +34,9 @@ int TextEdit::TextEditListener::keyCallback(GLFWwindow *, int key, int scancode,
 	        _text.clear();
 	    }
 		if (key == GLFW_KEY_BACKSPACE) {
-			if (!_text.empty()) _text.pop_back();
+            if (!_text.empty()) _text.pop_back();
+        } else if (key == GLFW_KEY_SPACE) {
+		    _text += " ";
 		} else {
 			if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
 				auto ciao = (unsigned int) ((mods & GLFW_MOD_SHIFT) ? L'A' : L'a');
