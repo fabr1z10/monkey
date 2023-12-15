@@ -1,7 +1,9 @@
 #include <glm/gtx/transform.hpp>
-#include "skeletal.h"
-#include "../components/skeletalrenderer.h"
+#include "skeletal_model.h"
+#include "skeletalrenderer.h"
 #include "../assetmanager.h"
+
+using namespace monkey::skeletal;
 
 SkeletalModel::SkeletalModel(const py::kwargs& kwargs) {
 
@@ -89,4 +91,12 @@ std::vector<glm::mat4> SkeletalModel::calculateCurrentPose(std::unordered_map<in
 	}
 	return result;
 
+}
+
+int SkeletalModel::getJointId(const std::string & id) {
+    auto i = m_jointNameToId.find(id);
+    if (i == m_jointNameToId.end()) {
+        return -1;
+    }
+    return i->second;
 }

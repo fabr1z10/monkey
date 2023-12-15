@@ -1,7 +1,7 @@
-#include "jointTransform.h"
+#include "joint_transform.h"
 #include <glm/gtx/transform.hpp>
 
-
+using namespace monkey::skeletal;
 
 JointTransform JointTransform::interpolate(const JointTransform &A, const JointTransform &B, float progression) {
     JointTransform t;

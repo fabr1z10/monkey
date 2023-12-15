@@ -30,7 +30,7 @@ void main()
     totalLocalPos += localPosition0 * vWeight[0] + localPosition1 * vWeight[1] + localPosition2 * vWeight[2];
     totalLocalPos.z = z;//modelpos.z;
     pass_texCoord= vTexture;
-    totalLocalPos = vec4(vPosition, 1.0);
+    //totalLocalPos = vec4(vPosition, 1.0);
     gl_Position = pv_mat * model * totalLocalPos;
     //gl_Position.z =z;
 }

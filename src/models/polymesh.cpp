@@ -13,6 +13,7 @@ void PolyMesh::cioa(const std::string& id, std::unordered_map<std::string, glm::
     }
 }
 
+// All coordinates in the input file are given in image coorindates ((0, 0) is the top left point)
 PolyMesh::PolyMesh(const YAML::Node& node) : DrawableModel(GL_TRIANGLES) {
 	m_shaderType = SHADER_SKELETAL;
     using Coord = float;
@@ -35,8 +36,12 @@ PolyMesh::PolyMesh(const YAML::Node& node) : DrawableModel(GL_TRIANGLES) {
 
     std::vector<float> vertices;
     std::vector<Point> polygon;
+    // for each mesh, ge wive 3 numbers for each vertex:
+    // the first two numbers are the image coordinate of the vertex, the 3rd is the weight
+    // attached to parent node (0 = vertex in own)
     for (size_t i = 0; i < data.size(); i += 3) {
         size_t offset = i;
+        // transform from image to local coordinates (xl = x - xo, yl = -(y -yo))
         float x = data[offset] - m_origin.x;
         float y = -(data[offset + 1] - m_origin.y);
         float tx = data[offset] / tex->getWidth();
@@ -51,7 +56,6 @@ PolyMesh::PolyMesh(const YAML::Node& node) : DrawableModel(GL_TRIANGLES) {
     std::vector<std::vector<Point>> p;
     p.push_back(polygon);
     auto tri = mapbox::earcut<N>(p);
-
     this->initModel(vertices, tri);
 
 }

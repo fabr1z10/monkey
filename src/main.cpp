@@ -60,7 +60,7 @@
 #include "actions/say.h"
 #include "models/paramcurve.h"
 #include "components/cursor.h"
-#include "models/skeletal.h"
+#include "skeletal/skeletal_model.h"
 #include "cam25.h"
 #include "components/controller3d.h"
 #include "shapes3d/aabb3d.h"
@@ -313,7 +313,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const pybind11::kwargs&>());
 	py::class_<StaticQuad, Model, std::shared_ptr<StaticQuad>>(mm, "Quad")
 		.def(py::init<const pybind11::kwargs&>());
-	py::class_<SkeletalModel, Model, std::shared_ptr<SkeletalModel>>(mm, "SkeletalModel")
+	py::class_<monkey::skeletal::SkeletalModel, Model, std::shared_ptr<monkey::skeletal::SkeletalModel>>(mm, "SkeletalModel")
 		.def(py::init<const pybind11::kwargs&>());
 
 //    py::class_<MultiModel, Model, std::shared_ptr<MultiModel>>(mm, "multi_sprite")
