@@ -4,6 +4,7 @@
 #include "../pyhelper.h"
 #include "../components/renderer.h"
 #include "joint_transform.h"
+#include "animation.h"
 #include "../models/polymesh.h"
 
 namespace monkey::skeletal {
@@ -43,6 +44,8 @@ namespace monkey::skeletal {
         int getJointId(const std::string&);
 
         const std::vector<std::pair<int, glm::vec3>>& getOffsetPoints() const;
+
+        SkeletalAnimation* getAnimation(const std::string& id);
     private:
         std::string m_defaultAnimation;
         std::vector<JointInfo> m_jointInfos;
@@ -51,6 +54,7 @@ namespace monkey::skeletal {
         std::vector<glm::mat4> m_restTransforms2;
         std::vector<glm::mat4> m_invRestTransforms2;
         std::vector<std::pair<int, glm::vec3>> m_offsetPoints;
+        std::unordered_map<std::string, std::shared_ptr<SkeletalAnimation>> _animations;
         int m_root;
     };
 

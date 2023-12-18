@@ -21,6 +21,7 @@ namespace monkey::skeletal {
 
         void setModel(std::shared_ptr<Model>, const pybind11::kwargs &args) override;
 
+        void setAnimation(const std::string&) override;
     private:
         std::unordered_map<int, JointTransform> interpolatePoses(
                 KeyFrame* previousFrame, KeyFrame* nextFrame, float progression);

@@ -35,7 +35,7 @@ public:
 
     void add (Collider*);
     void move (Collider*);
-    virtual void remove (Collider*) = 0;
+    void remove (Collider*) ;
 
     void update(double) override;
 
@@ -46,7 +46,7 @@ public:
 	virtual RayCastHit rayCastY(glm::vec3 origin, float length, int mask, Node* node=nullptr) = 0;
 	virtual RayCastHit rayCastZ(glm::vec3 origin, float length, int mask, Node* node=nullptr) = 0;
 
-	virtual std::pair<glm::ivec3, glm::ivec3> getLocation(const Bounds& b) = 0;
+	std::pair<glm::ivec3, glm::ivec3> getLocation(const Bounds& b);
 	const CollisionEngineCell* getColliders(glm::ivec3);
 
 protected:
@@ -79,8 +79,8 @@ public:
 	RayCastHit rayCastY(glm::vec3 origin, float length, int mask, Node* node=nullptr) override;
 	RayCastHit rayCastZ(glm::vec3 origin, float length, int mask, Node* node=nullptr) override;
 	std::type_index getType() override;
-	void remove (Collider*) override;
-	std::pair<glm::ivec3, glm::ivec3> getLocation(const Bounds& b) override;
+	//void remove (Collider*) override;
+	//std::pair<glm::ivec3, glm::ivec3> getLocation(const Bounds& b) override;
 
 protected:
 	virtual bool aabbTest(const Bounds& b1, const Bounds& b2) override;
@@ -92,9 +92,13 @@ protected:
 };
 
 
-//class CollisionEngine3D : public ICollisionEngine {
-//public:
-//    CollisionEngine3D(float, float, float);
+class CollisionEngine3D : public ICollisionEngine {
+public:
+    CollisionEngine3D(float, float, float);
+    std::type_index getType() override;
+    RayCastHit rayCastX(glm::vec3 origin, float length, int mask, Node* node=nullptr) override;
+    RayCastHit rayCastY(glm::vec3 origin, float length, int mask, Node* node=nullptr) override;
+    RayCastHit rayCastZ(glm::vec3 origin, float length, int mask, Node* node=nullptr) override;
 //    //void add (Collider*);
 //    void remove (Collider*) override;
 //
@@ -118,4 +122,4 @@ protected:
 //
 //
 //    bool m_2d;
-//};
+};

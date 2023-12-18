@@ -186,7 +186,7 @@ RayCastHit CollisionEngine2D::rayCastZ(glm::vec3 origin, float length, int mask,
 }
 
 
-void CollisionEngine2D::remove(Collider * c) {
+void ICollisionEngine::remove(Collider * c) {
     m_removed.insert(c);
     if (m_colliderLocations.find(c) != m_colliderLocations.end()) {
 		auto d = m_colliderLocations.at(c);
@@ -342,7 +342,7 @@ void CollisionEngine2D::pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) {
 
 
 
-std::pair<glm::ivec3, glm::ivec3> CollisionEngine2D::getLocation(const Bounds &b) {
+std::pair<glm::ivec3, glm::ivec3> ICollisionEngine::getLocation(const Bounds &b) {
     glm::ivec3 min(0);
     glm::ivec3 max(0);
     min.x = getIndex(b.min.x, Direction::X);

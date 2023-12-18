@@ -100,3 +100,15 @@ void SkeletalRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kw
 SkeletalRenderer::~SkeletalRenderer() noexcept {
 	_batch->removeRenderer(this);
 }
+
+
+void SkeletalRenderer::setAnimation(const std::string & id) {
+    if (id == m_animation) {
+        return;
+    }
+
+    m_complete = false;
+    m_currentAnimation = _model->getAnimation(id);
+    m_animation = id;
+    m_animationTime = 0.0f;
+}

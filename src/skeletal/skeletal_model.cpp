@@ -59,6 +59,29 @@ SkeletalModel::SkeletalModel(const py::kwargs& kwargs) {
 		m_invRestTransforms2[i] = glm::inverse(m_restTransforms2[i]);
 		//m_invRestTransforms2[i][3][2] = -m_jointInfos[i].z;
 	}
+
+    /**************
+     * read anims *
+     **************/
+    int ac = 0;
+    if (kwargs.contains("animations")) {
+        auto anims = kwargs["animations"].cast<pybind11::list>();
+        for (const auto& anim : anims) {
+            auto id = anim["id"].cast<std::string>();
+            auto path = anim["path"].cast<std::string>();
+            auto animation = AssetManager::instance().getSkeletalAnimation(path);
+            _animations[id] = animation;
+//                attackBox = dictget<std::vector<int>>(animInfo, "attack_box", std::vector<int>());
+//                m_animations[id] = anim;
+//            }
+//            shapeVector.insert(shapeVector.end(), attackBox.begin(), attackBox.end());
+//            m_animShapes[id] = shapeVector;
+            if (m_defaultAnimation.empty()) {
+                m_defaultAnimation = id;
+            }
+
+        }
+    }
 }
 
 
@@ -99,4 +122,11 @@ int SkeletalModel::getJointId(const std::string & id) {
         return -1;
     }
     return i->second;
+}
+
+SkeletalAnimation * SkeletalModel::getAnimation(const std::string &id) {
+    auto it = _animations.find(id);
+    if (it == _animations.end())
+        return nullptr;
+    return it->second.get();
 }

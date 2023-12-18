@@ -197,3 +197,43 @@ std::shared_ptr<PolyMesh> AssetManager::getPolyMesh(const std::string& id) {
 	}
 
 }
+
+std::shared_ptr<monkey::skeletal::SkeletalAnimation> AssetManager::getSkeletalAnimation(const std::string & id) {
+    auto it = m_skeletalAnimations.find(id);
+    if (it == m_skeletalAnimations.end()) {
+        std::cout << " --- not cached. Create new!\n";
+        auto u = id.find_last_of('/');
+        if (u == std::string::npos) {
+            std::cerr << " --- wrong asset format. must have a /";
+            exit(1);
+        }
+        auto meshName = id.substr(u + 1);
+        auto sheetName = id.substr(0, u);
+        std::string file = _assetDirectory + "/" + sheetName + ".yaml";
+        try {
+
+            auto f = YAML::LoadFile(file);
+            for (YAML::const_iterator it2 = f.begin(); it2 != f.end(); ++it2) {
+                auto currId = it2->first.as<std::string>();
+                if (currId == meshName) {
+                    std::cout << " --- mesh: " << id << "\n";
+                    m_skeletalAnimations[id] = std::make_shared<monkey::skeletal::SkeletalAnimation>(it2->second);
+                }
+            }
+            if (m_skeletalAnimations.count(id) == 0) {
+                GLIB_FAIL("Looks like sprite: " + id + " does not exist!")
+            }
+            return m_skeletalAnimations.at(id);
+        } catch(const YAML::ParserException& ex) {
+            GLIB_FAIL(ex.what())
+        } catch (const YAML::BadFile& ex) {
+            GLIB_FAIL("Error loading " << file << ": "<< ex.what())
+            //std::cout << "\033[1;31mError loading " << file << ": " << ex.what() << std::endl;
+            //exit(1);
+
+        }
+    } else {
+        return it->second;
+    }
+
+}

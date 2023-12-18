@@ -9,7 +9,7 @@ class Error : public std::exception {
 public:
 	Error(const std::string& file, long line, const std::string& msg = "") {
 		std::stringstream stream;
-		stream << file << ", " << line << ": " << msg << std::endl;
+		stream << file << ", " << line << std::endl << msg;
 		m_msg = stream.str();
 	}
 	~Error() throw() {}
@@ -22,7 +22,7 @@ private:
 
 #define GLIB_FAIL(message) { \
 	std::ostringstream _glib_msg_stream; \
-	_glib_msg_stream << message; \
+	_glib_msg_stream << "\033[1;31m" << message; \
 	throw Error(__FILE__, __LINE__, _glib_msg_stream.str()); \
 }
 

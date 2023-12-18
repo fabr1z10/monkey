@@ -5,7 +5,7 @@
 #include <vector>
 
 enum class ShapeType {
-    RECT, COMPOUND, AABB2D, POLYLINE
+    RECT, COMPOUND, AABB2D, POLYLINE, AABB3D
 };
 
 struct Seg {

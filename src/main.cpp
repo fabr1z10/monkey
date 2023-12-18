@@ -326,8 +326,10 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
 	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
 	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
-		.def(py::init<float, float>())
+		.def(py::init<float, float>(), "width"_a, "height"_a)
 		.def("add_response", &CollisionEngine2D::addResponse);
+    py::class_<CollisionEngine3D, ICollisionEngine, std::shared_ptr<CollisionEngine3D>>(m, "CollisionEngine3D")
+        .def(py::init<float, float, float>(), "width"_a, "height"_a, "depth"_a);
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());

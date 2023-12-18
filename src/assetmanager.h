@@ -8,6 +8,7 @@
 #include "font.h"
 #include "multinode.h"
 #include "models/polymesh.h"
+#include "skeletal/animation.h"
 
 
 class AssetManager {
@@ -31,6 +32,7 @@ public:
     std::shared_ptr<Palette> getPalette(const std::string&);
     std::shared_ptr<Font> getFont(const std::string&);
 	std::shared_ptr<PolyMesh> getPolyMesh(const std::string&);
+    std::shared_ptr<monkey::skeletal::SkeletalAnimation> getSkeletalAnimation(const std::string&);
 private:
 	AssetManager();
 	std::pair<std::string, std::string> splitFileAsset(const std::string&);
@@ -43,4 +45,5 @@ private:
     std::unordered_map<std::string, std::shared_ptr<SpriteSheet>> m_spritesheets;
     std::unordered_map<std::string, std::string> _spriteSheetMoniker;
 	std::unordered_map<std::string, std::shared_ptr<PolyMesh>> m_polymesh;
+    std::unordered_map<std::string, std::shared_ptr<monkey::skeletal::SkeletalAnimation>> m_skeletalAnimations;
 };

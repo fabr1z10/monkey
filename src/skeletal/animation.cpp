@@ -4,20 +4,27 @@ using namespace monkey::skeletal;
 
 SkeletalAnimation::SkeletalAnimation(const YAML::Node& node) {
     m_loop = node["loop"].as<bool>(true);
-    auto joints = node["joints"].as<std::vector<std::string>>();
+    //auto joints = node["joints"].as<std::vector<std::string>>();
     auto time_factor = node["time_factor"].as<float>(1.f);
     m_length = time_factor * node["length"].as<float>(0.f);
     int index = 0;
+
     for (const auto& keyFrame : node["key_frames"]) {
         auto t = time_factor * keyFrame["t"].as<float>();
-        auto data = keyFrame["data"].as<std::vector<float>>();
+        auto poseIn = keyFrame["pose"];
         std::unordered_map<std::string, JointTransform> pose;
-        for (size_t i = 0, j = 0 ; i < data.size(); i+=3, ++j) {
+        for (const auto& joint : poseIn) {
+            auto jointId = joint.first.as<std::string>();
+            auto data = joint.second.as<std::vector<float>>();
             JointTransform tr;
-            tr.translation = glm::vec3(data[i], data[i+1], 0.f);
-            tr.rotation = glm::angleAxis(glm::radians(data[i+2]), glm::vec3(0.f, 0.f, 1.f));
-            tr.scale = glm::vec3(1.f);
-            pose[joints[j]] = tr;
+            tr.rotation = glm::angleAxis(glm::radians(data[0]), glm::vec3(0.f, 0.f, 1.f));
+            if (data.size() > 1) {
+                tr.translation = glm::vec3(data[1], data[2], 0.f);
+            }
+            if (data.size() > 3) {
+                tr.scale = glm::vec3(data[3]);
+            }
+            pose[jointId] = tr;
         }
         m_keyFrames.push_back(std::make_shared<KeyFrame>(index, t, pose));
         index++;
@@ -26,14 +33,14 @@ SkeletalAnimation::SkeletalAnimation(const YAML::Node& node) {
         m_length = m_keyFrames.back()->getTimeStamp();
     }
 
-    // attack boxes
-    if (node["attacks"]) {
-        for (const auto& attack : node["attacks"]) {
-            auto startTime = time_factor * attack[0].as<float>();
-            auto endTime = time_factor * attack[1].as<float>();
-            // TODO m_attacks.emplace_back(startTime, endTime);
-        }
-    }
+//    // attack boxes
+//    if (node["attacks"]) {
+//        for (const auto& attack : node["attacks"]) {
+//            auto startTime = time_factor * attack[0].as<float>();
+//            auto endTime = time_factor * attack[1].as<float>();
+//            // TODO m_attacks.emplace_back(startTime, endTime);
+//        }
+//    }
 }
 
 
