@@ -79,8 +79,33 @@ SkeletalModel::SkeletalModel(const py::kwargs& kwargs) {
             if (m_defaultAnimation.empty()) {
                 m_defaultAnimation = id;
             }
-
         }
+    }
+
+    /********************
+     * read offset
+     *******************/
+    if (kwargs.contains("offset")) {
+        for (const auto& offset : kwargs["offset"]) {
+            auto id = offset.cast<std::string>() ;
+            auto atindex = id.find('@');
+            assert(atindex != std::string::npos);
+            m_offsetPointIds.emplace_back(id.substr(0, atindex), id.substr(atindex+1));
+        }
+        computeOffset();
+    }
+}
+
+void SkeletalModel::computeOffset() {
+    m_offsetPoints.clear();
+    for (const auto& p : m_offsetPointIds) {
+        int jointId = m_jointNameToId.at(p.first);
+        if (m_jointInfos[jointId].mesh == nullptr) {
+            continue;
+        }
+        auto kp = m_jointInfos[jointId].mesh->getKeyPoint(p.second);
+        auto mp = m_restTransforms2[jointId] * glm::vec4(kp.x, kp.y, 0.0f, 1.0f);
+        m_offsetPoints.emplace_back(jointId, glm::vec3(mp.x, mp.y, 0.0f));
     }
 }
 

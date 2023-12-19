@@ -75,9 +75,10 @@ void SkeletalRenderer::draw(Shader * s) {
 	auto pz = glGetUniformLocation(s->getProgId(), "z");
 	glUniformMatrix4fv(boneLoc, _bones.size(), false, &_bones[0][0][0]);
 	int n{0};
-	auto worldMatrix = m_node->getWorldMatrix();
+	auto worldMatrix =m_node->getWorldMatrix() * m_rendererTransform;
+
 	int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "model");
-		glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix[0]));
+	glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix[0]));
 	for (const auto& model : _model->getModels()) {
 		auto restTransform = _model->getRestTransform(n);
 		const auto& jinfo = _model->getJointInfo(n++);
@@ -87,6 +88,8 @@ void SkeletalRenderer::draw(Shader * s) {
 		glUniform1f(pz, jinfo.z);
 		model->draw(s);
 	}
+
+
 
 }
 

@@ -75,6 +75,8 @@
 #include "components/controllers/sierra2d.h"
 #include "actions/sierra.h"
 #include "nodes/textedit.h"
+#include "components/controllers/walk3d.h"
+
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 
@@ -181,6 +183,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("move_to", &Node::moveTo)
         .def("set_position", &Node::setPosition)
         .def("set_model", &Node::setModel)
+        .def("rotate", &Node::rotate)
         .def("set_palette", &Node::setPalette)
         .def_property_readonly("anim", &Node::getAnimation)
         .def("set_animation", &Node::setAnimation)
@@ -434,6 +437,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<py::kwargs&>());
 	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "SierraController")
 		.def(py::init<py::kwargs&>());
+    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
+        .def(py::init<float, float, float>(), "size"_a, "speed"_a, "gravity"_a);
 
 //	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
 //		.def(py::init<py::kwargs&>());

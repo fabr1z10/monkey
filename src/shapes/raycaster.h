@@ -22,6 +22,7 @@ public:
     /// cast a ray along an axis
     RayCastHit raycastX(glm::vec3 P, float length, const Shape*, const glm::mat4&);
 	RayCastHit raycastY(glm::vec3 P, float length, const Shape*, const glm::mat4&);
+    RayCastHit raycastZ(glm::vec3 P, float length, const Shape*, const glm::mat4&);
 	//RayCastHit raycastX(glm::vec3 P, float length, const Shape*, const glm::mat4&);
 
 
@@ -32,8 +33,8 @@ protected:
 		m_functionsX;
 	std::unordered_map<std::type_index, std::function<RayCastHit(const glm::vec3& P, float, const Shape*, const glm::mat4&)>>
 		m_functionsY;
-
-
+    std::unordered_map<std::type_index, std::function<RayCastHit(const glm::vec3& P, float, const Shape*, const glm::mat4&)>>
+            m_functionsZ;
 };
 
 class RayCaster2D : public RayCaster {

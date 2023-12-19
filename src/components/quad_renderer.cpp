@@ -6,6 +6,7 @@ StaticQuadRenderer::StaticQuadRenderer(const pybind11::kwargs &args) : BatchRend
 	assert(_batch != nullptr);
 	_paletteId = py_get_dict<unsigned>(args, "pal", 0);
 	_camId = py_get_dict<unsigned>(args, "cam", 0);
+	_fade = py_get_dict<float>(args, "fade", 1.f);
 }
 
 std::type_index StaticQuadRenderer::getType() {
@@ -54,5 +55,5 @@ void StaticQuadRenderer::update(double) {
 					_paletteId,
 					false,
 					false,
-					0.f);
+					0.f,_fade,worldTransform);
 }

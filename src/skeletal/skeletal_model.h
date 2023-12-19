@@ -47,6 +47,7 @@ namespace monkey::skeletal {
 
         SkeletalAnimation* getAnimation(const std::string& id);
     private:
+        void computeOffset();
         std::string m_defaultAnimation;
         std::vector<JointInfo> m_jointInfos;
         std::unordered_map<std::string, int> m_jointNameToId;
@@ -55,6 +56,7 @@ namespace monkey::skeletal {
         std::vector<glm::mat4> m_invRestTransforms2;
         std::vector<std::pair<int, glm::vec3>> m_offsetPoints;
         std::unordered_map<std::string, std::shared_ptr<SkeletalAnimation>> _animations;
+        std::vector<std::pair<std::string, std::string>> m_offsetPointIds;
         int m_root;
     };
 

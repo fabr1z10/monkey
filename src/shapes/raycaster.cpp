@@ -191,7 +191,14 @@ RayCastHit RayCaster::raycastY(glm::vec3 P, float length, const Shape * s, const
 	return out;
 }
 
-
+RayCastHit RayCaster::raycastZ(glm::vec3 P, float length, const Shape * s, const glm::mat4 & t) {
+    auto it = m_functionsZ.find(s->get_type_index());
+    if (it == m_functionsZ.end()) {
+        return RayCastHit();
+    }
+    auto out = it->second(P, length, s, t);
+    return out;
+}
 
 void RayCaster2D::updateRaycastHit(RayCastHit& r, glm::vec2 ray, glm::vec2 line, float u, int si) {
 	r.collide = true;

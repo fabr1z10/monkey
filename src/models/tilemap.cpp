@@ -114,7 +114,7 @@ void TileMapRenderer::update(double dt) {
                     glm::vec3 bottomLeft{tile.position.x, tile.position.y, 0.f};
                     _batch->setQuad(k++, bottomLeft, glm::vec2(_tileSize, _tileSize), texCoordinates,
                                     glm::vec2(1.f, 1.f), 0,
-                                    false, false, 0);
+                                    false, false, 0, 1.f);
                     tile.position.x = 10.f * sin(2.f * _timer);
                     tile.position.y = _tileSize * tileId;
 

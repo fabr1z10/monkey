@@ -9,6 +9,8 @@ uniform sampler2D tex_main;
 
 in vec4 TexBounds;
 in vec2 TexCoords;
+in float vPal;
+in float fade;
 
 void main()
 {
@@ -18,6 +20,7 @@ void main()
     if (texColor.a < 0.5) {
         discard;
     }
+    texColor = vec4(fade * vec3(texColor), texColor.a);
     FragColor=texColor;
 }
 

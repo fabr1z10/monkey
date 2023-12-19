@@ -106,7 +106,7 @@ void SpriteRenderer::updateBatch() {
                               quad.palette,
                               flipx,
                               quad.flipv,
-                              _zLayer);
+                              _zLayer, 1.f);
     }
 }
 

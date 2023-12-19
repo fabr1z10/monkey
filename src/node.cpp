@@ -327,7 +327,7 @@ void Node::setText(const std::string & text) {
 }
 
 void Node::rotate(float angle, glm::vec3 axis) {
-	m_modelMatrix *= glm::rotate(angle, axis);
+	m_modelMatrix *= glm::rotate(glm::radians(angle), axis);
 	notifyMove();
 
 }

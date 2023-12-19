@@ -222,6 +222,7 @@ void StaticTiledModelRenderer::setModel(std::shared_ptr<Model> model, const pybi
 						flipx,
 						quad.flipv,
 						_zLayer,
+						1.f,
 						quad.texOffset);
 	}
 
@@ -291,6 +292,7 @@ void AnimatedTiledModelRenderer::update(double) {
 						flipx,
 						quad.flipv,
 						_zLayer,
+						1.f,
 						quad.texOffset);
 	}
 	//const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);

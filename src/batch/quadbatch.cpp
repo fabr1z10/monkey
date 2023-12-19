@@ -68,6 +68,8 @@ void QuadBatch::innerConfigure() {
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, stride, (const void*)offsetof(QuadBatchVertexData, palette));
 
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, stride, (const void*)offsetof(QuadBatchVertexData, fade));
 
 	// this depends on the particular batch and should go in a virtual method
 	std::vector<unsigned> indices;
@@ -160,8 +162,48 @@ void QuadBatch::setInvisible(int index) {
 
 }
 
+void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::vec4 textureBounds,
+                        glm::vec2 textureRepeat, int palette, bool fliph, bool flipv, float zLayer, float fade,
+                        const glm::mat4 &transform, glm::vec2 texOffset)
+{
+    float dx = fliph ? -size.x : size.x;
+
+    float txl = texOffset.x; //fliph ? textureRepeat.x : 0.f;
+    float txr = texOffset.x + textureRepeat.x; //fliph ? 0.f : textureRepeat.x;
+    float tyb = texOffset.y + (flipv ? 0.f : textureRepeat.y);
+    float tyt = texOffset.y + (flipv ? textureRepeat.y : 0.f);
+    float palY = _invPaletteCount * (0.5f + palette);
+    int offset = index * _vertsPerElement;
+
+    _data[offset].position = bottomBack;
+    _data[offset].textureBounds = textureBounds;
+    _data[offset].palette = palY;
+    _data[offset].textureCoords = glm::vec2(txl, tyb);
+    _data[offset].fade = fade;
+
+    _data[offset+1].position = bottomBack + glm::vec3(transform * glm::vec4(dx, 0.f, 0.f, 0.f));
+    _data[offset+1].textureBounds = textureBounds;
+    _data[offset+1].palette = palY;
+    _data[offset+1].textureCoords = glm::vec2(txr, tyb);
+    _data[offset+1].fade = fade;
+
+    _data[offset+2].position = bottomBack + glm::vec3(transform * glm::vec4(dx, size.y, 0.f, 0.f));
+    _data[offset+2].textureBounds = textureBounds;
+    _data[offset+2].palette = palY;
+    _data[offset+2].textureCoords = glm::vec2(txr, tyt);
+    _data[offset+2].fade = fade;
+
+    _data[offset+3].position = bottomBack + glm::vec3(transform * glm::vec4(0.f, size.y, 0.f, 0.f));
+    _data[offset+3].textureBounds = textureBounds;
+    _data[offset+3].palette = palY;
+    _data[offset+3].textureCoords = glm::vec2(txl, tyt);
+    _data[offset+3].fade = fade;
+
+
+}
+
 void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-						int palette, bool fliph, bool flipv, float zLayer, glm::vec2 texOffset)
+						int palette, bool fliph, bool flipv, float zLayer, float fade, glm::vec2 texOffset)
 {
 
 	float dx = fliph ? -size.x : size.x;
@@ -176,21 +218,26 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::ve
 	_data[offset].position = bottomBack;
 	_data[offset].textureBounds = textureBounds;
 	_data[offset].palette = palY;
+    _data[offset].fade = fade;
 	_data[offset].textureCoords = glm::vec2(txl, tyb);
+
 
 	_data[offset+1].position = bottomBack + glm::vec3(dx, 0.f, 0.f);
 	_data[offset+1].textureBounds = textureBounds;
 	_data[offset+1].palette = palY;
+    _data[offset+1].fade = fade;
 	_data[offset+1].textureCoords = glm::vec2(txr, tyb);
 
 	_data[offset+2].position = bottomBack + glm::vec3(dx, size.y, 0.f);
 	_data[offset+2].textureBounds = textureBounds;
 	_data[offset+2].palette = palY;
+    _data[offset+2].fade = fade;
 	_data[offset+2].textureCoords = glm::vec2(txr, tyt);
 
 	_data[offset+3].position = bottomBack + glm::vec3(0.f, size.y, 0.f);
 	_data[offset+3].textureBounds = textureBounds;
 	_data[offset+3].palette = palY;
+    _data[offset+3].fade = fade;
 	_data[offset+3].textureCoords = glm::vec2(txl, tyt);
 
 	for (int i = 0; i < 4; i++) {

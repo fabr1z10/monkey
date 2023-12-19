@@ -5,76 +5,48 @@ CollisionEngine3D::CollisionEngine3D(float width, float height, float depth) : I
     assert(width > 0.f);
     assert(height > 0.f);
     assert(depth > 0.f);
+    _use3D = true;
 
     //m_intersector = std::make_shared<Intersector3D>();
     //m_raycast = std::make_shared<RayCaster2D>();
 }
 
+std::type_index CollisionEngine3D::getType() {
+    return std::type_index(typeid(ICollisionEngine));
+}
 
-RayCastHit CollisionEngine3D::rayCastX(glm::vec3 origin, float length, int mask, Node* node) {
-    RayCastHit out;
-//	if (length == 0.f) {
-//		return out;
-//	}
-    float x0 = origin.x;
-    float x1 = origin.x + length;
-    int istart = (x0 >= 0.0f ? 0 : -1) + static_cast<int>(x0 / m_size.x);
-    int iend = (x1 >= 0.0f ? 0 : -1) + static_cast<int>(x1 / m_size.x);
-    // number of cells to examine
-    int cells = abs(iend - istart) + 1;
-    int inc = (x1 > x0) ? 1 : -1;
-    int j = (origin.y >= 0.0f ? 0 : -1) + static_cast<int>(origin.y / m_size.y);
-    int k = (origin.z >= 0.0f ? 0 : -1) + static_cast<int>(origin.z / m_size.z);
-    for (auto n = 0, i=istart ; n < cells; ++n, i+=inc) {
-        glm::vec3 cellLocation(i, j, 0);
-        auto it = m_cells.find(cellLocation);
-        if (it != m_cells.end()) {
-            float x_seg_start = (n == 0 ? x0 : (i + (inc == 1 ? 0 : -1)) * m_size.x);
-            float x_seg_end = (n == cells - 1 ? x1 : (i + (inc == 1 ? 1 : 0)) * m_size.x);
-            float x_seg_min = x_seg_start, x_seg_max = x_seg_end;
-            if (inc == -1) {
-                std::swap(x_seg_min, x_seg_max);
-            }
-            Bounds segmentBounds(glm::vec3(x_seg_min, origin.y, origin.z), glm::vec3(x_seg_max, origin.y, origin.z));
-            for (const auto &c : it->second.colliders) {
-                if (!c->isActive() || node == c->getNode()) {
-                    continue;
-                }
-                int flag = c->getCollisionFlag();
-                if (mask == 0 || (flag & mask) != 0) {
-                    // try static bounds
-                    auto shapeBounds = c->getStaticBounds();
-                    if (aabbTest(segmentBounds, shapeBounds)) {
-                        auto *shape = c->getShape().get();
-                        if (shape->getShapeType() == ShapeType::AABB3D) {
-                            float dist=0.0f;
-                            if (length >= 0.0f) {
-                                if (x0 < shapeBounds.min.x) {
-                                    dist = shapeBounds.min.x - x0;
-                                } else {
-                                    dist = shapeBounds.max.x - x0;
-                                }
-                            } else {
-                                if (x0 > shapeBounds.max.x) {
-                                    dist = x0 - shapeBounds.max.x;
-                                } else {
-                                    dist = x0 - shapeBounds.min.x;
-                                }
-                            }
-                            out.update(dist, c, glm::vec3(-inc, 0.f, 0.f), 0);
-                        } else {
-                            // otherwise do a proper check
-                            auto report = m_raycast->raycastX(origin, length, shape, c->getNode()->getWorldMatrix());
-                            if (report.collide) {
-                                out.update(report.length, c, report.normal, report.segmentIndex);
-                            }
-                        }
+bool CollisionEngine3D::aabbTest(const Bounds &b1, const Bounds &b2) {
+
+    return !(b1.min.x > b2.max.x || b1.max.x < b2.min.x ||
+             b1.min.y > b2.max.y || b1.max.y < b2.min.y ||
+             b1.min.z > b2.max.z || b1.max.z < b2.min.z);
+
+
+}
+
+void CollisionEngine3D::pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) {
+    auto it = m_colliderLocations.find(c);
+    if (it != m_colliderLocations.end()) {
+        if (it->second.min != m || it->second.max != M) {
+            for (int i = it->second.min.x; i <= it->second.max.x; ++i) {
+                for (int j = it->second.min.y; j <= it->second.max.y; ++j) {
+                    for (int k = it->second.min.z; k <= it->second.max.z; ++k) {
+                        m_cells[glm::ivec3(i, j, k)].colliders.erase(c);
                     }
                 }
             }
-            if (out.collide) {
-                return out;
+        }
+    }
+    for (int i = m.x; i <= M.x; ++i) {
+        for (int j = m.y; j <= M.y; ++j) {
+            for (int k = m.z; k <= M.z; ++k) {
+                auto &cell = m_cells[glm::ivec3(i, j, k)];
+                cell.colliders.insert(c);
+                cell.dirty = true;
             }
         }
     }
+    m_colliderLocations[c] = ColliderInfo {m, M, true};
 }
+
+

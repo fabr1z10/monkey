@@ -17,4 +17,5 @@ public:
 private:
 	unsigned _camId;
 	StaticQuad* _model;
+	float _fade;
 };
