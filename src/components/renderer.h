@@ -9,7 +9,7 @@
 class Renderer : public Component {
 public:
     Renderer();
-    virtual int setup(Shader*);
+    //virtual int setup(Shader*);
     virtual void draw(Shader*) {}
 
 
@@ -47,6 +47,7 @@ protected:
 	//GLuint m_texId;
 	//GLuint m_paletteId;
 };
+
 
 inline ShaderType Renderer::getShaderType() const {
 	return _shaderType;

@@ -2,19 +2,23 @@
 #include <GLFW/glfw3.h>
 #include "../../node.h"
 #include "../../engine.h"
+#include "../../pyhelper.h"
 
 extern GLFWwindow* window;
 
-Walk3DController::Walk3DController(float size, float speed, float gravity) : Component(), _size(size), _speed(speed), _gravity(gravity), _lookingLeft(false) {
+Walk3DController::Walk3DController(float size, float speed, float gravity, const pybind11::kwargs& args) : Component(), _size(size), _speed(speed), _gravity(gravity), _lookingLeft(false) {
     _xCorrection = 0.f; //sqrt(2.f) * 0.5f;
     _yVelocity = 0.f;
     _skinWidth =  .015f;
+    _idleAnim = py_get_dict<std::string>(args, "idle", "idle");
+    _walkAnim = py_get_dict<std::string>(args, "walk", "walk");
 
 }
 
 void Walk3DController::start() {
     //_dir = 'e';
     _lookingLeft = false;
+    m_animatedRenderer = m_node->getComponent<Renderer>();
 
     auto& engine = Engine::instance();
     auto room = engine.getRoom();
@@ -97,5 +101,9 @@ void Walk3DController::update(double dt) {
 
     m_node->move(glm::vec3(dx, dy, dz));
 
-
+    if (anyPressed) {
+        m_animatedRenderer->setAnimation(_walkAnim);
+    } else {
+        m_animatedRenderer->setAnimation(_idleAnim);
+    }
 }

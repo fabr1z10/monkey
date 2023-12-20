@@ -3,6 +3,7 @@
 #include "pyhelper.h"
 #include "engine.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
 
 IBatch::IBatch(int verticesPerElement, const pybind11::kwargs& args) : _vertsPerElement(verticesPerElement), _nPrimitive(0) {
 	_maxElements = py_get_dict<int>(args, "max_elements");
@@ -26,6 +27,9 @@ void ProvaBatch::draw(Shader *s) {
 	for (const auto& renderer : _renderers) {
 
 		renderer.second->draw(s);
+
+
+
 	}
 
 }

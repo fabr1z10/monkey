@@ -6,7 +6,7 @@
 
 class Walk3DController : public Component {
 public:
-    explicit Walk3DController(float size, float speed, float gravity);
+    explicit Walk3DController(float size, float speed, float gravity, const pybind11::kwargs& args);
     //void move(glm::vec3&, bool forced) override;
 
     void start() override;
@@ -24,5 +24,6 @@ private:
     bool _lookingLeft;
     Renderer* m_animatedRenderer;
     ICollisionEngine* m_collisionEngine;
-
+    std::string _walkAnim;
+    std::string _idleAnim;
 };

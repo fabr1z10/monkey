@@ -9,33 +9,10 @@ Renderer::Renderer() : Component(), m_rendererTransform(1.f),
 
 }
 
-
-
-int Renderer::setup(Shader * s) {
-//    const auto& m = m_node->getWorldMatrix() * m_rendererTransform;
-//    s->setVec4("mult_color", m_multColor);
-//    s->setVec4("add_color", m_addColor);
-//    s->setMat4("model", m);
-//
-//	if (m_paletteId != GL_INVALID_VALUE) {
-//		s->setInt("texture_palette", 1);
-//		glActiveTexture(GL_TEXTURE1);
-//		glBindTexture(GL_TEXTURE_1D, m_paletteId);
-//		if (m_texId != GL_INVALID_VALUE) {
-//			s->setInt("texture_pdiffuse1", 0);
-//			glActiveTexture(GL_TEXTURE0);
-//			glBindTexture(GL_TEXTURE_2D, m_texId);
-//		}
-//	} else {
-//		if (m_texId != GL_INVALID_VALUE) {
-//			s->setInt("texture_diffuse1", 0);
-//			glActiveTexture(GL_TEXTURE0);
-//			glBindTexture(GL_TEXTURE_2D, m_texId);
-//		}
-//	}
-//
-//    return 0;
+const glm::mat4 & Renderer::getRendererTransform() const {
+    return m_rendererTransform;
 }
+
 
 void Renderer::setPalette(unsigned palId) {
     _paletteId = palId;

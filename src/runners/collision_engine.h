@@ -45,6 +45,8 @@ public:
     RayCastHit rayCastX(glm::vec3 origin, float length, int mask, Node* node=nullptr);
 	RayCastHit rayCastY(glm::vec3 origin, float length, int mask, Node* node=nullptr);
 	RayCastHit rayCastZ(glm::vec3 origin, float length, int mask, Node* node=nullptr);
+    std::vector<ShapeCastHit> shapeCast (Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false) ;
+
 
 	std::pair<glm::ivec3, glm::ivec3> getLocation(const Bounds& b);
 	const CollisionEngineCell* getColliders(glm::ivec3);

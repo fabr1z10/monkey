@@ -6,6 +6,9 @@ using namespace monkey::skeletal;
 
 SkeletalRenderer::SkeletalRenderer(const pybind11::kwargs& args) : BatchRenderer<ProvaBatch>(args), m_complete(false),
     _model(nullptr), m_currentAnimation(nullptr) {
+    _castShadow = py_get_dict<bool>(args, "cast_shadow", false);
+    _shadowAlpha = py_get_dict<float>(args, "shadow_alpha", 0.5f);
+    _shadowScale = py_get_dict<float>(args, "shadow_scale", 1.0f);
 //	_shaderType = SHADER_SKELETAL;
 }
 
@@ -67,29 +70,45 @@ void SkeletalRenderer::update(double dt) {
 
 }
 
+void SkeletalRenderer::innerDraw(Shader * s, int l2m ,int weightIndex, int pz) {
+    int n{0};
+    auto worldMatrix =m_node->getWorldMatrix() * m_rendererTransform;
+    int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "model");
+    glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix[0]));
+    for (const auto& model : _model->getModels()) {
+        auto restTransform = _model->getRestTransform(n);
+        const auto& jinfo = _model->getJointInfo(n++);
+        auto weightIndices = jinfo.weightIndex;// m_skeletalModel->getWeightIndex(n++);
+        glUniformMatrix4fv(l2m, 1, false, &restTransform[0][0]);
+        glUniform3iv(weightIndex, 1, &weightIndices[0]);
+        glUniform1f(pz, jinfo.z);
+        model->draw(s);
+    }
+
+}
+
 void SkeletalRenderer::draw(Shader * s) {
 
+    glm::vec4 white(1.f);
+    auto mcol = glGetUniformLocation(s->getProgId(), "mult_color");
 	auto boneLoc = glGetUniformLocation(s->getProgId(), "Bone");
 	auto l2m = glGetUniformLocation(s->getProgId(), "local_to_model");
 	auto weightIndex = glGetUniformLocation(s->getProgId(), "weightIndex");
 	auto pz = glGetUniformLocation(s->getProgId(), "z");
 	glUniformMatrix4fv(boneLoc, _bones.size(), false, &_bones[0][0][0]);
-	int n{0};
-	auto worldMatrix =m_node->getWorldMatrix() * m_rendererTransform;
+    glUniform4fv(mcol, 1, &white[0]);
+	innerDraw(s, l2m, weightIndex, pz);
 
-	int jointMatrixLoc = glGetUniformLocation(s->getProgId(), "model");
-	glUniformMatrix4fv(jointMatrixLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix[0]));
-	for (const auto& model : _model->getModels()) {
-		auto restTransform = _model->getRestTransform(n);
-		const auto& jinfo = _model->getJointInfo(n++);
-		auto weightIndices = jinfo.weightIndex;// m_skeletalModel->getWeightIndex(n++);
-		glUniformMatrix4fv(l2m, 1, false, &restTransform[0][0]);
-		glUniform3iv(weightIndex, 1, &weightIndices[0]);
-		glUniform1f(pz, jinfo.z);
-		model->draw(s);
-	}
-
-
+    if (_castShadow) {
+        glm::vec4 shade(0.f, 0.f, 0.f, _shadowAlpha);
+        auto tr = getRendererTransform();
+        auto p = glm::rotate(glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(1.f, _shadowScale, 1.f)) * tr;
+        setTransform(p);
+        glUniform4fv(mcol, 1, &shade[0]);
+        innerDraw(s, l2m, weightIndex, pz);
+        //renderer.second->draw(s);
+        setTransform(tr);
+    }
 
 }
 

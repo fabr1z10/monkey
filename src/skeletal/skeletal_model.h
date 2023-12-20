@@ -6,6 +6,7 @@
 #include "joint_transform.h"
 #include "animation.h"
 #include "../models/polymesh.h"
+#include "../shape.h"
 
 namespace monkey::skeletal {
 
@@ -46,6 +47,14 @@ namespace monkey::skeletal {
         const std::vector<std::pair<int, glm::vec3>>& getOffsetPoints() const;
 
         SkeletalAnimation* getAnimation(const std::string& id);
+
+        std::shared_ptr<Shape> getShape (const std::string& anim) const;
+
+        std::shared_ptr<Shape> getShapeCast (const std::string& anim) const;
+
+        std::vector<std::string> getAnimationList() const;
+
+        int getShapeCount() const;
     private:
         void computeOffset();
         std::string m_defaultAnimation;
@@ -57,6 +66,8 @@ namespace monkey::skeletal {
         std::vector<std::pair<int, glm::vec3>> m_offsetPoints;
         std::unordered_map<std::string, std::shared_ptr<SkeletalAnimation>> _animations;
         std::vector<std::pair<std::string, std::string>> m_offsetPointIds;
+        std::unordered_map<std::string, std::shared_ptr<Shape>> _shapes;
+        std::unordered_map<std::string, std::shared_ptr<Shape>> _shapeCast;
         int m_root;
     };
 

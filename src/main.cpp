@@ -438,7 +438,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "SierraController")
 		.def(py::init<py::kwargs&>());
     py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
-        .def(py::init<float, float, float>(), "size"_a, "speed"_a, "gravity"_a);
+        .def(py::init<float, float, float, const pybind11::kwargs&>(), "size"_a, "speed"_a, "gravity"_a);
 
 //	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
 //		.def(py::init<py::kwargs&>());

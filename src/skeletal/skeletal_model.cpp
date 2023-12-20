@@ -155,3 +155,18 @@ SkeletalAnimation * SkeletalModel::getAnimation(const std::string &id) {
         return nullptr;
     return it->second.get();
 }
+
+std::shared_ptr<Shape> SkeletalModel::getShape (const std::string& anim) const {
+    const auto& it = _shapes.find(anim);
+    if (it == _shapes.end())
+        return nullptr;
+    return it->second;
+}
+
+std::shared_ptr<Shape> SkeletalModel::getShapeCast(const std::string &anim) const {
+    const auto& it = _shapeCast.find(anim);
+    if (it == _shapeCast.end())
+        return nullptr;
+    return it->second;
+
+}

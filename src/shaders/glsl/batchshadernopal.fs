@@ -22,6 +22,7 @@ void main()
     }
     texColor = vec4(fade * vec3(texColor), texColor.a);
     FragColor=texColor;
+    //FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
 }
 
 )"
