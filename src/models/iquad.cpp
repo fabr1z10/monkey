@@ -28,7 +28,7 @@ Animation * IQuad::getAnimationInfo(const std::string &anim) {
     return &it->second;
 }
 
-StaticQuad::    StaticQuad(const pybind11::kwargs& args) {
+StaticQuad::StaticQuad(const pybind11::kwargs& args) {
 	_textureCoordinates = py_get_dict<glm::vec4>(args, "tex_coords");
 	_size = py_get_dict<glm::vec2>(args, "size", glm::vec2(_textureCoordinates[2], _textureCoordinates[3]));
 	_anchorPoint = py_get_dict<glm::vec2>(args, "anchor", glm::vec2(0.f));

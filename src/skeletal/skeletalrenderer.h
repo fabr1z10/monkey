@@ -23,7 +23,7 @@ namespace monkey::skeletal {
 
         void setModel(std::shared_ptr<Model>, const pybind11::kwargs &args) override;
 
-        SkeletalModel* getModel();
+        SkeletalModel* getModel() { throw; }// TODO}
 
         void setAnimation(const std::string&) override;
     private:

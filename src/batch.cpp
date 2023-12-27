@@ -12,7 +12,7 @@ IBatch::IBatch(int verticesPerElement, const pybind11::kwargs& args) : _vertsPer
 }
 
 ProvaBatch::ProvaBatch(const pybind11::kwargs &kwargs) : IBatch(0, kwargs) {
-
+    _shaderType = SHADER_SKELETAL;
 }
 
 void ProvaBatch::addRenderer(Renderer * r) {

@@ -22,7 +22,7 @@ namespace monkey::skeletal {
         SkeletalRenderer *_renderer;
         SkeletalModel *m_model;
         ICollisionEngine* _collisionEngine;
-        void generateDebugMesh() override;
+        void generateDebugMesh() override {}
     };
 
     class SkeletalColliderRenderer : public BatchRenderer<LineBatch> {
@@ -31,7 +31,7 @@ namespace monkey::skeletal {
         //void draw(Shader * s) override;
         void start() override;
         std::type_index getType() override;
-        void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
+        void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override {}
         void update(double) override;
 
     private:

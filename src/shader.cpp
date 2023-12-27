@@ -164,8 +164,10 @@ void BatchShader::draw() {
 	auto room = Engine::instance().getRoom();
 	const auto& b = room->getBatches();
 	for (const auto& batch : b) {
-		batch->setupUniforms(this);
-		batch->draw(this);
+        if (m_shaderType == batch->getShaderType()) {
+            batch->setupUniforms(this);
+            batch->draw(this);
+        }
 	}
 }
 

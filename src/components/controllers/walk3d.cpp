@@ -70,8 +70,8 @@ void Walk3DController::update(double dt) {
     }
 
     if (dz != 0.f) {
-        glm::vec3 rayOriginLeft(pos.x + dx * dir_x - _size, pos.y, pos.z - _size);
-        glm::vec3 rayOriginRight(pos.x + dx * dir_x + _size, pos.y, pos.z + _size);
+        glm::vec3 rayOriginLeft(pos.x + dx * dir_x - _size, pos.y, pos.z);
+        glm::vec3 rayOriginRight(pos.x + dx * dir_x + _size, pos.y, pos.z);
         auto hit_left = m_collisionEngine->rayCastZ(rayOriginLeft, dz, 2, m_node);
         if (hit_left.collide) {
             dz = dir_z * (hit_left.length - _skinWidth);

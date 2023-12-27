@@ -9,6 +9,6 @@ public:
 
 private:
 	float m_angle;
-	float m_cosAngle;
-	float m_sinAngle;
+	//float m_cosAngle;
+	//float m_sinAngle;
 };
