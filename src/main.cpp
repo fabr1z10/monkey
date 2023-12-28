@@ -76,6 +76,7 @@
 #include "actions/sierra.h"
 #include "nodes/textedit.h"
 #include "components/controllers/walk3d.h"
+#include "skeletal/skeletal_collider.h"
 
 using namespace pybind11::literals; // to bring in the `_a` literal
 
@@ -425,6 +426,9 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "SpriteCollider")
 		.def("set_override", &SpriteCollider::setCollisionOverride)
 		.def(py::init<const pybind11::kwargs&>());
+
+    py::class_<monkey::skeletal::SkeletalCollider, Collider, std::shared_ptr<monkey::skeletal::SkeletalCollider>>(m, "SkeletalCollider")
+        .def(py::init<const pybind11::kwargs&>());
 
 	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "Controller")
 		.def_property_readonly("grounded", &Controller::grounded)

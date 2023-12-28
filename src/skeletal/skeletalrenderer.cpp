@@ -1,6 +1,7 @@
 #include "skeletalrenderer.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+#include <iostream>
 
 using namespace monkey::skeletal;
 
@@ -56,8 +57,9 @@ void SkeletalRenderer::update(double dt) {
 
     // apply offset
     const auto& offsetPoints = _model->getOffsetPoints();
+    glm::vec3 offset(0.0f);
     if (!offsetPoints.empty()) {
-        glm::vec3 offset(0.0f);
+
         //std::cout << "no of offset points: " << offsetPoints.size() << "\n";
         for (const auto &a : offsetPoints) {
             // find coordinates of offset pointg
@@ -67,6 +69,21 @@ void SkeletalRenderer::update(double dt) {
         //std::cerr << offset.y << "\n";
         setTransform(glm::translate(offset));
     }
+
+
+    // compute height box
+    const auto* hp = _model->getCollidePoint(0);
+    auto sz = _model->getSizeXZ();
+
+    if (hp != nullptr) {
+        glm::vec4 p = _bones[hp->first] * glm::vec4(hp->second, 1.0f);
+        _size.y = offset.y + p.y;
+        // std::cout << "HEAD IS AT " << _height << "\n";
+    }
+    _size.x = sz.x;
+    _size.z = sz.y;
+
+
 
 }
 

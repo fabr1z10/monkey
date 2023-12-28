@@ -4,11 +4,12 @@
 #include "../math/earcut.h"
 #include "../yamlexp.h"
 
-void PolyMesh::cioa(const std::string& id, std::unordered_map<std::string, glm::vec2>& m, const YAML::Node& node) {
+void PolyMesh::cioa(const std::string& id, std::unordered_map<std::string, glm::vec2>& m, const YAML::Node& node, bool isSize) {
 //    if (node["id"]) {
     for (const auto& a : node[id]) {
         auto key = a.first.as<std::string>();
-        glm::vec2 value(a.second[0].as<float>() - m_origin.x, -(a.second[1].as<float>() - m_origin.y));
+        glm::vec2 value = isSize ? glm::vec2(a.second[0].as<float>(), a.second[1].as<float>()) :
+            glm::vec2(a.second[0].as<float>() - m_origin.x, -(a.second[1].as<float>() - m_origin.y));
         m[key] = value;
     }
 }
@@ -27,8 +28,8 @@ PolyMesh::PolyMesh(const YAML::Node& node) : DrawableModel(GL_TRIANGLES) {
     m_origin = node["origin"].as<glm::vec2>(glm::vec2(0.f));
 
     // read key points and dimensions
-    cioa("key_points", m_keyPoints, node);
-    cioa("dims", m_dimensions, node);
+    cioa("key_points", m_keyPoints, node, false);
+    cioa("dims", m_dimensions, node, true);
 
     auto& am = AssetManager::instance();
     auto tex = am.getTex(imgFile);    //auto jointId = t.get<int>("joint_id");

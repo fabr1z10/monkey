@@ -46,6 +46,8 @@ namespace monkey::skeletal {
 
         const std::vector<std::pair<int, glm::vec3>>& getOffsetPoints() const;
 
+        const std::pair<int, glm::vec3>* getCollidePoint(int) const;
+
         SkeletalAnimation* getAnimation(const std::string& id);
 
         std::shared_ptr<Shape> getShape (const std::string& anim) const;
@@ -55,8 +57,10 @@ namespace monkey::skeletal {
         std::vector<std::string> getAnimationList() const;
 
         int getShapeCount() const;
+
+        glm::vec2 getSizeXZ() const;
     private:
-        void computeOffset();
+        void computeOffset(std::vector<std::pair<int, glm::vec3>>& points, const std::vector<std::pair<std::string, std::string>>& ids);
         std::string m_defaultAnimation;
         std::vector<JointInfo> m_jointInfos;
         std::unordered_map<std::string, int> m_jointNameToId;
@@ -64,11 +68,13 @@ namespace monkey::skeletal {
         std::vector<glm::mat4> m_restTransforms2;
         std::vector<glm::mat4> m_invRestTransforms2;
         std::vector<std::pair<int, glm::vec3>> m_offsetPoints;
+        std::vector<std::pair<int, glm::vec3>> m_colliderPoints;
         std::unordered_map<std::string, std::shared_ptr<SkeletalAnimation>> _animations;
         std::vector<std::pair<std::string, std::string>> m_offsetPointIds;
         std::unordered_map<std::string, std::shared_ptr<Shape>> _shapes;
         std::unordered_map<std::string, std::shared_ptr<Shape>> _shapeCast;
         int m_root;
+        glm::vec2 _sizeXZ;
     };
 
     inline const std::vector<std::shared_ptr<PolyMesh>> &SkeletalModel::getModels() const {
@@ -87,4 +93,18 @@ namespace monkey::skeletal {
     inline const std::vector<std::pair<int, glm::vec3>>& SkeletalModel::getOffsetPoints() const {
         return m_offsetPoints;
     }
+
+    inline const std::pair<int, glm::vec3>* SkeletalModel::getCollidePoint(int i) const {
+        if (i < m_colliderPoints.size()) {
+            return &m_colliderPoints[i];
+        }
+        return nullptr;
+
+    }
+
+    inline glm::vec2 SkeletalModel::getSizeXZ() const {
+        return _sizeXZ;
+    }
+
+
 }

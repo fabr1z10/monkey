@@ -15,5 +15,5 @@ private:
     glm::vec2 m_origin;
     std::unordered_map<std::string, glm::vec2> m_keyPoints;
     std::unordered_map<std::string, glm::vec2> m_dimensions;
-    void cioa(const std::string& id, std::unordered_map<std::string, glm::vec2>& m, const YAML::Node& node);
+    void cioa(const std::string& id, std::unordered_map<std::string, glm::vec2>& m, const YAML::Node& node, bool size);
 };

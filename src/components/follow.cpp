@@ -30,7 +30,7 @@ void Follow::update (double dt) {
 		glm::vec3 eye = worldPos + m_relativePos;
 		auto dir = glm::vec3(0.f, 0.f, -1.f);//(glm::normalize(m_node->getWorldPosition() - eye);
 		m_cam->setPosition(eye, dir, m_up);
-		std::cout << m_cam->getViewMatrix()[3][0] << ", " << m_cam->getViewMatrix()[3][1] <<  m_cam->getViewMatrix()[3][2] << "\n";
+		//std::cout << m_cam->getViewMatrix()[3][0] << ", " << m_cam->getViewMatrix()[3][1] <<  m_cam->getViewMatrix()[3][2] << "\n";
 		m_previous = worldPos;
 	}
 

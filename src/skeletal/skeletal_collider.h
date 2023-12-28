@@ -21,8 +21,8 @@ namespace monkey::skeletal {
         int _castTag;
         SkeletalRenderer *_renderer;
         SkeletalModel *m_model;
-        ICollisionEngine* _collisionEngine;
-        void generateDebugMesh() override {}
+        //ICollisionEngine* _collisionEngine;
+        void generateDebugMesh() override;
     };
 
     class SkeletalColliderRenderer : public BatchRenderer<LineBatch> {

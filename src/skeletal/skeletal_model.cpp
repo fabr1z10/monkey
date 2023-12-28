@@ -82,9 +82,9 @@ SkeletalModel::SkeletalModel(const py::kwargs& kwargs) {
         }
     }
 
-    /********************
-     * read offset
-     *******************/
+    /**************************************
+     * read offset and collision points
+     *************************************/
     if (kwargs.contains("offset")) {
         for (const auto& offset : kwargs["offset"]) {
             auto id = offset.cast<std::string>() ;
@@ -92,20 +92,39 @@ SkeletalModel::SkeletalModel(const py::kwargs& kwargs) {
             assert(atindex != std::string::npos);
             m_offsetPointIds.emplace_back(id.substr(0, atindex), id.substr(atindex+1));
         }
-        computeOffset();
+        computeOffset(m_offsetPoints, m_offsetPointIds);
+    }
+    if (kwargs.contains("collide")) {
+        std::vector<std::pair<std::string, std::string>> collidePoints;
+        for (const auto& offset : kwargs["collide"]) {
+            auto id = offset.cast<std::string>() ;
+            auto atindex = id.find('@');
+            assert(atindex != std::string::npos);
+            collidePoints.emplace_back(id.substr(0, atindex), id.substr(atindex+1));
+        }
+        computeOffset(m_colliderPoints, collidePoints);
+    }
+    if (kwargs.contains("size")) {
+        auto size = py_get_dict<std::string>(kwargs, "size");
+        auto atindex = size.find('@');
+        auto id = m_jointNameToId.at(size.substr(0, atindex));
+        if (m_jointInfos[id].mesh != nullptr) {
+            _sizeXZ = m_jointInfos[id].mesh->getDimension(size.substr(atindex+1));
+
+        }
     }
 }
 
-void SkeletalModel::computeOffset() {
-    m_offsetPoints.clear();
-    for (const auto& p : m_offsetPointIds) {
+void SkeletalModel::computeOffset(std::vector<std::pair<int, glm::vec3>>& points, const std::vector<std::pair<std::string, std::string>>& ids) {
+    points.clear();
+    for (const auto& p : ids) {
         int jointId = m_jointNameToId.at(p.first);
         if (m_jointInfos[jointId].mesh == nullptr) {
             continue;
         }
         auto kp = m_jointInfos[jointId].mesh->getKeyPoint(p.second);
         auto mp = m_restTransforms2[jointId] * glm::vec4(kp.x, kp.y, 0.0f, 1.0f);
-        m_offsetPoints.emplace_back(jointId, glm::vec3(mp.x, mp.y, 0.0f));
+        points.emplace_back(jointId, glm::vec3(mp.x, mp.y, 0.0f));
     }
 }
 

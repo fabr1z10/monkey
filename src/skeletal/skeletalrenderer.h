@@ -23,9 +23,11 @@ namespace monkey::skeletal {
 
         void setModel(std::shared_ptr<Model>, const pybind11::kwargs &args) override;
 
-        SkeletalModel* getModel() { throw; }// TODO}
+        SkeletalModel* getModel();
 
         void setAnimation(const std::string&) override;
+
+        glm::vec3 getSize() const;
     private:
         void innerDraw(Shader*,int,int,int);
         std::unordered_map<int, JointTransform> interpolatePoses(
@@ -38,7 +40,12 @@ namespace monkey::skeletal {
         bool _castShadow;
         float _shadowAlpha;
         float _shadowScale;
+        glm::vec3 _size;
     };
+
+    inline SkeletalModel * SkeletalRenderer::getModel() {
+        return _model;
+    }
 
     inline std::type_index SkeletalRenderer::getType() {
         return std::type_index(typeid(Renderer));
@@ -46,5 +53,9 @@ namespace monkey::skeletal {
 
     inline float SkeletalRenderer::getAnimationTime() const {
         return m_animationTime;
+    }
+
+    inline glm::vec3 SkeletalRenderer::getSize() const {
+        return _size;
     }
 }
