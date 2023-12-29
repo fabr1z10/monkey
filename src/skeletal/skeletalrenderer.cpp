@@ -36,6 +36,7 @@ std::unordered_map<int, JointTransform> SkeletalRenderer::interpolatePoses(
     return currentPose;
 }
 
+
 void SkeletalRenderer::update(double dt) {
     std::unordered_map<int, JointTransform> pose;
     if (m_currentAnimation != nullptr) {
@@ -83,6 +84,23 @@ void SkeletalRenderer::update(double dt) {
     _size.x = sz.x;
     _size.z = sz.y;
 
+    // compute shapecast
+    _shapeCast.reset();
+    if (m_currentAnimation->shapeCast(m_animationTime)) {
+        auto index =_model->getCollidePointIndex(m_animation);
+        if (index != -1) {
+            const auto* ip1 = _model->getCollidePoint(index);
+            const auto* ip2 = _model->getCollidePoint(index+1);
+            glm::vec3 p1 = _bones[ip1->first] * glm::vec4(ip1->second, 1.0f);
+            glm::vec3 p2 = _bones[ip2->first] * glm::vec4(ip2->second, 1.0f);
+            p1.y += offset.y;
+            p2.y += offset.y;
+            p1.z = -_size.z;
+            p2.z = _size.z;
+            _shapeCast = Bounds(p1);
+            _shapeCast.addPoint(p2);
+        }
+    }
 
 
 }
@@ -119,7 +137,7 @@ void SkeletalRenderer::draw(Shader * s) {
     if (_castShadow) {
         glm::vec4 shade(0.f, 0.f, 0.f, _shadowAlpha);
         auto tr = getRendererTransform();
-        auto p = glm::rotate(glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(1.f, _shadowScale, 1.f)) * tr;
+        auto p = glm::rotate(glm::radians(-89.8f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(1.f, _shadowScale, 1.f)) * tr;
         setTransform(p);
         glUniform4fv(mcol, 1, &shade[0]);
         innerDraw(s, l2m, weightIndex, pz);

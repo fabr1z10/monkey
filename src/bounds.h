@@ -21,7 +21,7 @@ struct Bounds {
     glm::vec3 getCenter();
     static Bounds maxBounds();
     void scale(float, float);
-
+    void reset();
 };
 
 inline glm::vec3 Bounds::getSize() const {

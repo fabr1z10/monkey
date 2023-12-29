@@ -40,7 +40,7 @@ namespace monkey::skeletal {
         std::string _batchId;
         int _offsetMain;
         int _offsetCast;
-
+        glm::vec4 _debugColor;
 
     };
 

@@ -69,6 +69,11 @@ SkeletalModel::SkeletalModel(const py::kwargs& kwargs) {
         for (const auto& anim : anims) {
             auto id = anim["id"].cast<std::string>();
             auto path = anim["path"].cast<std::string>();
+            int cp = py_get_dict<int>(anim, "collide_point", -1);
+            if (cp != -1) {
+                _collidePointIndices[id] = cp;
+            }
+
             auto animation = AssetManager::instance().getSkeletalAnimation(path);
             _animations[id] = animation;
 //                attackBox = dictget<std::vector<int>>(animInfo, "attack_box", std::vector<int>());
@@ -188,4 +193,12 @@ std::shared_ptr<Shape> SkeletalModel::getShapeCast(const std::string &anim) cons
         return nullptr;
     return it->second;
 
+}
+
+int SkeletalModel::getCollidePointIndex(const std::string &anim) const {
+    auto it = _collidePointIndices.find(anim);
+    if (it == _collidePointIndices.end()) {
+        return -1;
+    }
+    return it->second;
 }

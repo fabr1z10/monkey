@@ -62,7 +62,7 @@ void Renderer::setTransform(const glm::mat4 &m) {
     m_rendererTransform = m;
 }
 
-bool Renderer::isComplete() {
+bool Renderer::isComplete() const {
     return false;
 }
 

@@ -28,7 +28,7 @@ public:
 	using Base = Renderer;
 	std::string getAnimation() const;
     virtual void setAnimation(const std::string&) {}
-    virtual bool isComplete();
+    virtual bool isComplete() const;
     void setShift(glm::vec3);
     void setZLayer(float);
 protected:

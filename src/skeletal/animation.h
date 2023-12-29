@@ -28,12 +28,20 @@ namespace monkey::skeletal {
 
         bool loop() const;
 
+        bool shapeCast(float) const;
     private:
         bool m_loop;
+        bool _hasAttack;
+        float _attackStartTime;
+        float _attackEndTime;
         float m_length;
         std::vector<std::shared_ptr<KeyFrame>> m_keyFrames;
-        //std::vector<std::pair<float, float>> m_attacks;
+
     };
+
+    inline bool SkeletalAnimation::shapeCast(float t) const {
+        return (t >= _attackStartTime && t <= _attackEndTime);
+    }
 
     inline float SkeletalAnimation::getLength() const {
         return m_length;

@@ -8,6 +8,64 @@
 #include "../shapes3d/seg3d.h"
 
 
+std::vector<ShapeCastHit> ICollisionEngine::shapeCast(Shape * shape, const glm::mat4 &transform, int mask, bool onlyFirst) {
+    std::vector<ShapeCastHit> result;
+
+    // first get the transformed aabb
+    auto aabb = shape->getBounds();
+    aabb.transform(transform);
+    auto loc = getLocation(aabb);
+
+    for (int i = loc.first.x; i <= loc.second.x; ++i) {
+        for (int j = loc.first.y; j <= loc.second.y; ++j) {
+            for (int k = loc.first.z; k <= loc.second.z; ++k) {
+                auto cell = m_cells.find(glm::vec3(i, j, k));
+                if (cell != m_cells.end()) {
+                    auto &colliders = cell->second.colliders;
+                    for (auto &c : colliders) {
+                        if (!c->isActive()) {
+                            continue;
+                        }
+                        int flag = c->getCollisionFlag();
+                        int m = flag & mask;
+                        if (m == 0) {
+                            continue;
+                        }
+                        auto b = c->getStaticBounds();
+                        // perform a aabb testing
+                        if (!aabbTest(aabb, b)) {
+                            continue;
+                        }
+                        auto s = c->getShape();
+                        if (s != nullptr) {
+                            CollisionReport report;
+                            if (shape->getShapeType() == ShapeType::AABB3D && s->getShapeType() == ShapeType::AABB3D) {
+                                // special case, skip test
+                                report.collide = true;
+                            } else {
+                                const auto &t = c->getNode()->getWorldMatrix();
+                                report = m_intersector->intersect(shape, s.get(), transform, t);
+                            }
+                            if (report.collide) {
+                                Bounds bb = aabb.intersection(b);
+                                ShapeCastHit res;
+                                res.report = report;
+                                res.report.direction = bb.getCenter();
+                                res.entity = c;
+                                result.push_back(res);
+                                if (onlyFirst)
+                                    return result;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
+}
+
+
 RayCastHit ICollisionEngine::rayCastX(glm::vec3 origin, float length, int mask, Node* node) {
     RayCastHit out;
     float x0 = origin.x;

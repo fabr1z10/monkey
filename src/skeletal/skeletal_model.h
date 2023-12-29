@@ -48,6 +48,8 @@ namespace monkey::skeletal {
 
         const std::pair<int, glm::vec3>* getCollidePoint(int) const;
 
+        int getCollidePointIndex(const std::string& anim) const;
+
         SkeletalAnimation* getAnimation(const std::string& id);
 
         std::shared_ptr<Shape> getShape (const std::string& anim) const;
@@ -73,6 +75,7 @@ namespace monkey::skeletal {
         std::vector<std::pair<std::string, std::string>> m_offsetPointIds;
         std::unordered_map<std::string, std::shared_ptr<Shape>> _shapes;
         std::unordered_map<std::string, std::shared_ptr<Shape>> _shapeCast;
+        std::unordered_map<std::string, int> _collidePointIndices;
         int m_root;
         glm::vec2 _sizeXZ;
     };

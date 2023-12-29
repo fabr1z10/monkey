@@ -12,7 +12,19 @@ Walk3DController::Walk3DController(float size, float speed, float gravity, const
     _skinWidth =  .015f;
     _idleAnim = py_get_dict<std::string>(args, "idle", "idle");
     _walkAnim = py_get_dict<std::string>(args, "walk", "walk");
+    _listener = std::make_unique<Walk3DListener>(this);
+    _playingAnimation = false;
+}
 
+void Walk3DController::playAnimation(const std::string & anim) {
+    _playingAnimation = true;
+    m_animatedRenderer->setAnimation(anim);
+}
+
+void Walk3DController::jump() {
+    if (_grounded) {
+        _yVelocity = 100.f;
+    }
 }
 
 void Walk3DController::start() {
@@ -39,10 +51,14 @@ void Walk3DController::update(double dt) {
     if (rightPressed)
         _lookingLeft = false;
 
-    float dx = (leftPressed || rightPressed ? 1.f : 0.f);
-    float dz = upPressed ? -1.f : (downPressed ? 1.f : 0.f);
-    if (upPressed) dx -= _xCorrection;
-    if (downPressed) dx += _xCorrection;
+    float dx {0.f};
+    float dz {0.f};
+    if (!_grounded || !_playingAnimation) {
+        dx = (leftPressed || rightPressed) ? 1.f : 0.f;
+        dz = upPressed ? -1.f : (downPressed ? 1.f : 0.f);
+        if (upPressed) dx -= _xCorrection;
+        if (downPressed) dx += _xCorrection;
+    }
 
     glm::vec3 direction(dx, 0, dz);
     if (dx != 0 || dz != 0) {
@@ -83,6 +99,7 @@ void Walk3DController::update(double dt) {
     }
 
     // vertical collision
+    _grounded = false;
     if (dy < 0.f) {
         glm::vec3 rayOriginLeft(pos.x + dx * dir_x - _size, pos.y, pos.z + dir_z * dz);
         glm::vec3 rayOriginRight(pos.x + dx * dir_x + _size, pos.y, pos.z + dir_z * dz);
@@ -96,14 +113,37 @@ void Walk3DController::update(double dt) {
         }
         if (hit_left.collide || hit_right.collide) {
             _yVelocity = 0.f;
+            _grounded = true;
         }
     }
 
     m_node->move(glm::vec3(dx, dy, dz));
 
-    if (anyPressed) {
-        m_animatedRenderer->setAnimation(_walkAnim);
+    if (_playingAnimation) {
+        if (m_animatedRenderer->isComplete()) {
+            _playingAnimation = false;
+        }
     } else {
-        m_animatedRenderer->setAnimation(_idleAnim);
+        if (anyPressed && _grounded) {
+            m_animatedRenderer->setAnimation(_walkAnim);
+        } else {
+            m_animatedRenderer->setAnimation(_idleAnim);
+        }
+    }
+}
+
+int Walk3DListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+
+    if (action == GLFW_PRESS) {
+        switch (key) {
+            case GLFW_KEY_Z:
+                _controller->playAnimation("kick");
+                break;
+            case GLFW_KEY_LEFT_CONTROL:
+                _controller->jump();
+        }
+    }
+    if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+
     }
 }

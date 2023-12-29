@@ -2,7 +2,7 @@
 
 using namespace monkey::skeletal;
 
-SkeletalAnimation::SkeletalAnimation(const YAML::Node& node) {
+SkeletalAnimation::SkeletalAnimation(const YAML::Node& node) : _hasAttack(false) {
     m_loop = node["loop"].as<bool>(true);
     //auto joints = node["joints"].as<std::vector<std::string>>();
     auto time_factor = node["time_factor"].as<float>(1.f);
@@ -33,14 +33,12 @@ SkeletalAnimation::SkeletalAnimation(const YAML::Node& node) {
         m_length = m_keyFrames.back()->getTimeStamp();
     }
 
-//    // attack boxes
-//    if (node["attacks"]) {
-//        for (const auto& attack : node["attacks"]) {
-//            auto startTime = time_factor * attack[0].as<float>();
-//            auto endTime = time_factor * attack[1].as<float>();
-//            // TODO m_attacks.emplace_back(startTime, endTime);
-//        }
-//    }
+    // attack boxes
+    if (node["attack"]) {
+        _hasAttack = true;
+        _attackStartTime = node["attack"]["start"].as<float>();
+        _attackEndTime = node["attack"]["end"].as<float>();
+    }
 }
 
 

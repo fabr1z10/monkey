@@ -28,6 +28,10 @@ namespace monkey::skeletal {
         void setAnimation(const std::string&) override;
 
         glm::vec3 getSize() const;
+
+        bool isComplete() const override;
+
+        Bounds getShapeCast() const;
     private:
         void innerDraw(Shader*,int,int,int);
         std::unordered_map<int, JointTransform> interpolatePoses(
@@ -41,6 +45,7 @@ namespace monkey::skeletal {
         float _shadowAlpha;
         float _shadowScale;
         glm::vec3 _size;
+        Bounds _shapeCast;
     };
 
     inline SkeletalModel * SkeletalRenderer::getModel() {
@@ -57,5 +62,13 @@ namespace monkey::skeletal {
 
     inline glm::vec3 SkeletalRenderer::getSize() const {
         return _size;
+    }
+
+    inline bool SkeletalRenderer::isComplete() const {
+        return m_complete;
+    }
+
+    inline Bounds SkeletalRenderer::getShapeCast() const {
+        return _shapeCast;
     }
 }
