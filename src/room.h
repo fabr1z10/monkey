@@ -6,25 +6,25 @@
 #include "runner.h"
 #include "batch/quadbatch.h"
 #include "batch/linebatch.h"
-//#include "light.h"
 
-struct CurrentCamera {
-	Camera* cam;
-	glm::mat4 pvMatrix;
-	Node* endNode;
-
-	void clear() {
-		cam = nullptr;
-		endNode = nullptr;
-	}
-};
+//struct CurrentCamera {
+//	Camera* cam;
+//	glm::mat4 pvMatrix;
+//	Node* endNode;
+//
+//	void clear() {
+//		cam = nullptr;
+//		endNode = nullptr;
+//	}
+//};
 
 class Room {
 public:
     Room();
-    void addSpritesheet(const std::string& sheet);
+    ~Room();
+    //void addSpritesheet(const std::string& sheet);
     void setClearColor(int r, int g, int b);
-    void addCamera( std::shared_ptr<Camera>);
+    void addCamera(std::shared_ptr<Camera>);
     //QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
     //void addLinesBatch(int maxElements = 1000);
     void addBatch(const std::string& batchId, std::shared_ptr<IBatch>);
@@ -36,7 +36,6 @@ public:
     //IBatch* getBatch(int shader, int id);
     Camera* getCamera(int id);
 	const std::vector<std::shared_ptr<IBatch>>& getBatches();
-    ~Room();
     void update(double);
     void configure(Shader*, int);
     void draw(Shader*);
@@ -66,11 +65,11 @@ public:
     //void useLights(Shader*);
     void setMainCam(std::shared_ptr<Camera>);
 
-    const CurrentCamera& getCurrentCamera();
+    //const CurrentCamera& getCurrentCamera();
     int getCameraCount() const;
     void addCallback(pybind11::function f) {_callbacks.push_back(f);}
 private:
-	CurrentCamera _currentCamera;
+	//CurrentCamera _currentCamera;
 	Camera* m_mainCamera;
     std::string m_id;
     std::shared_ptr<Node> m_root;
@@ -92,9 +91,9 @@ private:
 	std::unordered_map<std::string, IBatch*> _batchMap;
 };
 
-inline const CurrentCamera & Room::getCurrentCamera() {
-	return _currentCamera;
-}
+//inline const CurrentCamera & Room::getCurrentCamera() {
+//	return _currentCamera;
+//}
 
 inline std::string Room::id() const {
     return m_id;

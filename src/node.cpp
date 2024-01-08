@@ -1,12 +1,12 @@
 #include "node.h"
 #include <glm/gtx/transform.hpp>
 #include "engine.h"
-#include "components/renderer.h"
+//#include "components/renderer.h"
 #include "util.h"
-#include "components/statemachine.h"
-#include "models/text.h"
+//#include "components/statemachine.h"
+//#include "models/text.h"
 
-Node::Node() : _id(Engine::instance().getNextId()), m_camera(nullptr), m_modelMatrix(1.0f), m_active(true),
+Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), m_active(true),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
     m_model(nullptr), _scale(1.0f) {
 }
@@ -27,7 +27,7 @@ Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nu
 	m_active = other.m_active;
 	m_started = other.m_started;
 	m_userData = other.m_userData;
-	m_camera = other.m_camera;
+	//m_camera = other.m_camera;
 	m_model = other.m_model;
 }
 
@@ -52,13 +52,13 @@ Node::~Node() {
 }
 
 
-std::string Node::getAnimation() const {
-	return getComponent<Renderer>()->getAnimation();
-}
-
-void Node::setAnimation(const std::string& animId) {
-	getComponent<Renderer>()->setAnimation(animId);
-}
+//std::string Node::getAnimation() const {
+//	return getComponent<Renderer>()->getAnimation();
+//}
+//
+//void Node::setAnimation(const std::string& animId) {
+//	getComponent<Renderer>()->setAnimation(animId);
+//}
 
 void Node::setParent(Node * node) {
     m_parent = node;
@@ -155,9 +155,6 @@ void Node::setUserData(pybind11::object userData) {
     m_userData = userData;
 }
 
-void Node::setCamera(std::shared_ptr<Camera> cam) {
-    m_camera = cam;
-}
 
 void Node::setZ(float z) {
 	m_modelMatrix[3][2] = z;
@@ -213,9 +210,6 @@ void Node::addComponent(std::shared_ptr<Component> c) {
 }
 
 
-void Node::setPalette(unsigned palId) {
-	getComponent<Renderer>()->setPalette(palId);
-}
 
 std::shared_ptr<Model> Node::getModel() {
     return m_model;
@@ -223,21 +217,21 @@ std::shared_ptr<Model> Node::getModel() {
 
 void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 
-	if (model == nullptr) {
-		if (m_model != nullptr) {
-			m_components.erase(std::type_index(typeid(Renderer)));
-		}
-		m_model = nullptr;
-
-	} else {
-		m_model = model;
-		auto renderer = model->getRenderer(args);
-		this->addComponent(renderer);
-		renderer->setModel(model, args);
-		if (Engine::instance().isRunning()) {
-			renderer->start();
-		}
-	}
+//	if (model == nullptr) {
+//		if (m_model != nullptr) {
+//			m_components.erase(std::type_index(typeid(Renderer)));
+//		}
+//		m_model = nullptr;
+//
+//	} else {
+//		m_model = model;
+//		auto renderer = model->getRenderer(args);
+//		this->addComponent(renderer);
+//		renderer->setModel(model, args);
+//		if (Engine::instance().isRunning()) {
+//			renderer->start();
+//		}
+//	}
 
 	//auto model = node->getModel();
 	//auto renderer = model->getRenderer(this);
@@ -278,18 +272,18 @@ void Node::setFlipX(bool value) {
 	notifyMove();
 }
 
-std::string Node::getState() const {
-	auto sm = getComponent<StateMachine>();
-	auto pino = sm->getState()->getId();
-	return pino;
-}
-
-void Node::setState(const std::string &state, const pybind11::kwargs& kwargs) {
-	auto sm = getComponent<StateMachine>();
-	if (sm != nullptr) {
-		sm->setState(state, kwargs);
-	}
-}
+//std::string Node::getState() const {
+//	auto sm = getComponent<StateMachine>();
+//	auto pino = sm->getState()->getId();
+//	return pino;
+//}
+//
+//void Node::setState(const std::string &state, const pybind11::kwargs& kwargs) {
+//	auto sm = getComponent<StateMachine>();
+//	if (sm != nullptr) {
+//		sm->setState(state, kwargs);
+//	}
+//}
 
 float Node::getX() const {
 	return m_worldMatrix[3][0];
@@ -316,15 +310,7 @@ float Node::getScale() const {
 	return fabs(m_worldMatrix[0][0]);
 }
 
-std::string Node::getText() const {
-	return std::dynamic_pointer_cast<Text>(m_model)->getText();
-}
 
-void Node::setText(const std::string & text) {
-	std::dynamic_pointer_cast<Text>(m_model)->setText(text);
-
-
-}
 
 void Node::rotate(float angle, glm::vec3 axis) {
 	m_modelMatrix *= glm::rotate(glm::radians(angle), axis);

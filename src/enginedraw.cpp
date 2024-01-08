@@ -3,6 +3,7 @@
 #include <iostream>
 #include "enginedraw.h"
 #include "engine.h"
+#include "shaders/batchshader.h"
 #include "shaders/shaders.h"
 #include "error.h"
 
@@ -72,8 +73,7 @@ void BasicEngineDraw::draw(Room* room) {
         room->draw(current);
     }
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+
 }
 
 void FrameBufferEngineDraw::initShaders() {
@@ -165,8 +165,8 @@ void FrameBufferEngineDraw::draw(Room *room) {
         //room->draw(current);
     }
     auto vp = Engine::instance().getWindowViewport();
-    std::vector<float> ccc(256*240);
-    glReadPixels(0,0,256,240, GL_DEPTH_COMPONENT, GL_FLOAT, &ccc[0]);
+    //std::vector<float> ccc(256*240);
+    //glReadPixels(0,0,256,240, GL_DEPTH_COMPONENT, GL_FLOAT, &ccc[0]);
     // frame buffer rendering start
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
     glViewport(vp.x, vp.y, vp.z, vp.w);

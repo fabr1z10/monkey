@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <pybind11/pybind11.h>
 #include "glm/glm.hpp"
-#include "camera.h"
+//#include "camera.h"
 #include "component.h"
 #include "model.h"
 #include "event.h"
@@ -13,13 +13,13 @@ class Node {
 public:
     Node();
     Node(const Node&);
-    virtual std::shared_ptr<Node> clone();
     ~Node();
+    virtual std::shared_ptr<Node> clone();
     long getId() const;
     Node* getParent();
     void setParent(Node*);
-    std::string getAnimation() const;
-    virtual void setAnimation(const std::string&);
+    //std::string getAnimation() const;
+    //virtual void setAnimation(const std::string&);
 
     virtual void add(std::shared_ptr<Node>);
     void moveTo(std::shared_ptr<Node> node);
@@ -44,8 +44,8 @@ public:
 	glm::vec3 getLocalPosition() const;
     glm::vec3 getWorldPosition() const;
 
-	std::shared_ptr<Camera> getCamera();
-    void setCamera(std::shared_ptr<Camera>);
+	//std::shared_ptr<Camera> getCamera();
+    //void setCamera(std::shared_ptr<Camera>);
     pybind11::object getUserData();
     void setUserData(pybind11::object);
     void setPosition(float, float, float);
@@ -56,10 +56,10 @@ public:
 	std::shared_ptr<Model> getModel();
 	virtual void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());
 
-	void setPalette(unsigned palId);
+
 	Bounds getBounds();
-	std::string getState() const;
-	void setState (const std::string& state, const pybind11::kwargs&);
+//	std::string getState() const;
+//	void setState (const std::string& state, const pybind11::kwargs&);
     void addComponent(std::shared_ptr<Component> c) ;
     float getX() const;
     float getY() const;
@@ -79,8 +79,8 @@ public:
 	Event<Node*> onRemove;                      // fires when node is deleted
 	void setTag(const std::string&);
 	std::string getTag() const;
-	std::string getText() const;
-	void setText(const std::string&);
+	//std::string getText() const;
+	//void setText(const std::string&);
 	void setScale(float);
 	float getScale() const;
 protected:
@@ -96,7 +96,7 @@ protected:
     bool m_active;
     bool m_started;
     pybind11::object m_userData;
-    std::shared_ptr<Camera> m_camera;
+    //std::shared_ptr<Camera> m_camera;
 	std::shared_ptr<Model> m_model;
 protected:
 	std::string _tag;
@@ -120,6 +120,3 @@ inline bool Node::active() const {
     return m_active;
 }
 
-inline std::shared_ptr<Camera> Node::getCamera() {
-    return m_camera;
-}

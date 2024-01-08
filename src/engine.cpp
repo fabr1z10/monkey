@@ -3,8 +3,9 @@
 #include "pyhelper.h"
 #include "monkeyfu.h"
 #include "shaders/lightshader.h"
-#include "batch/quadbatch.h"
+//#include "batch/quadbatch.h"
 #include "assetmanager.h"
+#include "error.h"
 #include "batch/linebatch.h"
 
 
@@ -35,41 +36,60 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 //
 //}
 
-pybind11::function Engine::getScript(const std::string &name) const {
-	return py_get<pybind11::function>(m_scripts, name);
-}
+//pybind11::function Engine::getScript(const std::string &name) const {
+//	return py_get<pybind11::function>(m_scripts, name);
+//}
 
 
 void Engine::start() {
-    m_game = py::module::import("game");
-	py::object settings = py::module::import("game.settings");
-	m_scripts = py::module::import("game.scripts");
-	if (settings) {
-	} else {
-		std::cout << " don't know\n";
-	}
+    // read the settings PY file
+    try {
+        auto settings = py::module::import("settings");
+        _deviceSize = py_get<glm::ivec2>(settings, "device_size");
+        assert(_deviceSize[1] > 0);
+        _windowSize = py_get<glm::ivec2>(settings, "window_size", _deviceSize);
+        _deviceAspectRatio = static_cast<double>(_deviceSize[0]) / _deviceSize[1];
+        _roomId = py_get<std::string>(settings, "room");
+        _frameTime = 1.0 / 60.0;
+        _timeLastUpdate = 0.0;
+        _enableMouse = py_get<bool>(settings, "enable_mouse", false);
+        _title = py_get<std::string>(settings, "title", "Unknown");
+        m_settings = settings;
 
-	m_title = py_get<std::string>(settings, "title");
-	m_windowSize = py_get<glm::ivec2>(settings, "window_size");
-	m_deviceSize = py_get<glm::ivec2>(settings, "device_size");
-    auto useFrameBuffer = py_get<bool>(settings,"enable_framebuffer", false);
+    } catch (std::runtime_error& err) {
+        GLIB_FAIL(err.what());
+    }
+//		// check if spritesheet has been loaded
+////        if (m_spriteSheets.count(sheetName) == 0) {
+////        	// load spritesheet
+////        	m_spriteSheets.insert(std::make_pair(sheetName, std::make_shared<SpriteSheet>(f)));
+////        }
+////		auto sheet = m_spriteSheets.at(sheetName);
+//		//auto sheetFile = f["sheet"].as<std::string>();
+//		auto spritesNode = f["sprites"];
+//		auto sheet = f["sheet"].as<std::string>();
+//		auto * batch = Engine::instance().getRoom()->addSpriteBatch(sheet);
 
-	assert(m_deviceSize[1] > 0);
-	m_deviceAspectRatio = static_cast<double>(m_deviceSize[0]) / m_deviceSize[1];
-	m_roomId = py_get<std::string>(settings, "room");
-	m_frameTime = 1.0 / 60.0;
-	m_timeLastUpdate = 0.0;
-	m_enableMouse = py_get<bool>(settings, "enable_mouse", false);
-	m_settings = settings;
 
-	if (pybind11::hasattr(settings, "init")) {
-		settings.attr("init").cast<pybind11::function>()();
-	}
 
-	auto dataFiles = py_get<pybind11::dict>(settings, "data", pybind11::dict());
-	for (const auto& d : dataFiles) {
-	    readDataFile(d.first.cast<std::string>(), d.second.cast<std::string>());
-	}
+
+
+//	m_scripts = py::module::import("scripts");
+
+
+    //auto useFrameBuffer = py_get<bool>(settings,"enable_framebuffer", false);
+
+
+
+
+//	if (pybind11::hasattr(settings, "init")) {
+//		settings.attr("init").cast<pybind11::function>()();
+//	}
+
+//	auto dataFiles = py_get<pybind11::dict>(settings, "data", pybind11::dict());
+//	for (const auto& d : dataFiles) {
+//	    readDataFile(d.first.cast<std::string>(), d.second.cast<std::string>());
+//	}
 	
 
     // Initialise GLFW
@@ -87,7 +107,7 @@ void Engine::start() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    window = glfwCreateWindow( m_windowSize[0], m_windowSize[1], m_title.c_str(), NULL, NULL);
+    window = glfwCreateWindow( _windowSize[0], _windowSize[1], _title.c_str(), NULL, NULL);
     if( window == NULL ){
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
         getchar();
@@ -109,9 +129,9 @@ void Engine::start() {
 
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    Engine::WindowResizeCallback(window, m_windowSize[0], m_windowSize[1]);
+    Engine::WindowResizeCallback(window, _windowSize[0], _windowSize[1]);
     glfwSetKeyCallback(window, key_callback );
-    if (m_enableMouse) {
+    if (_enableMouse) {
         glfwSetMouseButtonCallback(window, mouse_button_callback);
         glfwSetCursorPosCallback(window, cursor_pos_callback);
         //glfwSetScrollCallback(window, scroll_callback);
@@ -123,19 +143,19 @@ void Engine::start() {
 
     glDisable(GL_POINT_SMOOTH);
     // setupFramebufferRendering();
-    if (useFrameBuffer) {
-        _engineDraw = std::make_unique<FrameBufferEngineDraw>();
-    } else {
-        _engineDraw = std::make_unique<BasicEngineDraw>();
-    }
+//    if (useFrameBuffer) {
+    _engineDraw = std::make_unique<FrameBufferEngineDraw>();
+//    } else {
+//        _engineDraw = std::make_unique<BasicEngineDraw>();
+//    }
     // Dark blue background
     //loadShaders();
 
-    auto shaders = py_get<std::vector<int>>(settings, "shaders");
+    auto shaders = py_get<std::vector<int>>(m_settings, "shaders");
     for (const auto& shader : shaders) {
 		_engineDraw->addShader(shader);
     }
-
+//
     _engineDraw->initShaders();
 
 //    // load fonts
@@ -160,10 +180,10 @@ void Engine::initialize() {
 //
 //	}
 	// check game initialization function
-	auto onStartup = py_get<pybind11::function>(m_settings, "on_startup", pybind11::function());
-	if (onStartup) {
-		onStartup();
-	}
+//	auto onStartup = py_get<pybind11::function>(m_settings, "on_startup", pybind11::function());
+//	if (onStartup) {
+//		onStartup();
+//	}
 
 
 }
@@ -177,13 +197,13 @@ void Engine::run() {
 
     // main loop
     while (!m_shutdown) {
-        m_roomId = py_get<std::string>(m_settings, "room");
+        _roomId = py_get<std::string>(m_settings, "room");
 		m_scheduledForRemoval.clear();
-        std::cout << " loading room: " << m_roomId << std::endl;
+        std::cout << "Loading room: " << _roomId << std::endl;
         loadRoom();
         // start up all nodes and components
-		m_room->start();
-        m_room->iterate_dfs([](Node *n) { n->start(); });
+//		m_room->start();
+//        m_room->iterate_dfs([](Node *n) { n->start(); });
         m_run = true;
 
         do {
@@ -191,8 +211,8 @@ void Engine::run() {
             /// note: if I run the update only every frame time CPU goes to 100%. If I run it on
             /// every iter, it doesn't. Tried move the glfwSwapBuffers call (and successive) out of the loop
             /// and that seems to work.
-            if (true || currentTime - m_timeLastUpdate >= m_frameTime) {
-                m_timeLastUpdate = currentTime;
+            if (true || currentTime - _timeLastUpdate >= _frameTime) {
+                _timeLastUpdate = currentTime;
 
                 // remove all entities scheduled for removal
                 if (!m_scheduledForRemoval.empty()) {
@@ -209,10 +229,11 @@ void Engine::run() {
                 //glBindFramebuffer(GL_FRAMEBUFFER, _fb);
                 //glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
-                m_room->update(m_frameTime);
+                //m_room->update(_frameTime);
 
-                _engineDraw->draw(m_room.get());
-
+                _engineDraw->draw(_room.get());
+                glfwSwapBuffers(window);
+                glfwPollEvents();
             }
             //m_shutdown = !(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
             //             glfwWindowShouldClose(window) == 0);
@@ -220,12 +241,12 @@ void Engine::run() {
 
         } // Check if the ESC key was pressed or the window was closed
         while (m_run && !m_shutdown);
-        m_room->end();
+        //m_room->end();
         m_allNodes.clear();
-        if (m_room) {
-            m_room->cleanUp();
-        }
-        m_room = nullptr;
+        //if (m_room) {
+        //    m_room->cleanUp();
+        //}
+        //m_room = nullptr;
 //        for (size_t i = 0; i < _batches.size(); ++i) {
 //            for (const auto& batch : _batches[i]) {
 //				batch->cleanUp();
@@ -235,10 +256,9 @@ void Engine::run() {
 	//m_settings.attr("on_close")();
 
     //_batches.clear();
-    _engineDraw->shutdown();
-	m_game.release();
+    //_engineDraw->shutdown();
+	//m_game.release();
 	m_settings.release();
-
     glfwTerminate();
 }
 
@@ -253,25 +273,25 @@ void Engine::closeRoom() {
 }
 
 void Engine::loadRoom() {
-    // generate current room
-    std::cout << "sucalo\n";
-
-
-    // create a batch
-    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
-    //for (auto& batch : _batches) batch.clear();
-    m_room = std::make_shared<Room>();
-    m_game.attr(m_roomId.c_str())(m_room);
-	_engineDraw->init(m_room.get());
-
-	//m_room = m_game.attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
-    // init shaders
+//    // generate current room
+//    std::cout << "sucalo\n";
+//
+//
+//    // create a batch
+//    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
+//    //for (auto& batch : _batches) batch.clear();
+    _room = std::make_shared<Room>();
+//    m_game.attr(_roomId.c_str())(m_room);
+//	//_engineDraw->init(m_room.get());
+//
+//	//m_room = m_game.attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
+//    // init shaders
 
 
 }
 
 Shader* Engine::getShader(ShaderType type) {
-	return _engineDraw->getShader(type);
+	//return _engineDraw->getShader(type);
 }
 
 
@@ -311,10 +331,10 @@ void Engine::unregisterToMouseEvent(MouseListener * listener) {
 void Engine::WindowResizeCallback(GLFWwindow* win, int width, int height) {
     // notify cameras
     if (height == 0) height = 1;
-    std::cout << "(" << width << ", " << height << ")\n";
+    //std::cout << "(" << width << ", " << height << ")\n";
     float winAspectRatio = static_cast<float>(width) / height;
     auto& engine = Engine::instance();
-    engine.m_windowSize = glm::ivec2(width, height);
+    engine._windowSize = glm::ivec2(width, height);
     auto deviceSize = engine.getDeviceSize();
     auto dar = engine.getDeviceAspectRatio();
     int vx, vy, vw, vh;
@@ -350,15 +370,15 @@ void Engine::WindowResizeCallback(GLFWwindow* win, int width, int height) {
 
 
 double Engine::getDeviceAspectRatio() const {
-    return m_deviceAspectRatio;
+    return _deviceAspectRatio;
 }
 
 glm::ivec2 Engine::getDeviceSize() const {
-    return m_deviceSize;
+    return _deviceSize;
 }
 
 glm::ivec2 Engine::getWindowSize() const {
-    return m_windowSize;
+    return _windowSize;
 }
 
 glm::vec4 Engine::getActualDeviceViewport() const {
@@ -370,7 +390,7 @@ glm::vec4 Engine::getWindowViewport() const {
 
 void Engine::setActualDeviceViewport(glm::vec4 viewport) {
     m_actualDeviceViewport = viewport;
-    std::cout << m_actualDeviceViewport[2] << ", " << m_actualDeviceViewport[3] << "\n";
+    //std::cout << m_actualDeviceViewport[2] << ", " << m_actualDeviceViewport[3] << "\n";
 }
 
 void Engine::addNode(std::shared_ptr<Node> node) {
@@ -416,7 +436,7 @@ void Engine::scheduleForRemoval(Node * node) {
 }
 
 std::shared_ptr<Room> Engine::getRoom() {
-	return m_room;
+	return _room;
 }
 
 void Engine::registerToKeyboardEvent(KeyboardListener * listener) {

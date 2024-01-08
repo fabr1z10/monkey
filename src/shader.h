@@ -37,7 +37,7 @@ public:
     virtual void draw() {}
 protected:
     GLuint m_programId;
-    GLuint m_vao;
+    //GLuint m_vao;
     ShaderType m_shaderType;
     std::vector<VertexInfo> m_vertexFormat;
     GLsizei m_stride;
@@ -59,8 +59,3 @@ inline ShaderType Shader::getShaderType() const {
 //	void draw() override;
 //};
 
-class BatchShader : public Shader {
-public:
-	BatchShader(ShaderType, const std::string& vertexCode, const std::string& fragmentCode, const std::string& vertexFormat);
-    void draw() override;
-};

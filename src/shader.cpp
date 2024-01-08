@@ -19,6 +19,9 @@ std::unordered_map<char, std::pair<GLenum, size_t>> Shader::m_types {
 Shader::Shader(ShaderType type, const std::string& vertexCode, const std::string& fragmentCode,
                const std::string& vertexFormat) : m_shaderType(type), m_stride(0), m_flags(0u) {
 
+    // the constructor of shader compiles vertex and fragment shaders, link them
+    // and generates the vertex info vector based on the vertex format string
+    // (one item per attribute, for each vertex size, type and bytesize
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
 
@@ -89,8 +92,8 @@ Shader::Shader(ShaderType type, const std::string& vertexCode, const std::string
         }
     }
     //
-    std::cout << " --- creating vao\n";
-    glGenVertexArrays(1, &m_vao);
+    //std::cout << " --- creating vao\n"; we don't need this
+    //glGenVertexArrays(1, &m_vao);
 }
 
 
@@ -100,14 +103,14 @@ Shader::~Shader() {
 
 void Shader::init() {
 	glUseProgram(m_programId);
-	glBindVertexArray(m_vao);
-	setupVertices();
+	//glBindVertexArray(m_vao);
+	//setupVertices();
 
 }
 
 void Shader::use() {
     glUseProgram(m_programId);
-    glBindVertexArray(m_vao);
+    //glBindVertexArray(m_vao);
 }
 
 void Shader::setupVertices() {
@@ -156,20 +159,6 @@ void Shader::setVec3(const std::string &name, const glm::vec3 &value) const
     glUniform3fv(glGetUniformLocation(m_programId, name.c_str()), 1, &value[0]);
 }
 
-BatchShader::BatchShader(ShaderType type, const std::string &vertexCode, const std::string &fragmentCode,
-						 const std::string &vertexFormat) : Shader(type, vertexCode, fragmentCode, vertexFormat) {
-}
-
-void BatchShader::draw() {
-	auto room = Engine::instance().getRoom();
-	const auto& b = room->getBatches();
-	for (const auto& batch : b) {
-        if (m_shaderType == batch->getShaderType()) {
-            batch->setupUniforms(this);
-            batch->draw(this);
-        }
-	}
-}
 
 
 //SimpleShader::SimpleShader(ShaderType type, const std::string &vertexCode, const std::string &fragmentCode,

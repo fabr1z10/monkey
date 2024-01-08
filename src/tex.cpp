@@ -1,11 +1,10 @@
 #include "tex.h"
 #include <iostream>
 #include "globals.h"
+
 //#define cimg_use_jpeg
 #define cimg_use_png
 #define cimg_display 0
-
-
 #include "CImg.h"
 #include "png.h"
 #include "palette.h"

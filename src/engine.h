@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <pybind11/pybind11.h>
 #include <glm/glm.hpp>
-#include "node.h"
+//#include "node.h"
 #include "room.h"
 #include "keylistener.h"
 #include "mouselistener.h"
@@ -46,7 +46,8 @@ public:
     static void cursor_pos_callback(GLFWwindow*, double xpos, double ypos);
     static void mouse_button_callback(GLFWwindow*, int, int, int);
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	std::shared_ptr<Room> getRoom();
+
+    std::shared_ptr<Room> getRoom();
 
     // node handling
     Node* getNode(int);
@@ -80,33 +81,32 @@ private:
     Engine();
     void loadRoom();
     void loadShaders();
-    pybind11::object m_game;
+    //pybind11::object m_game;
     pybind11::object m_settings;
-    pybind11::object m_scripts;
-    std::string m_title;
-    std::string m_roomId;
-    glm::ivec2 m_windowSize;
-    glm::ivec2 m_deviceSize;
+    //pybind11::object m_scripts;
+    std::string _title;
+    std::string _roomId;
+    glm::ivec2 _windowSize;
+    glm::ivec2 _deviceSize;
     glm::vec4 m_actualDeviceViewport;
     glm::vec4 m_windowViewport;
 
-    double m_deviceAspectRatio;
-    // the current room
+    double _deviceAspectRatio;
 
     // the current room
-    std::shared_ptr<Room> m_room;
+    std::shared_ptr<Room> _room;
 
 
 
 
 
-    double m_frameTime;
-    double m_timeLastUpdate;
+    double _frameTime;
+    double _timeLastUpdate;
 
     bool m_run;
     bool m_shutdown;
     long m_nextId;
-    bool m_enableMouse;
+    bool _enableMouse;
 
     // frambuffer stuff
     //GLuint _fb, _color, _depth;

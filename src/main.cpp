@@ -7,7 +7,7 @@
 //#include "node.h"
 //#include "models/modelmake.h"
 //#include <iostream>
-//#include "monkeyfu.h"
+#include "monkeyfu.h"
 //#include "shape.h"
 //#include "shapes/convexpoly.h"
 //#include "shapes/circle.h"
@@ -108,16 +108,13 @@ double add(double x, double y) {
 //    return 0;
 //}
 
-int add2(int i, int j) {
-	return i+j;
-}
 PYBIND11_MODULE(monkey, m) {
     m.doc() = "prova prova2"; // optional module docstring
     m.def("add", &add);
 //    m.def("read", &read_png);
 //    m.def("test",&add2, "i"_a = 1, "j"_a = 3);
-//    m.def("from_hex", &fromHex, py::arg("color"));
-//	m.def("get_sprite", &getSprite);
+    m.def("from_hex", &fromHex, py::arg("color"));
+	//m.def("get_sprite", &getSprite);
 //	m.def("get_polymesh", &getPolyMesh);
 //	m.def("get_multi", &getMulti);
 //	m.def("get_node", &getNode, py::return_value_policy::reference);
@@ -127,8 +124,9 @@ PYBIND11_MODULE(monkey, m) {
 //	m.def("close_room", &closeRoom);
 //	m.def("play", &playScript);
 //	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
-//	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
-//    m.attr("SHADER_BATCH_QUAD_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_PALETTE);
+	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
+
+	m.attr("SHADER_BATCH_QUAD_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_PALETTE);
 //    m.attr("SHADER_BATCH_QUAD_NO_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_NO_PALETTE);
 //    m.attr("SHADER_BATCH_LINES") = static_cast<int>(ShaderType::BATCH_LINES);
 //
@@ -149,11 +147,11 @@ PYBIND11_MODULE(monkey, m) {
 //		.value("Solid", FillType::SOLID)
 //		.export_values();
 //
-//    py::class_<Engine>(m, "Engine")
-//        //.def(py::init<>())
-//        .def("start", &Engine::start)
-//        .def("run", &Engine::run)
-//        .def("shutdown", &Engine::shutdown);
+    py::class_<Engine>(m, "Engine")
+        //.def(py::init<>())
+        .def("start", &Engine::start)
+        .def("run", &Engine::run)
+        .def("shutdown", &Engine::shutdown);
 //
 //    py::class_<Room, std::shared_ptr<Room>>(m, "Room")
 //        .def(py::init<>())

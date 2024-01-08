@@ -31,11 +31,11 @@ IBatch * Room::getBatch(const std::string & id) {
 	return _batchMap.at(id);
 }
 
-void Room::addSpritesheet(const std::string &sheet) {
-	auto s = AssetManager::instance().getSpritesheet(sheet);
-	//_quadBatches[s->getId()] = s->getBatch();
-
-}
+//void Room::addSpritesheet(const std::string &sheet) {
+//	auto s = AssetManager::instance().getSpritesheet(sheet);
+//	//_quadBatches[s->getId()] = s->getBatch();
+//
+//}
 
 Room::~Room() {
 }
@@ -113,7 +113,7 @@ void Room::update(double dt) {
     std::list<Node*> li;
 	li.push_back(m_root.get());
 	//std::vector<std::pair<int, std::shared_ptr<Camera>>> camStack;
-	_currentCamera.clear();
+	//_currentCamera.clear();
     while (!li.empty()) {
         auto current = li.front();
 		li.pop_front();

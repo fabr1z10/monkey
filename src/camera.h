@@ -10,10 +10,8 @@ namespace py = pybind11;
 
 class Camera {
 public:
-    Camera(const py::kwargs& kwargs);
-    ~Camera() {
-
-    }
+    explicit Camera(const py::kwargs& kwargs);
+    ~Camera() =default;
     virtual void setPosition(glm::vec3 eye, glm::vec3 direction, glm::vec3 up = glm::vec3(0, 1, 0));
     void move(glm::vec2);
     void setBounds(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
@@ -25,26 +23,26 @@ public:
     //std::string getCameraName() const;
     glm::vec4 getViewport() const;
 protected:
-    glm::vec3 m_fwd;
-    glm::vec3 m_up;
-    glm::vec3 m_eye;
-    glm::vec2 m_xBounds;
-    glm::vec2 m_yBounds;
-    glm::vec2 m_zBounds;
+    glm::vec3 _fwd;
+    glm::vec3 _up;
+    glm::vec3 _eye;
+    glm::vec2 _xBounds;
+    glm::vec2 _yBounds;
+    glm::vec2 _zBounds;
 
-    glm::mat4 m_projectionMatrix;
-    glm::mat4 m_viewMatrix;
-    glm::vec4 m_viewport;
-    glm::vec4 m_screenViewport;
+    glm::mat4 _projectionMatrix;
+    glm::mat4 _viewMatrix;
+    glm::vec4 _viewport;
+    glm::vec4 _screenViewport;
     //std::string _id;
 };
 
 inline const glm::mat4 & Camera::getViewMatrix() const {
-    return m_viewMatrix;
+    return _viewMatrix;
 }
 
 inline const glm::mat4 & Camera::getProjectionMatrix() const {
-	return m_projectionMatrix;
+	return _projectionMatrix;
 }
 
 
@@ -54,20 +52,20 @@ public:
     glm::vec2 getWorldCooridnates(float x, float y);
 	Bounds getViewingBounds() const override;
 private:
-    float m_orthoWidth;
-    float m_orthoHeight;
-    glm::vec3 m_halfSize;
+    float _orthoWidth;
+    float _orthoHeight;
+    glm::vec3 _halfSize;
 
 };
 
 
-class PerspectiveCamera : public Camera {
-public:
-    PerspectiveCamera(const py::kwargs& kwargs);
-	Bounds getViewingBounds() const override;
-private:
-    float m_fov;
-    float m_near;
-    float m_far;
-    float m_aspectRatio;
-};
+//class PerspectiveCamera : public Camera {
+//public:
+//    PerspectiveCamera(const py::kwargs& kwargs);
+//	Bounds getViewingBounds() const override;
+//private:
+//    float m_fov;
+//    float m_near;
+//    float m_far;
+//    float m_aspectRatio;
+//};
