@@ -241,11 +241,11 @@ void Engine::run() {
 
         } // Check if the ESC key was pressed or the window was closed
         while (m_run && !m_shutdown);
-        //m_room->end();
+        _room->end();
         m_allNodes.clear();
-        //if (m_room) {
-        //    m_room->cleanUp();
-        //}
+        if (_room) {
+            _room->cleanUp();
+        }
         //m_room = nullptr;
 //        for (size_t i = 0; i < _batches.size(); ++i) {
 //            for (const auto& batch : _batches[i]) {
