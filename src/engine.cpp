@@ -291,6 +291,7 @@ void Engine::loadRoom() {
 }
 
 Shader* Engine::getShader(ShaderType type) {
+    return nullptr;
 	//return _engineDraw->getShader(type);
 }
 

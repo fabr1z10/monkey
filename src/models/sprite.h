@@ -34,7 +34,7 @@ public:
 //	std::pair<int, int> getDebugAttackShape(const std::string& anim, int frame);
 //	Bounds getAttackRange() const;
 	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
-	ulong getMaxBoxes() const;
+	unsigned long getMaxBoxes() const;
 	const float* getBoxData(const std::string& anim, int frame);
 	Bounds getStaticBounds() const;
 private:
@@ -57,11 +57,11 @@ private:
     std::unordered_map<std::pair<std::string, int>, std::vector<glm::vec2>> m_jointOverride;
 	std::vector<float> _boxData;
 	std::vector<std::pair<unsigned, unsigned>> _boxOffset;
-	ulong _maxBoxes;
+	unsigned long _maxBoxes;
 	Bounds _staticBounds;
 };
 
-inline ulong Sprite::getMaxBoxes() const {
+inline unsigned long Sprite::getMaxBoxes() const {
 	return _maxBoxes;
 }
 //inline Bounds Sprite::getAttackRange() const {

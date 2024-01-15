@@ -86,7 +86,7 @@ Shader::Shader(ShaderType type, const std::string& vertexCode, const std::string
         if (std::isalpha(vertexFormat[i])) {
             auto size = std::stoi(vertexFormat.substr(start, i-start));
             const auto& typeInfo = m_types.at(vertexFormat[i]);
-            m_vertexFormat.emplace_back(VertexInfo{size, typeInfo.first, size * typeInfo.second});
+            m_vertexFormat.emplace_back(VertexInfo{size, typeInfo.first, size * (unsigned long)typeInfo.second});
             start = i+1;
             m_stride += size * typeInfo.second;
         }
