@@ -82,6 +82,7 @@ private:
     void loadRoom();
     void loadShaders();
     //pybind11::object m_game;
+    pybind11::module _factory;
     pybind11::object m_settings;
     //pybind11::object m_scripts;
     std::string _title;

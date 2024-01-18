@@ -174,7 +174,7 @@ void Tex::load_png(const std::string &file) {
     png_colorp pal;
     int colors;
     png_get_PLTE(png_ptr, info_ptr, &pal, &colors);
-    std::cout << " number of colors: " << colors << std::endl;
+    //std::cout << " number of colors: " << colors << std::endl;
     // store default palette
 
 
@@ -182,7 +182,7 @@ void Tex::load_png(const std::string &file) {
     memset(_pal, 0, PALETTE_SIZE);
 
     for (size_t i = 0, j = 0; i< colors; ++i) {
-        std::cout << "color #" << i << ": " << (int) pal[i].red << ", " << (int) pal[i].green << ", " << (int) pal[i].blue << "\n";
+        //std::cout << "color #" << i << ": " << (int) pal[i].red << ", " << (int) pal[i].green << ", " << (int) pal[i].blue << "\n";
         _pal[j++] = pal[i].red;
 		_pal[j++] = pal[i].green;
 		_pal[j++] = pal[i].blue;

@@ -9,9 +9,9 @@
 
 SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args), m_frame(0), m_ticks(0), _currentFrameTicks(0) {
     //_batch = dynamic_cast<QuadBatch*>(batch);
-    assert(_batch != nullptr);
-    _paletteId = py_get_dict<unsigned>(args, "pal", 0);
-    _camId = py_get_dict<unsigned>(args, "cam", 0);
+    //assert(_batch != nullptr);
+    //_paletteId = py_get_dict<unsigned>(args, "pal", 0);
+    //_camId = py_get_dict<unsigned>(args, "cam", 0);
 
     // request a new quad id to the batch
     //_quadId = _spriteBatch->getPrimitiveId();
@@ -23,7 +23,7 @@ SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<Qua
 
 void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 	Renderer::setModel(model, args);
-    m_sprite = std::dynamic_pointer_cast<IQuad>(model);
+    m_sprite = std::dynamic_pointer_cast<Sprite>(model);
     auto qc = m_sprite->getQuadCount();
     for (int i = 0; i< qc; ++i) {
         _primitiveIds.push_back(_batch->getPrimitiveId());
@@ -91,7 +91,7 @@ void SpriteRenderer::updateBatch() {
     for (const auto& quad : a.quads) {
         auto flipx = m_node->getFlipX();
 
-        auto bottomLeft = worldTransform * glm::vec4(m_shift + quad.location - glm::vec3(quad.anchorPoint, 0.f), 1.f);
+        auto bottomLeft = worldTransform * glm::vec4(quad.location.x, quad.location.y, quad.location.z, 1.f);
         //glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);
         //auto bottomLeft = pos + scale * (m_shift + quad.location) - glm::vec3(delta, 0.f);
 //		if (m_node->getLabel()== "sword") {

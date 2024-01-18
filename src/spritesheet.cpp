@@ -6,7 +6,7 @@
 #include <iostream>
 #include "yamlexp.h"
 
-SpriteSheet::SpriteSheet(const std::string& fileName) {
+SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _id(id) {
 	std::string directory = fileName.substr(0, fileName.rfind('/'));
 	//std::string fileName = file + ".yaml";
 	//std::cout << fileName << "\n";
@@ -14,7 +14,6 @@ SpriteSheet::SpriteSheet(const std::string& fileName) {
 
 	try {
 		auto f = YAML::LoadFile(fileName);
-		_id = f["id"].as<std::string>();
 		if (f.IsDefined()) {
 			std::cout << "Ok\n";
 		} else {
@@ -37,7 +36,7 @@ SpriteSheet::SpriteSheet(const std::string& fileName) {
 				size_t palOffset{0};
 				for (const auto& pal : f["palettes"]) {
 					auto palId = pal.first.as<std::string>();
-					std::cout << palId << "\n";
+					//std::cout << palId << "\n";
 					palOffset += PALETTE_SIZE;
 					for (const auto& color : pal.second) {
 						auto key = color.first.as<std::string>();
@@ -88,14 +87,14 @@ SpriteSheet::SpriteSheet(const std::string& fileName) {
 		}
 
 		// now loop through multi-sprites
-		if (f["multi_sprites"]) {
-			for (const auto& ms : f["multi_sprites"]) {
-				auto ms_id = ms.first.as<std::string>();
-				//std::cout << " reading multisprite: " << id << std::endl;
-				//std::shared_ptr<MultiNode> root;
-				_multiSprites[ms_id] = std::make_shared<MultiNode>(ms.second, _id);
-			}
-		}
+//		if (f["multi_sprites"]) {
+//			for (const auto& ms : f["multi_sprites"]) {
+//				auto ms_id = ms.first.as<std::string>();
+//				//std::cout << " reading multisprite: " << id << std::endl;
+//				//std::shared_ptr<MultiNode> root;
+//				_multiSprites[ms_id] = std::make_shared<MultiNode>(ms.second, _id);
+//			}
+//		}
 
 
 
@@ -108,17 +107,17 @@ SpriteSheet::SpriteSheet(const std::string& fileName) {
 	for (const auto& ms : _sprites) {
 		std::cout << "sprite: " << ms.first << "\n";
 	}
-	for (const auto& ms : _multiSprites) {
-		std::cout << "multisprite: " << ms.first << "\n";
-	}
+//	for (const auto& ms : _multiSprites) {
+//		std::cout << "multisprite: " << ms.first << "\n";
+//	}
 
 
 }
 
 std::string SpriteSheet::toString() {
-	std::stringstream str;
-	str << "sheet: " << _id << ", fonts: " << _fonts.size() << ", sprites: " << _sprites.size() << ", multisprites: " << _multiSprites.size() << std::endl;
-	return str.str();
+//	std::stringstream str;
+//	str << "sheet: " << _id << ", fonts: " << _fonts.size() << ", sprites: " << _sprites.size() << ", multisprites: " << _multiSprites.size() << std::endl;
+//	return str.str();
 
 }
 
@@ -135,12 +134,12 @@ std::shared_ptr<Sprite> SpriteSheet::getSprite(const std::string& id) {
 	return _sprites.at(id);
 }
 
-std::shared_ptr<MultiNode> SpriteSheet::getMultiNode(const std::string& id, const std::string& batch) {
-	auto node = std::dynamic_pointer_cast<MultiNode>(_multiSprites.at(id)->clone());
-	node->initialize(batch);
-	return node;
-}
-
+//std::shared_ptr<MultiNode> SpriteSheet::getMultiNode(const std::string& id, const std::string& batch) {
+////	auto node = std::dynamic_pointer_cast<MultiNode>(_multiSprites.at(id)->clone());
+////	node->initialize(batch);
+////	return node;
+//}
+//
 std::shared_ptr<Font> SpriteSheet::getFont(const std::string& id) {
 	return _fonts.at(id);
 }

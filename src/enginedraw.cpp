@@ -181,8 +181,8 @@ void FrameBufferEngineDraw::draw(Room *room) {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // frame buffer rendering end
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+//    glfwSwapBuffers(window);
+//    glfwPollEvents();
 }
 
 

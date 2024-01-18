@@ -20,7 +20,7 @@ void main()
     if (texColor.a < 0.5) {
         discard;
     }
-    texColor = vec4(fade * vec3(texColor), texColor.a);
+    texColor = vec4(vec3(texColor), texColor.a);
     FragColor=texColor;
     //FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
 }

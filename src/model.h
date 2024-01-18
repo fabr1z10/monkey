@@ -12,9 +12,9 @@ class Renderer;
 
 class Model {
 public:
-    Model();
+    Model() = default;
 
-    virtual ~Model();
+    virtual ~Model() = default;
 
 	//void setTexture(const std::string& texFile);
 

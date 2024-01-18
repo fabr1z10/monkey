@@ -16,7 +16,7 @@
 #include "../spritesheet.h"
 
 // construct from YAML
-Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
+Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
 
 	//_batch = Engine::instance().getRoom()->addSpriteBatch(sheet);
 
@@ -125,7 +125,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 			//m_frameToShape[std::make_pair(animId, frameCount)] = boxFrame;
 			int quadCurrentFrame {0};
 			//for (const auto& q : el["quads"]) {
-			Desc desc;
+			QuadInfo desc;
             auto texc = el["tex"].as<glm::vec4>();
             int width_px = texc[2];
             int height_px = texc[3];
@@ -140,15 +140,15 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
                 std::swap(desc.textureCoordinates[0], desc.textureCoordinates[1]);
             }
 			desc.repeat = el["repeat"].as<glm::vec2>(glm::vec2(1.f, 1.f));
-            desc.anchorPoint = el["anchor"].as<glm::vec2>(glm::vec2(0.f));
+            desc.location = el["location"].as<vec3>(vec3());
             //desc.location = el["pos"]. py_get_dict<glm::vec3>(el, "pos", glm::vec3(0.f));
             float width_actual = static_cast<float>(width_px) / ppu;
             float height_actual = static_cast<float>(height_px) / ppu;
             desc.size = glm::vec2(width_actual, height_actual);
-            m_modelBounds.min.x = std::min(m_modelBounds.min.x, -desc.anchorPoint.x);
-            m_modelBounds.min.y = std::min(m_modelBounds.min.y, -desc.anchorPoint.y);
-            m_modelBounds.max.x = std::max(m_modelBounds.max.x, -desc.anchorPoint.x + width_actual);
-            m_modelBounds.max.y = std::max(m_modelBounds.max.y, -desc.anchorPoint.y + height_actual);
+            m_modelBounds.min.x = std::min(m_modelBounds.min.x, desc.location.x);
+            m_modelBounds.min.y = std::min(m_modelBounds.min.y, desc.location.y);
+            m_modelBounds.max.x = std::max(m_modelBounds.max.x, desc.location.x + width_actual);
+            m_modelBounds.max.y = std::max(m_modelBounds.max.y, desc.location.y + height_actual);
             frameInfo.quads.push_back(desc);
             quadCurrentFrame++;
 			_quadCount = 1;
@@ -169,6 +169,23 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : IQuad() {
 	}
 	//generateBuffers(vertices, indices);
 
+
+}
+
+
+const Frame & Sprite::getFrameInfo(const std::string &anim, int frame) {
+    return _animations.at(anim).frames[frame];
+}
+
+Animation * Sprite::getAnimationInfo(const std::string &anim) {
+    auto it = _animations.find(anim);
+    if (it == _animations.end())
+        return nullptr;
+    return &it->second;
+}
+
+std::shared_ptr<Renderer> Sprite::getRenderer(const pybind11::kwargs& args) {
+	return std::make_shared<SpriteRenderer>(args);
 
 }
 //

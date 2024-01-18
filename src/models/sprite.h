@@ -7,12 +7,45 @@
 //#include "spritesheet.h"
 #include "../batch/quadbatch.h"
 
+struct Frame {
+	Frame() : ticks(0), boxId(-1), tickMin(-1), maxTicks(0) {
+		for (int i = 0; i < MAX_JOINTS; ++i) {
+			joints[i] = glm::vec2(0.f, 0.f);
+		}
+	}
+	std::vector<QuadInfo> quads;
+	int ticks;
+	int tickMin;
+	int maxTicks;
+	int getTicks() const;
 
-class Sprite : public IQuad {
+	int boxId;
+	std::array<glm::vec2, MAX_JOINTS> joints;
+};
+
+struct Animation {
+	Animation () : loop(0) {}
+
+	std::vector<Frame> frames;
+	int loop;   // -1 no loop
+	std::string next;
+	pybind11::function _onEnd;
+};
+
+
+
+class Sprite : public Model {
 
 public:
     Sprite(SpriteSheet* sheet, const YAML::Node& node);
-    //void initFromPy(const pybind11::kwargs&) override {}
+
+	const Frame& getFrameInfo(const std::string& anim, int frame);
+
+	Animation* getAnimationInfo(const std::string& anim);
+
+	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
+
+	//void initFromPy(const pybind11::kwargs&) override {}
     //void initFromYAML(const YAML::Node &node, const YAML::Node &globals) override;
 	//void init(Node*) override;
 	//void draw(Shader*, Node*) override;
@@ -37,8 +70,17 @@ public:
 	unsigned long getMaxBoxes() const;
 	const float* getBoxData(const std::string& anim, int frame);
 	Bounds getStaticBounds() const;
+	std::string getDefaultAnimation() const;
+	int getQuadCount() const;
+
 private:
-    //QuadBatch* _batch;
+	int _quadCount; // the number of quads to book -> this is the # pf quads of the frame with the highest n of quads
+
+	std::unordered_map<std::string, Animation> _animations;
+
+	std::string _defaultAnimation;
+
+	//QuadBatch* _batch;
 	Bounds m_attackRange;
 	//SpriteSheet* m_sheet;
     //std::string m_defaultAnimation;
@@ -60,6 +102,14 @@ private:
 	unsigned long _maxBoxes;
 	Bounds _staticBounds;
 };
+
+inline int Sprite::getQuadCount() const {
+	return 1;
+}
+
+inline std::string Sprite::getDefaultAnimation() const {
+    return _defaultAnimation;
+}
 
 inline unsigned long Sprite::getMaxBoxes() const {
 	return _maxBoxes;

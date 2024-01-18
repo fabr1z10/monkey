@@ -28,7 +28,7 @@ public:
 	[[nodiscard]] const std::string& getAnimation() const;
 	void setAnimation(const std::string&) override;
 	void setAnimationForce(const std::string&);
-    IQuad* getSprite();
+    IQuads* getSprite();
 	[[nodiscard]] int getFrame() const;
 	//void draw(Shader *) override;
 	bool isComplete() const;
@@ -36,22 +36,22 @@ public:
     bool updateTick(int);
     void updateBatch();
     inline int getTickCount() const;
-	const IQuad* getSprite() const;
+	const Sprite* getSprite() const;
 private:
 	//QuadBatch* _spriteBatch;
 
-    unsigned _camId;
+    //unsigned _camId;
 	//void innerDraw(Shader*, const glm::mat4&) override;
 	const Animation* m_animInfo;
 	int m_frame;
-	std::shared_ptr<IQuad> m_sprite;
+	std::shared_ptr<Sprite> m_sprite;
 	int m_ticks;
 	bool m_complete;
 	int _currentFrameTicks;
 
 };
 
-inline const IQuad * SpriteRenderer::getSprite() const {
+inline const Sprite * SpriteRenderer::getSprite() const {
 	return m_sprite.get();
 }
 
@@ -59,9 +59,7 @@ inline int SpriteRenderer::getTickCount() const {
     return m_ticks;
 }
 
-inline IQuad* SpriteRenderer::getSprite() {
-	return m_sprite.get();
-}
+
 
 inline int SpriteRenderer::getFrame() const {
 	return m_frame;

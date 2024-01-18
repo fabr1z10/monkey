@@ -1,7 +1,7 @@
 #include "node.h"
 #include <glm/gtx/transform.hpp>
 #include "engine.h"
-//#include "components/renderer.h"
+#include "components/renderer.h"
 #include "util.h"
 //#include "components/statemachine.h"
 //#include "models/text.h"
@@ -217,21 +217,21 @@ std::shared_ptr<Model> Node::getModel() {
 
 void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 
-//	if (model == nullptr) {
-//		if (m_model != nullptr) {
-//			m_components.erase(std::type_index(typeid(Renderer)));
-//		}
-//		m_model = nullptr;
-//
-//	} else {
-//		m_model = model;
-//		auto renderer = model->getRenderer(args);
-//		this->addComponent(renderer);
-//		renderer->setModel(model, args);
-//		if (Engine::instance().isRunning()) {
-//			renderer->start();
-//		}
-//	}
+	if (model == nullptr) {
+		if (m_model != nullptr) {
+			m_components.erase(std::type_index(typeid(Renderer)));
+		}
+		m_model = nullptr;
+
+	} else {
+		m_model = model;
+		auto renderer = model->getRenderer(args);
+		this->addComponent(renderer);
+		renderer->setModel(model, args);
+		if (Engine::instance().isRunning()) {
+			renderer->start();
+		}
+	}
 
 	//auto model = node->getModel();
 	//auto renderer = model->getRenderer(this);

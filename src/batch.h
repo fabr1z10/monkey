@@ -7,6 +7,9 @@
 
 class Shader;
 
+// every batch is associated to a camera. THis is important because
+// batch uses this camera to setup the projection view matrix.
+
 class IBatch {
 public:
 	IBatch(int verticesPerElement, const pybind11::kwargs&);

@@ -8,7 +8,7 @@
 
 class Renderer : public Component {
 public:
-    Renderer();
+    Renderer() = default;
     //virtual int setup(Shader*);
     virtual void draw(Shader*) {}
 
@@ -28,7 +28,7 @@ public:
 	using Base = Renderer;
 	std::string getAnimation() const;
     virtual void setAnimation(const std::string&) {}
-    virtual bool isComplete() const;
+    //virtual bool isComplete() const;
     void setShift(glm::vec3);
     void setZLayer(float);
 protected:

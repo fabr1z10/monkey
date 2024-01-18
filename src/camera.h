@@ -12,7 +12,7 @@ class Camera {
 public:
     explicit Camera(const py::kwargs& kwargs);
     ~Camera() =default;
-    virtual void setPosition(glm::vec3 eye, glm::vec3 direction, glm::vec3 up = glm::vec3(0, 1, 0));
+    void setPosition(glm::vec3 eye, glm::vec3 direction, glm::vec3 up = glm::vec3(0, 1, 0));
     void move(glm::vec2);
     void setBounds(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
     void init(Shader*);

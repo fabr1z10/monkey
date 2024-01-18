@@ -7,8 +7,8 @@
 //#include "runners/scheduler.h"
 //#include "batch.h"
 //#include "multinode.h"
-
-//void readDataFile(const std::string& id, const std::string& path);
+float prova(const pybind11::kwargs&);
+py::dict readDataFile(const std::string& path);
 Engine& getEngine();
 //std::shared_ptr<Sprite> getSprite(const std::string& id);
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id);

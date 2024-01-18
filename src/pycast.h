@@ -1,7 +1,55 @@
+#pragma once
+
+
 #include <pybind11/pybind11.h>
 #include <glm/glm.hpp>
+#include "vec.h"
 
 namespace PYBIND11_NAMESPACE { namespace detail {
+	template <> struct type_caster<vec2> {
+	public:
+		PYBIND11_TYPE_CASTER(vec2, const_name("v2"));
+		bool load(handle src, bool) {
+			PyObject *source = src.ptr();
+			value.x = PyFloat_AsDouble(PyTuple_GetItem(source, 0));
+			value.y = PyFloat_AsDouble(PyTuple_GetItem(source, 0));
+			return true;
+		}
+		static handle cast(vec2 src, return_value_policy /* policy */, handle /* parent */) {
+			return PyTuple_Pack(2, PyFloat_FromDouble(src.x), PyFloat_FromDouble(src.y));// PyLong_FromLong(src.long_value);
+		}
+	};
+	template <> struct type_caster<vec3> {
+	public:
+	PYBIND11_TYPE_CASTER(vec3, const_name("v3"));
+		bool load(handle src, bool) {
+			PyObject *source = src.ptr();
+			value.x = PyFloat_AsDouble(PyTuple_GetItem(source, 0));
+			value.y = PyFloat_AsDouble(PyTuple_GetItem(source, 1));
+			value.z = PyFloat_AsDouble(PyTuple_GetItem(source, 2));
+			return true;
+		}
+		static handle cast(vec3 src, return_value_policy /* policy */, handle /* parent */) {
+			return PyTuple_Pack(3, PyFloat_FromDouble(src.x), PyFloat_FromDouble(src.y), PyFloat_FromDouble(src.z));// PyLong_FromLong(src.long_value);
+		}
+	};
+	template <> struct type_caster<vec4> {
+	public:
+	PYBIND11_TYPE_CASTER(vec4, const_name("v4"));
+		bool load(handle src, bool) {
+			PyObject *source = src.ptr();
+			value.x = PyFloat_AsDouble(PyTuple_GetItem(source, 0));
+			value.y = PyFloat_AsDouble(PyTuple_GetItem(source, 1));
+			value.z = PyFloat_AsDouble(PyTuple_GetItem(source, 2));
+			value.w = PyFloat_AsDouble(PyTuple_GetItem(source, 3));
+			return true;
+		}
+		static handle cast(vec4 src, return_value_policy /* policy */, handle /* parent */) {
+			return PyTuple_Pack(4, PyFloat_FromDouble(src.x), PyFloat_FromDouble(src.y), PyFloat_FromDouble(src.z), PyFloat_FromDouble(src.w));// PyLong_FromLong(src.long_value);
+		}
+	};
+
+
         template <> struct type_caster<glm::vec2> {
         public:
             /**
@@ -52,14 +100,13 @@ namespace PYBIND11_NAMESPACE { namespace detail {
 			 * instance or return false upon failure. The second argument
 			 * indicates whether implicit conversions should be applied.
 			 */
-			bool load(handle src, bool) {
-				/* Extract PyObject from handle */
-				//PyObject *source = src.ptr();
-				auto tuple = src.cast<pybind11::tuple>();
-				value.x = tuple[0].cast<float>();
-				value.y = tuple[1].cast<float>();
-				value.z = tuple[2].cast<float>();
-				/* Ensure return code was OK (to avoid out-of-range errors etc) */
+			bool load(handle src, bool convert) {
+
+
+				PyObject *source = src.ptr();
+				value.x = PyFloat_AsDouble(PyTuple_GetItem(source, 0));
+				value.y = PyFloat_AsDouble(PyTuple_GetItem(source, 1));
+				value.z = PyFloat_AsDouble(PyTuple_GetItem(source, 2));
 				return true;
 			}
 

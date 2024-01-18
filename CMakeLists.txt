@@ -26,8 +26,10 @@ include_directories(${PYBIND_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include ${
 
 link_directories(${YAML_CPP_LIBRARY_DIR})
 
-file(GLOB MONKEY_SOURCE src/main.cpp src/assetmanager.cpp src/tex.cpp src/engine.cpp src/monkeyfu.cpp src/node.cpp src/component.cpp
-		src/bounds.cpp src/shader.cpp src/camera.cpp src/batch.cpp src/room.cpp src/enginedraw.cpp src/shaders/batchshader.cpp)
+file(GLOB MONKEY_SOURCE src/error.cpp src/util.cpp src/palette.cpp src/main.cpp src/assetmanager.cpp src/tex.cpp src/engine.cpp src/monkeyfu.cpp src/node.cpp src/component.cpp
+		src/bounds.cpp src/shader.cpp src/camera.cpp src/batch.cpp src/room.cpp src/enginedraw.cpp src/shaders/batchshader.cpp
+		src/batch/quadbatch.cpp src/spritesheet.cpp src/font.cpp src/models/sprite.cpp src/models/iquad.cpp src/components/sprite_renderer.cpp
+		src/shapes/aabb.cpp src/math/random.cpp src/nodes/text.cpp)
 
 pybind11_add_module(monkey ${MONKEY_SOURCE})
 

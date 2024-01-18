@@ -9,7 +9,7 @@
 class SpriteSheet {
 
 public:
-	explicit SpriteSheet(const std::string& file);
+	explicit SpriteSheet(const std::string& id, const std::string& file);
 	Tex* getTex();
 	std::shared_ptr<QuadBatch> getBatch();
 	std::shared_ptr<Sprite> getSprite(const std::string&);

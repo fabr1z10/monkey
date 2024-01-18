@@ -8,6 +8,7 @@
 //#include "models/modelmake.h"
 //#include <iostream>
 #include "monkeyfu.h"
+#include "nodes/text.h"
 //#include "shape.h"
 //#include "shapes/convexpoly.h"
 //#include "shapes/circle.h"
@@ -114,6 +115,8 @@ PYBIND11_MODULE(monkey, m) {
 //    m.def("read", &read_png);
 //    m.def("test",&add2, "i"_a = 1, "j"_a = 3);
     m.def("from_hex", &fromHex, py::arg("color"));
+    m.def("read_data_file", &readDataFile);
+    m.def("prova", &prova);
 	//m.def("get_sprite", &getSprite);
 //	m.def("get_polymesh", &getPolyMesh);
 //	m.def("get_multi", &getMulti);
@@ -135,9 +138,9 @@ PYBIND11_MODULE(monkey, m) {
 ////	m.attr("SHADER_TEXTURE_LIGHT") = static_cast<int>(ShaderType::SHADER_TEXTURE_LIGHT);
 ////    m.attr("SHADER_BATCH") = static_cast<int>(ShaderType::QUAD_SHADER);
 ////    m.attr("SHADER_LINEBATCH") = static_cast<int>(ShaderType::LINE_SHADER);
-//    m.attr("ALIGN_LEFT") = static_cast<int>(HAlign::LEFT);
-//	m.attr("ALIGN_CENTER") = static_cast<int>(HAlign::CENTER);
-//	m.attr("ALIGN_RIGHT") = static_cast<int>(HAlign::RIGHT);
+    m.attr("HALIGN_LEFT") = static_cast<int>(HAlign::LEFT);
+	m.attr("HALIGN_CENTER") = static_cast<int>(HAlign::CENTER);
+	m.attr("HALIGN_RIGHT") = static_cast<int>(HAlign::RIGHT);
 //	m.attr("VALIGN_TOP") = static_cast<int>(VAlign::TOP);
 //	m.attr("VALIGN_CENTER") = static_cast<int>(VAlign::CENTER);
 //	m.attr("VALIGN_BOTTOM") = static_cast<int>(VAlign::BOTTOM);
@@ -152,21 +155,27 @@ PYBIND11_MODULE(monkey, m) {
         .def("start", &Engine::start)
         .def("run", &Engine::run)
         .def("shutdown", &Engine::shutdown);
-//
-//    py::class_<Room, std::shared_ptr<Room>>(m, "Room")
-//        .def(py::init<>())
+
+	py::class_<Room, std::shared_ptr<Room>>(m, "Room")
+        .def(py::init<>())
 //        .def("add_spritesheet", &Room::addSpritesheet)
-//		.def("add_runner", &Room::addRunner)
-//		.def("add_camera", &Room::addCamera)
-//		.def("add_batch", &Room::addBatch)
+		.def("add_runner", &Room::addRunner)
+		.def("add_camera", &Room::addCamera)
+		.def("add_batch", &Room::addBatch)
 //		.def_property("on_start", nullptr, &Room::setOnStart)
 //        //.def("add_line_batch", &Room::addLinesBatch)
 //		.def("set_clear_color", &Room::setClearColor)
 //		.def("set_main_cam", &Room::setMainCam)
-//        .def("root", &Room::getRoot, py::return_value_policy::reference);
+        .def("root", &Room::getRoot, py::return_value_policy::reference);
 //
-//    py::class_<Node, std::shared_ptr<Node>>(m, "Node")
-//        .def(py::init<>())
+    py::class_<Node, std::shared_ptr<Node>>(m, "Node")
+        .def(py::init<>())
+        .def("set_position", &Node::setPosition)
+		.def("add", &Node::add);
+	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
+    	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
+    	        "batch"_a, "font"_a, "text"_a);
+
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
 //		.def_property("scale", &Node::getScale, &Node::setScale)
@@ -177,10 +186,10 @@ PYBIND11_MODULE(monkey, m) {
 //        .def_property_readonly("id", &Node::getId)
 //        .def_property("tag", &Node::getTag, &Node::setTag)
 //        .def_property("text", &Node::getText, &Node::setText)
-//        .def("add", &Node::add)
+
 //        .def("move", &Node::movea)
 //        .def("move_to", &Node::moveTo)
-//        .def("set_position", &Node::setPosition)
+
 //        .def("set_model", &Node::setModel)
 //        .def("rotate", &Node::rotate)
 //        .def("set_palette", &Node::setPalette)
@@ -224,15 +233,14 @@ PYBIND11_MODULE(monkey, m) {
 //
 //
 //
-//    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
-//        //.def("add", &IBatch::add);
-//	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
-//    py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
+    py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
+	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
+    py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
 //	py::class_<Batch<TriBatchVertexData>, IBatch, std::shared_ptr<Batch<TriBatchVertexData>>>(m, "tbatch");
 //
 //
-//    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "SpriteBatch")
-//        .def(py::init<const pybind11::kwargs&>());
+    py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "SpriteBatch")
+        .def(py::init<const pybind11::kwargs&>());
 //    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "LineBatch")
 //        .def(py::init<const pybind11::kwargs&>());
 //	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "TriangleBatch")
@@ -240,14 +248,13 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
 //		.def(py::init<const pybind11::kwargs&>());
 //
-//    py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
-//        .def("set_bounds", &Camera::setBounds)
-//        .def("set_position", &Camera::setPosition);
-//        //.def(py::init<const py::kwargs&>());
-//
-//    py::class_<OrthoCamera, Camera, std::shared_ptr<OrthoCamera>>(m, "CamOrtho")
-//        .def(py::init<float, float, const py::kwargs&>());
-//
+    py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
+        .def("set_bounds", &Camera::setBounds)
+        .def("set_position", &Camera::setPosition);
+
+    py::class_<OrthoCamera, Camera, std::shared_ptr<OrthoCamera>>(m, "CamOrtho")
+        .def(py::init<float, float, const py::kwargs&>());
+
 //    py::class_<PerspectiveCamera, Camera, std::shared_ptr<PerspectiveCamera>>(m, "CamPerspective")
 //        .def(py::init<const py::kwargs&>());
 //

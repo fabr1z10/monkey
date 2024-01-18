@@ -36,14 +36,16 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 //
 //}
 
-//pybind11::function Engine::getScript(const std::string &name) const {
+pybind11::function Engine::getScript(const std::string &name) const {
+
 //	return py_get<pybind11::function>(m_scripts, name);
-//}
+}
 
 
 void Engine::start() {
     // read the settings PY file
     try {
+    	_factory = py::module::import("factory");
         auto settings = py::module::import("settings");
         _deviceSize = py_get<glm::ivec2>(settings, "device_size");
         assert(_deviceSize[1] > 0);
@@ -55,6 +57,14 @@ void Engine::start() {
         _enableMouse = py_get<bool>(settings, "enable_mouse", false);
         _title = py_get<std::string>(settings, "title", "Unknown");
         m_settings = settings;
+		if (pybind11::hasattr(_factory, "init")) {
+			_factory.attr("init")();
+		}
+
+		auto assetDirs = py_get<std::vector<std::string>>(m_settings, "asset_directories", std::vector<std::string>());
+		for (const auto& dir : assetDirs) {
+			AssetManager::instance().addDirectory(dir);
+		}
 
     } catch (std::runtime_error& err) {
         GLIB_FAIL(err.what());
@@ -82,9 +92,7 @@ void Engine::start() {
 
 
 
-//	if (pybind11::hasattr(settings, "init")) {
-//		settings.attr("init").cast<pybind11::function>()();
-//	}
+
 
 //	auto dataFiles = py_get<pybind11::dict>(settings, "data", pybind11::dict());
 //	for (const auto& d : dataFiles) {
@@ -229,7 +237,7 @@ void Engine::run() {
                 //glBindFramebuffer(GL_FRAMEBUFFER, _fb);
                 //glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
-                //m_room->update(_frameTime);
+                _room->update(_frameTime);
 
                 _engineDraw->draw(_room.get());
                 glfwSwapBuffers(window);
@@ -259,6 +267,7 @@ void Engine::run() {
     //_engineDraw->shutdown();
 	//m_game.release();
 	m_settings.release();
+    _factory.release();
     glfwTerminate();
 }
 
@@ -281,8 +290,13 @@ void Engine::loadRoom() {
 //    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
 //    //for (auto& batch : _batches) batch.clear();
     _room = std::make_shared<Room>();
+    auto roomBuilder = _factory.attr("create_room");
+    if (!roomBuilder) {
+    	GLIB_FAIL("no function create_room found in factory module!");
+    }
+    roomBuilder(_room);
 //    m_game.attr(_roomId.c_str())(m_room);
-//	//_engineDraw->init(m_room.get());
+	_engineDraw->init(_room.get());
 //
 //	//m_room = m_game.attr(m_roomId.c_str())().cast<std::shared_ptr<Room>>();
 //    // init shaders

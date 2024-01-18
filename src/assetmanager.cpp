@@ -10,6 +10,14 @@ AssetManager::AssetManager() {
 	//_assetDirectory = py_get<std::string>(settings, "asset_directory");
 }
 
+void AssetManager::addDirectory(const std::string & dir) {
+	std::stringstream str;
+	str << dir;
+	if (!dir.empty() && dir.back() != '/') {
+		str << "/";
+	}
+	_assetDirectories.push_back(str.str());
+}
 
 std::string AssetManager::fileExists(const std::string & path) const {
     for (const auto& dir : _assetDirectories) {
@@ -32,8 +40,23 @@ std::shared_ptr<Tex> AssetManager::getTex(const std::string & file) {
 }
 
 
-//std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &file) {
-//	//	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
+std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id) {
+	// have I loaded already this sheet?
+	auto it = _spritesheets.find(id);
+	if (it != _spritesheets.end()) {
+		return it->second;
+	}
+	// find file
+	std::string fileName = fileExists(id + ".yaml");
+	M_Assert(!fileName.empty(), (" -- cannot find spritesheet: " + id).c_str());
+
+	auto sheet = std::make_shared<SpriteSheet>(id, fileName);
+	_spritesheets[id] = sheet;
+	return sheet;
+
+
+}
+
 ////	for (const auto& sheet : sheets) {
 ////
 ////		auto id = sheet.first.cast<std::string>();
@@ -158,20 +181,12 @@ std::shared_ptr<Tex> AssetManager::getTex(const std::string & file) {
 //
 //}
 //
-//std::shared_ptr<Font> AssetManager::getFont(const std::string& id) {
-//	auto u = id.find('/');
-//	auto sheet = id.substr(0, u);
-//	auto fontName = id.substr(u+1);
-//	return m_spritesheets.at(sheet)->getFont(fontName);
-////    auto it = m_fonts.find(file);
-////    if (it == m_fonts.end()) {
-////        std::cout << " --- not cached. Create new!\n";
-////        auto font = std::make_shared<Font>(file);
-////        m_fonts[file] = font;
-////        return font;
-////    }
-////    return it->second;
-//}
+std::shared_ptr<Font> AssetManager::getFont(const std::string& id) {
+	auto u = id.find('/');
+	auto sheet = id.substr(0, u);
+	auto fontName = id.substr(u+1);
+	return _spritesheets.at(sheet)->getFont(fontName);
+}
 //
 //
 //std::shared_ptr<PolyMesh> AssetManager::getPolyMesh(const std::string& id) {
