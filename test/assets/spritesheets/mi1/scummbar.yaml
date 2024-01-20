@@ -1,0 +1,163 @@
+sheet: 'scummbar.png'
+sprites:
+  door:
+    animations:
+      closed:
+        frames:
+          - tex: [1,194,38,47]
+      open:
+        frames:
+          - tex: [1,146,38,47]
+  door_kitchen:
+    animations:
+      closed:
+        frames:
+          - tex: [641,1,35,69]
+      open:
+        frames:
+          - tex: [677,1,35,69]
+  mancomb:
+    animations:
+      idle_1:
+        frames:
+          - tick_min: 50
+            max_ticks: 100
+            tex: [43,146,33,40]
+          - tick_min: 10
+            max_ticks: 10
+            tex: [79,146,36,40]
+            anchor: [1,0]
+
+  estevan:
+    animations:
+      idle_1:
+        frames:
+          - tex: [119,146,35,27]
+  cobb:
+    animations:
+      idle_1:
+        frames:
+          - tex: [42,188,29,38]
+  fireplace:
+    animations:
+      idle:
+        frames:
+          - tex: [290, 260, 32, 26 ]
+          - tex: [324, 260, 32, 26 ]
+          - tex: [358, 260, 32, 26 ]
+  pirate1:
+    animations:
+      idle_1:
+        frames:
+          - tex: [138,177,26,27]
+            tick_min: 50
+            max_ticks: 100
+          - tex: [166,177,27,27]
+          - tex: [195,177,26,27]
+            tick_min: 50
+            max_ticks: 100
+          - tex: [166,177,27,27]
+  pirate2:
+    animations:
+      idle_1:
+        frames:
+          - tex: [238,145,36,37]
+            tick_min: 50
+            max_ticks: 100
+          - tex: [276,145,36,37]
+            tick_min: 50
+            max_ticks: 100
+  pirate3:
+    animations:
+      idle_1:
+        frames:
+          - tex: [226,183,40,23]
+      idle_2:
+        frames:
+          - tex: [268,183,40,23]
+  pirate4:
+    animations:
+      idle_1:
+        frames:
+          - tex: [138,208,33,25]
+      idle_2:
+        frames:
+          - tex: [173,208,33,25]
+          - tex: [208,208,33,25]
+  pirate5:
+    animations:
+      idle_1:
+        frames:
+          - tex: [315,145,35,27]
+      idle_2:
+        loop: false
+        frames:
+          - tex: [352,145,35,27]
+          - tex: [389,146,35,26]
+  pirate6:
+    animations:
+      idle_1:
+        frames:
+          - tex: [246,208,50,26]
+  pirate7:
+    animations:
+      idle_1:
+        frames:
+          - tex: [339,174,20,21]
+      idle_2:
+        loop: false
+        frames:
+          - tex: [361,174,20,22]
+          - tex: [316,174,20,21]
+  pirate8:
+    animations:
+      idle_1:
+        frames:
+          - tex: [303,197,28,32]
+      idle_2:
+        loop: false
+        frames:
+          - tex: [332,197,28,32]
+          - tex: [363,197,29,32]
+  pirate9:
+    animations:
+      idle_1:
+        frames:
+          - tex: [427,146,30,33]
+      idle_2:
+        loop: false
+        frames:
+          - tex: [458,146,30,35]
+          - tex: [490,146,30,39]
+  important_pirate1:
+    animations:
+      idle:
+        frames:
+          - tex: [402,188,38,54]
+            ticks: 50
+          - tex: [442,188,37,54]
+          - tex: [480,187,38,55]
+          - tex: [442,188,37,54]
+          - tex: [402,188,38,54]
+            ticks: 50
+          - tex: [519,188,39,54]
+            ticks: 50
+  important_pirate2:
+    animations:
+      idle:
+        frames:
+          - tex: [604,146,34,53]
+            ticks: 50
+          - tex: [604,201,34,53]
+          - tex: [639,146,35,53]
+            anchor: [1,0]
+            ticks: 50
+          - tex: [604,201,34,53]
+  important_pirate3:
+    animations:
+      idle:
+        frames:
+          - tex: [640,203,35,51]
+            ticks: 50
+          - tex: [676,203,35,51]
+            ticks: 50

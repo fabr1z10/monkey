@@ -1,0 +1,17 @@
+sheet: 'mancomb.png'
+sprites:
+  mancomb:
+    animations:
+      neutral:
+        frames:
+          - tex: [1,145,78,78]
+      blink:
+        loop: -1
+        frames:
+          - tex: [80,145,78,78]
+          - tex: [159,145,78,78]
+          - tex: [80,145,78,78]
+          - tex: [1,145,78,78]
+      laugh:
+        frames:
+          - tex: [238,145,78,78]

@@ -1,0 +1,31 @@
+id: '001'
+sheet: '001.png'
+sprites:
+  flag1:
+    animations:
+      default:
+        frames:
+          - tex: [2,168,24,9]
+          - tex: [2,178,22,9]
+          - tex: [2,188,20,9]
+          - tex: [2,198,22,9]
+          - tex: [2,208,22,9]
+  flag2:
+    animations:
+      default:
+        frames:
+          - tex: [27,168,24,9]
+          - tex: [27,178,22,9]
+          - tex: [27,188,22,9]
+          - tex: [27,198,22,9]
+          - tex: [27,208,24,9]
+  flag3:
+    animations:
+      default:
+        frames:
+          - tex: [52,168,22,9]
+          - tex: [52,178,22,9]
+          - tex: [52,188,22,9]
+          - tex: [52,198,22,9]
+          - tex: [53,208,24,9]
+

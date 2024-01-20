@@ -12,6 +12,15 @@ enum class HAlign {
 	RIGHT = 2
 };
 
+
+enum class Anchor {
+	TOPLEFT = 0,
+	TOPRIGHT = 1,
+	BOTTOMLEFT = 2,
+	BOTTOMRIGHT = 3,
+	CENTER = 4
+};
+
 class Text : public Node {
 
 public:
@@ -29,8 +38,10 @@ private:
 	Font* _font;
 	int _pal;
 	glm::vec2 _size;
+	glm::vec3 _offset;
 	int _lines;
 	HAlign _hAlign;
+	Anchor _anchor;
 	std::string _sheetId;
 	std::string _batchId;
 };

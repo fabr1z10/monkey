@@ -1,0 +1,205 @@
+sheet: 'kitchen.png'
+sprites:
+  door:
+    animations:
+      closed:
+        frames:
+          - tex: [40,145,37,53]
+      open:
+        frames:
+          - tex: [1,145,37,53]
+  door_pier:
+    animations:
+      closed:
+        frames:
+          - tex: [112,145,32,60]
+      open:
+        frames:
+          - tex: [78,145,32,60]
+  potostew:
+    animations:
+      default:
+        frames:
+          - tex: [181,145,29,17]
+          - tex: [181,164,29,17]
+          - tex: [181,183,29,17]
+  meat:
+    animations:
+      default:
+        frames:
+          - tex: [212,155,24,6]
+  fish:
+    animations:
+      default:
+        frames:
+          - tex: [211,146,12,7]
+  pot:
+    animations:
+      default:
+        frames:
+          - tex: [227,146,15,7]
+  plank:
+    animations:
+      down:
+        frames:
+          - tex: [65,235,67,24]
+      up:
+        next: down
+        frames:
+          - tex: [65,210,61,24]
+            ticks: 50
+  seagull:
+    animations:
+      fly:
+        #next: eat
+        on_end: seagull_land
+        frames:
+          - tex: [3,220,20,14]
+            anchor: [-307,-37]
+          - tex: [3,236,25,12]
+            anchor: [-295,-35]
+          - tex: [3,220,20,14]
+            anchor: [-292,-33]
+          - tex: [3,250,19,25]
+            anchor: [-285,-29]
+          - tex: [3,277,19,19]
+            anchor: [-277,-32]
+          - tex: [3,250,19,25]
+            anchor: [-269,-22]
+          - tex: [3,220,20,14]
+            anchor: [-260,-25]
+          - tex: [3,236,25,12]
+            anchor: [-247,-23]
+          - tex: [3,220,20,14]
+            anchor: [-244,-21]
+          - tex: [3,277,19,19]
+            anchor: [-245,-23]
+          - tex: [3,277,19,19]
+            anchor: [-250,-17]
+          - tex: [3,298,23,15]
+            anchor: [-248,-14]
+          - tex: [3,315,25,11]
+            anchor: [-246,-13]
+          - tex: [3,298,23,15]
+            anchor: [-243,-12]
+          - tex: [3,328,19,9]
+            anchor: [-243,-10]
+      eat:
+        frames:
+          - tex: [3, 339, 15, 13]
+            anchor: [-245, -10]
+          - tex: [25,223,18,11]
+            anchor: [-242, -10]
+          - tex: [30,238,17,10]
+            anchor: [-243, -10]
+          - tex: [24,250,19,9]
+            anchor: [-242, -10]
+          - tex: [24,261,19,10]
+            anchor: [-242, -10]
+          - tex: [24,273,17,10]
+            anchor: [-243, -10]
+          - tex: [24,285,18,11]
+            anchor: [-242, -10]
+          - tex: [28,298,15,13]
+            anchor: [-245, -10]
+          - tex: [30,312,11,17]
+            anchor: [-249, -10]
+          - tex: [24,331,12,17]
+            anchor: [-248, -10]
+          - tex: [49,224,12,17]
+            anchor: [-248, -10]
+      jump1:
+        #next: eat
+        on_end: seagull_land
+        frames:
+          - tex: [3,339,15,13]
+            anchor: [-245,-40]
+          - tex: [3,339,15,13]
+            anchor: [-245,-64]
+          - tex: [3,339,15,13]
+            anchor: [-245,-94]
+          - tex: [3,339,15,13]
+            anchor: [-245,-100]
+          - tex: [3,277,19,19]
+            anchor: [-237,-82]
+          - tex: [3,277,19,19]
+            anchor: [-237,-64]
+          - tex: [3,277,19,19]
+            anchor: [-237,-40]
+          - tex: [3,277,19,19]
+            anchor: [-237,-10]
+      jump2:
+        #next: eat
+        on_end: seagull_land
+        frames:
+          - tex: [3,339,15,13]
+            anchor: [-245,-40]
+          - tex: [3,339,15,13]
+            anchor: [-245,-64]
+          - tex: [3,339,15,13]
+            anchor: [-245,-94]
+          - tex: [3,339,15,13]
+            anchor: [-245,-100]
+          - tex: [47,301,19,19]
+            anchor: [-249,-98]
+          - tex: [47,301,19,19]
+            anchor: [-255,-94]
+          - tex: [47,301,19,19]
+            anchor: [-261,-86]
+          - tex: [47,301,19,19]
+            anchor: [-267,-74]
+          - tex: [47,301,19,19]
+            anchor: [-273,-58]
+          - tex: [47,301,19,19]
+            anchor: [-279,-38]
+          - tex: [46,291,23,7]
+            anchor: [-268,-34]
+          - tex: [3,250,19,25]
+            anchor: [-259,-27]
+          - tex: [3,220,20,14]
+            anchor: [-254,-23]
+          - tex: [3,236,25,12]
+            anchor: [-245,-15]
+          - tex: [3,277,19,19]
+            anchor: [-250,-17]
+          - tex: [3,298,23,15]
+            anchor: [-248,-14]
+          - tex: [3,315,23,15]
+            anchor: [-246,-13]
+          - tex: [3,298,23,15]
+            anchor: [-244,-12]
+          - tex: [3,328,19,9]
+            anchor: [-243,-11]
+      leave:
+        on_end: seagull_leave
+        frames:
+          - tex: [3,339,15,13]
+            anchor: [-245,-10]
+          - tex: [52,244,7,13]
+            anchor: [-245,-10]
+          - tex: [46,259,15,13]
+            anchor: [-245,-10]
+          - tex: [48,274,7,13]
+            anchor: [-245,-10]
+          - tex: [46,259,15,13]
+            anchor: [-245,-10]
+          - tex: [52,244,7,13]
+            anchor: [-245,-10]
+          - tex: [47, 301, 19, 19]
+            anchor: [-247,-15]
+          - tex: [47, 301, 19, 19]
+            anchor: [-257,-20]
+          - tex: [47, 301, 19, 19]
+            anchor: [-267,-25]
+          - tex: [47, 301, 19, 19]
+            anchor: [-277,-30]
+          - tex: [47, 301, 19, 19]
+            anchor: [-287,-35]
+          - tex: [47, 301, 19, 19]
+            anchor: [-297,-40]
+          - tex: [47, 301, 19, 19]
+            anchor: [-307,-45]
+          - tex: [47, 301, 19, 19]
+            anchor: [-317,-50]
+          - tex: [47, 301, 19, 19]
+            anchor: [-327,-55]

@@ -48,7 +48,7 @@ public:
     //void setCamera(std::shared_ptr<Camera>);
     pybind11::object getUserData();
     void setUserData(pybind11::object);
-    void setPosition(float, float, float);
+    virtual void setPosition(float, float, float);
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
 	void rotate(float angle, glm::vec3 axis);

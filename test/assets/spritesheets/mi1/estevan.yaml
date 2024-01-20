@@ -1,0 +1,17 @@
+sheet: 'estevan.png'
+sprites:
+  estevan:
+    animations:
+      neutral:
+        frames:
+          - tex: [1,145,92,94]
+      blink:
+        loop: -1
+        frames:
+          - tex: [94,145,92,94]
+          - tex: [187,145,92,94]
+          - tex: [94,145,92,94]
+          - tex: [1,145,92,94]
+      scared:
+        frames:
+          - tex: [280,145,92,94]

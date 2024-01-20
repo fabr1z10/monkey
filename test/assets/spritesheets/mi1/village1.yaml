@@ -1,0 +1,10 @@
+sheet: 'village1.png'
+sprites:
+  door:
+    animations:
+      closed:
+        frames:
+          - tex: [239,183,31,52]
+      open:
+        frames:
+          - tex: [207,183,31,52]

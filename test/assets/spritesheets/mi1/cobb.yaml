@@ -1,0 +1,15 @@
+sheet: 'cobb.png'
+sprites:
+  cobb:
+    animations:
+      neutral:
+        frames:
+          - tex: [1,145,78,70]
+      blink:
+        loop: -1
+        frames:
+          - tex: [80,145,78,70]
+          - tex: [1,145,78,70]
+      excited:
+        frames:
+          - tex: [159,145,78,70]

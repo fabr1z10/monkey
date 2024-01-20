@@ -23,6 +23,8 @@ Text::Text(const std::string &batchId, const std::string& font, const std::strin
 		_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
 	}
 
+	_anchor = static_cast<Anchor>(py_get_dict<int>(args, "anchor", static_cast<int>(Anchor::TOPLEFT)));
+
 	updateText(text);
 
 
@@ -34,6 +36,7 @@ void Text::updateText(const std::string & text) {
 	auto s32 = getString32(text);
 
 	float crl = 0.f;		// current row length
+	float cel = 0.f;
 	float cwl = 0.f;		// current world length
 	int eol = -1;		// eol index
 	int cws = -1;
@@ -50,6 +53,7 @@ void Text::updateText(const std::string & text) {
 			rows.emplace_back(TextRow(i+1));
 			eol = 0;
 			crl = 0;
+			cel = 0;
 			cwl = 0;
 		} else {
 
@@ -57,6 +61,7 @@ void Text::updateText(const std::string & text) {
 
 			if (c == 0x20) {
 				eol = i;
+				cel = crl;
 				crl += charInfo.advance;
 				cws = -1;
 				cwl = 0;
@@ -66,14 +71,16 @@ void Text::updateText(const std::string & text) {
 				cwl += charInfo.advance;
 				if (crl > _width) {
 					rows.back().indexEnd = eol;
+					rows.back().length = cel;
 					rows.emplace_back(TextRow(cws));
 					crl = cwl;
+					cel = 0;
 				}
 			}
 		}
 		i++;
 	}
-
+	rows.back().length = crl;
 
 
 	// now that we have defined the rows we can create the quads
@@ -108,7 +115,9 @@ void Text::updateText(const std::string & text) {
 
 
 	int rowCount {0};
+	float maxRowLength = 0;
 	for (const auto& row : rows) {
+		maxRowLength = std::max(row.length, maxRowLength);
 		int ec = row.indexEnd == -1 ? text.length() : row.indexEnd;
 		int len = ec - row.indexStart;
 		if (len > 0) {
@@ -118,6 +127,19 @@ void Text::updateText(const std::string & text) {
 	}
 	std::cout << "n rows = " << rowCount << "\n";
 	setModel(model, pybind11::dict("batch"_a=_batchId));
+
+	_size.x = (_width == std::numeric_limits<float>::infinity()) ? maxRowLength : _width;
+	_size.y = rows.size() * _lineHeight;
+
+	switch (_anchor) {
+		case Anchor::CENTER:
+			_offset.x = - _size.x * 0.5f;
+			_offset.y = - _size.y * 0.5f;
+			break;
+	}
+
+
+
 //
 //	auto size = glm::vec2(0.f);
 //

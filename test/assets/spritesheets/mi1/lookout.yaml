@@ -1,0 +1,10 @@
+sheet: 'lookout.png'
+sprites:
+  fire:
+    animations:
+      default:
+        frames:
+          - tex: [ 143,150,24,32 ]
+          - tex: [ 169,150,24,32 ]
+          - tex: [ 195,150,24,32 ]
+          - tex: [ 221,150,24,32 ]
