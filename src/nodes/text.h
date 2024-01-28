@@ -3,6 +3,7 @@
 #include "../node.h"
 #include "../font.h"
 
+
 // align each row left (default), center, or right w.r.t. box
 // this only works if a width is specified
 
@@ -42,6 +43,9 @@ private:
 	int _lines;
 	HAlign _hAlign;
 	Anchor _anchor;
-	std::string _sheetId;
+	//std::string _sheetId;
 	std::string _batchId;
+    void setPosition(float, float, float) override;
+
+
 };

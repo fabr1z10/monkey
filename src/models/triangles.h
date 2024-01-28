@@ -13,7 +13,7 @@ public:
 		glm::vec3 P2;
 		glm::vec4 color;
 	};
-	TrianglesModel() : Model() {}
+	TrianglesModel(const std::string& batchId) : Model(), _batchId(batchId) {}
 	explicit TrianglesModel(const pybind11::kwargs&);
 	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
 	int getTriangleCount() const;
@@ -21,6 +21,7 @@ public:
 	void init(const glm::vec4& color, const std::vector<float>& data);
 
 private:
+    std::string _batchId;
 	int _triangleCount;
 	std::vector<Tri> _triangles;
 
@@ -36,7 +37,7 @@ inline const TrianglesModel::Tri & TrianglesModel::getTriangle(int i) const {
 
 class TrianglesModelRenderer : public BatchRenderer<TriangleBatch> {
 public:
-	explicit TrianglesModelRenderer(const pybind11::kwargs&);
+	explicit TrianglesModelRenderer(const std::string&);
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
 	std::type_index getType() override;
 	void update(double) override;

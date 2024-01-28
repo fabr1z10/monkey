@@ -269,6 +269,8 @@ void Room::start() {
 	for (const auto& runner : m_runners) {
 		runner.second->start();
 	}
+    iterate_dfs([] (Node* n) { n->start(); });
+
     if (m_onStart) m_onStart();
 
 }

@@ -7,8 +7,13 @@
 
 
 
-IQuads::IQuads(const std::string &sheetId) : Model() {
-	_sheet = AssetManager::instance().getSpritesheet(sheetId).get();
+IQuads::IQuads(const std::string &batchId) : Model(), _batchId(batchId) {
+
+
+
+    auto* batch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
+
+    _sheet = batch->getSheet();
 	auto * tex = _sheet->getTex();
 	_texWidth = tex->getWidth();
 	_texHeight = tex->getHeight();
@@ -20,20 +25,21 @@ void IQuads::addQuad(glm::vec4 texCoords, const pybind11::kwargs &kwargs) {
 
 	QuadInfo info;
 	bool normalized = py_get_dict<bool>(kwargs, "normalized", false);
+	glm::vec4 tc;
 	if (!normalized) {
-		float tx0 = texCoords[0] / _texWidth;
-		float tx1 = (texCoords[0] + texCoords[2]) / _texWidth;
-		float ty0 = texCoords[1] / _texHeight;
-		float ty1 = (texCoords[1] + texCoords[3]) / _texHeight;
-		texCoords = glm::vec4(tx0, tx1, ty0, ty1);
+		float tx0 = texCoords.x / _texWidth;
+		float tx1 = (texCoords.x + texCoords.z) / _texWidth;
+		float ty0 = texCoords.y / _texHeight;
+		float ty1 = (texCoords.y + texCoords.w) / _texHeight;
+		tc = glm::vec4(tx0, tx1, ty0, ty1);
 	} else {
-		texCoords = glm::vec4(texCoords[0], texCoords[0] + texCoords[2], texCoords[1], texCoords[1] + texCoords[3]);
+		tc = glm::vec4(texCoords.x, texCoords.x + texCoords.z, texCoords.y, texCoords.y + texCoords.w);
 	}
 
-	info.textureCoordinates = texCoords;
+	info.textureCoordinates = tc;
 	info.repeat = py_get_dict<glm::vec2>(kwargs, "repeat", glm::vec2(1.f));
 	info.size = py_get_dict<glm::vec2>(kwargs, "size", glm::vec2(texCoords[2], texCoords[3]));
-	info.location = py_get_dict<vec3>(kwargs, "pos", vec3());
+	info.location = py_get_dict<glm::vec3>(kwargs, "pos", glm::vec3());
 	info.palette = py_get_dict<int>(kwargs, "pal", 0);
 	info.fliph = py_get_dict<bool>(kwargs, "fliph", false);
 	info.flipv = py_get_dict<bool>(kwargs, "flipv", false);
@@ -41,7 +47,7 @@ void IQuads::addQuad(glm::vec4 texCoords, const pybind11::kwargs &kwargs) {
 }
 
 
-IQuadsRenderer::IQuadsRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args) {
+IQuadsRenderer::IQuadsRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId) {
 	auto tex = _batch->getSheet()->getTex();
 
 }
@@ -90,7 +96,7 @@ int Frame::getTicks() const {
 }
 
 std::shared_ptr<Renderer> IQuads::getRenderer(const pybind11::kwargs& args) {
-    return std::make_shared<IQuadsRenderer>(args);
+    return std::make_shared<IQuadsRenderer>(_batchId);
 
 }
 

@@ -5,11 +5,11 @@
 
 #include "../shapes/compound.h"
 #include "../shapes/aabb.h"
-#include "../shapes3d/aabb3d.h"
+#include "../shapes/aabb3d.h"
 #include "../shapes/polygon.h"
 #include "../shapes/polyline.h"
 #include "../pyhelper.h"
-#include "../models/multi.h"
+//#include "../models/multi.h"
 #include "../models/lines.h"
 
 #include "lines.h"
@@ -44,12 +44,12 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
 
 }
 
-std::shared_ptr<Model> ModelMaker::makeModel(const std::shared_ptr<Shape> & shape, glm::vec4 color, FillType fillType) {
-    return ModelMaker::instance().make(shape, color, fillType);
+std::shared_ptr<Model> ModelMaker::makeModel(const std::string& batchId, const std::shared_ptr<Shape> & shape, glm::vec4 color, FillType fillType) {
+    return ModelMaker::instance().make(batchId, shape, color, fillType);
 }
 
-std::shared_ptr<Model> ModelMaker::make(const std::shared_ptr<Shape>& shape, glm::vec4 color, FillType ft) {
-
+std::shared_ptr<Model> ModelMaker::make(const std::string& batchId, const std::shared_ptr<Shape>& shape, glm::vec4 color, FillType ft) {
+    _batchId = batchId;
 	auto& op = ft == FillType::OUTLINE ? _dss : _dssolid;
 	auto it = op.find(shape->get_type_index());
 	if (it != op.end()) {
@@ -81,7 +81,7 @@ std::shared_ptr<Model> ModelMaker::makePolyLine(const std::shared_ptr<Shape> &s,
 	data.push_back(outline->back().P1.x);
 	data.push_back(outline->back().P1.y);
 	data.push_back(0.f);
-	auto lines = std::make_shared<PolyChain>();
+	auto lines = std::make_shared<PolyChain>(_batchId);
 	lines->initChain(color, data, false);//1, pts, glm::vec4(1.f));
 	return lines;
 }
@@ -92,7 +92,7 @@ std::shared_ptr<Model> ModelMaker::makeAABBSolid(const std::shared_ptr<Shape> &s
 	auto bounds = s->getBounds();
 	std::vector<float> data {bounds.min.x, bounds.min.y, bounds.max.x, bounds.min.y,
 						  bounds.max.x, bounds.max.y, bounds.min.x, bounds.max.y};
-	auto triangles = std::make_shared<TrianglesModel>();
+	auto triangles = std::make_shared<TrianglesModel>(_batchId);
 	triangles->init(color, data);//1, pts, glm::vec4(1.f));
 	return triangles;
 
@@ -108,7 +108,7 @@ std::shared_ptr<Model> ModelMaker::makePolySolid(const std::shared_ptr<Shape> &s
 		data.push_back(point.y);
 	}
 
-	auto triangles = std::make_shared<TrianglesModel>();
+	auto triangles = std::make_shared<TrianglesModel>(_batchId);
 	triangles->init(color, data);//1, pts, glm::vec4(1.f));
 	return triangles;
 }
@@ -122,7 +122,7 @@ std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm
 		data.push_back(point.y);
 		data.push_back(0.f);
 	}
-	auto lines = std::make_shared<PolyChain>();
+	auto lines = std::make_shared<PolyChain>(_batchId);
 	lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
 
 	for (size_t i = 0; i < p->getHoleCount(); ++i) {
@@ -148,7 +148,7 @@ std::shared_ptr<Model> ModelMaker::makeAABB(const std::shared_ptr<Shape>& s, glm
         b.max.x, b.max.y, 0.f,
         b.min.x, b.max.y, 0.f
     };
-    auto lines = std::make_shared<PolyChain>();
+    auto lines = std::make_shared<PolyChain>(_batchId);
     lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
 
     return lines;
@@ -183,7 +183,7 @@ std::shared_ptr<Model> ModelMaker::makeAABB3D(const std::shared_ptr<Shape> &s, g
 		b.max.x, b.max.y, b.max.z,
 
 	};
-	auto lines = std::make_shared<LineModel>();
+	auto lines = std::make_shared<LineModel>(_batchId);
 	lines->init(color, data);
 	//lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
 
@@ -268,7 +268,7 @@ std::shared_ptr<Model> ModelMaker::makeConvexPoly(const std::shared_ptr<Shape>& 
 //    //model->generateBuffers(vertices, elements);
 //    return model;
 
-    auto lmodel = std::make_shared<PolyChain>();
+    auto lmodel = std::make_shared<PolyChain>(_batchId);
     lmodel->initChain(color, data, closed);
 
     return lmodel;
@@ -285,7 +285,7 @@ std::shared_ptr<Model> ModelMaker::makeCircle(const std::shared_ptr<Shape>& s, g
     float angle = 0.0f;
 
 
-    auto lmodel = std::make_shared<PolyChain>();
+    auto lmodel = std::make_shared<PolyChain>(_batchId);
 
     std::vector<float> data;
 

@@ -29,7 +29,7 @@ Controller2D::~Controller2D() {
 std::shared_ptr<Model> Controller2D::getDebugModel() {
 	auto shape = std::make_shared<AABB>(-m_center.x, -m_center.x + m_size.x, -m_center.y, -m_center.y + m_size.y);
 	auto& m = ModelMaker::instance();
-	auto model = m.make(shape, glm::vec4(1.f, 0.f, 0.f, 1.f), FillType::OUTLINE);
+	auto model = m.make(_batchId, shape, glm::vec4(1.f, 0.f, 0.f, 1.f), FillType::OUTLINE);
 	return model;
 }
 

@@ -13,7 +13,8 @@
 //#include "shapes/convexpoly.h"
 //#include "shapes/circle.h"
 //#include "model.h"
-//#include "models/tiled.h"
+#include "models/iquad.h"
+#include "models/sprite.h"
 //#include "runners/collision_engine.h"
 //#include "components/sprite_collider.h"
 //#include "components/controller.h"
@@ -73,7 +74,10 @@
 //#include "models/tilemap.h"
 //#include "components/mariocontroller.h"
 //#include "shapes/polyline.h"
-//#include "components/controllers/sierra2d.h"
+#include "components/controllers/sierra2d.h"
+#include "models/modelmake.h"
+#include "shapes/convexpoly.h"
+#include "shapes/polyline.h"
 //#include "actions/sierra.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
@@ -117,7 +121,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("from_hex", &fromHex, py::arg("color"));
     m.def("read_data_file", &readDataFile);
     m.def("prova", &prova);
-	//m.def("get_sprite", &getSprite);
+	m.def("get_sprite", &getSprite);
 //	m.def("get_polymesh", &getPolyMesh);
 //	m.def("get_multi", &getMulti);
 //	m.def("get_node", &getNode, py::return_value_policy::reference);
@@ -131,7 +135,7 @@ PYBIND11_MODULE(monkey, m) {
 
 	m.attr("SHADER_BATCH_QUAD_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_PALETTE);
 //    m.attr("SHADER_BATCH_QUAD_NO_PALETTE") = static_cast<int>(ShaderType::BATCH_QUAD_NO_PALETTE);
-//    m.attr("SHADER_BATCH_LINES") = static_cast<int>(ShaderType::BATCH_LINES);
+    m.attr("SHADER_BATCH_LINES") = static_cast<int>(ShaderType::BATCH_LINES);
 //
 //	//m.attr("SHADER_BATCH_COLOR_TRI") = static_cast<int>(ShaderType::BATCH_COLOR_TRI);
 //	m.attr("SHADER_SKELETAL") = static_cast<int>(ShaderType::SHADER_SKELETAL);
@@ -141,14 +145,20 @@ PYBIND11_MODULE(monkey, m) {
     m.attr("HALIGN_LEFT") = static_cast<int>(HAlign::LEFT);
 	m.attr("HALIGN_CENTER") = static_cast<int>(HAlign::CENTER);
 	m.attr("HALIGN_RIGHT") = static_cast<int>(HAlign::RIGHT);
+
+	m.attr("ANCHOR_TOPLEFT") = static_cast<int>(Anchor::TOPLEFT);
+    m.attr("ANCHOR_TOPRIGHT") = static_cast<int>(Anchor::TOPRIGHT);
+    m.attr("ANCHOR_BOTTOMLEFT") = static_cast<int>(Anchor::BOTTOMLEFT);
+    m.attr("ANCHOR_BOTTOMRIGHT") = static_cast<int>(Anchor::BOTTOMRIGHT);
+    m.attr("ANCHOR_CENTER") = static_cast<int>(Anchor::CENTER);
 //	m.attr("VALIGN_TOP") = static_cast<int>(VAlign::TOP);
 //	m.attr("VALIGN_CENTER") = static_cast<int>(VAlign::CENTER);
 //	m.attr("VALIGN_BOTTOM") = static_cast<int>(VAlign::BOTTOM);
 //
-//	py::enum_<FillType>(m, "FillType")
-//		.value("Outline", FillType::OUTLINE)
-//		.value("Solid", FillType::SOLID)
-//		.export_values();
+	py::enum_<FillType>(m, "FillType")
+		.value("Outline", FillType::OUTLINE)
+		.value("Solid", FillType::SOLID)
+		.export_values();
 //
     py::class_<Engine>(m, "Engine")
         //.def(py::init<>())
@@ -171,7 +181,11 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
         .def(py::init<>())
         .def("set_position", &Node::setPosition)
-		.def("add", &Node::add);
+        .def("add_component", &Node::addComponent)
+        .def("set_model", &Node::setModel)
+        .def("add", &Node::add);
+
+
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
     	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
     	        "batch"_a, "font"_a, "text"_a);
@@ -190,12 +204,10 @@ PYBIND11_MODULE(monkey, m) {
 //        .def("move", &Node::movea)
 //        .def("move_to", &Node::moveTo)
 
-//        .def("set_model", &Node::setModel)
 //        .def("rotate", &Node::rotate)
 //        .def("set_palette", &Node::setPalette)
 //        .def_property_readonly("anim", &Node::getAnimation)
 //        .def("set_animation", &Node::setAnimation)
-//        .def("add_component", &Node::addComponent)
 //		.def("set_state", &Node::setState)
 //		.def_property_readonly("state", &Node::getState)
 //		.def_property_readonly("x", &Node::getX)
@@ -241,8 +253,8 @@ PYBIND11_MODULE(monkey, m) {
 //
     py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "SpriteBatch")
         .def(py::init<const pybind11::kwargs&>());
-//    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "LineBatch")
-//        .def(py::init<const pybind11::kwargs&>());
+    py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "LineBatch")
+        .def(py::init<const pybind11::kwargs&>());
 //	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "TriangleBatch")
 //		.def(py::init<const pybind11::kwargs&>());
 //	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
@@ -261,15 +273,21 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<Camera25, OrthoCamera, std::shared_ptr<Camera25>>(m, "Cam25")
 //		.def(py::init<float, float, const py::kwargs&>());
 //
-//    py::class_<Shape, std::shared_ptr<Shape>>(m, "Shape")
-//        .def(py::init<>());
-//	py::class_<Point, Shape, std::shared_ptr<Point>>(m, "Point")
+
+    // -- shapes
+    py::module_ ms = m.def_submodule("shapes");
+    py::class_<Shape, std::shared_ptr<Shape>>(ms, "Shape")
+        .def(py::init<>());
+    py::class_<Segment, Shape, std::shared_ptr<Segment>>(ms, "Segment")
+        .def(py::init<float, float, float, float>());
+
+    //	py::class_<Point, Shape, std::shared_ptr<Point>>(m, "Point")
 //		.def(py::init<>());
 //
 //    py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "ConvexPoly")
 //        .def(py::init<const py::array_t<float>&>());
-//	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(m, "PolyLine")
-//		.def(py::init<const py::kwargs&>());
+	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
+		.def(py::init<const py::kwargs&>());
 //	py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(m, "Polygon")
 //		.def(py::init<const std::vector<float>&>());
 //
@@ -279,8 +297,6 @@ PYBIND11_MODULE(monkey, m) {
 //    py::class_<Circle, Shape, std::shared_ptr<Circle>>(m, "Circle")
 //        .def(py::init<float, const py::kwargs&>());
 //
-//    py::class_<Segment, Shape, std::shared_ptr<Segment>>(m, "Segment")
-//        .def(py::init<float, float, float, float>());
 //
 //	py::class_<AABB, Shape, std::shared_ptr<AABB>>(m, "AABB")
 //		.def(py::init<float, float, float, float>());
@@ -290,13 +306,18 @@ PYBIND11_MODULE(monkey, m) {
 //
 //
 //	/// --- models ---
-//    py::module_ mm = m.def_submodule("models");
+    py::module_ mm = m.def_submodule("models");
+//
 //	mm.def("make_plane", &ModelMaker::pippo);
-//	mm.def("from_shape", &ModelMaker::makeModel);
-//    py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
+	mm.def("from_shape", &ModelMaker::makeModel);
+    py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
 //	py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "itiled");
 //        //.def(py::init<>());
-////    py::class_<Quad, Model, std::shared_ptr<Quad>>(mm, "quad")
+    py::class_<IQuads, Model, std::shared_ptr<IQuads>>(mm, "Quad")
+        .def(py::init<const std::string&>(), "batch"_a)
+        .def("prova", &IQuads::prova)
+        .def("add", &IQuads::addQuad);
+    py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite");
 ////        .def(py::init<const pybind11::kwargs&>());
 //    //py::class_<Lines, Model, std::shared_ptr<Lines>>(mm)
 //    py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "Lines")
@@ -332,11 +353,11 @@ PYBIND11_MODULE(monkey, m) {
 //
 //
 //	/// --- runners ---
-//	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
-//	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
-//	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
-//		.def(py::init<float, float>(), "width"_a, "height"_a)
-//		.def("add_response", &CollisionEngine2D::addResponse);
+	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
+	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
+	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
+		.def(py::init<float, float>(), "width"_a, "height"_a)
+		.def("add_response", &CollisionEngine2D::addResponse);
 //    py::class_<CollisionEngine3D, ICollisionEngine, std::shared_ptr<CollisionEngine3D>>(m, "CollisionEngine3D")
 //        .def(py::init<float, float, float>(), "width"_a, "height"_a, "depth"_a);
 //	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
@@ -407,7 +428,10 @@ PYBIND11_MODULE(monkey, m) {
 //
 //
 //	/// --- components ---
-//	py::class_<Component, std::shared_ptr<Component>>(m, "component");
+    py::module_ mc = m.def_submodule("components");
+
+	py::class_<Component, std::shared_ptr<Component>>(m, "component");
+
 //
 //	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");
 //
@@ -421,12 +445,13 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<pybind11::kwargs&>());
 //
 //
-//	py::class_<Collider, Component, std::shared_ptr<Collider>>(m, "icollider")
-//		.def_property_readonly("bounds", &Collider::bounds)
-//		.def("set_collision_flag", &Collider::setCollisionFlag);
-//
-//	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "Collider")
-//		.def(py::init<const pybind11::kwargs&>());
+	py::class_<Collider, Component, std::shared_ptr<Collider>>(m, "icollider")
+		.def_property_readonly("bounds", &Collider::bounds)
+		.def("set_collision_flag", &Collider::setCollisionFlag);
+
+	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "Collider")
+		.def(py::init<int, int, int, std::shared_ptr<Shape>, const pybind11::kwargs&>(), py::arg("flag"),
+        py::arg("mask"), py::arg("tag"),  py::arg("shape"),py::kw_only());
 //
 //	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "SpriteCollider")
 //		.def("set_override", &SpriteCollider::setCollisionOverride)
@@ -444,8 +469,8 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<py::kwargs&>());
 //	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
-//	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "SierraController")
-//		.def(py::init<py::kwargs&>());
+	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "SierraController")
+		.def(py::init<py::kwargs&>());
 //    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
 //        .def(py::init<float, float, float, const pybind11::kwargs&>(), "size"_a, "speed"_a, "gravity"_a);
 //

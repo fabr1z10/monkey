@@ -3,6 +3,7 @@
 #include "error.h"
 #include "engine.h"
 
+using namespace pybind11::literals; // to bring in the `_a` literal
 
 AssetManager::AssetManager() {
 
@@ -97,9 +98,25 @@ std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id)
 //
 //}
 
-//std::shared_ptr<Sprite> AssetManager::getSprite(const std::string & id) {
-//
-//	auto u = id.find('/');
+
+std::shared_ptr<Node> AssetManager::getSprite(const std::string & id) {
+
+
+
+	auto u = id.find('/');
+	auto batchId = id.substr(0, u);
+	auto spriteId = id.substr(u + 1);
+
+    auto quadBatch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
+	auto model = quadBatch->getSheet()->getSprite(spriteId);
+	auto node = std::make_shared<Node>();
+	node->setModel(model, py::dict("batch"_a=batchId));
+	return node;
+
+
+
+
+
 //	auto sheet = id.substr(0, u);
 //	auto sprite = id.substr(u+1);
 //
@@ -109,7 +126,7 @@ std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id)
 //	}
 //
 //	return _spritesheets.at(sheet)->getSprite(sprite);
-//}
+}
 //	auto it = m_sprites.find(id);
 //	if (it == m_sprites.end()) {
 //		std::cout << " --- not cached. Create new!\n";

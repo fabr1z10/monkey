@@ -8,10 +8,11 @@
 
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-Collider::Collider(const pybind11::kwargs& args) : m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr) {
-	m_flag = py_get_dict<int>(args, "flag");
-	m_mask = py_get_dict<int>(args, "mask");
-	m_tag = py_get_dict<int>(args, "tag");
+Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr),
+    m_flag(flag), m_mask(mask), m_tag(tag) {
+//	m_flag = py_get_dict<int>(args, "flag");
+//	m_mask = py_get_dict<int>(args, "mask");
+//	m_tag = py_get_dict<int>(args, "tag");
 	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
@@ -37,7 +38,7 @@ void Collider::setCollisionTag(int tag) {
 
 void Collider::start() {
     auto& engine = Engine::instance();
-    auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
+    //auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
     auto room = engine.getRoom();
     m_engine = room->getRunner<ICollisionEngine>();
     //m_engine = Engine::get().GetRunner<ICollisionEngine>();
@@ -52,7 +53,7 @@ void Collider::start() {
 
     // register to move. When the object moves, we notify the collision engine
 
-    if (collDebug) {
+    if (!_batchId.empty()) {
         generateDebugMesh();
     }
 }
@@ -75,8 +76,9 @@ std::type_index Collider::getType() {
 
 
 
-SimpleCollider::SimpleCollider(const pybind11::kwargs& args) : Collider(args) {//std::shared_ptr<Shape> shape, int flag, int mask, int tag) : Collider(flag, mask, tag), m_shape(shape) {
-	m_shape = py_get_dict<std::shared_ptr<Shape>>(args, "shape");
+SimpleCollider::SimpleCollider(int flag, int mask, int tag, std::shared_ptr<Shape> shape, const pybind11::kwargs& args) :
+    Collider(flag, mask, tag, args), m_shape(shape) {//std::shared_ptr<Shape> shape, int flag, int mask, int tag) : Collider(flag, mask, tag), m_shape(shape) {
+	//m_shape = py_get_dict<std::shared_ptr<Shape>>(args, "shape");
     m_staticBounds = m_shape->getBounds();
 }
 
@@ -85,9 +87,9 @@ void SimpleCollider::generateDebugMesh() {
         m_debugNode->remove();
     }
     auto& modelMaker = ModelMaker::instance();
-    auto model = modelMaker.make(m_shape, glm::vec4(1.f), FillType::OUTLINE);
+    auto model = modelMaker.make(_batchId, m_shape, glm::vec4(1.f), FillType::OUTLINE);
     auto node = std::make_shared<Node>();
-    node->setModel(model, pybind11::dict("batch"_a = _batchId));
+    node->setModel(model);//pybind11::dict("batch"_a = _batchId));
     m_node->add(node);
     m_debugNode = node.get();
 }

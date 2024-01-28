@@ -21,7 +21,7 @@
 
 class SpriteRenderer : public BatchRenderer<QuadBatch> {
 public:
-	explicit SpriteRenderer(const pybind11::kwargs& args);
+	explicit SpriteRenderer(const std::string& args);
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	void start() override;

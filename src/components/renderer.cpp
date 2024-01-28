@@ -1,4 +1,3 @@
-
 #include <glm/gtc/type_ptr.hpp>
 #include "renderer.h"
 #include "../node.h"
@@ -62,9 +61,9 @@ void Renderer::setTransform(const glm::mat4 &m) {
     m_rendererTransform = m;
 }
 
-bool Renderer::isComplete() const {
-    return false;
-}
+//bool Renderer::isComplete() const {
+//    return false;
+//}
 
 void Renderer::setShift(glm::vec3 shift) {
 	m_shift = shift;

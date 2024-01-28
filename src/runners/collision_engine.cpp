@@ -5,7 +5,7 @@
 #include "../shapes/convexpoly.h"
 #include "../shapes/intersector2d.h"
 //#include "../shapes/intersector3d.h"
-#include "../shapes3d/seg3d.h"
+//#include "../shapes3d/seg3d.h"
 
 
 std::vector<ShapeCastHit> ICollisionEngine::shapeCast(Shape * shape, const glm::mat4 &transform, int mask, bool onlyFirst) {

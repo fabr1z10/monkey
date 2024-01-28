@@ -7,7 +7,7 @@
 
 
 
-SpriteRenderer::SpriteRenderer(const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(args), m_frame(0), m_ticks(0), _currentFrameTicks(0) {
+SpriteRenderer::SpriteRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId), m_frame(0), m_ticks(0), _currentFrameTicks(0) {
     //_batch = dynamic_cast<QuadBatch*>(batch);
     //assert(_batch != nullptr);
     //_paletteId = py_get_dict<unsigned>(args, "pal", 0);

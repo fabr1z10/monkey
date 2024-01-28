@@ -2,9 +2,10 @@
 
 #include "../model.h"
 #include <pybind11/pybind11.h>
+#include <iostream>
 #include "../batch/quadbatch.h"
 #include "../components/batchrenderer.h"
-#include "../vec.h"
+//#include "../vec.h"
 
 const int MAX_JOINTS = 2;
 
@@ -14,7 +15,7 @@ struct QuadInfo {
 				 flipv(false), fliph(false), palette(0), advance(0.f) {}
 
 	// the position w.r.t the node position
-	vec3 location;
+	glm::vec3 location;
 
     //glm::vec2 anchorPoint;
     glm::vec2 size;
@@ -39,9 +40,12 @@ struct QuadInfo {
 // model that renders one or more quads using a batch
 class IQuads : public Model {
 public:
-    IQuads(const std::string& spriteSheetId);
+    IQuads(const std::string& batchId);
     virtual ~IQuads() {}
     void addQuad(glm::vec4 texCoords, const pybind11::kwargs& kwargs);
+    void prova(glm::vec3 ciao) {
+        std::cout << ciao.x << "\n";
+    }
     // returns information for rendering a frame (used by the renderer - which is responsibile
     // for keeping track of current animation and frame
 
@@ -54,7 +58,7 @@ public:
 	const QuadInfo& getQuadInfo(int) const;
 protected:
     //int _quadCount; // the number of quads to book -> this is the # pf quads of the frame with the highest n of quads
-
+    std::string _batchId;
 	SpriteSheet* _sheet;
 	std::vector<QuadInfo> _quads;
 	float _texWidth;
@@ -74,7 +78,7 @@ inline int IQuads::getQuadCount() const {
 
 class IQuadsRenderer : public BatchRenderer<QuadBatch> {
 public:
-	explicit IQuadsRenderer(const pybind11::kwargs& args);
+	explicit IQuadsRenderer(const std::string& batchId);
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	//void start() override;

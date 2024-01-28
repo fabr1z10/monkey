@@ -2,8 +2,10 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "../../node.h"
+#include "../../error.h"
 #include "../../engine.h"
 #include "../../pyhelper.h"
+
 
 extern GLFWwindow* window;
 
@@ -37,6 +39,7 @@ void Sierra2DController::start() {
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
 	m_collisionEngine = room->getRunner<ICollisionEngine>();
+	M_Assert(m_collisionEngine != nullptr, "The component Sierra2DController requires a collision engine.");
 }
 
 void Sierra2DController::update(double) {

@@ -74,6 +74,8 @@ public:
 	int getQuadCount() const;
 
 private:
+    //std::string _batchId;
+
 	int _quadCount; // the number of quads to book -> this is the # pf quads of the frame with the highest n of quads
 
 	std::unordered_map<std::string, Animation> _animations;

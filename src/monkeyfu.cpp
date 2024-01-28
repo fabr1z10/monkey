@@ -17,12 +17,9 @@ Engine& getEngine() {
 }
 
 
-float prova(const pybind11::kwargs& args) {
-	auto a2 = py_get_dict<vec2>(args, "pippo2");
-	auto a3 = py_get_dict<vec3>(args, "pippo3");
-	auto a4 = py_get_dict<vec4>(args, "pippo4");
-	auto v3 = py_get_dict<glm::vec3>(args, "pippo3");
-	return a2.x + a3.x + a4.x;
+void prova(glm::vec2 p) {
+    std::cout << p.x << "\n";
+
 
 }
 glm::vec4 fromHex(const std::string& str) {
@@ -33,10 +30,10 @@ glm::vec4 fromHex(const std::string& str) {
 
 }
 //
-//std::shared_ptr<Sprite> getSprite(const std::string& id) {
-//	auto& am = AssetManager::instance();
-//	return am.getSprite(id);
-//}
+std::shared_ptr<Node> getSprite(const std::string& id) {
+	auto& am = AssetManager::instance();
+	return am.getSprite(id);
+}
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id) {
 //	auto& am = AssetManager::instance();
 //	return am.getPolyMesh(id);

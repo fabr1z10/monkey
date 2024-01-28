@@ -15,8 +15,8 @@ public:
         return instance;
     }
 	static std::shared_ptr<Model> pippo(const pybind11::kwargs& args);
-    static std::shared_ptr<Model> makeModel(const std::shared_ptr<Shape>&, glm::vec4 color, FillType);
-    std::shared_ptr<Model> make(const std::shared_ptr<Shape>&, glm::vec4 color, FillType ft);
+    static std::shared_ptr<Model> makeModel(const std::string& batchId, const std::shared_ptr<Shape>&, glm::vec4 color, FillType);
+    std::shared_ptr<Model> make(const std::string& batchId, const std::shared_ptr<Shape>&, glm::vec4 color, FillType ft);
 private:
     int m_pointsPerCirle;
     ModelMaker();
@@ -36,5 +36,6 @@ private:
     typedef std::shared_ptr<Model> (ModelMaker::*funcPtrOne)(const std::shared_ptr<Shape>&, glm::vec4, FillType);
     std::unordered_map<std::type_index, funcPtrOne> _dss;
 	std::unordered_map<std::type_index, funcPtrOne> _dssolid;
-    //std::unordered_map<std::type_index, std::function<std::shared_ptr<Model>(const std::shared_ptr<IBatch>&, std::shared_ptr<Shape>, glm::vec4, FillType)>> m_builders;
+    std::string _batchId;
+	//std::unordered_map<std::type_index, std::function<std::shared_ptr<Model>(const std::shared_ptr<IBatch>&, std::shared_ptr<Shape>, glm::vec4, FillType)>> m_builders;
 };

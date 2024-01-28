@@ -27,7 +27,7 @@ public:
 	void addDirectory(const std::string&);
 
 	//std::shared_ptr<SpriteSheet> readSpritesheet (const std::string& directory);
-    //std::shared_ptr<Sprite> getSprite(const std::string&);
+    std::shared_ptr<Node> getSprite(const std::string&);
 //    std::shared_ptr<MultiNode> getMulti(const std::string&, const std::string& batch);
 //    //std::shared_ptr<TiledModel> getTiled(const std::string&);
     std::shared_ptr<Tex> getTex(const std::string&);
@@ -43,7 +43,7 @@ private:
 
 	std::unordered_map<std::string, std::shared_ptr<Tex>> _tex;
 //    std::unordered_map<std::string, std::shared_ptr<Palette>> m_palettes;
-//	std::unordered_map<std::string, std::shared_ptr<Sprite>> m_sprites;
+	std::unordered_map<std::string, std::shared_ptr<Sprite>> m_sprites;
 //    std::unordered_map<std::string, std::shared_ptr<Font>> m_fonts;
 //    std::unordered_map<std::string, std::shared_ptr<MultiNode>> m_multiSprites;
     std::unordered_map<std::string, std::shared_ptr<SpriteSheet>> _spritesheets;

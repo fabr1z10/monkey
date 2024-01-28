@@ -139,8 +139,9 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
             if (desc.fliph) {
                 std::swap(desc.textureCoordinates[0], desc.textureCoordinates[1]);
             }
+            auto anchor = el["anchor"].as<glm::vec2>(glm::vec2(0.f));
 			desc.repeat = el["repeat"].as<glm::vec2>(glm::vec2(1.f, 1.f));
-            desc.location = el["location"].as<vec3>(vec3());
+            desc.location = glm::vec3(-anchor.x, -anchor.y, 0.f);
             //desc.location = el["pos"]. py_get_dict<glm::vec3>(el, "pos", glm::vec3(0.f));
             float width_actual = static_cast<float>(width_px) / ppu;
             float height_actual = static_cast<float>(height_px) / ppu;
@@ -185,7 +186,9 @@ Animation * Sprite::getAnimationInfo(const std::string &anim) {
 }
 
 std::shared_ptr<Renderer> Sprite::getRenderer(const pybind11::kwargs& args) {
-	return std::make_shared<SpriteRenderer>(args);
+
+    auto batchId = py_get_dict<std::string>(args, "batch");
+	return std::make_shared<SpriteRenderer>(batchId);
 
 }
 //

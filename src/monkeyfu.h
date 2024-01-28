@@ -2,15 +2,17 @@
 
 
 #include "engine.h"
-//#include "models/sprite.h"
+#include "pycast.h"
+#include "models/sprite.h"
 //#include "models/polymesh.h"
 //#include "runners/scheduler.h"
 //#include "batch.h"
 //#include "multinode.h"
-float prova(const pybind11::kwargs&);
+void prova(glm::vec2 c);
 py::dict readDataFile(const std::string& path);
 Engine& getEngine();
-//std::shared_ptr<Sprite> getSprite(const std::string& id);
+
+std::shared_ptr<Node> getSprite(const std::string& id);
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id);
 glm::vec4 fromHex(const std::string&);
 //std::shared_ptr<MultiNode> getMulti(const std::string& id, const std::string& batch);

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "pyhelper.h"
 #include "monkeyfu.h"
-#include "shaders/lightshader.h"
+//#include "shaders/lightshader.h"
 //#include "batch/quadbatch.h"
 #include "assetmanager.h"
 #include "error.h"
@@ -210,7 +210,7 @@ void Engine::run() {
         std::cout << "Loading room: " << _roomId << std::endl;
         loadRoom();
         // start up all nodes and components
-//		m_room->start();
+		_room->start();
 //        m_room->iterate_dfs([](Node *n) { n->start(); });
         m_run = true;
 

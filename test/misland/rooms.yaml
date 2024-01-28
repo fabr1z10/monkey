@@ -1,3 +1,5 @@
 lookout:
   room_number: 38
   size: [320, 144]
+  batches:
+    - "001"

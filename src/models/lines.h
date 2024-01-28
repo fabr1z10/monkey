@@ -12,13 +12,14 @@ public:
         glm::vec3 P1;
         glm::vec4 color;
     };
-    LineModel();
-    explicit LineModel(const pybind11::kwargs&);
+    explicit LineModel(const std::string& batchId);
+    explicit LineModel(const std::string& batchId, const pybind11::kwargs&);
     std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
     int getLineCount() const;
     const Segment& getSegment(int index) const;
     void init(const glm::vec4& color, const std::vector<float>& data);
 protected:
+    std::string _batchId;
     //LineBatch* _batch;
     std::vector<Segment> _segments;
     int _lineCount;
@@ -35,14 +36,14 @@ inline int LineModel::getLineCount() const {
 
 class PolyChain : public LineModel {
 public:
-    PolyChain() : LineModel() {}
-    explicit PolyChain(const pybind11::kwargs&);
+    explicit PolyChain(const std::string& batchId) : LineModel(batchId) {}
+    explicit PolyChain(const std::string& batchId, const pybind11::kwargs&);
     void initChain(const glm::vec4& color, const std::vector<float>& data, bool closed);
 };
 
 class LinesRenderer : public BatchRenderer<LineBatch> {
 public:
-    explicit LinesRenderer(const pybind11::kwargs&);
+    explicit LinesRenderer(const std::string&);
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
     std::type_index getType() override;
     //void start() override;

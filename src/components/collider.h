@@ -10,7 +10,7 @@ class ICollisionEngine;
 
 class Collider : public Component {
 public:
-    Collider(const pybind11::kwargs& args);
+    Collider(int, int, int, const pybind11::kwargs& args);
     virtual ~Collider();
     Bounds getStaticBounds() const;
     glm::vec4 bounds() const;
@@ -52,7 +52,7 @@ inline int Collider::getCollisionMask() const {
 
 class SimpleCollider : public Collider {
 public:
-    SimpleCollider(const pybind11::kwargs&); //std::shared_ptr<Shape>, int flag, int mask, int tag);
+    SimpleCollider(int flag, int mask, int tag, std::shared_ptr<Shape> shape, const pybind11::kwargs&); //std::shared_ptr<Shape>, int flag, int mask, int tag);
     std::shared_ptr<Shape> getShape() override;
 private:
     void generateDebugMesh() override;

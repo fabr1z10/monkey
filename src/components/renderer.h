@@ -8,7 +8,7 @@
 
 class Renderer : public Component {
 public:
-    Renderer() = default;
+    Renderer();
     //virtual int setup(Shader*);
     virtual void draw(Shader*) {}
 

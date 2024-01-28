@@ -2,11 +2,11 @@
 #include "../pyhelper.h"
 #include "../engine.h"
 
-LineModel::LineModel() : _lineCount(0) {
+LineModel::LineModel(const std::string& batchId) : _lineCount(0), _batchId(batchId) {
     //_batch = static_cast<LineBatch*>(Engine::instance().getBatch(1, 0));
 }
 
-LineModel::LineModel(const pybind11::kwargs & args) : LineModel() {
+LineModel::LineModel(const std::string& batchId, const pybind11::kwargs & args) : LineModel(batchId) {
     auto color = args["color"].cast<glm::vec4>();
     auto points = args["points"].cast<std::vector<float>>();
     init(color, points);
@@ -25,11 +25,11 @@ void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
 }
 
 std::shared_ptr<Renderer> LineModel::getRenderer(const pybind11::kwargs& args) {
-    return std::make_shared<LinesRenderer>(args);
+    return std::make_shared<LinesRenderer>(_batchId);
 }
 
 
-PolyChain::PolyChain(const pybind11::kwargs& args) : LineModel() {
+PolyChain::PolyChain(const std::string& batchId, const pybind11::kwargs& args) : LineModel(batchId) {
     auto color = args["color"].cast<glm::vec4>();
     auto points = args["points"].cast<std::vector<float>>();
     auto closed = py_get_dict<bool>(args, "closed", true);
@@ -74,7 +74,7 @@ void PolyChain::initChain(const glm::vec4 &color, const std::vector<float> &data
 //
 //}
 
-LinesRenderer::LinesRenderer(const pybind11::kwargs& args) : BatchRenderer<LineBatch>(args) {
+LinesRenderer::LinesRenderer(const std::string& batchId) : BatchRenderer<LineBatch>(batchId) {
     //assert(_lineBatch);
 
 }
