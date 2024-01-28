@@ -22,7 +22,12 @@ ConvexPoly::ConvexPoly(const py::array_t<float>& input) {
 }
 
 void ConvexPoly::addPoint(glm::vec2 P) {
-	m_bounds.addPoint(P);
+    if (m_points.empty()) {
+        m_bounds.min = glm::vec3(P, 0.f);
+        m_bounds.max = m_bounds.min;
+    } else {
+        m_bounds.addPoint(P);
+    }
 	if (!m_points.empty()) {
 		addEdge(m_points.back(), P);
 	}

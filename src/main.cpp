@@ -445,11 +445,11 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<pybind11::kwargs&>());
 //
 //
-	py::class_<Collider, Component, std::shared_ptr<Collider>>(m, "icollider")
+	py::class_<Collider, Component, std::shared_ptr<Collider>>(mc, "icollider")
 		.def_property_readonly("bounds", &Collider::bounds)
 		.def("set_collision_flag", &Collider::setCollisionFlag);
 
-	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(m, "Collider")
+	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(mc, "Collider")
 		.def(py::init<int, int, int, std::shared_ptr<Shape>, const pybind11::kwargs&>(), py::arg("flag"),
         py::arg("mask"), py::arg("tag"),  py::arg("shape"),py::kw_only());
 //

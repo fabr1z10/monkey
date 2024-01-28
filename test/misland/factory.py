@@ -49,16 +49,17 @@ def create_room(room):
     root.add(b)
 
     # display some lines
-    c = monkey.Node()
-    c.set_model(monkey.models.from_shape('lines', monkey.shapes.Segment(0, 0, 10, 10), monkey.from_hex('ffffff'), monkey.FillType.Outline))
-    root.add(c)
+    # c = monkey.Node()
+    # c.set_model(monkey.models.from_shape('lines', monkey.shapes.Segment(0, 0, 10, 10), monkey.from_hex('ffffff'), monkey.FillType.Outline))
+    # root.add(c)
 
     d = monkey.Node()
     d.set_model(monkey.models.from_shape('lines', monkey.shapes.PolyLine(points=[10,0,10,50,110,60]), monkey.from_hex('ff0000'), monkey.FillType.Outline))
     root.add(d)
 
-
-
+    l1 = monkey.Node()
+    l1.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=[20,0,20,90]), batch='lines'))
+    root.add(l1)
     #a.prova([1,2,3])
     #root.add(a)
     #test = monkey.Text('sprites/sierra',
