@@ -78,6 +78,7 @@
 #include "models/modelmake.h"
 #include "shapes/convexpoly.h"
 #include "shapes/polyline.h"
+#include "shapes/aabb.h"
 //#include "actions/sierra.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
@@ -183,7 +184,8 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_position", &Node::setPosition)
         .def("add_component", &Node::addComponent)
         .def("set_model", &Node::setModel)
-        .def("add", &Node::add);
+        .def("add", &Node::add)
+        .def_property("user_data", &Node::getUserData, &Node::setUserData);
 
 
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
@@ -193,7 +195,6 @@ PYBIND11_MODULE(monkey, m) {
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
 //		.def_property("scale", &Node::getScale, &Node::setScale)
-//        .def_property("user_data", &Node::getUserData, &Node::setUserData)
 //        .def_property("active", &Node::active, &Node::setActive)
 //        .def("get_parent",&Node::getParent, py::return_value_policy::reference)
 //        .def("get_children", &Node::getChildren)
@@ -281,8 +282,8 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Segment, Shape, std::shared_ptr<Segment>>(ms, "Segment")
         .def(py::init<float, float, float, float>());
 
-    //	py::class_<Point, Shape, std::shared_ptr<Point>>(m, "Point")
-//		.def(py::init<>());
+    py::class_<Point, Shape, std::shared_ptr<Point>>(ms, "Point")
+        .def(py::init<>());
 //
 //    py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "ConvexPoly")
 //        .def(py::init<const py::array_t<float>&>());
@@ -298,8 +299,8 @@ PYBIND11_MODULE(monkey, m) {
 //        .def(py::init<float, const py::kwargs&>());
 //
 //
-//	py::class_<AABB, Shape, std::shared_ptr<AABB>>(m, "AABB")
-//		.def(py::init<float, float, float, float>());
+    py::class_<AABB, Shape, std::shared_ptr<AABB>>(ms, "AABB")
+        .def(py::init<float, float, float, float>());
 //
 //	py::class_<AABB3D, Shape, std::shared_ptr<AABB3D>>(m, "AABB3D")
 //		.def(py::init<float, float, float, float, float, float>());

@@ -3,3 +3,26 @@ lookout:
   size: [320, 144]
   batches:
     - "001"
+  walls:
+    - [20, 0, 20, 90]
+  items:
+    - type: bg
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg
+      auto_depth: true
+      pos: [198, 39, 0]
+      quad: [86, 167, 118, 127]
+    - type: sprite
+      sprite: '001/flag1'
+      pos: [6,155,0]
+    - type: sprite
+      sprite: '001/flag2'
+      pos: [36,155,0]
+    - type: sprite
+      sprite: '001/flag3'
+      pos: [66,155,0]
+    - type: hotspot
+      aabb: [50, 100, 20, 40]
+      on_enter: pippo
+      on_leave: pippa
