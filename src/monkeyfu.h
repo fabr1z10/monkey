@@ -5,7 +5,7 @@
 #include "pycast.h"
 #include "models/sprite.h"
 //#include "models/polymesh.h"
-//#include "runners/scheduler.h"
+#include "runners/scheduler.h"
 //#include "batch.h"
 //#include "multinode.h"
 void prova(glm::vec2 c);
@@ -21,7 +21,7 @@ glm::vec4 fromHex(const std::string&);
 //IBatch* getBatch(int shader, int batch);
 //Camera* getCamera(int id);
 //
-//int playScript(const std::shared_ptr<Script> s);
+int playScript(const std::shared_ptr<Script> s);
 //void closeRoom();
 
 

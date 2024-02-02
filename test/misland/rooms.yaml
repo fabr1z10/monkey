@@ -23,6 +23,9 @@ lookout:
       sprite: '001/flag3'
       pos: [66,155,0]
     - type: hotspot
-      aabb: [50, 100, 20, 40]
-      on_enter: pippo
-      on_leave: pippa
+      poly: [0,0,286,0,286,21,269,28,249,28,236,23,221,8,0,8]
+      on_enter: drown
+#    - type: hotspot
+#      aabb: [50, 100, 20, 40]
+#      on_enter: pippo
+#      on_leave: pippa/

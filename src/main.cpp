@@ -31,14 +31,14 @@
 //#include "states/foewalk2d.h"
 //#include "states/idle.h"
 //#include "states/bounce.h"
-//#include "runners/scheduler.h"
+#include "runners/scheduler.h"
 //#include "actions/delay.h"
 //#include "actions/nodeaction.h"
 //#include "actions/blink.h"
 //#include "actions/callfunc.h"
 //#include "actions/moveacc.h"
-//#include "actions/move.h"
-//#include "actions/animate.h"
+#include "actions/move.h"
+#include "actions/animate.h"
 //#include "actions/remove.h"
 //#include "components/scriptplayer.h"
 //#include "actions/move_dynamics.h"
@@ -80,7 +80,7 @@
 #include "shapes/polyline.h"
 #include "shapes/aabb.h"
 #include "shapes/polygon.h"
-//#include "actions/sierra.h"
+#include "actions/sierra.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -131,7 +131,7 @@ PYBIND11_MODULE(monkey, m) {
 //	//m.def("get_batch", &getBatch, py::return_value_policy::reference);
 //    m.def("get_camera", &getCamera, py::return_value_policy::reference);
 //	m.def("close_room", &closeRoom);
-//	m.def("play", &playScript);
+    m.def("play", &playScript);
 //	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 
@@ -186,7 +186,11 @@ PYBIND11_MODULE(monkey, m) {
         .def("add_component", &Node::addComponent)
         .def("set_model", &Node::setModel)
         .def("add", &Node::add)
-        .def_property("user_data", &Node::getUserData, &Node::setUserData);
+        .def_property_readonly("id", &Node::getId)
+        .def_property_readonly("x", &Node::getX)
+		.def_property_readonly("y", &Node::getY)
+		.def_property_readonly("z", &Node::getZ)
+		.def_property("user_data", &Node::getUserData, &Node::setUserData);
 
 
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
@@ -199,7 +203,7 @@ PYBIND11_MODULE(monkey, m) {
 //        .def_property("active", &Node::active, &Node::setActive)
 //        .def("get_parent",&Node::getParent, py::return_value_policy::reference)
 //        .def("get_children", &Node::getChildren)
-//        .def_property_readonly("id", &Node::getId)
+
 //        .def_property("tag", &Node::getTag, &Node::setTag)
 //        .def_property("text", &Node::getText, &Node::setText)
 
@@ -362,9 +366,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_response", &CollisionEngine2D::addResponse);
 //    py::class_<CollisionEngine3D, ICollisionEngine, std::shared_ptr<CollisionEngine3D>>(m, "CollisionEngine3D")
 //        .def(py::init<float, float, float>(), "width"_a, "height"_a, "depth"_a);
-//	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
-//		.def("add", &Scheduler::add)
-//		.def(py::init<>());
+	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
+		.def("add", &Scheduler::add)
+		.def(py::init<>());
 //	py::class_<Lighting, Runner, std::shared_ptr<Lighting>>(m, "Lighting")
 //		.def(py::init<>())
 //		.def("set_ambient", &Lighting::setAmbient)
@@ -384,15 +388,17 @@ PYBIND11_MODULE(monkey, m) {
 //
 //
 //	/// --- actions ---
-//	py::module_ ma = m.def_submodule("actions");
-//	py::class_<Action, std::shared_ptr<Action>>(ma, "Action")
-//		.def("set_on_end", &Action::setOnEnd, "function"_a);
-//
-//	py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
+    py::module_ ma = m.def_submodule("actions");
+    py::class_<Action, std::shared_ptr<Action>>(ma, "Action")
+        .def("set_on_end", &Action::setOnEnd, "function"_a);
+
+    py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
+	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
+		.def(py::init<int, glm::vec3, float>(), "id"_a, "position"_a, "speed"_a);
 //	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
 //		.def(py::init<float>(), "time"_a);
-//	py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
-//		.def(py::init<int, const std::string&, bool>(), "id"_a, "anim"_a, "sync"_a=false);
+    py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
+        .def(py::init<int, const std::string&, bool>(), "id"_a, "anim"_a, "sync"_a=false);
 //	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "Blink")
 //		.def(py::init<int, float, float>(), "id"_a, "duration"_a, "period"_a);
 //	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "CallFunc")
@@ -401,8 +407,7 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<int, glm::vec3, glm::vec3, float>(), "id"_a, "velocity"_a, "acceleration"_a, "timeout"_a);
 //	py::class_<MoveDynamics, NodeAction, std::shared_ptr<MoveDynamics>>(ma, "MoveDynamics")
 //		.def(py::init<int, glm::vec3, glm::vec3>(), "id"_a, "velocity"_a, "acceleration"_a);
-//	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
-//		.def(py::init<int, glm::vec3, float>(), "id"_a, "position"_a, "speed"_a);
+
 //	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "MoveBy")
 //		.def(py::init<int, glm::vec3, float, float>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
 //	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "Remove")
@@ -422,8 +427,8 @@ PYBIND11_MODULE(monkey, m) {
 //			 float, glm::vec2, int, float, int, int, const py::kwargs&>(), "font"_a, "text"_a, "batch"_a, "pos"_a,
 //			 "palette"_a,"timeout"_a, "margin"_a, "parent"_a, "max_width"_a,
 //			 "halign"_a, "valign"_a, py::kw_only());
-//	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "SierraEnable")
-//		.def(py::init<int, bool>(), "id"_a, "value"_a);
+	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "SierraEnable")
+		.def(py::init<int, bool>(), "id"_a, "value"_a);
 //	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "SierraChangeAnim")
 //		.def(py::init<int, const std::string&, const std::string&>(), "id"_a, "idle"_a, "walk"_a);
 //

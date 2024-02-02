@@ -1,0 +1,35 @@
+#pragma once
+
+#include "nodeaction.h"
+#include <glm/glm.hpp>
+
+class Move : public NodeAction {
+public:
+	explicit Move(int id, glm::vec3 pos, float speed);
+	int process(double) override;
+	void start() override;
+
+private:
+	float _time;
+	float _speed;
+	glm::vec3 _targetPos;
+	glm::vec3 _dir;
+	float _length;
+	float _distanceTraversed;
+};
+
+class MoveBy : public NodeAction {
+public:
+	explicit MoveBy(int id, glm::vec2 delta, float time, float speed);
+	int process(double) override;
+	void start() override;
+
+private:
+	int m_id;
+	glm::vec3 m_endPoint;
+	float m_speed;
+	float m_distance;
+	float m_distanceTraveled;
+	glm::vec3 m_delta;
+	glm::vec3 m_unitVec;
+};

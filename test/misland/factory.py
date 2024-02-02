@@ -24,9 +24,14 @@ def sprite(ciao):
 
 def hotspot(ciao):
     h = monkey.Node()
-    aabb = ciao['aabb']
+
+    if 'aabb' in ciao:
+        aabb = ciao['aabb']
+        shape = monkey.shapes.AABB(aabb[0], aabb[1], aabb[2], aabb[3])
+    else:
+        shape = monkey.shapes.Polygon(ciao['poly'])
     h.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
-                                               monkey.shapes.AABB(aabb[0], aabb[1], aabb[2], aabb[3]), batch='lines'))
+                                               shape, batch='lines'))
     h.user_data = {
         'on_enter': ciao.get('on_enter', None),
         'on_leave': ciao.get('on_leave', None)
@@ -51,6 +56,7 @@ def create_room(room):
     ce = monkey.CollisionEngine2D(80, 80)
     ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
     room.add_runner(ce)
+    room.add_runner(monkey.Scheduler())
 
     room_info = settings.rooms[settings.room]
 

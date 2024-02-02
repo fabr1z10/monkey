@@ -65,7 +65,7 @@ std::shared_ptr<Node> getSprite(const std::string& id) {
 //	Engine::instance().closeRoom();
 //}
 //
-//int playScript(const std::shared_ptr<Script> s) {
-//	return Engine::instance().getRoom()->getRunner<Scheduler>()->add(s);
-//}
+int playScript(const std::shared_ptr<Script> s) {
+    return Engine::instance().getRoom()->getRunner<Scheduler>()->add(s);
+}
 //

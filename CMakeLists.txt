@@ -27,7 +27,7 @@ include_directories(${PYBIND_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include ${
 link_directories(${YAML_CPP_LIBRARY_DIR})
 
 file(GLOB MONKEY_SOURCE src/*.cpp src/shaders/*.cpp src/batch/*.cpp src/models/*.cpp src/components/*.cpp src/components/controllers/*.cpp
-		src/runners/*.cpp src/shapes/*.cpp src/math/*.cpp src/nodes/*.cpp)
+		src/runners/*.cpp src/shapes/*.cpp src/math/*.cpp src/nodes/*.cpp src/actions/*.cpp)
 
 pybind11_add_module(monkey ${MONKEY_SOURCE})
 
