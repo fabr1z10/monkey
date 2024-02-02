@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 //#include <pybind11/operators.h>
-//#include <pybind11/stl.h>
+#include <pybind11/stl.h>
 //#include "pyhelper.h"
 //#include "png.h"
 //#include "engine.h"
@@ -79,6 +79,7 @@
 #include "shapes/convexpoly.h"
 #include "shapes/polyline.h"
 #include "shapes/aabb.h"
+#include "shapes/polygon.h"
 //#include "actions/sierra.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
@@ -289,8 +290,8 @@ PYBIND11_MODULE(monkey, m) {
 //        .def(py::init<const py::array_t<float>&>());
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
 		.def(py::init<const py::kwargs&>());
-//	py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(m, "Polygon")
-//		.def(py::init<const std::vector<float>&>());
+    py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(ms, "Polygon")
+        .def(py::init<const std::vector<float>&>());
 //
 //    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
 //        .def(py::init<float, float, const py::kwargs&>());
@@ -377,9 +378,9 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<const pybind11::kwargs&>());
 //
 //	/// --- scripts & actions
-//	py::class_<Script, std::shared_ptr<Script>>(m, "Script")
-//		.def("add", &Script::add)
-//		.def(py::init<const pybind11::kwargs&>());
+    py::class_<Script, std::shared_ptr<Script>>(m, "Script")
+        .def("add", &Script::add)
+        .def(py::init<const pybind11::kwargs&>());
 //
 //
 //	/// --- actions ---
