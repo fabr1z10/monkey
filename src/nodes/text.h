@@ -27,6 +27,7 @@ class Text : public Node {
 public:
 	Text(const std::string& batchId, const std::string& font, const std::string& text, const pybind11::kwargs& args);
 	void updateText(const std::string&);
+	glm::vec2 getSize() const;
 private:
 	struct TextRow {
 		TextRow (int iStart) : indexStart(iStart), indexEnd(-1), length(0.f) {}
@@ -49,3 +50,7 @@ private:
 
 
 };
+
+inline glm::vec2 Text::getSize() const {
+	return _size;
+}

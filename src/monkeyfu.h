@@ -16,12 +16,12 @@ std::shared_ptr<Node> getSprite(const std::string& id);
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id);
 glm::vec4 fromHex(const std::string&);
 //std::shared_ptr<MultiNode> getMulti(const std::string& id, const std::string& batch);
-//Node* getNode(int id);
+Node* getNode(int id);
 //std::unordered_set<Node*> getNodes(const std::string& tag);
 //IBatch* getBatch(int shader, int batch);
 //Camera* getCamera(int id);
 //
 int playScript(const std::shared_ptr<Script> s);
-//void closeRoom();
+void closeRoom();
 
 

@@ -69,7 +69,7 @@
 //#include "states/walk3d.h"
 //#include "states/playerwalk3d.h"
 //#include "states/top2d.h"
-//#include "batch/trianglebatch.h"
+#include "batch/trianglebatch.h"
 //#include "nodes/road.h"
 //#include "models/tilemap.h"
 //#include "components/mariocontroller.h"
@@ -81,6 +81,12 @@
 #include "shapes/aabb.h"
 #include "shapes/polygon.h"
 #include "actions/sierra.h"
+#include "actions/callfunc.h"
+#include "actions/addnode.h"
+#include "components/keyboard.h"
+#include "actions/waitforkey.h"
+#include "actions/delay.h"
+#include "nodes/textedit.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -126,11 +132,11 @@ PYBIND11_MODULE(monkey, m) {
 	m.def("get_sprite", &getSprite);
 //	m.def("get_polymesh", &getPolyMesh);
 //	m.def("get_multi", &getMulti);
-//	m.def("get_node", &getNode, py::return_value_policy::reference);
+	m.def("get_node", &getNode, py::return_value_policy::reference);
 //	m.def("get_nodes", &getNodes, py::return_value_policy::reference);
 //	//m.def("get_batch", &getBatch, py::return_value_policy::reference);
 //    m.def("get_camera", &getCamera, py::return_value_policy::reference);
-//	m.def("close_room", &closeRoom);
+	m.def("close_room", &closeRoom);
     m.def("play", &playScript);
 //	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
@@ -186,21 +192,27 @@ PYBIND11_MODULE(monkey, m) {
         .def("add_component", &Node::addComponent)
         .def("set_model", &Node::setModel)
         .def("add", &Node::add)
+        .def("remove", &Node::remove)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
 		.def_property_readonly("z", &Node::getZ)
+        .def_property("active", &Node::active, &Node::setActive)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData);
 
 
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
     	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
-    	        "batch"_a, "font"_a, "text"_a);
+    	        "batch"_a, "font"_a, "text"_a)
+		.def_property_readonly("size", &Text::getSize);
+	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")
+		.def(py::init<const std::string&, const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
+			 "batch"_a, "font"_a, "prompt"_a, "cursor"_a);
 
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
 //		.def_property("scale", &Node::getScale, &Node::setScale)
-//        .def_property("active", &Node::active, &Node::setActive)
+
 //        .def("get_parent",&Node::getParent, py::return_value_policy::reference)
 //        .def("get_children", &Node::getChildren)
 
@@ -223,7 +235,7 @@ PYBIND11_MODULE(monkey, m) {
 //		.def("get_state_machine", &Node::getComponent<StateMachine>, py::return_value_policy::reference)
 //		.def("get_sprite_collider", &Node::getComponent<SpriteCollider>, py::return_value_policy::reference)
 //		.def("get_dynamics", &Node::getComponent<Dynamics>, py::return_value_policy::reference)
-//        .def("remove", &Node::remove);
+
 //
 //    py::class_<MultiNode, Node, std::shared_ptr<MultiNode>>(m, "MultiNode")
 //    	.def("set_node_model", &MultiNode::setNodeModel);
@@ -234,8 +246,7 @@ PYBIND11_MODULE(monkey, m) {
 //		.def("clear", &ItemList::clear);
 //		//.def(py::init<const std::string&>())
 //
-//	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")
-//		.def(py::init<const pybind11::kwargs&>());
+
 //
 //
 //	py::class_<WalkArea, Node, std::shared_ptr<WalkArea>>(m, "_walkarea")
@@ -254,15 +265,15 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<IBatch, std::shared_ptr<IBatch>>(m, "batch");
 	py::class_<Batch<QuadBatchVertexData>, IBatch, std::shared_ptr<Batch<QuadBatchVertexData>>>(m, "qbatch");
     py::class_<Batch<LineBatchVertexData>, IBatch, std::shared_ptr<Batch<LineBatchVertexData>>>(m, "lbatch");
-//	py::class_<Batch<TriBatchVertexData>, IBatch, std::shared_ptr<Batch<TriBatchVertexData>>>(m, "tbatch");
+	py::class_<Batch<TriBatchVertexData>, IBatch, std::shared_ptr<Batch<TriBatchVertexData>>>(m, "tbatch");
 //
 //
     py::class_<QuadBatch, Batch<QuadBatchVertexData>, std::shared_ptr<QuadBatch>>(m, "SpriteBatch")
         .def(py::init<const pybind11::kwargs&>());
     py::class_<LineBatch, Batch<LineBatchVertexData>, std::shared_ptr<LineBatch>>(m, "LineBatch")
         .def(py::init<const pybind11::kwargs&>());
-//	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "TriangleBatch")
-//		.def(py::init<const pybind11::kwargs&>());
+	py::class_<TriangleBatch, Batch<TriBatchVertexData>, std::shared_ptr<TriangleBatch>>(m, "TriangleBatch")
+		.def(py::init<const pybind11::kwargs&>());
 //	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
 //		.def(py::init<const pybind11::kwargs&>());
 //
@@ -395,14 +406,20 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
 		.def(py::init<int, glm::vec3, float>(), "id"_a, "position"_a, "speed"_a);
-//	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
-//		.def(py::init<float>(), "time"_a);
+	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
+		.def(py::init<float>(), "time"_a);
     py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
         .def(py::init<int, const std::string&, bool>(), "id"_a, "anim"_a, "sync"_a=false);
 //	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "Blink")
 //		.def(py::init<int, float, float>(), "id"_a, "duration"_a, "period"_a);
-//	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "CallFunc")
-//		.def(py::init<pybind11::function>(), "function"_a);
+	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "CallFunc")
+		.def(py::init<pybind11::function>(), "function"_a);
+	py::class_<AddNode, NodeAction, std::shared_ptr<AddNode>>(ma, "Add")
+		.def(py::init<int, std::shared_ptr<Node>>(), "id"_a, "node"_a);
+	py::class_<WaitForKey, Action, std::shared_ptr<WaitForKey>>(ma, "WaitForKey")
+		.def(py::init<>())
+		.def("add", &WaitForKey::add);
+
 //	py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "MoveAccelerated")
 //		.def(py::init<int, glm::vec3, glm::vec3, float>(), "id"_a, "velocity"_a, "acceleration"_a, "timeout"_a);
 //	py::class_<MoveDynamics, NodeAction, std::shared_ptr<MoveDynamics>>(ma, "MoveDynamics")
@@ -476,7 +493,7 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<py::kwargs&>());
 //	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
-	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(m, "SierraController")
+	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
 		.def(py::init<py::kwargs&>());
 //    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
 //        .def(py::init<float, float, float, const pybind11::kwargs&>(), "size"_a, "speed"_a, "gravity"_a);
@@ -502,9 +519,9 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<MoveTranslate, Component, std::shared_ptr<MoveTranslate>>(m, "MoveTranslate")
 //		.def(py::init<const pybind11::kwargs&>());
 //
-//	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(m, "Keyboard")
-//		.def("add", &Keyboard::addFunction)
-//		.def(py::init<>());
+	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(mc, "Keyboard")
+		.def("add", &Keyboard::addFunction)
+		.def(py::init<>());
 //
 //	py::class_<ScriptPlayer, Component, std::shared_ptr<ScriptPlayer>>(m, "script_player")
 //		.def("play", &ScriptPlayer::play)

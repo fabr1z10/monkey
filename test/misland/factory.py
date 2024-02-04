@@ -1,7 +1,7 @@
 import monkey
 import settings
 import scripts
-
+import game_state
 
 
 def bg(ciao):
@@ -40,6 +40,7 @@ def hotspot(ciao):
 
 def init():
     settings.rooms = monkey.read_data_file('rooms.yaml')
+    settings.strings = monkey.read_data_file('strings.yaml')
 
 def on_enter_hotspot(a, b, c):
     on_enter = b.user_data.get('on_enter')
@@ -69,50 +70,73 @@ def create_room(room):
                           viewport=viewport,
                           bounds_x=(158, 158), bounds_y=(83, 83))
     room.add_camera(cam)
+
+    ui_cam = monkey.CamOrtho(320,200, viewport=(0,0,320,200), bounds_x=(160,160), bounds_y=(100,100))
+    room.add_camera(ui_cam)
+
     room.add_batch('sprites', monkey.SpriteBatch(max_elements=10000, cam=0, sheet='sprites'))
+    room.add_batch('ui', monkey.SpriteBatch(max_elements=10000, cam=1, sheet='sprites'))
     for batch in room_info.get('batches', []):
         room.add_batch(batch, monkey.SpriteBatch(max_elements=10000, cam=0, sheet=batch))
     room.add_batch('lines', monkey.LineBatch(max_elements=200, cam=0))
+    room.add_batch('tri', monkey.TriangleBatch(max_elements=1000, cam=0))
+
 
     root = room.root()
 
+    kb = monkey.components.Keyboard()
+    kb.add(settings.Keys.restart, 1, 0, scripts.restart_room)
+    root.add_component(kb)
+
+    game_node = monkey.Node()
+    text_node = monkey.Node()
+    game_state.Ids.game_node = game_node.id
+    game_state.Ids.text_node = text_node.id
+    root.add(game_node)
+    root.add(text_node)
+
+
+
+
     # display some text
-    test = monkey.Text(batch='sprites', font='sierra', anchor=monkey.ANCHOR_CENTER,
-                       text="Misfortune strikes and you have fallen into the moat. Your struggles and cries have attracted hungry alligators. They do not want to let you go.",
-                       width=29 * 8)
-    test.set_position(160, 100, 0)
-    root.add(test)
+    # test = monkey.Text(batch='ui', font='sierra', text="Ciao")
+    # test.set_position(0, 24, 0)
+    # text_node.add(test)
 
     # display some images
 
 
     # display a sprite
     b = monkey.get_sprite('sprites/graham')
-    b.add_component(monkey.SierraController(half_width=2, y_front=0, y_back=166))
+    b.add_component(monkey.components.SierraController(half_width=2, y_front=0, y_back=166))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
-    root.add(b)
+    game_node.add(b)
+
+    # create parser
+    parser = monkey.TextEdit(batch='ui', font='sierra', prompt='>', cursor='_', width=2000,pal=0)
+    parser.set_position(0,24,0)
+    text_node.add(parser)
+    #settings.text_edit_node = parser.id
 
     # display some lines
     # c = monkey.Node()
     # c.set_model(monkey.models.from_shape('lines', monkey.shapes.Segment(0, 0, 10, 10), monkey.from_hex('ffffff'), monkey.FillType.Outline))
     # root.add(c)
 
-    d = monkey.Node()
-    d.set_model(monkey.models.from_shape('lines', monkey.shapes.PolyLine(points=[10, 0, 10, 50, 110, 60]),
-                                         monkey.from_hex('ff0000'), monkey.FillType.Outline))
-    root.add(d)
+    # d = monkey.Node()
+    # d.set_model(monkey.models.from_shape('lines', monkey.shapes.PolyLine(points=[10, 0, 10, 50, 110, 60]),
+    #                                      monkey.from_hex('ff0000'), monkey.FillType.Outline))
+    # root.add(d)
 
+
+    # make room
     for wall in room_info.get('walls', []):
         w = monkey.Node()
         w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
-        root.add(w)
+        game_node.add(w)
 
     for item in room_info.get('items', []):
         f = globals().get(item['type'])
         if f:
-            root.add(f(item))
-    # a.prova([1,2,3])
-    # root.add(a)
-    # test = monkey.Text('sprites/sierra',
-    #                   "We, at Sierra, wish to thank you for playing King's Quest. We are very sorry that you did not succeed and hope you will fare better next time.\nGood luck.",
-    #                   width = 29*8)
+            game_node.add(f(item))
+

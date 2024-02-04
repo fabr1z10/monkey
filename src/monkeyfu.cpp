@@ -45,9 +45,9 @@ std::shared_ptr<Node> getSprite(const std::string& id) {
 //	return am.getMulti(id, batch);
 //}
 //
-//Node* getNode(int id) {
-//	return Engine::instance().getNode(id);
-//}
+Node* getNode(int id) {
+	return Engine::instance().getNode(id);
+}
 //
 //std::unordered_set<Node*> getNodes(const std::string& tag) {
 //	return Engine::instance().getNodes(tag);
@@ -61,9 +61,9 @@ std::shared_ptr<Node> getSprite(const std::string& id) {
 ////    return Engine::instance().getRoom()->getBatch(shader, batch);
 ////}
 //
-//void closeRoom() {
-//	Engine::instance().closeRoom();
-//}
+void closeRoom() {
+	Engine::instance().closeRoom();
+}
 //
 int playScript(const std::shared_ptr<Script> s) {
     return Engine::instance().getRoom()->getRunner<Scheduler>()->add(s);

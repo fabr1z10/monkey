@@ -10,14 +10,14 @@
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 Text::Text(const std::string &batchId, const std::string& font, const std::string &text, const pybind11::kwargs& args) :
-	Node(), _hAlign(HAlign::LEFT), _batchId(batchId) {
+	Node(), _hAlign(HAlign::LEFT), _batchId(batchId), _lines(0), _offset(glm::vec3(0.f)) {
 	auto* batch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
 	//_sheetId = batch->getSheet()->getId();
 	_font = batch->getSheet()->getFont(font).get();
 
 	_lineHeight = _font->getLineHeight();
 	_width = py_get_dict<float>(args, "width", std::numeric_limits<float>::infinity());
-	//_pal = py_get_dict<int>(args, "pal", 0);
+	_pal = py_get_dict<int>(args, "pal", 0);
 	//buildQuads();
 	if (_width != std::numeric_limits<float>::infinity()) {
 		_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
@@ -142,7 +142,7 @@ void Text::updateText(const std::string & text) {
 	        _offset.x = - _size.x;
 	        break;
 	}
-    Node::setPosition(_offset.x, _offset.y, _offset.z);
+    Node::move(glm::vec3(_offset.x, _offset.y, _offset.z));
 
 }
 
