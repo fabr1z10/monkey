@@ -28,9 +28,9 @@ void Controller::start() {
 }
 
 void Controller::setDebugShape() {
-	auto& engine = Engine::instance();
-	auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
-	if (collDebug) {
+	//auto& engine = Engine::instance();
+	//auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
+	if (!_batchId.empty()) {
 		if (m_debugShape != nullptr) {
 			m_debugShape->remove();
 		}

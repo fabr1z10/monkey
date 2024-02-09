@@ -90,3 +90,17 @@ def drown(player, other, c):
 
 def drown2(player, other, c):
     _drown(player, 188, 38)
+
+def _msg(n):
+    def f():
+        script = monkey.Script()
+        message(script, n)
+        monkey.play(script)
+    return f
+
+lookout_look_tree = _msg(7)
+lookout_look_castle = _msg(4)
+
+def ciao(a,b,c):
+    settings.room='castle'
+    monkey.close_room()

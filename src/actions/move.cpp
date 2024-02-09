@@ -72,3 +72,24 @@ int MoveBy::process(double dt) {
 
 	return 1;
 }
+
+MoveAccelerated::MoveAccelerated(int id, glm::vec3 initialVelocity, glm::vec3 acceleration, const pybind11::kwargs& args) : NodeAction(id),
+	_velocity(initialVelocity), _acceleration(acceleration) {
+	_yMin = py_get_dict<float>(args, "y_min", -std::numeric_limits<float>::max());
+}
+
+
+int MoveAccelerated::process(double dt) {
+	auto dtf = static_cast<float>(dt);
+
+	_velocity += _acceleration * dtf;
+	auto delta = _velocity * dtf;
+	m_node->move(delta);
+	auto pos =m_node->getWorldPosition();
+	if (delta.y < 0 && pos.y < _yMin) {
+		m_node->setPosition(pos.x, _yMin, pos.z);
+		return 0;
+	}
+	return 1;
+}
+

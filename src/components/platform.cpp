@@ -4,6 +4,13 @@
 #include "../node.h"
 #include "../engine.h"
 #include "../util.h"
+#include "../pyhelper.h"
+
+Platform::Platform(const pybind11::kwargs &args) : Component() {
+    _onLand = py_get_dict<pybind11::function>(args, "on_land", pybind11::function());
+    _onBump = py_get_dict<pybind11::function>(args, "on_bump", pybind11::function());
+}
+
 
 Platform::~Platform() {
 	for (const auto& c : m_characters) {
@@ -40,12 +47,19 @@ void Platform::forceRemove(Controller2D * c) {
 }
 
 void Platform::registerComponent(Controller2D* character) {
-	m_characters.insert(character);
-	int a = character->getNode()->onRemove.reg([&, character] (Node* node) {
-		m_characters.erase(character);
-	});
-	m_pippo[character] = a;
+        // coming from above
+        m_characters.insert(character);
+        int a = character->getNode()->onRemove.reg([&, character](Node *node) {
+            m_characters.erase(character);
+        });
+        m_pippo[character] = a;
 
+
+}
+
+void Platform::hitFromBelow() {
+    std::cout << "hitfrombelow\n";
+    if (_onBump) _onBump(m_node);
 }
 
 void Platform::unregisterAll() {

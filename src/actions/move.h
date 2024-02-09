@@ -33,3 +33,16 @@ private:
 	glm::vec3 m_delta;
 	glm::vec3 m_unitVec;
 };
+
+
+class MoveAccelerated : public NodeAction {
+public:
+    MoveAccelerated(int id, glm::vec3 initialVelocity, glm::vec3 acceleration, const pybind11::kwargs&);
+    int process(double) override;
+
+private:
+    glm::vec3 _velocity;
+    glm::vec3 _acceleration;
+    float _yMin;
+
+};

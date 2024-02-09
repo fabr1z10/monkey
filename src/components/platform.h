@@ -9,13 +9,14 @@ class Controller2D;
 
 class Platform : public Component {
 public:
-	Platform() {}
+	Platform(const pybind11::kwargs& args);
 	virtual ~Platform();
 	void start() override;
 	// void update(double) override;
 	void registerComponent(Controller2D*);
 	void unregisterComponent(Controller2D*);
 	void forceRemove(Controller2D*);
+	void hitFromBelow();
 	void unregisterAll();
 	void setActive(bool) override;
 	void move(Node*);
@@ -27,4 +28,6 @@ private:
 	ICollisionEngine* m_collisionEngine;
 	float m_platformWidth;
 	std::unordered_map<Controller2D*, int> m_pippo;
+	pybind11::function _onLand;
+	pybind11::function _onBump;
 };

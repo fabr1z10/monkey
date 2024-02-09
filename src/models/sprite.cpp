@@ -132,6 +132,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
 			//desc.paletteIndex = yaml_read<int>(q, "palette", 0);
 			desc.fliph = el["fliph"].as<bool>(false);
             desc.flipv = el["flipv"].as<bool>(false);
+            desc.palette = el["pal"].as<int>(0);
             desc.textureCoordinates[0] = texc[0] / texw;
             desc.textureCoordinates[1] = (texc[0] + texc[2]) / texw;
             desc.textureCoordinates[2] = texc[1] / texh;

@@ -1,0 +1,26 @@
+world1_1:
+  world_size: [3584, 240]
+  items:
+    - type: platform
+      size: [69,2]
+      tile: [224,8,16,16]
+    - type: platform
+      pos: [71, 0, 0]
+      size: [15,2]
+      tile: [224,8,16,16]
+    - type: platform
+      pos: [89, 0, 0]
+      size: [64,2]
+      tile: [224,8,16,16]
+    - type: platform
+      pos: [155, 0, 0]
+      size: [69,2]
+      tile: [224,8,16,16]
+    - type: platform
+      pos: [134, 2, 0]
+      size: [4, 1]
+      tile: [288,8,16,16]
+    - type: sprite
+      pos: [5, 5, 0]
+      sprite: 'tiles/brick'
+

@@ -194,13 +194,13 @@ void Controller2D::verticalCollisions(glm::vec3& velocity, bool forced) {
 			}
 //			m_details.below = directionY == -1;
 //			m_details.above = directionY == 1;
-			if (directionY < 0.0f) {
+			//if (directionY < 0.0f) {
 				if (hit.length < obstacleDistance) {
 					obstacle = hit.entity->getNode();
 					obstacleDistance = hit.length;
 				}
 				//obstacles.insert(hit.entity->getNode());
-			}
+			//}
 		}
 	}
 
@@ -209,14 +209,19 @@ void Controller2D::verticalCollisions(glm::vec3& velocity, bool forced) {
 	if (obstacle != nullptr) {
 		auto* platformController = obstacle->getComponent<Platform>();
 
-		if (platformController != m_platforms) {
-			if (platformController != nullptr) {
-				platformController->registerComponent(this);
-			}
-			if (m_platforms != nullptr) {
-				m_platforms->unregisterComponent(this);
-			}
-			m_platforms = platformController;
+		if (directionY < 0.f) {
+            if (platformController != m_platforms) {
+                if (platformController != nullptr) {
+                    platformController->registerComponent(this);
+                }
+                if (m_platforms != nullptr) {
+                    m_platforms->unregisterComponent(this);
+                }
+                m_platforms = platformController;
+            }
+        } else {
+		    // notify hit
+		    if (platformController != nullptr) platformController->hitFromBelow();
 		}
 	} else {
 		if (m_platforms != nullptr && !forced) {

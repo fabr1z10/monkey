@@ -5,7 +5,7 @@ import game_state
 
 
 def bg(ciao):
-    a = monkey.models.Quad(batch='001')
+    a = monkey.models.Quad(ciao['batch'])
     a.add(ciao['quad'])
     auto_depth = ciao.get('auto_depth', False)
     pos = ciao.get('pos', [0,0,0])
@@ -53,6 +53,14 @@ def on_leave_hotspot(a,b):
     if on_leave:
         getattr(scripts, on_leave)(a,b)
 
+def process_action(a):
+    b=a.lower().strip()
+    b = '_'.join(b.split())
+    f = getattr(scripts, settings.room +'_' + b, None)
+    if f:
+        f()
+
+
 def create_room(room):
     ce = monkey.CollisionEngine2D(80, 80)
     ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
@@ -61,8 +69,8 @@ def create_room(room):
 
     room_info = settings.rooms[settings.room]
 
-    size = room_info['size']
-    print(' -- size:', size)
+    #size = room_info['size']
+    #print(' -- size:', size)
     # game_area = (316, 166)
     viewport = (2, 25, 316, 166)
     # mid_y = game_area[1] // 2
@@ -110,10 +118,11 @@ def create_room(room):
     b = monkey.get_sprite('sprites/graham')
     b.add_component(monkey.components.SierraController(half_width=2, y_front=0, y_back=166))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
+    b.set_position(213,75,0)
     game_node.add(b)
 
     # create parser
-    parser = monkey.TextEdit(batch='ui', font='sierra', prompt='>', cursor='_', width=2000,pal=0)
+    parser = monkey.TextEdit(batch='ui', font='sierra', prompt='>', cursor='_', width=2000,pal=0, on_enter=process_action)
     parser.set_position(0,24,0)
     text_node.add(parser)
     #settings.text_edit_node = parser.id

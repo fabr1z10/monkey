@@ -87,6 +87,9 @@
 #include "actions/waitforkey.h"
 #include "actions/delay.h"
 #include "nodes/textedit.h"
+#include "components/controllers/walk2d.h"
+#include "components/follow.h"
+#include "actions/remove.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -406,6 +409,10 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
 		.def(py::init<int, glm::vec3, float>(), "id"_a, "position"_a, "speed"_a);
+	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "MoveBy")
+		.def(py::init<int, glm::vec2, float, float>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
+    py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "MoveAccelerated")
+        .def(py::init<int, glm::vec3, glm::vec3, const pybind11::kwargs&>(), "id"_a, "initial_velocity"_a, "acceleration"_a);
 	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
 		.def(py::init<float>(), "time"_a);
     py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
@@ -416,6 +423,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<pybind11::function>(), "function"_a);
 	py::class_<AddNode, NodeAction, std::shared_ptr<AddNode>>(ma, "Add")
 		.def(py::init<int, std::shared_ptr<Node>>(), "id"_a, "node"_a);
+	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "Remove")
+		.def(py::init<int>(), "id"_a);
 	py::class_<WaitForKey, Action, std::shared_ptr<WaitForKey>>(ma, "WaitForKey")
 		.def(py::init<>())
 		.def("add", &WaitForKey::add);
@@ -425,10 +434,6 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<MoveDynamics, NodeAction, std::shared_ptr<MoveDynamics>>(ma, "MoveDynamics")
 //		.def(py::init<int, glm::vec3, glm::vec3>(), "id"_a, "velocity"_a, "acceleration"_a);
 
-//	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "MoveBy")
-//		.def(py::init<int, glm::vec3, float, float>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
-//	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "Remove")
-//		.def(py::init<int>(), "id"_a);
 //	py::class_<actions::Walk, NodeAction, std::shared_ptr<actions::Walk>>(ma, "Walk")
 //		.def(py::init<int, glm::vec3>(), "id"_a, "pos"_a);
 //	py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "Turn")
@@ -484,18 +489,24 @@ PYBIND11_MODULE(monkey, m) {
 //    py::class_<monkey::skeletal::SkeletalCollider, Collider, std::shared_ptr<monkey::skeletal::SkeletalCollider>>(m, "SkeletalCollider")
 //        .def(py::init<const pybind11::kwargs&>());
 //
-//	py::class_<Controller, Component, std::shared_ptr<Controller>>(m, "Controller")
-//		.def_property_readonly("grounded", &Controller::grounded)
-//		.def_property_readonly("size", &Controller::getSize)
-//		.def("set_size", &Controller::setSize);
-//
-//	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(m, "Controller2D")
-//		.def(py::init<py::kwargs&>());
+	py::class_<Controller, Component, std::shared_ptr<Controller>>(mc, "Controller")
+		.def_property_readonly("grounded", &Controller::grounded)
+		.def_property_readonly("size", &Controller::getSize)
+		.def("set_size", &Controller::setSize);
+
+	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
+		.def(py::init<py::kwargs&>());
 //	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
 	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
 		.def(py::init<py::kwargs&>());
-//    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
+	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
+	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
+		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
+		        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
+
+
+	//    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
 //        .def(py::init<float, float, float, const pybind11::kwargs&>(), "size"_a, "speed"_a, "gravity"_a);
 //
 ////	py::class_<Controller3D, Controller, std::shared_ptr<Controller3D>>(m, "controller_3d")
@@ -505,11 +516,11 @@ PYBIND11_MODULE(monkey, m) {
 //		.def("set_velocity", &Dynamics::setVelocity)
 //		.def(py::init<const pybind11::kwargs&>());
 //
-//	py::class_<Follow, Component, std::shared_ptr<Follow>>(m, "Follow")
-//		.def(py::init<const pybind11::kwargs&>());
+	py::class_<Follow, Component, std::shared_ptr<Follow>>(mc, "Follow")
+		.def(py::init<int, const pybind11::kwargs&>(), py::arg("camId"), py::kw_only());
 //
-//	py::class_<Platform, Component, std::shared_ptr<Platform>>(m, "Platform")
-//		.def(py::init<>());
+	py::class_<Platform, Component, std::shared_ptr<Platform>>(mc, "Platform")
+		.def(py::init<const pybind11::kwargs&>());
 //
 //	py::class_<StateMachine, Component, std::shared_ptr<StateMachine>>(m, "StateMachine")
 //		.def("add", &StateMachine::addState)
