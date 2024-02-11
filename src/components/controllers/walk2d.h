@@ -4,9 +4,14 @@
 #include "../controller2d.h"
 #include "../../keylistener.h"
 
+
 class Walk2D : public Component {
 
+
+
 public:
+
+
 	Walk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
 		const pybind11::kwargs& args);
 	void start() override;
@@ -29,15 +34,9 @@ protected:
 	int _flags;
 	bool _jumping;
 	// bits
-	// 0 - right
-	// 1 - left
-	// 2 - up
-	// 3 - down
-	// 4 - jmp
-	// 5 - crouch
-	// 6 - button 1
-	// 7 - button 2
-	// 8 - button 3
+	// 0 - face (0=right, 1=left)
+	// 1 - moving (0=false, 1=true)
+	// 2 - direction (0=fwd, 1=back)
 };
 
 class PlayerWalk2D : public Walk2D, public KeyboardListener {
@@ -52,4 +51,15 @@ private:
 	int _btn1;
 	int _btn2;
 	int _btn3;
+};
+
+class FoeWalk2D : public Walk2D {
+public:
+    FoeWalk2D(float maxSpeed, float accelerationTime, float jumpHeight, float timeToJumpApex, const pybind11::kwargs& args);
+    void control() override;
+
+private:
+    bool _flipPlatformEdge;
+    int _status;
+
 };

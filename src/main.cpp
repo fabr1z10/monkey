@@ -503,7 +503,10 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
 		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
-		        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
+        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
+    py::class_<FoeWalk2D, Walk2D, std::shared_ptr<FoeWalk2D>>(mc, "FoeWalk2D")
+        .def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
+        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
 
 
 	//    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
