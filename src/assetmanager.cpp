@@ -2,6 +2,8 @@
 #include "assetmanager.h"
 #include "error.h"
 #include "engine.h"
+#include <regex>
+#include <pybind11/embed.h>
 
 using namespace pybind11::literals; // to bring in the `_a` literal
 
@@ -98,6 +100,60 @@ std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id)
 //
 //}
 
+
+std::shared_ptr<Model> AssetManager::getTiled(const std::string & id, const pybind11::kwargs & args) {
+    auto u = id.find('/');
+    auto batchId = id.substr(0, u);
+    auto spriteId = id.substr(u + 1);
+
+    auto quadBatch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
+    auto ciao = quadBatch->getSheet()->getTiled(spriteId);
+
+    std::cout << ciao << "\n";
+
+    std::smatch matches;
+
+    std::regex exp("\\[(.*?)\\]");
+    //std::regex exp("(\\[.*?\\])");
+
+    std::string::const_iterator searchStart( ciao.cbegin() );
+    std::unordered_map<std::string, std::string> toReplace;
+    while (regex_search(searchStart, ciao.cend(), matches, exp)) {
+        for (int i=1; i<matches.size(); i++) {
+
+            auto pipp  = pybind11::str(pybind11::eval(pybind11::str(matches[i]), pybind11::dict(args))).cast<std::string>();
+
+            std::stringstream key ;
+            key << "[" << matches[i] << "]";
+            std::cout << key.str() <<  " -> " << pipp << "\n";
+            toReplace[key.str()] = pipp;
+        }
+        searchStart = matches.suffix().first;
+    }
+
+    std::string s{ciao};
+    for (const auto& p : toReplace) {
+        std::cout << p.first << ", " << p.second << "\n";
+        size_t i = s.find(p.first);
+        while (i != -1) {
+            s.replace(i, p.first.length(), p.second);
+            i = s.find(p.first);
+        }
+        //s.replace(s.find(p.first), p.first.length(), p.second);
+    }
+
+    auto it = _tiled.find(s);
+    if (it != _tiled.end()) {
+        return it->second;
+    }
+    std::cout <<"---" <<  s << "\n";
+    auto model =std::make_shared<IQuads>(batchId, s);
+    _tiled[s] = model;
+    return model;
+
+
+
+}
 
 std::shared_ptr<Node> AssetManager::getSprite(const std::string & id) {
 

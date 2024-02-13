@@ -6,6 +6,16 @@
 #include <iostream>
 #include "yamlexp.h"
 
+
+std::string SpriteSheet::getTiled(const std::string & a) { //}, const pybind11::kwargs &b ) {
+    return _tiled.at(a);
+    //std::unordered_map<std::pair<std::string, const pybind11::kwargs&>, int> ciao;
+    //ciao[std::make_pair(a, b)] = 20;
+
+    //pybind11::eval()
+}
+
+
 SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _id(id) {
 	std::string directory = fileName.substr(0, fileName.rfind('/'));
 	//std::string fileName = file + ".yaml";
@@ -71,8 +81,12 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 				auto fontId = f.first.as<std::string>();
 				_fonts[fontId] = std::make_shared<Font>(this, f.second);
 			}
+		}
 
-
+		if (f["art"]) {
+		    for (const auto& f : f["art"]) {
+		        _tiled[f.first.as<std::string>()] = f.second.as<std::string>();
+		    }
 		}
 
 

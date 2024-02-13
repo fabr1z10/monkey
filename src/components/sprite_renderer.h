@@ -28,7 +28,7 @@ public:
 	[[nodiscard]] const std::string& getAnimation() const;
 	void setAnimation(const std::string&) override;
 	void setAnimationForce(const std::string&);
-    IQuads* getSprite();
+    //IQuads* getSprite();
 	[[nodiscard]] int getFrame() const;
 	//void draw(Shader *) override;
 	bool isComplete() const;

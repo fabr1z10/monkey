@@ -41,6 +41,7 @@ struct QuadInfo {
 class IQuads : public Model {
 public:
     IQuads(const std::string& batchId);
+    IQuads(const std::string& batchId, const std::string& desc);
     virtual ~IQuads() {}
     void addQuad(glm::vec4 texCoords, const pybind11::kwargs& kwargs);
     void prova(glm::vec3 ciao) {
@@ -57,6 +58,8 @@ public:
 	std::vector<QuadInfo>& getQuads();
 	const QuadInfo& getQuadInfo(int) const;
 protected:
+    std::string ltrim(const std::string &s);
+
     //int _quadCount; // the number of quads to book -> this is the # pf quads of the frame with the highest n of quads
     std::string _batchId;
 	SpriteSheet* _sheet;

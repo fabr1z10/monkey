@@ -2,6 +2,39 @@ import monkey
 import settings
 import scripts
 
+def get_shorthand(node, s: str):
+    n = s.split(',')
+    if n[0] == 'p':
+        z = float(n[6]) if len(n) > 6 else 0
+        pos = [float(n[1]),float(n[2]),z]
+        node.add(platform(pos=pos, size=(float(n[3]), float(n[4])), tile=getattr(settings.Tiles, n[5])))
+    elif n[0] =='bc':
+        for i in range(1, len(n), 2):
+            pos = [float(n[i]), float(n[i+1]), 0]
+            node.add(brick_coin(pos=pos, hits=1, sprite='tiles/brick_bonus'))
+    elif n[0] == 'b':
+        for i in range(1, len(n), 2):
+            pos = [float(n[i]), float(n[i+1]), 0]
+            node.add(brick(pos=pos, hits=1, sprite='tiles/brick'))
+    elif n[0] == 'bb':
+        for i in range(1, len(n), 2):
+            pos = [float(n[i]), float(n[i+1]), 0]
+            node.add(brick_bonus(pos=pos, sprite='tiles/brick_bonus'))
+    elif n[0] == 'ts':
+        id = n[1]
+        width = float(n[2])
+        height = float(n[3])
+        for i in range(4, len(n), 2):
+            pos = [float(n[i]), float(n[i+1]), 0]
+            node.add(tiled(id=id, pos=pos, size=(width, height)))
+
+
+
+
+
+
+
+
 def player(x, y, speed, acceleration, jh, tja):
     node = monkey.get_sprite('tiles/mario')
     node.set_position(x * settings.tile_size, y * settings.tile_size, 0)
@@ -14,6 +47,10 @@ def player(x, y, speed, acceleration, jh, tja):
 def foe(x, y):
     node = monkey.get_sprite('tiles/goomba')
     node.set_position(x * settings.tile_size, y * settings.tile_size, 0)
+    node.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
+
+    node.add_component(monkey.components.FoeWalk2D(max_speed=50,
+        acceleration=0.1, jump_height=64, time_to_jump_apex=0.5, dir=-1))
 
     return node
 
@@ -37,19 +74,28 @@ def foe(x, y):
     #     return node
 
 
-def platform(ciao):
+def platform(**kwargs):
+    print('ciap')
     platform = monkey.Node()
-    pos = ciao.get('pos', [0, 0, 0])
+    pos = kwargs.get('pos', [0, 0, 0])
+    print(pos)
     platform.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
-    size = ciao['size']
+    size = kwargs['size']
     width_px = size[0] * settings.tile_size
     height_px = size[1] * settings.tile_size
     platform.add_component(monkey.components.Collider(
         shape=monkey.shapes.AABB(0, width_px, 0, height_px), flag=2, mask=0, tag=0, batch='lines'))
     a = monkey.models.Quad('tiles')
-    a.add(ciao['tile'], repeat=size, size=(width_px, height_px))
+    a.add(kwargs['tile'], repeat=size, size=(width_px, height_px))
     platform.set_model(a)
     return platform
+
+# def tiled(x, y, desc, **kwargs):
+#     a = monkey.Node()
+#     a.set_position(x * settings.tile_size, y * settings.tile_size, 1)
+#     a.set_model(monkey.get_tiled(desc, **kwargs))
+#     return a
+
 
 
 def init():
@@ -57,18 +103,80 @@ def init():
 
 
 
-def sprite(ciao):
-    b = monkey.get_sprite(ciao['sprite'])
-    pos = ciao.get('pos', [0,0,0])
+def mushroom():
+    b = monkey.get_sprite('tiles/mushroom')
+    switch = monkey.components.Switch()
+    b.add_component(switch)
+    b.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
+    switch.add(monkey.components.FoeWalk2D(max_speed=50,
+        acceleration=0.1, jump_height=64, time_to_jump_apex=0.5, dir=-1, flip_h=False))
+    b.add_component(switch)
+    return b
+
+def brick_coin(**kwargs):
+    b = monkey.get_sprite(kwargs['sprite'])
+    hit = kwargs.get('hit',1)
+    pos = kwargs.get('pos', [0,0,0])
     b.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
     b.add_component(monkey.components.Collider(
         shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
     b.add_component(monkey.components.Platform(on_bump=scripts.bump_platform))
-    b.user_data = {'y': pos[1] * settings.tile_size, 'hit': 4}
+    b.user_data = {'y': pos[1] * settings.tile_size, 'hit': hit}
+    return b
+
+def brick_bonus(**kwargs):
+    print(kwargs['sprite'])
+    b = monkey.get_sprite(kwargs['sprite'])
+    print('suca')
+    pos = kwargs.get('pos', [0, 0, 0])
+    b.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
+    b.add_component(monkey.components.Collider(
+        shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_platform_bonus))
+    b.user_data = {'y': pos[1] * settings.tile_size, 'hit': 1,'bonus': 'mushroom'}
+    return b
+
+def tiled(**kwargs):
+    id = kwargs['id']
+    pos = kwargs.get('pos', [0, 0, 0])
+    size = kwargs.get('size', [0,0])
+    b = id.find('(')
+    if b != -1:
+        print(id)
+        args = id[b+1:id.find(')')].split(',')
+    ar= {}
+    i = 0
+    for arg in args:
+        ar['x' + str(i)] = int(arg)
+        i+=1
+    a = monkey.Node()
+    a.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
+    print(ar)
+    if size[0] > 0:
+        a.add_component(monkey.components.Collider(
+            shape=monkey.shapes.AABB(0, size[0] * settings.tile_size, 0, size[1]*settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
+    a.set_model(monkey.get_tiled(id[:b], **ar))
+    return a
+
+
+
+def brick(**kwargs):
+    b = monkey.Node()
+    model = monkey.models.Quad('tiles')
+    model.add([368,0,8,8], repeat=[2,2], size=(16,16))
+    b.set_model(model)
+    pos = kwargs.get('pos', [0,0,0])
+    b.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
+    b.add_component(monkey.components.Collider(
+        shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_brick))
+    b.user_data = {'y': pos[1] * settings.tile_size}
     return b
 
 def create_room(room):
     room_info = settings.rooms[settings.room]
+    #room.set_clear_color(92,148,252)
+    room.set_clear_color(0, 0, 64)
     world_size = room_info['world_size']
     cam = monkey.CamOrtho(256, 240,
                           viewport=(0,0,256,240),
@@ -86,11 +194,17 @@ def create_room(room):
     root.add_component(kb)
 
     room.add_batch('tiles', monkey.SpriteBatch(max_elements=10000, cam=0, sheet='tiles'))
-    room.add_batch('lines', monkey.LineBatch(max_elements=200, cam=0))
+    room.add_batch('lines', monkey.LineBatch(max_elements=2000, cam=0))
 
     root.add(player(5, 5,  200, 0.1 ,settings.jump_height, 0.5))
-    root.add(foe(8, 2))
+    root.add(foe(8, 3))
+    #a = monkey.models.Quad('tiles', '38,1,fh,38,1')
+    #root.add(tiled(5,5,'tiles/pipe',n=3))
     for item in room_info.get('items', []):
-        f = globals().get(item['type'])
-        if f:
-            root.add(f(item))
+        if isinstance(item, str):
+
+            get_shorthand(root, item)
+        else:
+            f = globals().get(item['type'])
+            if f:
+                root.add(f(**item))

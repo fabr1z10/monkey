@@ -90,6 +90,8 @@
 #include "components/controllers/walk2d.h"
 #include "components/follow.h"
 #include "actions/remove.h"
+#include "components/sprite_collider.h"
+#include "components/switch.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -133,6 +135,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("read_data_file", &readDataFile);
     m.def("prova", &prova);
 	m.def("get_sprite", &getSprite);
+    m.def("get_tiled", &getTiled);
 //	m.def("get_polymesh", &getPolyMesh);
 //	m.def("get_multi", &getMulti);
 	m.def("get_node", &getNode, py::return_value_policy::reference);
@@ -185,7 +188,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_batch", &Room::addBatch)
 //		.def_property("on_start", nullptr, &Room::setOnStart)
 //        //.def("add_line_batch", &Room::addLinesBatch)
-//		.def("set_clear_color", &Room::setClearColor)
+		.def("set_clear_color", &Room::setClearColor)
 //		.def("set_main_cam", &Room::setMainCam)
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 //
@@ -196,6 +199,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_model", &Node::setModel)
         .def("add", &Node::add)
         .def("remove", &Node::remove)
+        .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
@@ -335,6 +339,7 @@ PYBIND11_MODULE(monkey, m) {
 //        //.def(py::init<>());
     py::class_<IQuads, Model, std::shared_ptr<IQuads>>(mm, "Quad")
         .def(py::init<const std::string&>(), "batch"_a)
+        .def(py::init<const std::string&, const std::string&>(), "batch"_a, "desc"_a)
         .def("prova", &IQuads::prova)
         .def("add", &IQuads::addQuad);
     py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite");
@@ -481,11 +486,16 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(mc, "Collider")
 		.def(py::init<int, int, int, std::shared_ptr<Shape>, const pybind11::kwargs&>(), py::arg("flag"),
         py::arg("mask"), py::arg("tag"),  py::arg("shape"),py::kw_only());
-//
-//	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(m, "SpriteCollider")
-//		.def("set_override", &SpriteCollider::setCollisionOverride)
-//		.def(py::init<const pybind11::kwargs&>());
-//
+
+	py::class_<SpriteCollider, Collider, std::shared_ptr<SpriteCollider>>(mc, "SpriteCollider")
+            //.def("set_override", &SpriteCollider::setCollisionOverride)
+		.def(py::init<int, int, int, const pybind11::kwargs&>(), py::arg("flag"), py::arg("mask"), py::arg("tag"), py::kw_only());
+
+	py::class_<Switch, Component, std::shared_ptr<Switch>>(mc, "Switch")
+	    .def(py::init<>())
+	    .def("add", &Switch::add)
+	    .def("enable", &Switch::enable);
+	//
 //    py::class_<monkey::skeletal::SkeletalCollider, Collider, std::shared_ptr<monkey::skeletal::SkeletalCollider>>(m, "SkeletalCollider")
 //        .def(py::init<const pybind11::kwargs&>());
 //

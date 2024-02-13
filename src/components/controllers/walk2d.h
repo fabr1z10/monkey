@@ -20,6 +20,7 @@ public:
 
 
 protected:
+    float _dir;
 	Controller2D* _controller;
 	glm::vec3 _v;
 	glm::vec3 _a;
@@ -60,6 +61,7 @@ public:
 
 private:
     bool _flipPlatformEdge;
+    bool _flipH;
     int _status;
 
 };

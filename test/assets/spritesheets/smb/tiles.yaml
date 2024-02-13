@@ -60,7 +60,11 @@ fonts:
       '!': [88,16,8,8,8]
       ' ': [32,16,8,8,8]
       '-': [64,16,8,8,8]
-
+art:
+  pipe: 'rep,[2*x0],38,0,39,0,6,2,40,0,b,loop,38,2,39,2,40,2,41,2,b,38,1,39,1,40,1,41,1'
+  bush: 'pal,4,32,1,rep,[2*x0],33,1,loop,34,1,b,-1,rep,[x0],33,0,34,0,loop,-1'
+  cloud: '32,2,rep,[x0],33,2,34,2,loop,35,2,b,32,1,rep,[2*x0],33,1,loop,34,1,b,-1,rep,[x0],33,0,34,0,loop,-1'
+  #pipe: '38,0,39,0,6,2,40,0,b,38,0,39,0,6,2,40,0'
 
 
 sprites:
@@ -97,7 +101,13 @@ sprites:
       idle:
         frames:
           - tex: [336,0,16,16]
-  brick:
+  mushroom:
+    animations:
+      idle:
+        frames:
+          - tex: [384,0,16,16]
+            anchor: [8,0]
+  brick_bonus:
     animations:
       idle:
         frames:

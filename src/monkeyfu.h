@@ -12,6 +12,7 @@ void prova(glm::vec2 c);
 py::dict readDataFile(const std::string& path);
 Engine& getEngine();
 
+std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs&);
 std::shared_ptr<Node> getSprite(const std::string& id);
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id);
 glm::vec4 fromHex(const std::string&);

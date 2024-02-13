@@ -29,7 +29,13 @@ glm::vec4 fromHex(const std::string& str) {
 	return glm::vec4(r / 255.f, g / 255.f, b / 255.f, 1.f);
 
 }
-//
+
+std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs& args) {
+    auto& am = AssetManager::instance();
+    return am.getTiled(id, args);
+
+}
+
 std::shared_ptr<Node> getSprite(const std::string& id) {
 	auto& am = AssetManager::instance();
 	return am.getSprite(id);

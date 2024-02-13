@@ -8,6 +8,9 @@ asset_directories = [ '../assets/spritesheets/smb']
 tile_size = 16
 jump_height = 80
 
+class Tiles:
+    block1 = [224,8,16,16]
+    block2 = [288,8,16,16]
 
 class Keys:
     restart = 299

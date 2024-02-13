@@ -175,11 +175,11 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
 }
 
 
-const Frame & Sprite::getFrameInfo(const std::string &anim, int frame) {
+const Frame & Sprite::getFrameInfo(const std::string &anim, int frame) const {
     return _animations.at(anim).frames[frame];
 }
 
-Animation * Sprite::getAnimationInfo(const std::string &anim) {
+const Animation * Sprite::getAnimationInfo(const std::string &anim) const {
     auto it = _animations.find(anim);
     if (it == _animations.end())
         return nullptr;
@@ -319,7 +319,7 @@ glm::vec2 Sprite::getJoint(const std::string &anim, int frame, int joint) const 
 //    return it->second[joint];
 }
 
-const float *Sprite::getBoxData(const std::string &anim, int frame) {
+const float *Sprite::getBoxData(const std::string &anim, int frame) const {
     auto boxId = _animations.at(anim).frames[frame].boxId;
     if (boxId == -1) {
         return nullptr;

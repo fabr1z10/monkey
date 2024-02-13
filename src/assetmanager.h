@@ -29,7 +29,7 @@ public:
 	//std::shared_ptr<SpriteSheet> readSpritesheet (const std::string& directory);
     std::shared_ptr<Node> getSprite(const std::string&);
 //    std::shared_ptr<MultiNode> getMulti(const std::string&, const std::string& batch);
-//    //std::shared_ptr<TiledModel> getTiled(const std::string&);
+    std::shared_ptr<Model> getTiled(const std::string&, const pybind11::kwargs&);
     std::shared_ptr<Tex> getTex(const std::string&);
 //    std::shared_ptr<Palette> getPalette(const std::string&);
     std::shared_ptr<Font> getFont(const std::string&);
@@ -42,6 +42,7 @@ private:
 	std::vector<std::string> _assetDirectories;
 
 	std::unordered_map<std::string, std::shared_ptr<Tex>> _tex;
+    std::unordered_map<std::string, std::shared_ptr<Model>> _tiled;
 //    std::unordered_map<std::string, std::shared_ptr<Palette>> m_palettes;
 	std::unordered_map<std::string, std::shared_ptr<Sprite>> m_sprites;
 //    std::unordered_map<std::string, std::shared_ptr<Font>> m_fonts;

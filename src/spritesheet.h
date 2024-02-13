@@ -15,6 +15,7 @@ public:
 	std::shared_ptr<Sprite> getSprite(const std::string&);
 	//std::shared_ptr<MultiNode>  getMultiNode(const std::string&, const std::string& batch);
 	std::shared_ptr<Font> getFont(const std::string&);
+	std::string getTiled(const std::string&);//, const pybind11::kwargs&);
 	std::string toString();
 	std::string getId() const;
 	glm::ivec2 getTileSize() const;
@@ -23,7 +24,9 @@ private:
 	std::shared_ptr<Palette> _palette;
 	std::unordered_map<std::string, std::shared_ptr<Sprite>> _sprites;
 	//std::unordered_map<std::string, std::shared_ptr<MultiNode>> _multiSprites;
+
 	std::unordered_map<std::string, std::shared_ptr<Font>> _fonts;
+	std::unordered_map<std::string, std::string> _tiled;
 	std::shared_ptr<QuadBatch> _batch;
 	std::string _id;
     glm::ivec2 _tileSize;

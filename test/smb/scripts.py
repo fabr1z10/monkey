@@ -22,6 +22,38 @@ def restart_room():
     monkey.close_room()
 
 
+def bump_brick(node):
+    s = monkey.Script()
+    s.add(monkey.actions.MoveAccelerated(node.id, (0, 200, 0), (0, -1000, 0), y_min=node.user_data['y']))
+    monkey.play(s)
+
+def add_foe_walk(b):
+    def f():
+        b.get_switch().enable(0)
+        #b.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
+        #b.add_component(monkey.components.FoeWalk2D(max_speed=50,
+        #    acceleration=0.1, jump_height=64, time_to_jump_apex=0.5, dir=-1))
+    return f
+
+def bump_platform_bonus(node):
+    if node.user_data['hit'] == 0:
+        return
+    node.user_data['hit'] -= 1
+    bonus = node.user_data['bonus']
+    import factory
+    b = getattr(factory, bonus)()
+    s = monkey.Script()
+    b.set_position(node.x + settings.tile_size* 0.5, node.user_data['y'], node.z)
+    s.add(monkey.actions.Animate(node.id, 'taken'))
+    s.add(monkey.actions.MoveAccelerated(node.id, (0, 200, 0), (0, -1000, 0), y_min=node.user_data['y']))
+    s.add(monkey.actions.Add(settings.main_node, b))
+    s.add(monkey.actions.MoveBy(b.id, (0, 17), time=0.5))
+    s.add(monkey.actions.CallFunc(add_foe_walk(b)))
+    monkey.play(s)
+
+
+
+
 def bump_platform(node):
     if node.user_data['hit'] == 0:
         return

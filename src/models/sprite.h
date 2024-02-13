@@ -39,9 +39,9 @@ class Sprite : public Model {
 public:
     Sprite(SpriteSheet* sheet, const YAML::Node& node);
 
-	const Frame& getFrameInfo(const std::string& anim, int frame);
+	const Frame& getFrameInfo(const std::string& anim, int frame) const;
 
-	Animation* getAnimationInfo(const std::string& anim);
+	const Animation* getAnimationInfo(const std::string& anim) const;
 
 	std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
 
@@ -68,7 +68,7 @@ public:
 //	Bounds getAttackRange() const;
 	glm::vec2 getJoint(const std::string& anim, int frame, int joint) const;
 	unsigned long getMaxBoxes() const;
-	const float* getBoxData(const std::string& anim, int frame);
+	const float* getBoxData(const std::string& anim, int frame) const ;
 	Bounds getStaticBounds() const;
 	std::string getDefaultAnimation() const;
 	int getQuadCount() const;
