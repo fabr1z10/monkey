@@ -27,6 +27,13 @@ def get_shorthand(node, s: str):
         for i in range(4, len(n), 2):
             pos = [float(n[i]), float(n[i+1]), 0]
             node.add(tiled(id=id, pos=pos, size=(width, height)))
+    elif n[0] == 'foe':
+        id = n[1]
+        for i in range(2, len(n), 2):
+            pos = [float(n[i]), float(n[i+1]), 0]
+            node.add(foe(id=id, pos=pos))
+
+
 
 
 
@@ -39,19 +46,25 @@ def player(x, y, speed, acceleration, jh, tja):
     node = monkey.get_sprite('tiles/mario')
     node.set_position(x * settings.tile_size, y * settings.tile_size, 0)
     node.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
+    node.add_component(monkey.components.SpriteCollider(settings.CollisionFlags.player,
+        settings.CollisionFlags.foe, settings.CollisionTags.player, batch='lines'))
     node.add_component(monkey.components.PlayerWalk2D(max_speed=speed,
         acceleration=acceleration, jump_height=jh, time_to_jump_apex=tja))
     node.add_component(monkey.components.Follow(0))
     return node
 
-def foe(x, y):
-    node = monkey.get_sprite('tiles/goomba')
-    node.set_position(x * settings.tile_size, y * settings.tile_size, 0)
+def foe(**kwargs):
+    foe_id = kwargs['id']
+    char_info = settings.characters[foe_id]
+    node = monkey.get_sprite(char_info['sprite'])
+    pos = kwargs.get('pos', [0, 0, 0])
+    node.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
     node.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
-
-    node.add_component(monkey.components.FoeWalk2D(max_speed=50,
-        acceleration=0.1, jump_height=64, time_to_jump_apex=0.5, dir=-1))
-
+    node.add_component(monkey.components.FoeWalk2D(max_speed=char_info['speed'],
+        acceleration=char_info['acceleration'], jump_height=char_info['jump_height'],
+        time_to_jump_apex=char_info['time_to_jump_apex'], dir=-1))
+    node.add_component(monkey.components.SpriteCollider(settings.CollisionFlags.foe,
+        settings.CollisionFlags.player, settings.CollisionTags.foe, batch='lines'))
     return node
 
     # node.add_component(monkey.mario_controller(size=(width, height, 0), batch='line'))
@@ -75,10 +88,8 @@ def foe(x, y):
 
 
 def platform(**kwargs):
-    print('ciap')
     platform = monkey.Node()
     pos = kwargs.get('pos', [0, 0, 0])
-    print(pos)
     platform.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
     size = kwargs['size']
     width_px = size[0] * settings.tile_size
@@ -90,15 +101,19 @@ def platform(**kwargs):
     platform.set_model(a)
     return platform
 
-# def tiled(x, y, desc, **kwargs):
-#     a = monkey.Node()
-#     a.set_position(x * settings.tile_size, y * settings.tile_size, 1)
-#     a.set_model(monkey.get_tiled(desc, **kwargs))
-#     return a
+def spawn(**kwargs):
+    sp = monkey.Node()
+    pos = kwargs.get('pos', [0, 0, 0])
+    sp.set_position(pos[0] * settings.tile_size, pos[1] * settings.tile_size, pos[2])
+    sp.add_component(monkey.components.Collider(shape=monkey.shapes.AABB(0,2,0,256), flag=settings.CollisionFlags.foe,
+        mask=settings.CollisionFlags.player, tag=settings.CollisionTags.spawn, batch='lines'))
+    sp.user_data['item'] = kwargs['item']
+    return sp
 
 
 
 def init():
+    settings.characters = monkey.read_data_file('characters.yaml')
     settings.rooms = monkey.read_data_file('rooms.yaml')
 
 
@@ -109,7 +124,7 @@ def mushroom():
     b.add_component(switch)
     b.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
     switch.add(monkey.components.FoeWalk2D(max_speed=50,
-        acceleration=0.1, jump_height=64, time_to_jump_apex=0.5, dir=-1, flip_h=False))
+        acceleration=0.1, jump_height=64, time_to_jump_apex=0.5, dir=-1, flip_h=False, flip_platform_edge=False))
     b.add_component(switch)
     return b
 
@@ -183,7 +198,7 @@ def create_room(room):
                           bounds_x=(128, world_size[0]-128), bounds_y=(120, world_size[1]-120))
     room.add_camera(cam)
     ce = monkey.CollisionEngine2D(80, 80)
-    #ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
+    ce.add_response(settings.CollisionTags.player, settings.CollisionTags.spawn, on_start=scripts.touch_spawn)
     room.add_runner(ce)
     room.add_runner(monkey.Scheduler())
     root = room.root()
@@ -197,12 +212,11 @@ def create_room(room):
     room.add_batch('lines', monkey.LineBatch(max_elements=2000, cam=0))
 
     root.add(player(5, 5,  200, 0.1 ,settings.jump_height, 0.5))
-    root.add(foe(8, 3))
+    #root.add(foe(8, 3))
     #a = monkey.models.Quad('tiles', '38,1,fh,38,1')
     #root.add(tiled(5,5,'tiles/pipe',n=3))
     for item in room_info.get('items', []):
         if isinstance(item, str):
-
             get_shorthand(root, item)
         else:
             f = globals().get(item['type'])

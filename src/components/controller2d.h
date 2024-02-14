@@ -66,6 +66,7 @@ private:
 	glm::vec3 m_velocityOld;
 	float m_slopeAngle, m_slopeAngleOld;
 	int _foeFlag;
+
 	int _platformFlag;
 };
 

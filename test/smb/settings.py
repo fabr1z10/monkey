@@ -20,3 +20,9 @@ class CollisionFlags:
     player = 1
     platform = 2
     foe = 4
+
+class CollisionTags:
+    player = 0
+    spawn = 1
+    foe = 2
+

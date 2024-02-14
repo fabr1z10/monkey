@@ -14,7 +14,7 @@ if os.path.isdir(name):
 
 os.mkdir(name)
 
-f = open("misland/main.py", "w")
+f = open(name + "/main.py", "w")
 f.write('#!/usr/bin/python3\n\n')
 f.write('import monkey\n\n')
 f.write('game = monkey.engine()\n')
@@ -23,13 +23,13 @@ f.write('game.run()\n')
 f.write('game.shutdown()\n')
 f.close()
 
-f = open("misland/strings.py", "w")
+f = open(name +"/strings.py", "w")
 f.close()
 
-f = open("misland/state.py", "w")
+f = open(name +"/state.py", "w")
 f.close()
 
-f = open("misland/settings.py", "w")
+f = open(name+"/settings.py", "w")
 f.write('import monkey\n\n')
 f.write('device_size = (256, 240)\n')
 f.write("room = 'hello_world'\n")

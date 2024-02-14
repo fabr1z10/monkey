@@ -197,7 +197,9 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_position", &Node::setPosition)
         .def("add_component", &Node::addComponent)
         .def("set_model", &Node::setModel)
+        .def("get_model", &Node::getModel)
         .def("add", &Node::add)
+        .def("get_children", &Node::getChildren)
         .def("remove", &Node::remove)
         .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
         .def_property_readonly("id", &Node::getId)
@@ -221,7 +223,7 @@ PYBIND11_MODULE(monkey, m) {
 //		.def_property("scale", &Node::getScale, &Node::setScale)
 
 //        .def("get_parent",&Node::getParent, py::return_value_policy::reference)
-//        .def("get_children", &Node::getChildren)
+
 
 //        .def_property("tag", &Node::getTag, &Node::setTag)
 //        .def_property("text", &Node::getText, &Node::setText)
@@ -307,9 +309,9 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<Point, Shape, std::shared_ptr<Point>>(ms, "Point")
         .def(py::init<>());
-//
-//    py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(m, "ConvexPoly")
-//        .def(py::init<const py::array_t<float>&>());
+
+    py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(ms, "ConvexPoly")
+        .def(py::init<const py::array_t<float>&>());
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
 		.def(py::init<const py::kwargs&>());
     py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(ms, "Polygon")
@@ -334,7 +336,8 @@ PYBIND11_MODULE(monkey, m) {
 //
 //	mm.def("make_plane", &ModelMaker::pippo);
 	mm.def("from_shape", &ModelMaker::makeModel);
-    py::class_<Model, std::shared_ptr<Model>>(mm, "Model");
+    py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
+        .def("set_color", &Model::setColor);
 //	py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "itiled");
 //        //.def(py::init<>());
     py::class_<IQuads, Model, std::shared_ptr<IQuads>>(mm, "Quad")

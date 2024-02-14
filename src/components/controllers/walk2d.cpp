@@ -129,13 +129,16 @@ void PlayerWalk2D::control() {
 
 void FoeWalk2D::control() {
     _flags |= 6;     // foe always moves
+    bool faceLeft = _flags & 1;
     if (_flipH) {
-        m_node->setFlipX((_flags & 1) > 0);
+        m_node->setFlipX(faceLeft);
     } else {
-        _dir = (_flags & 1) ? -1.f : 1.f;
+        _dir = (faceLeft) ? -1.f : 1.f;
     }
     if (_controller->grounded()) {
         if (_flipPlatformEdge && _controller->isFalling(_dir)) {
+            _flags ^= 0x01;
+        } else if ((faceLeft && _controller->left()) || (!faceLeft && _controller->right())) {
             _flags ^= 0x01;
         }
 

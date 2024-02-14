@@ -21,6 +21,8 @@ public:
     virtual std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) = 0;
 
 	Bounds getBounds() const;
+
+	virtual void setColor(glm::vec4 color) {}
 protected:
     //GLuint m_size;
 	Bounds m_modelBounds;

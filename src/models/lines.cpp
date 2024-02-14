@@ -12,6 +12,12 @@ LineModel::LineModel(const std::string& batchId, const pybind11::kwargs & args) 
     init(color, points);
 }
 
+void LineModel::setColor(glm::vec4 color) {
+    for (auto& s : _segments) {
+        s.color = color;
+    }
+}
+
 void LineModel::init(const glm::vec4 &color, const std::vector<float> &data) {
     for (size_t i = 0; i < data.size(); i += 6) {
         size_t offset = i;
@@ -109,3 +115,4 @@ void LinesRenderer::update(double dt) {
 
 
 }
+

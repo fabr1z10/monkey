@@ -75,3 +75,9 @@ def bump_platform(node):
     s.add(monkey.actions.Remove(bonus.id))
     s.add(monkey.actions.CallFunc(make_score('100', node.x, node.user_data['y'] + settings.tile_size)))
     monkey.play(s)
+
+def touch_spawn(p,s,x):
+    s.remove()
+    item = s.user_data['item']
+    import factory
+    factory.get_shorthand(monkey.get_node(settings.main_node), item)

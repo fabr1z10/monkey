@@ -18,6 +18,7 @@ public:
     int getLineCount() const;
     const Segment& getSegment(int index) const;
     void init(const glm::vec4& color, const std::vector<float>& data);
+    void setColor(glm::vec4 color) override;
 protected:
     std::string _batchId;
     //LineBatch* _batch;
