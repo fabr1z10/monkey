@@ -1,7 +1,7 @@
 #include "polygon.h"
 #include "../util.h"
 
-Polygon::Polygon(const std::vector<float> &points) {
+GenericPolygon::GenericPolygon(const std::vector<float> &points) {
 	for (size_t i = 0; i < points.size(); i+=2) {
 		_points.emplace_back(points[i], points[i+1]);
 		m_bounds.addPoint(glm::vec3(points[i], points[i+1], 0.f));
@@ -9,7 +9,7 @@ Polygon::Polygon(const std::vector<float> &points) {
 
 }
 
-void Polygon::addHole(const std::vector<float> &points) {
+void GenericPolygon::addHole(const std::vector<float> &points) {
 	std::vector<glm::vec2> p;
 	for (size_t i = 0; i < points.size(); i+=2) {
 		p.emplace_back(points[i], points[i+1]);
@@ -18,7 +18,7 @@ void Polygon::addHole(const std::vector<float> &points) {
 
 }
 
-bool Polygon::isInside(glm::vec3 P) const {
+bool GenericPolygon::isInside(glm::vec3 P) const {
 	if (pnpoly(_points, P)) {
 		for (const auto& hole : _holes) {
 			if (pnpoly(hole, P)) {
@@ -32,7 +32,7 @@ bool Polygon::isInside(glm::vec3 P) const {
 }
 
 // returns whether AB intersects polygon
-bool Polygon::intersectSegment(glm::vec2 A, glm::vec2 B, float &t) {
+bool GenericPolygon::intersectSegment(glm::vec2 A, glm::vec2 B, float &t) {
 	for (size_t i = 1; i < _points.size(); ++i) {
 		float t{0.f};
 		if (seg2seg(A, B, _points[i-1], _points[i], t)) {

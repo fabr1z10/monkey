@@ -10,7 +10,7 @@ def make_text(string_id):
     msg = monkey.Text(batch='sprites', font='sierra', anchor=monkey.ANCHOR_CENTER,
                       text=settings.strings[string_id],
                       width=29 * 8, pal=1)
-    msg.set_position(160, 100, 1)
+    msg.set_position(160, 100, 2)
     border = monkey.Node()
     border.set_model(monkey.models.from_shape('tri',
                                               monkey.shapes.AABB(-10, msg.size[0] + 10, -msg.size[1] - 5, 5),
@@ -85,22 +85,24 @@ def _drown(player, x, y):
     monkey.play(script)
 
 
-def drown(player, other, c):
+def drown(player, other):
     _drown(player, player.x, 4)
 
-def drown2(player, other, c):
+def drown2(player, other):
     _drown(player, 188, 38)
 
-def _msg(n):
-    def f():
-        script = monkey.Script()
-        message(script, n)
-        monkey.play(script)
-    return f
+def msg(n):
+    script = monkey.Script()
+    message(script, n)
+    monkey.play(script)
 
-lookout_look_tree = _msg(7)
-lookout_look_castle = _msg(4)
 
-def ciao(a,b,c):
-    settings.room='castle'
+
+#lookout_look_tree = _msg(7)
+#lookout_look_castle = _msg(4)
+
+def goto_room(playe, other, room, pos, dir):
+    settings.room=room
+    settings.pos=pos
+    settings.dir = dir
     monkey.close_room()

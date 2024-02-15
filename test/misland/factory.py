@@ -45,7 +45,7 @@ def init():
 def on_enter_hotspot(a, b, c):
     on_enter = b.user_data.get('on_enter')
     if on_enter:
-        getattr(scripts, on_enter)(a,b,c)
+        getattr(scripts, on_enter[0])(a, b, *on_enter[1:])
 
 
 def on_leave_hotspot(a,b):
@@ -54,11 +54,22 @@ def on_leave_hotspot(a,b):
         getattr(scripts, on_leave)(a,b)
 
 def process_action(a):
+
     b=a.lower().strip()
     b = '_'.join(b.split())
-    f = getattr(scripts, settings.room +'_' + b, None)
-    if f:
-        f()
+    #f = getattr(scripts, settings.room +'_' + b, None)
+    aa = settings.rooms[settings.room]['scripts'].get(b, None)
+    if aa:
+        print('found')
+
+        s = getattr(scripts, aa[0])(*aa[1:])
+
+
+    else:
+        print('nofound')
+
+    #if f:
+    #    f()
 
 
 def create_room(room):
@@ -116,9 +127,9 @@ def create_room(room):
 
     # display a sprite
     b = monkey.get_sprite('sprites/graham')
-    b.add_component(monkey.components.SierraController(half_width=2, y_front=0, y_back=166))
+    b.add_component(monkey.components.SierraController(half_width=2, y_front=0, y_back=166, dir=settings.dir))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
-    b.set_position(213,75,0)
+    b.set_position(settings.pos[0], settings.pos[1], 0)#
     game_node.add(b)
 
     # create parser

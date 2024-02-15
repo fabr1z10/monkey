@@ -1,3 +1,28 @@
+rock:
+  batches:
+    - "003"
+  items:
+    - type: bg
+      batch: "003"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg      # tree
+      batch: "003"
+      auto_depth: true
+      pos: [0,0, 0]
+      quad: [0,194,64,138]
+    - type: bg      # tree
+      batch: "003"
+      auto_depth: true
+      pos: [130,71, 0]
+      quad: [80,195,98,36]
+    - type: bg      # tree
+      batch: "003"
+      auto_depth: true
+      pos: [242,87, 0]
+      quad: [194,198,74,79]
+  scripts:
+    look_tree: [ 'msg', 12 ]
 castle:
   batches:
     - "002"
@@ -6,7 +31,16 @@ castle:
       batch: "002"
       pos: [0, 0, -1]
       quad: [0, 0, 316, 166]
-
+    - type: hotspot
+      poly: [0,0,2,0,2,166,0,166]
+      on_enter: ['goto_room', 'rock', [314, 16], 'e']
+  walls:
+    - [131, 23, 190,23,192,25,199,25,207,46,247,46,256,25,261,23,314,23]
+  scripts:
+    look_lion: [ 'msg', 8 ]
+    look_castle: [ 'msg', 9 ]
+    look_flag: [ 'msg', 10 ]
+    look_door: [ 'msg', 11 ]
 
 lookout:
   room_number: 38
@@ -42,13 +76,19 @@ lookout:
       pos: [66,155,0]
     - type: hotspot
       poly: [0,0,286,0,286,21,269,28,249,28,236,23,221,8,0,8]
-      on_enter: drown
+      on_enter: ['drown']
     - type: hotspot
       poly: [184,22,200,36,204,36,176,45]
-      on_enter: drown2
+      on_enter: ['drown2']
     - type: hotspot
       poly: [0,8,2,8,2,22,0,22]
-      on_enter: ciao
+      on_enter: ['goto_room', 'castle', [314, 16], 'e']
+  scripts:
+    look_tree: ["msg", 7]
+    look_castle: ['msg', 4]
+    look_flag: ['msg', 5]
+    look_banner: ['msg', 5]
+
 #    - type: hotspot
 #      aabb: [50, 100, 20, 40]
 #      on_enter: pippo

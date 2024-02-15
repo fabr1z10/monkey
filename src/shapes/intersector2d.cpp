@@ -32,7 +32,7 @@ Intersector2D::Intersector2D() {
     add<AABB, AABB>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return AABB2(s1, s2, t1, t2); });
     //add<AABB, Triangles>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return SATTriAABB(s1, s2, t1, t2); });
     add<Point, AABB>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return PointVsShape(s1, s2, t1, t2); });
-	add<Point, Polygon>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return PointVsShape(s1, s2, t1, t2); });
+	add<Point, GenericPolygon>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return PointVsShape(s1, s2, t1, t2); });
 
 }
 
