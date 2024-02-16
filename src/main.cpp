@@ -206,6 +206,7 @@ PYBIND11_MODULE(monkey, m) {
         .def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
 		.def_property_readonly("z", &Node::getZ)
+        .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("active", &Node::active, &Node::setActive)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData);
 
@@ -225,7 +226,7 @@ PYBIND11_MODULE(monkey, m) {
 //        .def("get_parent",&Node::getParent, py::return_value_policy::reference)
 
 
-//        .def_property("tag", &Node::getTag, &Node::setTag)
+
 //        .def_property("text", &Node::getText, &Node::setText)
 
 //        .def("move", &Node::movea)
@@ -511,7 +512,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<py::kwargs&>());
 //	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
-	py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
+    py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
+        .def(py::init<py::kwargs&>());
+	py::class_<PlayerSierra2DController, Sierra2DController, std::shared_ptr<PlayerSierra2DController>>(mc, "PlayerSierraController")
 		.def(py::init<py::kwargs&>());
 	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")

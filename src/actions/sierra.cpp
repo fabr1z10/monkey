@@ -9,7 +9,7 @@ EnableSierraController::EnableSierraController(int id, bool value) : NodeAction(
 
 void EnableSierraController::start() {
 	NodeAction::start();
-	m_node->getComponent<Sierra2DController>()->enable(_value);
+	m_node->getComponent<PlayerSierra2DController>()->enable(_value);
 }
 
 ChangeSierraAnim::ChangeSierraAnim(int id, const std::string& idle, const std::string& walk) : NodeAction(id) {

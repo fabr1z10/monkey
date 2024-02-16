@@ -71,6 +71,8 @@ def pippo(a, b, c):
     print('entering weppo')
 
 
+
+
 def pippa(a, b):
     print('leaving jiko')
 
@@ -95,6 +97,18 @@ def msg(n):
     script = monkey.Script()
     message(script, n)
     monkey.play(script)
+
+def push_rock():
+    game_state.rock_moved = True
+    script = monkey.Script()
+    message(script, 13)
+    script.add(monkey.actions.MoveBy(id=game_state.nodes['rock'], delta=(0,-12), time=1))
+    monkey.play(script)
+
+def switch(condition, a1, a2):
+    a = a1 if eval(condition) else a2
+    s = globals()[a[0]](*a[1:])
+
 
 
 

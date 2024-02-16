@@ -9,29 +9,32 @@
 
 extern GLFWwindow* window;
 
-Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component(), _enableControls(true) {
-	_halfWidth = py_get_dict<float>(args, "half_width");
-	_skinWidth = py_get_dict<float>(args, "skinWidth", .015f);
-	_idleAnimation = py_get_dict<std::string>(args, "idle", "idle");
-	_walkAnimation = py_get_dict<std::string>(args, "walk", "walk");
-	_dir = py_get_dict<std::string>(args, "dir", "e");
-	_yFront = py_get_dict<float>(args, "y_front");
+Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component() {
+    _yFront = py_get_dict<float>(args, "y_front");
     _yBack = py_get_dict<float>(args, "y_back");
     _a = 2.f / (_yFront - _yBack);
     _b = (_yBack + _yFront) / (_yBack - _yFront);
 }
 
-void Sierra2DController::setAnim(const std::string &idle, const std::string &walk) {
+PlayerSierra2DController::PlayerSierra2DController(const pybind11::kwargs &args) : Sierra2DController(args), _enableControls(true) {
+	_halfWidth = py_get_dict<float>(args, "half_width");
+	_skinWidth = py_get_dict<float>(args, "skinWidth", .015f);
+	_idleAnimation = py_get_dict<std::string>(args, "idle", "idle");
+	_walkAnimation = py_get_dict<std::string>(args, "walk", "walk");
+	_dir = py_get_dict<std::string>(args, "dir", "e");
+}
+
+void PlayerSierra2DController::setAnim(const std::string &idle, const std::string &walk) {
 	_idleAnimation = idle;
 	_walkAnimation = walk;
 }
 
 
-void Sierra2DController::enable(bool value) {
+void PlayerSierra2DController::enable(bool value) {
 	_enableControls = value;
 }
 
-void Sierra2DController::start() {
+void PlayerSierra2DController::start() {
 	//_dir = 'e';
 	_lookingLeft = false;
 	m_animatedRenderer = m_node->getComponent<Renderer>();
@@ -39,10 +42,20 @@ void Sierra2DController::start() {
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
 	m_collisionEngine = room->getRunner<ICollisionEngine>();
-	M_Assert(m_collisionEngine != nullptr, "The component Sierra2DController requires a collision engine.");
+	M_Assert(m_collisionEngine != nullptr, "The component PlayerSierra2DController requires a collision engine.");
 }
 
 void Sierra2DController::update(double) {
+    updateZ();
+}
+
+
+void Sierra2DController::updateZ() {
+    float z = _a * m_node->getY() + _b;
+    m_node->setZ(z);
+}
+
+void PlayerSierra2DController::update(double) {
 	if (!_enableControls) {
 		return;
 	}
@@ -106,9 +119,7 @@ void Sierra2DController::update(double) {
 	m_node->move(glm::vec3(dx,dy,0));
 
     // update z
-    float z = _a * m_node->getY() + _b;
-
-    m_node->setZ(z);
+    updateZ();
 
 	if (anyPressed) {
 		m_animatedRenderer->setAnimation(_walkAnimation + "_" + _dir);

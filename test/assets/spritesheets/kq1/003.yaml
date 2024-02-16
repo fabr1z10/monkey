@@ -1,2 +1,8 @@
 id: '003'
 sheet: '003.png'
+sprites:
+  rock:
+    animations:
+      default:
+        frames:
+          - tex: [280,168,34,23]

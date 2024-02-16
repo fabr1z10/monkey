@@ -20,6 +20,11 @@ def sprite(ciao):
     auto_depth = ciao.get('auto_depth', False)
     pos = ciao.get('pos', [0,0,0])
     b.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-2*pos[1]/166.0 )
+    movable = ciao.get('movable', False)
+    if movable:
+        b.add_component(monkey.components.SierraController(y_front=0, y_back=166))
+
+
     return b
 
 def hotspot(ciao):
@@ -29,7 +34,7 @@ def hotspot(ciao):
         aabb = ciao['aabb']
         shape = monkey.shapes.AABB(aabb[0], aabb[1], aabb[2], aabb[3])
     else:
-        shape = monkey.shapes.Polygon(ciao['poly'])
+        shape = monkey.shapes.GenericPolygon(ciao['poly'])
     h.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
                                                shape, batch='lines'))
     h.user_data = {
@@ -127,7 +132,7 @@ def create_room(room):
 
     # display a sprite
     b = monkey.get_sprite('sprites/graham')
-    b.add_component(monkey.components.SierraController(half_width=2, y_front=0, y_back=166, dir=settings.dir))
+    b.add_component(monkey.components.PlayerSierraController(half_width=2, y_front=0, y_back=166, dir=settings.dir))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
     b.set_position(settings.pos[0], settings.pos[1], 0)#
     game_node.add(b)
@@ -158,5 +163,8 @@ def create_room(room):
     for item in room_info.get('items', []):
         f = globals().get(item['type'])
         if f:
-            game_node.add(f(item))
+            node = f(item)
+            if 'tag' in item:
+                game_state.nodes[item['tag']] = node.id
+            game_node.add(node)
 

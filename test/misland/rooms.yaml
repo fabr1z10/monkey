@@ -1,3 +1,13 @@
+egg1:
+  batches:
+    - "004"
+  items:
+    - type: bg
+      batch: "004"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+  scripts:
+    look_tree: ['msg', 18]
 rock:
   batches:
     - "003"
@@ -21,8 +31,24 @@ rock:
       auto_depth: true
       pos: [242,87, 0]
       quad: [194,198,74,79]
+    - type: sprite
+      sprite: '003/rock'
+      auto_depth: true
+      tag: rock
+      movable: True
+      pos: [236,33,0]
+    - type: hotspot
+      poly: [315,0,316,0,316,166,315,166]
+      on_enter: ['goto_room', 'castle', [2, 16], 'w']
+    - type: hotspot
+      poly: [0,124,316,124,316,125,0,125]
+      on_enter: ['goto_room', 'egg1', [158, 2], 'n']
   scripts:
-    look_tree: [ 'msg', 12 ]
+    look_rock: ['msg', 15]
+    look_tree: ['msg', 12]
+    look_hole: ['switch', 'game_state.rock_moved == 1', ['msg', 14], ['msg', 16]]
+    push_rock: ['switch', 'game_state.rock_moved == 0', ['push_rock'], ['msg', 17]]
+    move_rock: ['push_rock']
 castle:
   batches:
     - "002"
