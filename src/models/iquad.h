@@ -57,6 +57,7 @@ public:
 	const std::vector<QuadInfo>& getQuads() const;
 	std::vector<QuadInfo>& getQuads();
 	const QuadInfo& getQuadInfo(int) const;
+	void setPalette(int) override;
 protected:
     std::string ltrim(const std::string &s);
 
@@ -78,6 +79,8 @@ inline std::vector<QuadInfo> & IQuads::getQuads() {
 inline int IQuads::getQuadCount() const {
     return _quads.size();
 }
+
+
 
 class IQuadsRenderer : public BatchRenderer<QuadBatch> {
 public:

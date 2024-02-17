@@ -92,6 +92,11 @@ void Node::remove() {
     Engine::instance().scheduleForRemoval(this);
 }
 
+void Node::clearChildren() {
+    m_children.clear();
+}
+
+
 void Node::removeChild(long id) {
     m_children.erase(id);
 }

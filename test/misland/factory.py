@@ -107,19 +107,23 @@ def create_room(room):
 
 
     root = room.root()
+    game_state.Ids.root = root.id
 
-    kb = monkey.components.Keyboard()
-    kb.add(settings.Keys.restart, 1, 0, scripts.restart_room)
-    root.add_component(kb)
 
     game_node = monkey.Node()
     text_node = monkey.Node()
+    #inventory_node = monkey.Node()
     game_state.Ids.game_node = game_node.id
     game_state.Ids.text_node = text_node.id
+    #game_state.Ids.inventory_node = inventory_node.id
     root.add(game_node)
     root.add(text_node)
+    #root.add(inventory_node)
 
-
+    kb = monkey.components.Keyboard()
+    kb.add(settings.Keys.restart, 1, 0, scripts.restart_room)
+    kb.add(settings.Keys.inventory, 1, 0, scripts.show_inventory)
+    game_node.add_component(kb)
 
 
     # display some text

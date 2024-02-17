@@ -34,6 +34,7 @@ public:
     virtual void postProcess() {}
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
 
+    void clearChildren();
     void setActive(bool);
     bool active() const;
 

@@ -51,8 +51,10 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 					for (const auto& color : pal.second) {
 						auto key = color.first.as<std::string>();
 						int colorIndex{0};
-						if (key == "0") {
 
+						if (key == "0") {
+                            unsigned long colorHex = strtoul(key.c_str(), NULL, 16);
+                            colorIndex = 0;
 						} else {
 							unsigned long colorHex = strtoul(key.c_str(), NULL, 16);
 							colorIndex = _texture->getColorIndex(colorHex);

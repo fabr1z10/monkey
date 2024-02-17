@@ -8,6 +8,9 @@ class Keyboard : public Component, public KeyboardListener {
 public:
 	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	void addFunction(int, int, int, pybind11::function f);
+	void addFallbackFunction(pybind11::function f);
+
 private:
 	std::unordered_map<KeyboardEvent, pybind11::function> m_functions;
+	pybind11::function _fallbackFunction;
 };

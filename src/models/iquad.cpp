@@ -20,7 +20,9 @@ IQuads::IQuads(const std::string &batchId) : Model(), _batchId(batchId) {
 
 
 }
-
+void IQuads::setPalette(int pal) {
+    for (auto& q : _quads) q.palette= pal;
+}
 
 std::string IQuads::ltrim(const std::string &s)
 {

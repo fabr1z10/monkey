@@ -4,6 +4,9 @@ tile_size: [8, 8]
 palettes:
   1:
     ffffff: 000000
+  2:
+    0: ffffff
+    ffffff: 000000
 fonts:
   sierra:
     line_height: 8

@@ -4,4 +4,11 @@ class Ids:
 
 rock_moved = 0
 
+inventory = {22,23,21}
+
+inventory_selected = 0
+inventory_nodes = []
+
+
+
 nodes = {}

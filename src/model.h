@@ -23,6 +23,8 @@ public:
 	Bounds getBounds() const;
 
 	virtual void setColor(glm::vec4 color) {}
+
+	virtual void setPalette(int) {}
 protected:
     //GLuint m_size;
 	Bounds m_modelBounds;

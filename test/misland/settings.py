@@ -11,6 +11,11 @@ asset_directories = [ '../assets/spritesheets/kq1']
 class Keys:
     restart = 299
     enter = 257
+    inventory = 258
+    right = 262
+    left = 263
+    up = 265
+    down =264
 
 class CollisionFlags:
     player = 1

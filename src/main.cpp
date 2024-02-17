@@ -201,6 +201,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("add", &Node::add)
         .def("get_children", &Node::getChildren)
         .def("remove", &Node::remove)
+        .def("clear", &Node::clearChildren)
         .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
@@ -338,6 +339,7 @@ PYBIND11_MODULE(monkey, m) {
 //	mm.def("make_plane", &ModelMaker::pippo);
 	mm.def("from_shape", &ModelMaker::makeModel);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
+        .def("set_palette", &Model::setPalette)
         .def("set_color", &Model::setColor);
 //	py::class_<TiledModel, Model, std::shared_ptr<TiledModel>>(mm, "itiled");
 //        //.def(py::init<>());
@@ -551,6 +553,7 @@ PYBIND11_MODULE(monkey, m) {
 //
 	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(mc, "Keyboard")
 		.def("add", &Keyboard::addFunction)
+		.def("add_fallback", &Keyboard::addFallbackFunction)
 		.def(py::init<>());
 //
 //	py::class_<ScriptPlayer, Component, std::shared_ptr<ScriptPlayer>>(m, "script_player")
