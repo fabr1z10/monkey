@@ -21,7 +21,7 @@ public:
 
 	void innerConfigure() override;
 
-	void setInvisible(int index) override {}
+	void setVisible(int index, bool) override {}
 
 	void setTriangle(int index, glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec4 color0, glm::vec4 color1, glm::vec4 color2);
 	void setTriangle(int index, glm::vec3 P0, glm::vec3 P1, glm::vec3 P2, glm::vec4 color);

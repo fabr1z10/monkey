@@ -136,8 +136,8 @@ void LineBatch::setLine(int index, glm::vec3 P0, glm::vec3 P1, glm::vec4 color) 
 //    Batch::draw(s);
 //}
 
-void LineBatch::setInvisible(int index) {
+void LineBatch::setVisible(int index, bool value) {
 	int offset = index * _vertsPerElement;
-	for (size_t i = 0; i < 4; ++i) _data[offset+i].color.a = 0;
+	for (size_t i = 0; i < 4; ++i) _data[offset+i].color.a = value ? 1 : 0;
 
 }

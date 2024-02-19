@@ -3,7 +3,8 @@
 
 
 int Keyboard::keyCallback(GLFWwindow * w, int key, int scancode, int action, int mods) {
-    if (!m_active) {
+    if (_state != NodeState::ACTIVE) {
+        // ignore key
         return 0;
     }
 	auto it = m_functions.find(KeyboardEvent{key, action, mods});

@@ -14,7 +14,7 @@ struct QuadBatchVertexData {
 	glm::vec4 textureBounds;
 	glm::vec2 textureCoords;
 	float palette;
-	float fade;
+	float invalid;
 	//unsigned camera;
 } ;
 
@@ -30,12 +30,32 @@ public:
 	void innerConfigure() override;
 
 
-	void setQuad (int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-			   int palette, bool fliph, bool flipv, float zLayer, float fade, glm::vec2 offsetTex = glm::vec2(0.f));
+	void setQuad (
+	        int index,
+	        glm::vec3 bottomLeft,
+	        glm::vec2 size,
+	        glm::vec4 textureBounds,
+	        glm::vec2 textureRepeat,
+			int palette,
+			bool fliph,
+			bool flipv,
+			float zLayer,
+			glm::vec2 offsetTex = glm::vec2(0.f));
 
-    void setQuad (int index, glm::vec3 bottomLeft, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-                  int palette, bool fliph, bool flipv, float zLayer, float fade, const glm::mat4& transform,glm::vec2 offsetTex = glm::vec2(0.f));
-	void setInvisible(int index) override;
+    void setQuad (
+            int index,
+            glm::vec3 bottomLeft,
+            glm::vec2 size,
+            glm::vec4 textureBounds,
+            glm::vec2 textureRepeat,
+            int palette,
+            bool fliph,
+            bool flipv,
+            float zLayer,
+            const glm::mat4& transform,
+            glm::vec2 offsetTex = glm::vec2(0.f));
+
+    void setVisible(int index, bool value) override;
 
 	SpriteSheet* getSheet();
 private:

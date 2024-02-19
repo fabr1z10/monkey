@@ -23,7 +23,7 @@ std::vector<ShapeCastHit> ICollisionEngine::shapeCast(Shape * shape, const glm::
                 if (cell != m_cells.end()) {
                     auto &colliders = cell->second.colliders;
                     for (auto &c : colliders) {
-                        if (!c->isActive()) {
+                        if (c->getState() != NodeState::ACTIVE) {
                             continue;
                         }
                         int flag = c->getCollisionFlag();
@@ -91,7 +91,7 @@ RayCastHit ICollisionEngine::rayCastX(glm::vec3 origin, float length, int mask, 
             }
             Bounds segmentBounds(glm::vec3(x_seg_min, origin.y, z), glm::vec3(x_seg_max, origin.y, z));
             for (const auto &c : it->second.colliders) {
-                if (!c->isActive() || node == c->getNode()) {
+                if (c->getState() != NodeState::ACTIVE || node == c->getNode()) {
                     continue;
                 }
                 int flag = c->getCollisionFlag();
@@ -161,7 +161,7 @@ RayCastHit ICollisionEngine::rayCastY(glm::vec3 origin, float length, int mask, 
             }
             Bounds segmentBounds(glm::vec3(origin.x, y_seg_min, z), glm::vec3(origin.x, y_seg_max, z));
             for (const auto &c : it->second.colliders) {
-                if (!c->isActive() || node == c->getNode()) {
+                if (c->getState() != NodeState::ACTIVE || node == c->getNode()) {
                     continue;
                 }
                 int flag = c->getCollisionFlag();
@@ -232,7 +232,7 @@ RayCastHit ICollisionEngine::rayCastZ(glm::vec3 origin, float length, int mask, 
             }
             Bounds segmentBounds(glm::vec3(origin.x, origin.y, z_seg_min), glm::vec3(origin.x, origin.y, z_seg_max));
             for (const auto &c : it->second.colliders) {
-                if (!c->isActive() || node == c->getNode()) {
+                if (c->getState() != NodeState::ACTIVE || node == c->getNode()) {
                     continue;
                 }
                 int flag = c->getCollisionFlag();
@@ -366,7 +366,7 @@ void ICollisionEngine::update(double) {
     for (auto& c : m_colliderLocations) {
         if (c.second.dirty) {
             auto *c1 = c.first;
-            if (!c1->isActive()) {
+            if (c1->getState() != NodeState::ACTIVE) {
             	continue;
             }
             // loop through cells occupied by collider
@@ -386,7 +386,7 @@ void ICollisionEngine::update(double) {
                             auto pair = UPair<Collider *>(c1, c2);
                             if (processed.find(pair) != processed.end()) continue;
                             processed.insert(UPair<Collider *>(c1, c2));
-                            if (c1 == c2 || !c2->isActive()) continue;
+                            if (c1 == c2 || c2->getState() != NodeState::ACTIVE) continue;
                             if (((c1->getCollisionMask() & c2->getCollisionFlag()) == 0) &&
                                 ((c2->getCollisionMask() & c1->getCollisionFlag()) == 0)) {
                                 continue;

@@ -11,11 +11,11 @@ uniform sampler2D tex_pal;
 in vec4 TexBounds;
 in vec2 TexCoords;
 in float palY;
-in float fade;
+in float invalid;
 
 void main()
 {
-    if (palY < 0) discard;
+    if (invalid != 0.0) discard;
 
     vec2 tc = vec2(TexBounds[0] + fract(TexCoords.x) * (TexBounds[1] - TexBounds[0]),
                    TexBounds[2] + fract(TexCoords.y) * (TexBounds[3] - TexBounds[2]));

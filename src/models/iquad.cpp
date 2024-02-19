@@ -197,7 +197,7 @@ void IQuadsRenderer::update(double) {
 						q[i].palette,
 						q[i].fliph,
 						q[i].flipv,
-						0.f,1.f,worldTransform);
+						0.f,worldTransform);
 
 	}
 }

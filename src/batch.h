@@ -28,7 +28,7 @@ public:
 
     virtual void release(int id);
 
-	virtual void setInvisible(int index) = 0;
+	virtual void setVisible(int index, bool) = 0;
 
 	int getCameraId() const;
 protected:
@@ -149,7 +149,7 @@ public:
 	void draw(Shader* s) override;
 	void cleanUp() {}
 	void configure(Shader* s) override {}
-	void setInvisible(int index) override {}
+	void setVisible(int index, bool value) override {}
 	void addRenderer(Renderer*);
 	void removeRenderer(Renderer*);
 private:

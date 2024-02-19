@@ -25,7 +25,10 @@ void TextEdit::sendMessage(const std::string & text) {
 }
 
 int TextEdit::TextEditListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
-	if (!_node->active()) return 0;
+
+    if (_node->getState() != NodeState::ACTIVE) {
+        return 0;
+    }
 	if (action == GLFW_PRESS) {
 		if (key == GLFW_KEY_ENTER) {
 			_node->sendMessage(_text);

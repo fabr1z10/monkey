@@ -6,13 +6,13 @@
 //#include "components/statemachine.h"
 //#include "models/text.h"
 
-Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), m_active(true),
+Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), _state(NodeState::ACTIVE),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
     m_model(nullptr), _scale(1.0f) {
 }
 
 Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nullptr) {
-	m_active = other.m_active;
+	_state = other._state;
 	_tag = other._tag;
 	_scale = other._scale;
 	for (const auto& child : other.m_children) {
@@ -24,7 +24,7 @@ Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nu
 	m_modelMatrix = other.m_modelMatrix;
 	m_worldMatrix = other.m_worldMatrix;
 	m_scaleMatrix = other.m_scaleMatrix;
-	m_active = other.m_active;
+
 	m_started = other.m_started;
 	m_userData = other.m_userData;
 	//m_camera = other.m_camera;
@@ -75,9 +75,9 @@ void Node::add(std::shared_ptr<Node> node) {
     if (engine.isRunning()) {
         node->startRecursive();
     }
-	if (!m_active) {
-		node->setActive(m_active);
-	}
+	//if (!m_active) {
+	node->setState(_state);
+
 
 }
 
@@ -120,9 +120,15 @@ void Node::startRecursive() {
 }
 
 void Node::update(double dt) {
-    if (!m_active) return;
+    // don't do any update if node is not active!
+    if (_state != NodeState::ACTIVE) {
+        return;
+    }
+
     for (auto& iter : m_components) {
-        iter.second->update(dt);
+        if (iter.second->getState() == NodeState::ACTIVE) {
+            iter.second->update(dt);
+        }
     }
     // update world matrix
     if (m_parent != nullptr) {
@@ -130,13 +136,14 @@ void Node::update(double dt) {
     }
 }
 
-void Node::setActive(bool active) {
-    m_active = active;
+void Node::setState(NodeState state) {
+    // state is inherited by all components and all children
+    _state = state;
     for (const auto& comp : m_components) {
-        comp.second->setActive(active);
+        comp.second->setState(state);
     }
     for (const auto& c : m_children) {
-    	c.second->setActive(active);
+    	c.second->setState(state);
     }
 }
 

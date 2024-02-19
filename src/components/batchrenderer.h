@@ -22,10 +22,10 @@ public:
 		}
 	}
 
-	void setActive(bool value) override {
-		Component::setActive(value);
+	void setState(NodeState value) override {
+		Component::setState(value);
 		for (const auto& quad : _primitiveIds) {
-			_batch->setInvisible(quad);
+			_batch->setVisible(quad, value != NodeState::INACTIVE);
 		}
 	}
 //    explicit BatchRenderer(B* b) : Renderer(0, 0), _batch(b) {

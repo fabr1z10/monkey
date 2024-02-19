@@ -18,7 +18,7 @@ public:
 	void forceRemove(Controller2D*);
 	void hitFromBelow();
 	void unregisterAll();
-	void setActive(bool) override;
+	void setState(NodeState) override;
 	void move(Node*);
 	using Base = Platform;
 private:

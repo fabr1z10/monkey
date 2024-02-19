@@ -39,15 +39,15 @@ def inventory_previous():
 def inventory_exit():
     game_state.inventory_nodes = []
     inv = monkey.get_node(game_state.Ids.inventory_node).remove()
-    monkey.get_node(game_state.Ids.game_node).active = True
-    monkey.get_node(game_state.Ids.text_node).active = True
+    monkey.get_node(game_state.Ids.game_node).state = monkey.NodeState.ACTIVE
+    monkey.get_node(game_state.Ids.text_node).state = monkey.NodeState.ACTIVE
 
 
 
 
 def show_inventory():
-    monkey.get_node(game_state.Ids.game_node).active = False
-    monkey.get_node(game_state.Ids.text_node).active = False
+    monkey.get_node(game_state.Ids.game_node).state = monkey.NodeState.INACTIVE
+    monkey.get_node(game_state.Ids.text_node).state = monkey.NodeState.INACTIVE
     inv = monkey.Node()
     game_state.Ids.inventory_node = inv.id
     #inv.active=True
@@ -117,16 +117,16 @@ def rm_node(id):
     def f():
         print(id)
         monkey.get_node(id).remove()
-        set_main_node_active(True)()
+        set_main_node_active(monkey.NodeState.ACTIVE)()
     return f
 
 def set_main_node_active(value):
     def f():
         #monkey.get_node(settings.text_edit_node).active = value
-        monkey.get_node(game_state.Ids.game_node).active=value
+        monkey.get_node(game_state.Ids.game_node).state = value
     return f
 def message(script, id, last=True):
-    script.add(monkey.actions.CallFunc(function=set_main_node_active(False)))
+    script.add(monkey.actions.CallFunc(function=set_main_node_active(monkey.NodeState.PAUSED)))
 
     msg = make_text(id)
     script.add(monkey.actions.Add(id=game_state.Ids.text_node, node=msg))

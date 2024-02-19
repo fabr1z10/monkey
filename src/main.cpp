@@ -128,6 +128,13 @@ double add(double x, double y) {
 
 PYBIND11_MODULE(monkey, m) {
     m.doc() = "prova prova2"; // optional module docstring
+
+    py::enum_<NodeState>(m, "NodeState")
+        .value("ACTIVE", NodeState::ACTIVE)
+        .value("PAUSED", NodeState::PAUSED)
+        .value("INACTIVE", NodeState::INACTIVE)
+        .export_values();
+
     m.def("add", &add);
 //    m.def("read", &read_png);
 //    m.def("test",&add2, "i"_a = 1, "j"_a = 3);
@@ -208,7 +215,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("y", &Node::getY)
 		.def_property_readonly("z", &Node::getZ)
         .def_property("tag", &Node::getTag, &Node::setTag)
-        .def_property("active", &Node::active, &Node::setActive)
+        .def_property("state", &Node::getState, &Node::setState)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData);
 
 

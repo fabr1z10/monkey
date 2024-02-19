@@ -28,9 +28,9 @@ void Platform::start() {
 	m_platformWidth = m_node->getComponent<Collider>()->getStaticBounds().getSize().x;
 }
 
-void Platform::setActive(bool value) {
-	Component::setActive(value);
-	if (!value) {
+void Platform::setState(NodeState value) {
+	Component::setState(value);
+	if (value == NodeState::INACTIVE) {
 		unregisterAll();
 	}
 }

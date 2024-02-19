@@ -4,6 +4,12 @@
 
 class Node;
 
+enum NodeState {
+    ACTIVE = 0,
+    PAUSED = 1,
+    INACTIVE = 2
+};
+
 class Component {
 public:
     Component();
@@ -13,13 +19,15 @@ public:
     virtual void update(double) {}
     virtual void setNode(Node*);
     Node* getNode();
-    bool isActive() const;
-    virtual void setActive(bool);
+
+    virtual void setState(NodeState state);
+    NodeState getState() const;
 	//using Base = Component;
 protected:
     // the node this component belongs to
     Node* m_node;
-    bool m_active;
+    NodeState _state;
+
 };
 
 inline Node* Component::getNode() {
@@ -30,6 +38,9 @@ inline void Component::setNode(Node* node) {
     m_node = node;
 }
 
+inline NodeState Component::getState() const {
+    return _state;
+}
 
 
 

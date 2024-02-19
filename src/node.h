@@ -9,6 +9,8 @@
 #include "model.h"
 #include "event.h"
 
+
+
 class Node {
 public:
     Node();
@@ -35,8 +37,10 @@ public:
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
 
     void clearChildren();
-    void setActive(bool);
-    bool active() const;
+
+    // state getter & setter
+    void setState(NodeState);
+    NodeState getState() const;
 
 	bool getFlipX() const;
 	void setFlipX(bool value);
@@ -94,7 +98,7 @@ protected:
     glm::mat4 m_modelMatrix;
     glm::mat4 m_worldMatrix;
     glm::mat4 m_scaleMatrix;
-    bool m_active;
+    NodeState _state;
     bool m_started;
     pybind11::object m_userData;
     //std::shared_ptr<Camera> m_camera;
@@ -117,7 +121,7 @@ inline const std::unordered_map<long, std::shared_ptr<Node>> & Node::getChildren
     return m_children;
 }
 
-inline bool Node::active() const {
-    return m_active;
+inline NodeState Node::getState() const {
+    return _state;
 }
 

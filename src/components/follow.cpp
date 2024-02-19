@@ -22,8 +22,6 @@ void Follow::start() {
 
 
 void Follow::update (double dt) {
-	if (!m_active) return;
-
 	auto worldPos = m_node->getWorldPosition();
 	if (m_previous - worldPos != glm::vec3(0.0f)) {
 		glm::vec3 eye = worldPos + m_relativePos;
