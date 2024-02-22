@@ -2,6 +2,46 @@ import monkey
 import settings
 import scripts
 import game_state
+import inventory
+
+def read(d: dict, key: str, default_value=None):
+    value = d.get(key, default_value)
+    if isinstance(value, str) and value and value[0] == '@':
+        return getattr(scripts, value[1:])()
+    return value
+
+def make_text(id,x,y, **kwargs):
+    a=monkey.Text(batch='ui', font='sierra', anchor=kwargs.get('anchor',monkey.ANCHOR_CENTER), text=settings.strings[id])
+    a.set_position(x,y,5)
+    return a
+
+def make_solid_rect(x, y, w, h, color = 'FFFFFF', z = 0):
+    node = monkey.Node()
+    print(color,'sucalo')
+    node.set_model(monkey.models.from_shape(
+        'tri',
+             monkey.shapes.AABB(0, w, 0, h),
+             monkey.from_hex(color),
+             monkey.FillType.Solid))
+    node.set_position(x, y, z)
+    return node
+
+def make_outline_rect(x, y, w, h, color = 'FFFFFF', z = 0):
+    node = monkey.Node()
+    node.set_model(monkey.models.from_shape(
+        'lines',
+             monkey.shapes.AABB(0, w, 0, h),
+             monkey.from_hex(color),
+             monkey.FillType.Outline))
+    node.set_position(x, y, z)
+    return node
+
+def make_outline2_rect(x, y, w, h, color='FFFFFF', z=0):
+    node = monkey.Node()
+    node.add(make_outline_rect(x, y, w, h, color, z))
+    node.add(make_outline_rect(x+1, y, w-2, h, color, z))
+    return node
+
 
 
 def bg(ciao):
@@ -12,17 +52,19 @@ def bg(ciao):
     n = monkey.Node()
     n.set_model(a)
     n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-2*pos[1]/166.0 )
+    if auto_depth:
+        n.add_component(monkey.components.SierraController(z_func=settings.z_func))
     return n
     # root.add(n)
 
 def sprite(ciao):
     b = monkey.get_sprite(ciao['sprite'])
     auto_depth = ciao.get('auto_depth', False)
-    pos = ciao.get('pos', [0,0,0])
+    pos = read(ciao, 'pos', [0, 0, 0])
     b.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-2*pos[1]/166.0 )
     movable = ciao.get('movable', False)
     if movable:
-        b.add_component(monkey.components.SierraController(y_front=0, y_back=166))
+        b.add_component(monkey.components.SierraController(z_func=settings.z_func))
 
 
     return b
@@ -84,7 +126,8 @@ def create_room(room):
     room.add_runner(monkey.Scheduler())
 
     room_info = settings.rooms[settings.room]
-
+    zfunc = room_info.get('z_func', 'zfunc_default')
+    settings.z_func = getattr(scripts, zfunc)
     #size = room_info['size']
     #print(' -- size:', size)
     # game_area = (316, 166)
@@ -122,7 +165,8 @@ def create_room(room):
 
     kb = monkey.components.Keyboard()
     kb.add(settings.Keys.restart, 1, 0, scripts.restart_room)
-    kb.add(settings.Keys.inventory, 1, 0, scripts.show_inventory)
+    kb.add(settings.Keys.inventory, 1, 0, inventory.show_inventory)
+    kb.add(settings.Keys.view_item, 1, 0, inventory.show_view_item)
     game_node.add_component(kb)
 
 
@@ -136,7 +180,7 @@ def create_room(room):
 
     # display a sprite
     b = monkey.get_sprite('sprites/graham')
-    b.add_component(monkey.components.PlayerSierraController(half_width=2, y_front=0, y_back=166, dir=settings.dir))
+    b.add_component(monkey.components.PlayerSierraController(half_width=2, z_func=settings.z_func, dir=settings.dir))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
     b.set_position(settings.pos[0], settings.pos[1], 0)#
     game_node.add(b)

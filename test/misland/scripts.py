@@ -6,77 +6,18 @@ import settings
 def restart_room():
     monkey.close_room()
 
-def _text(id,x,y, **kwargs):
-    a=monkey.Text(batch='ui', font='sierra', anchor=kwargs.get('anchor',monkey.ANCHOR_CENTER), text=settings.strings[id])
-    a.set_position(x,y,5)
-    return a
+def zfunc_default (x, y):
+    return 1.0 - y / 166.0
 
-def inventory_row_up():
-    if game_state.inventory_selected > 1:
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(0)
-        game_state.inventory_selected -= 2
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(2)
-
-def inventory_row_down():
-    if game_state.inventory_selected < len(game_state.inventory)-1:
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(0)
-        game_state.inventory_selected = min(len(game_state.inventory)-1, game_state.inventory_selected + 2)
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(2)
-
-def inventory_next():
-    print(game_state.inventory_selected, len(game_state.inventory))
-    if game_state.inventory_selected < len(game_state.inventory)-1:
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(0)
-        game_state.inventory_selected += 1
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(2)
-
-def inventory_previous():
-    if game_state.inventory_selected > 0:
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(0)
-        game_state.inventory_selected -= 1
-        monkey.get_node(game_state.inventory_nodes[game_state.inventory_selected]).get_model().set_palette(2)
-
-def inventory_exit():
-    game_state.inventory_nodes = []
-    inv = monkey.get_node(game_state.Ids.inventory_node).remove()
-    monkey.get_node(game_state.Ids.game_node).state = monkey.NodeState.ACTIVE
-    monkey.get_node(game_state.Ids.text_node).state = monkey.NodeState.ACTIVE
+def zfunc1(x, y):
+    za = 1.0 if y < (108 + 0.593*(x-184)) and y<107 else 0
+    return 1.0 - y / 166.0 + za
 
 
 
 
-def show_inventory():
-    monkey.get_node(game_state.Ids.game_node).state = monkey.NodeState.INACTIVE
-    monkey.get_node(game_state.Ids.text_node).state = monkey.NodeState.INACTIVE
-    inv = monkey.Node()
-    game_state.Ids.inventory_node = inv.id
-    #inv.active=True
-    inv.add(_text(19, 160, 196))
-    inv.add(_text(20,160,4))
-    kb = monkey.Node()
-    k1 = monkey.components.Keyboard()
-    k1.add(settings.Keys.up, 1, 0, inventory_row_up)
-    k1.add(settings.Keys.down, 1, 0, inventory_row_down)
-    k1.add(settings.Keys.right, 1, 0, inventory_next)
-    k1.add(settings.Keys.left, 1, 0, inventory_previous)
-    k1.add_fallback(inventory_exit)
-    #k1.add(settings.Keys.inventory, 1, 0, scripts.show_inventory)
-    kb.add_component(k1)
-    inv.add(kb)
-    y = 180
-    if game_state.inventory:
-        i = 0
-        for item in game_state.inventory:
-            inode = _text(item, 8 if i % 2 == 0 else 312, y, anchor=monkey.ANCHOR_TOPLEFT if i % 2 == 0 else monkey.ANCHOR_TOPRIGHT)
-            inv.add(inode)
-            game_state.inventory_nodes.append(inode.id)
-            i += 1
-            if i % 2 == 0:
-                y -= 8
-        monkey.get_node(game_state.inventory_nodes[0]).get_model().set_palette(2)
-    else:
-        inv.add(_text(21, 160, y))
-    monkey.get_node(game_state.Ids.root).add(inv)
+
+
 
 
 
@@ -113,10 +54,10 @@ def make_text(string_id):
 
 
 
-def rm_node(id):
+def rm_node(*args):
     def f():
-        print(id)
-        monkey.get_node(id).remove()
+        for id in args:
+            monkey.get_node(id).remove()
         set_main_node_active(monkey.NodeState.ACTIVE)()
     return f
 
@@ -127,12 +68,28 @@ def set_main_node_active(value):
     return f
 def message(script, id, last=True):
     script.add(monkey.actions.CallFunc(function=set_main_node_active(monkey.NodeState.PAUSED)))
-
     msg = make_text(id)
     script.add(monkey.actions.Add(id=game_state.Ids.text_node, node=msg))
     wk = monkey.actions.WaitForKey()
     wk.add(settings.Keys.enter, func=rm_node(msg.id))
     script.add(wk)
+
+def message_item(script, item_id):
+    import factory
+    script.add(monkey.actions.CallFunc(function=set_main_node_active(monkey.NodeState.PAUSED)))
+
+    node = monkey.Node()
+    node.add(make_text(game_state.items[item_id]['desc']))
+    node.add(factory.make_solid_rect(136, 0, 42, 47, color='000000'))
+    node.add(factory.make_outline2_rect(136, 0, 42, 47, color='AA0000',z=1))
+    spr = monkey.get_sprite(game_state.items[item_id]['sprite'])
+    spr.set_position(157, 22, 1)
+    node.add(spr)
+    script.add(monkey.actions.Add(id=game_state.Ids.text_node, node=node))
+    wk = monkey.actions.WaitForKey()
+    wk.add(settings.Keys.enter, func=rm_node(node.id))
+    script.add(wk)
+
 
     # msg = monkey.actions.Msg(font='kq1main/sierra', text=settings.strings[id], batch='ui', pos=(160, 100, 1.1),#(158, 83, 1.1),
     #     palette=1, parent=settings.text_node, margin=(0,0), halign=1, valign=1, max_width=230,
@@ -172,6 +129,13 @@ def msg(n):
     message(script, n)
     monkey.play(script)
 
+def pickup(item, n1, n2):
+    if item in game_state.inventory:
+        msg(n2)
+    else:
+        game_state.inventory.add(item)
+        msg(n1)
+
 def push_rock():
     game_state.rock_moved = True
     script = monkey.Script()
@@ -184,6 +148,10 @@ def switch(condition, a1, a2):
     s = globals()[a[0]](*a[1:])
 
 
+def rock_pos():
+    if game_state.rock_moved == 1:
+        return [236, 21, 0]
+    return [236, 33, 0]
 
 
 #lookout_look_tree = _msg(7)
@@ -194,3 +162,29 @@ def goto_room(playe, other, room, pos, dir):
     settings.pos=pos
     settings.dir = dir
     monkey.close_room()
+
+def _goto_room(room, pos, dir):
+    def f():
+        settings.room = room
+        settings.pos = pos
+        settings.dir = dir
+        monkey.close_room()
+    return f
+
+
+def climb_tree():
+    script = monkey.Script()
+    message(script, 28)
+    script.add(monkey.actions.CallFunc(_goto_room('treetop', [80,3], 'n')))
+    monkey.play(script)
+
+def get_dagger():
+    if 'dagger' in game_state.inventory:
+        msg(26)
+    else:
+        if game_state.rock_moved:
+            game_state.inventory.add('dagger')
+            msg(25)
+        else:
+            msg(27)
+

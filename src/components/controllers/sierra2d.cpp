@@ -10,10 +10,13 @@
 extern GLFWwindow* window;
 
 Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component() {
-    _yFront = py_get_dict<float>(args, "y_front");
-    _yBack = py_get_dict<float>(args, "y_back");
-    _a = 2.f / (_yFront - _yBack);
-    _b = (_yBack + _yFront) / (_yBack - _yFront);
+    //_yFront = py_get_dict<float>(args, "y_front");
+    //_yBack = py_get_dict<float>(args, "y_back");
+    _zFunc = py_get_dict<pybind11::function>(args, "z_func", pybind11::function());
+    _scaleFunc = py_get_dict<pybind11::function>(args, "scale_func", pybind11::function());
+
+    //_a = 2.f / (_yFront - _yBack);
+    //_b = (_yBack + _yFront) / (_yBack - _yFront);
 }
 
 PlayerSierra2DController::PlayerSierra2DController(const pybind11::kwargs &args) : Sierra2DController(args), _enableControls(true) {
@@ -46,16 +49,31 @@ void PlayerSierra2DController::start() {
 }
 
 void Sierra2DController::update(double) {
-    updateZ();
+
+    auto currentPos = m_node->getWorldPosition();
+    if (currentPos != _previousPosition) {
+        updateZ(currentPos.x, currentPos.y);
+        _previousPosition = currentPos;
+    }
+
 }
 
 
-void Sierra2DController::updateZ() {
-    float z = _a * m_node->getY() + _b;
-    m_node->setZ(z);
+
+void Sierra2DController::updateZ(float x, float y) {
+    if (_zFunc) {
+        auto z = _zFunc(x, y).cast<float>();
+        m_node->setZ(z);
+    }
+    if (_scaleFunc) {
+        auto scale = _zFunc(x, y).cast<float>();
+        m_node->setScale(scale);
+    }
+
+
 }
 
-void PlayerSierra2DController::update(double) {
+void PlayerSierra2DController::update(double dt) {
 	if (!_enableControls) {
 		return;
 	}
@@ -119,7 +137,7 @@ void PlayerSierra2DController::update(double) {
 	m_node->move(glm::vec3(dx,dy,0));
 
     // update z
-    updateZ();
+    Sierra2DController::update(dt);
 
 	if (anyPressed) {
 		m_animatedRenderer->setAnimation(_walkAnimation + "_" + _dir);

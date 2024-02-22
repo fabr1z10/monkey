@@ -81,11 +81,23 @@ fonts:
       '.': [168,216,8,8,8]
       "'": [128,216,8,8,8]
       ':': [112,216,8,8,8]
+      ';': [104,216,8,8,8]
       '>': [176,216,8,8,8]
       '_': [56,216,8,8,8]
+      '-': [208,216,8,8,8]
 sprites:
-
-
+  item_dagger:
+    animations:
+      default:
+        frames:
+          - tex: [2,471,22,40]
+            anchor: [11, 20]
+  item_carrot:
+    animations:
+      default:
+        frames:
+          - tex: [67,475,46,34]
+            anchor: [23, 17]
   graham:
     animations:
       idle_e:

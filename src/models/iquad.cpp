@@ -158,6 +158,7 @@ void IQuads::addQuad(glm::vec4 texCoords, const pybind11::kwargs &kwargs) {
 	info.palette = py_get_dict<int>(kwargs, "pal", 0);
 	info.fliph = py_get_dict<bool>(kwargs, "fliph", false);
 	info.flipv = py_get_dict<bool>(kwargs, "flipv", false);
+
 	_quads.push_back(info);
 }
 

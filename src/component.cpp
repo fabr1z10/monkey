@@ -1,6 +1,6 @@
 #include "component.h"
 
-Component::Component() : m_node(nullptr) {}
+Component::Component() : m_node(nullptr), _state(NodeState::ACTIVE) {}
 
 std::type_index Component::getType() {
     return std::type_index(typeid(*this));

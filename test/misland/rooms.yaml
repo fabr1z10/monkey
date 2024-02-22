@@ -1,3 +1,54 @@
+garden:
+  z_func: zfunc1
+  batches:
+    - "006"
+  walls:
+    - [316,107,166,107,46,35,64,35,183,107]
+  scripts:
+    look_wall: ['msg', 30]
+    look_fence: ['msg', 30]
+    look_garden: ['msg', 31]
+    look_carrot: ['msg', 32]
+    get_carrot: ['pickup', 'carrot', 33, 34]
+  items:
+    - type: bg
+      batch: "006"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree
+      batch: "006"
+      auto_depth: true
+      pos: [44,35, 0]
+      quad: [1,167,139,89]
+    - type: bg      # tree
+      batch: "006"
+      auto_depth: true
+      pos: [78,79,0]
+      quad: [147,168,66,43]
+    - type: bg      # tree
+      batch: "006"
+      auto_depth: true
+      pos: [182,107,0]
+      quad: [144,217,134,17]
+    - type: bg      # tree
+      batch: "006"
+      pos: [0,92,1]
+      quad: [144,235,82,74]
+    - type: bg      # tree
+      batch: "006"
+      pos: [250,123,1]
+      quad: [228,235,50,43]
+treetop:
+  batches:
+    - "005"
+  items:
+    - type: bg
+      batch: "005"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: hotspot
+      poly: [0,0,316,0,316,1,0,1]
+      on_enter: ['goto_room', 'egg1', [182, 41], 's']
 egg1:
   batches:
     - "004"
@@ -6,8 +57,13 @@ egg1:
       batch: "004"
       pos: [0, 0, -1]
       quad: [0, 0, 316, 166]
+    - type: hotspot
+      poly: [0,0,316,0,316,1,0,1]
+      on_enter: ['goto_room', 'rock', [208, 123], 's']
+
   scripts:
     look_tree: ['msg', 18]
+    climb_tree: ['climb_tree']
 rock:
   batches:
     - "003"
@@ -31,12 +87,17 @@ rock:
       auto_depth: true
       pos: [242,87, 0]
       quad: [194,198,74,79]
+    - type: bg
+      batch: '003'
+      auto_depth: True
+      quad: [81,237,60,58]
+      pos: [120,107,0]
     - type: sprite
       sprite: '003/rock'
       auto_depth: true
       tag: rock
       movable: True
-      pos: [236,33,0]
+      pos: '@rock_pos'
     - type: hotspot
       poly: [315,0,316,0,316,166,315,166]
       on_enter: ['goto_room', 'castle', [2, 16], 'w']
@@ -48,6 +109,7 @@ rock:
     look_tree: ['msg', 12]
     look_hole: ['switch', 'game_state.rock_moved == 1', ['msg', 14], ['msg', 16]]
     push_rock: ['switch', 'game_state.rock_moved == 0', ['push_rock'], ['msg', 17]]
+    get_dagger: ['get_dagger']
     move_rock: ['push_rock']
 castle:
   batches:

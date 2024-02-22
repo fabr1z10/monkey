@@ -1,7 +1,7 @@
 import monkey
 
 device_size = (320, 200)
-room = 'rock'
+room = 'garden'
 pos = [213, 75]
 dir = 's'
 title = 'Hello world!'
@@ -12,6 +12,7 @@ class Keys:
     restart = 299
     enter = 257
     inventory = 258
+    view_item = 293 # F4
     right = 262
     left = 263
     up = 265

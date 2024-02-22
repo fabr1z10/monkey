@@ -1,0 +1,50 @@
+id: '007'
+sheet: '007.png'
+sprites:
+  wolf:
+    animations:
+      walk_e:
+        box: 0
+        frames:
+          - tex: [ 3, 169, 38, 16 ]
+            anchor: [ 22, 0 ]
+          - tex: [ 3, 186, 38, 18 ]
+            anchor: [ 22, 0 ]
+          - tex: [ 3, 205, 38, 18 ]
+            anchor: [ 22, 0 ]
+          - tex: [ 3, 224, 38, 21 ]
+            anchor: [ 22, 0 ]
+          - tex: [ 3, 146, 36, 22 ]
+            anchor: [ 22, 0 ]
+          - tex: [ 2, 269, 38, 19 ]
+            anchor: [ 22, 0 ]
+      walk_s:
+        box: 0
+        frames:
+          - tex: [ 57, 169, 10, 18 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 57, 188, 10, 18 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 57, 208, 10, 21 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 57, 230, 10, 22 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 57, 253, 10, 19 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 57, 273, 10, 16 ]
+            anchor: [ 5, 0 ]
+      walk_n:
+        box: 0
+        frames:
+          - tex: [ 45, 169, 10, 18 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 45, 188, 10, 18 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 45, 208, 10, 21 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 45, 230, 10, 22 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 45, 253, 10, 19 ]
+            anchor: [ 5, 0 ]
+          - tex: [ 45, 274, 10, 15 ]
+            anchor: [ 5, 0 ]

@@ -8,11 +8,14 @@ public:
     Sierra2DController(const pybind11::kwargs& args);
 protected:
     void update(double) override;
-    void updateZ();
+    void updateZ(float, float);
 private:
-    float _yFront;
-    float _yBack;
-    float _a, _b;
+    pybind11::function _zFunc;
+    pybind11::function _scaleFunc;
+    //float _yFront;
+    //float _yBack;
+    //float _a, _b;
+    glm::vec3 _previousPosition;
 
 };
 

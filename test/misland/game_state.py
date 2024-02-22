@@ -4,10 +4,28 @@ class Ids:
 
 rock_moved = 0
 
-inventory = {22,23,21}
+inventory = set()
 
 inventory_selected = 0
 inventory_nodes = []
+
+items = {
+
+    'dagger': {
+        'id': 22,
+        'desc': 24,
+        'sprite': 'sprites/item_dagger'
+    },
+    'carrot': {
+        'id': 35,
+        'desc': 36,
+        'sprite': 'sprites/item_carrot'
+    }
+
+}
+
+
+
 
 
 

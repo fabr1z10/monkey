@@ -21,7 +21,7 @@ void TrianglesModel::init(const glm::vec4 &color, const std::vector<float> &poin
 		t.P0 = glm::vec3(p[0][tri[3*i]][0], p[0][tri[3*i]][1], 0);
 		t.P1 = glm::vec3(p[0][tri[3*i+1]][0], p[0][tri[3*i+1]][1], 0);
 		t.P2 = glm::vec3(p[0][tri[3*i+2]][0], p[0][tri[3*i+2]][1], 0);
-		t.color = glm::vec4(1.f);
+		t.color = color;
 		_triangles.push_back(t);
 	}
 
