@@ -210,9 +210,9 @@ void Engine::run() {
         std::cout << "Loading room: " << _roomId << std::endl;
         loadRoom();
         // start up all nodes and components
-		_room->start();
 //        m_room->iterate_dfs([](Node *n) { n->start(); });
         m_run = true;
+        _room->start();
 
         do {
             double currentTime = glfwGetTime();

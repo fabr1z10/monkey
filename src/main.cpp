@@ -92,6 +92,7 @@
 #include "actions/remove.h"
 #include "components/sprite_collider.h"
 #include "components/switch.h"
+#include "components/controllers/sierranpc.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -193,7 +194,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_runner", &Room::addRunner)
 		.def("add_camera", &Room::addCamera)
 		.def("add_batch", &Room::addBatch)
-//		.def_property("on_start", nullptr, &Room::setOnStart)
+		.def_property("on_start", nullptr, &Room::setOnStart)
 //        //.def("add_line_batch", &Room::addLinesBatch)
 		.def("set_clear_color", &Room::setClearColor)
 //		.def("set_main_cam", &Room::setMainCam)
@@ -525,6 +526,9 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<py::kwargs&>());
 	py::class_<PlayerSierra2DController, Sierra2DController, std::shared_ptr<PlayerSierra2DController>>(mc, "PlayerSierraController")
 		.def(py::init<py::kwargs&>());
+
+    py::class_<NPCSierraController, Sierra2DController, std::shared_ptr<NPCSierraController>>(mc, "NPCSierraController")
+        .def(py::init<int, float, float, float, py::kwargs&>());
 	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
 		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,

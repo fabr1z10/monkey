@@ -39,8 +39,8 @@ bool seg2seg(glm::vec2 A, glm::vec2 B, glm::vec2 C, glm::vec2 D, float &t) {
     // Ax + t(Bx - Ax) = Cx + u(Dx - Cx)
     // Ay + t(By - Ay) = Cy + u(Dy - Cy)
     // which is
-    // t(Bx - Ax) - u(Dx - Cx) = (Cx - Ax)
-    // t(By - Ay) - u(Dy - Cy) = (Cy - Ay)
+    // t(Bx - Ax) + u(Cx - Dx) = (Cx - Ax)
+    // t(By - Ay) + u(Cy - Dy) = (Cy - Ay)
     // solution is
     //      | Cx - Ax    Dx - Cx |
     //      | Cy - Ay    Dy - Cy |
@@ -48,13 +48,14 @@ bool seg2seg(glm::vec2 A, glm::vec2 B, glm::vec2 C, glm::vec2 D, float &t) {
     //      | Bx - Ax    Dx - Cx |
     //      | By - Ay    Dy - Cy |
     glm::vec2 AB = B - A;
-    glm::vec2 DC = C - D;
-    float den = cross2d(AB, DC);
+    glm::vec2 CD = C - D;
+    float den = cross2d(AB, CD);
     if (isZero(den)) {
+        // if den is zero -> AB || CD -> AB and CD are parallel
         return false;
     }
     glm::vec2 AC = C - A;
-    t = cross2d(AC, DC) / den;
+    t = cross2d(AC, CD) / den;
     if (t >= 0.0f && t <= 1.0f) {
         float u = cross2d(AB, AC) / den;
         return (u >= 0.0f && u <= 1.0f);

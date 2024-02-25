@@ -4,6 +4,7 @@
 #include <sstream>
 #include <glm/glm.hpp>
 
+constexpr double pi = 3.14159265358979323846;
 
 const int key_left = 0x1;
 const int key_right = 0x2;

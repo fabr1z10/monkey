@@ -45,6 +45,7 @@ public:
     RayCastHit rayCastX(glm::vec3 origin, float length, int mask, Node* node=nullptr);
 	RayCastHit rayCastY(glm::vec3 origin, float length, int mask, Node* node=nullptr);
 	RayCastHit rayCastZ(glm::vec3 origin, float length, int mask, Node* node=nullptr);
+	RayCastHit rayCast(glm::vec3 origin, glm::vec3 destination, int mask, Node* node =nullptr) const;
     std::vector<ShapeCastHit> shapeCast (Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false) ;
 
 
@@ -54,7 +55,7 @@ public:
 protected:
 
 
-    virtual bool aabbTest(const Bounds& b1, const Bounds& b2) = 0;
+    virtual bool aabbTest(const Bounds& b1, const Bounds& b2) const = 0;
 	int getIndex(float x, Direction d);
     virtual void pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) = 0;
     std::unordered_map<Collider*, ColliderInfo> m_colliderLocations;
@@ -87,7 +88,7 @@ public:
 	//std::pair<glm::ivec3, glm::ivec3> getLocation(const Bounds& b) override;
 
 protected:
-	virtual bool aabbTest(const Bounds& b1, const Bounds& b2) override;
+	virtual bool aabbTest(const Bounds& b1, const Bounds& b2) const override;
 
 	void pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) override;
 
@@ -115,7 +116,7 @@ public:
 //    void processCollisions(const std::vector<ShapeCastHit>&, Node*, int);
 //
 protected:
-    virtual bool aabbTest(const Bounds& b1, const Bounds& b2) override;
+    virtual bool aabbTest(const Bounds& b1, const Bounds& b2) const override;
     void pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) override;
 
     //

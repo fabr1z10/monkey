@@ -43,9 +43,11 @@ public:
 private:
     RayCastHit rayCastAABB(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
 	RayCastHit rayCastPoly(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
+    RayCastHit rayCastPolyline(const glm::vec3& A, const glm::vec3& B, const Shape *s, const glm::mat4 &t);
 	// all shapes default to this, except circle and aabb that have special handlers
 	RayCastHit rayCastXGeneric(const glm::vec3& P, float, const Shape*, const glm::mat4& t);
 	RayCastHit rayCastYGeneric(const glm::vec3& P, float, const Shape*, const glm::mat4& t);
+
 	RayCastHit rayCastAxid2DAABB(const glm::vec3& P, Direction, float, const Shape*, const glm::mat4& t);
 	void updateRaycastHit(RayCastHit& r, glm::vec2 ray, glm::vec2 line, float u, int si);
 };

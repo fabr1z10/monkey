@@ -1,3 +1,45 @@
+wolf:
+  batches:
+    - "007"
+  on_start: create_wolf
+  walls:
+    - [100,0,100,166]
+    - [0,0,316,0,316,120,0,120,0,0]
+  items:
+    - type: bg
+      batch: "007"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree
+      batch: "007"
+      auto_depth: true
+      pos: [48,63, 0]
+      quad: [74,168,106,70]
+    - type: bg      # tree
+      batch: "007"
+      auto_depth: true
+      pos: [172,102, 0]
+      quad: [185,168,106,64]
+    - type: bg      # tree
+      batch: "007"
+      auto_depth: true
+      pos: [220,63, 0]
+      quad: [98,241,80,51]
+    - type: bg      # tree
+      batch: "007"
+      auto_depth: true
+      pos: [118,41, 0]
+      quad: [186,243,38,23]
+    - type: bg      # tree
+      batch: "007"
+      auto_depth: true
+      pos: [220,63, 0]
+      quad: [98,241,80,51]
+    - type: bg      # tree
+      batch: "007"
+      auto_depth: true
+      pos: [156,49, 0]
+      quad: [186,273,36,19]
 garden:
   z_func: zfunc1
   batches:
@@ -10,6 +52,7 @@ garden:
     look_garden: ['msg', 31]
     look_carrot: ['msg', 32]
     get_carrot: ['pickup', 'carrot', 33, 34]
+
   items:
     - type: bg
       batch: "006"
@@ -38,6 +81,9 @@ garden:
       batch: "006"
       pos: [250,123,1]
       quad: [228,235,50,43]
+    - type: hotspot
+      poly: [0,0,1,0,1,166,0,166]
+      on_enter: ['goto_room', 'egg1', [314, 10], 'w']
 treetop:
   batches:
     - "005"
@@ -60,7 +106,12 @@ egg1:
     - type: hotspot
       poly: [0,0,316,0,316,1,0,1]
       on_enter: ['goto_room', 'rock', [208, 123], 's']
-
+    - type: hotspot
+      poly: [315,0,316,0,316,166,315,166]
+      on_enter: ['goto_room', 'garden', [2, 10], 'e']
+    - type: hotspot
+      poly: [0,0,1,0,1,166,0,166]
+      on_enter: ['goto_room', 'wolf', [314, 10], 'w']
   scripts:
     look_tree: ['msg', 18]
     climb_tree: ['climb_tree']

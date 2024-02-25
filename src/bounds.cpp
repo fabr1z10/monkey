@@ -25,7 +25,9 @@ void Bounds::reset() {
     max = glm::vec3(0.f);
 
 }
-Bounds::Bounds(glm::vec3 m, glm::vec3 M) : min(m), max(M) {}
+Bounds::Bounds(glm::vec3 m, glm::vec3 M) : Bounds(m) {
+    addPoint(M);
+}
 
 Bounds::Bounds(glm::vec3 m) : min(m), max(m) {}
 

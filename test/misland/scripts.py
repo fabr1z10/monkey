@@ -102,6 +102,13 @@ def pippo(a, b, c):
     print('entering weppo')
 
 
+def create_wolf():
+    a = monkey.get_sprite('007/wolf')
+    a.set_position(20,10,0)
+    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 50))
+    monkey.get_node(game_state.Ids.game_node).add(a)
+
+
 
 
 def pippa(a, b):

@@ -65,6 +65,95 @@ std::vector<ShapeCastHit> ICollisionEngine::shapeCast(Shape * shape, const glm::
     return result;
 }
 
+RayCastHit ICollisionEngine::rayCast(glm::vec3 source, glm::vec3 target, int mask, Node* self) const {
+    RayCastHit out;
+
+    // index of origin cell
+    int i0 = static_cast<int>(source.x / m_size.x);
+    int j0 = static_cast<int>(source.y / m_size.y);
+
+    int i1 = static_cast<int>(target.x / m_size.x);
+    int j1 = static_cast<int>(target.y / m_size.y);
+
+    int ic = i0;
+    int jc = j0;
+    glm::vec2 u = glm::normalize(target - source);
+    glm::vec2 oc(source);
+    ShapeType boxType = _use3D ? ShapeType::AABB3D : ShapeType::AABB2D;
+
+    do {
+        glm::vec2 tc ;
+        int inc_i {0};
+        int inc_j {0};
+        if (ic == i1 && jc == j1) {
+            tc = glm::vec2(target);
+        } else {
+            // consider only the subsegment in cell (ic, jc)
+            float ny = u.y >= 0 ? (jc + 1) * m_size.y : (jc * m_size.y);
+            float nx = u.x >= 0 ? (ic + 1) * m_size.y : (ic * m_size.y);
+            float dist_x = u.x >= 0 ? nx - oc.x : oc.x - nx;
+            float dist_y = u.y >= 0 ? ny - oc.y : oc.y - ny;
+            if (u.x == 0.f) {
+                tc = glm::vec2(oc.x, ny);
+                inc_j += u.y > 0 ? 1 : -1;
+            } else if (u.y == 0.f) {
+                tc = glm::vec2(nx, oc.y);
+                inc_i += u.x > 0 ? 1 : -1;
+            } else {
+                glm::vec2 a(dist_x / fabs(u.x) , dist_y / fabs(u.y));
+                if (a.x < a.y) {
+                    tc = glm::vec2(nx, oc.y + a.x * u.y);
+                    inc_i += u.x > 0 ? 1 : -1;
+                } else {
+                    tc = glm::vec2(oc.x + a.y * u.x, ny);
+                    inc_j += u.y > 0 ? 1 : -1;
+                }
+            }
+        }
+
+
+        // collision check on (ic, jc)
+
+        auto it = m_cells.find(glm::ivec3(ic, jc, 0));
+        if (it != m_cells.end()) {
+            Bounds segmentBounds(glm::vec3(oc.x, oc.y, 0.f), glm::vec3(tc.x, tc.y, 0.f));
+            for (const auto &c : it->second.colliders) {
+                if (c->getState() != NodeState::ACTIVE || self == c->getNode()) {
+                    continue;
+                }
+                int flag = c->getCollisionFlag();
+                if (mask == 0 || (flag & mask) != 0) {
+                    auto shapeBounds = c->getStaticBounds();
+                    if (aabbTest(segmentBounds, shapeBounds)) {
+                        auto *shape = c->getShape().get();
+                        if (shape->getShapeType() == boxType) {
+                            out.update(0.f, c, glm::vec3(0.f), 0);
+                        } else {
+                            // otherwise do a proper check
+                            auto report = m_raycast->raycast(glm::vec3(oc, 0.f), glm::vec3(tc, 0.f), shape,
+                                                             c->getNode()->getWorldMatrix());
+                            if (report.collide) {
+                                out.update(report.length, c, report.normal, report.segmentIndex);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        oc = tc;
+        if (ic == i1 && jc == j1) {
+            break;
+        }
+        ic += inc_i;
+        jc += inc_j;
+
+
+    } while (true);
+
+    return out;
+
+}
+
 
 RayCastHit ICollisionEngine::rayCastX(glm::vec3 origin, float length, int mask, Node* node) {
     RayCastHit out;
@@ -614,7 +703,7 @@ void ICollisionEngine::addResponse(int i, int j, const pybind11::kwargs& args) {
 //}
 
 // returns true if bounds intersect
-bool CollisionEngine2D::aabbTest(const Bounds &b1, const Bounds &b2) {
+bool CollisionEngine2D::aabbTest(const Bounds &b1, const Bounds &b2) const{
 
     return !(b1.min.x > b2.max.x || b1.max.x < b2.min.x ||
              b1.min.y > b2.max.y || b1.max.y < b2.min.y);

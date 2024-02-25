@@ -25,7 +25,10 @@ RayCaster2D::RayCaster2D() {
     m_functionMap[std::type_index(typeid(AABB))] = [&] (const glm::vec3& A, const glm::vec3& B, const Shape* s, const glm::mat4& t) {
         return rayCastAABB(A, B, s, t);
     };
-
+    m_functionMap[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& A, const glm::vec3& B,
+            const Shape* s, const glm::mat4& t) {
+        return rayCastPolyline(A,B,s,t);
+    };
     /// axis
     m_functionsX[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastXGeneric(P, length, shape, t); };
 	m_functionsY[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastYGeneric(P, length, shape, t); };
@@ -236,6 +239,34 @@ RayCastHit RayCaster2D::rayCastAABB(const glm::vec3 &A, const glm::vec3 &B, cons
         }
     }
     return r;
+
+}
+
+RayCastHit RayCaster2D::rayCastPolyline(const glm::vec3 &A, const glm::vec3 &B, const Shape *s, const glm::mat4 &t) {
+    const auto* s2d = static_cast<const Shape2D*>(s);
+    auto* segs = s2d->getSegments();
+    RayCastHit out;
+    float rayLength = glm::length(B - A);
+    glm::vec3 AB = B - A;
+    if (segs != nullptr) {
+        for (auto& seg : *segs) {
+            // transform each point
+            auto s0 = glm::vec3(t * glm::vec4(seg.P0, 0, 1));
+            auto s1 = glm::vec3(t * glm::vec4(seg.P1, 0, 1));
+            float u{0.f};
+            if (seg2seg(A, B, s0, s1, u)) {
+                // collision
+                out.collide = true;
+                glm::vec3 u1 = glm::normalize(AB);
+                glm::vec3 v1 = glm::normalize(s1-s0);
+                out.length = u * rayLength;
+                out.normal = glm::normalize(v1 * glm::dot(u1, v1) - u1);
+                out.segmentIndex = 0;
+                return out;
+            }
+        }
+    }
+    return out;
 
 }
 

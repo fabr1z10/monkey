@@ -120,12 +120,17 @@ def process_action(a):
 
 
 def create_room(room):
+
     ce = monkey.CollisionEngine2D(80, 80)
     ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
     room.add_runner(ce)
     room.add_runner(monkey.Scheduler())
 
     room_info = settings.rooms[settings.room]
+    on_start = room_info.get('on_start')
+    if on_start:
+        room.on_start = getattr(scripts, on_start)
+
     zfunc = room_info.get('z_func', 'zfunc_default')
     settings.z_func = getattr(scripts, zfunc)
     #size = room_info['size']
@@ -182,7 +187,8 @@ def create_room(room):
     b = monkey.get_sprite('sprites/graham')
     b.add_component(monkey.components.PlayerSierraController(half_width=2, z_func=settings.z_func, dir=settings.dir))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
-    b.set_position(settings.pos[0], settings.pos[1], 0)#
+    b.set_position(settings.pos[0], settings.pos[1], 0)
+    game_state.Ids.player = b.id
     game_node.add(b)
 
     # create parser

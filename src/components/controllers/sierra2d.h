@@ -1,3 +1,4 @@
+#pragma once
 
 #include "../renderer.h"
 #include "../../runners/collision_engine.h"
@@ -5,7 +6,7 @@
 
 class Sierra2DController : public Component {
 public:
-    Sierra2DController(const pybind11::kwargs& args);
+    explicit Sierra2DController(const pybind11::kwargs& args);
 protected:
     void update(double) override;
     void updateZ(float, float);
