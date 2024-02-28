@@ -4,6 +4,15 @@ import scripts
 import game_state
 import inventory
 
+link_aabb = {
+    'w': [0, 1, 0, 166],
+    'e': [315, 316, 0, 166],
+    's': [0, 316, 0, 1],
+    'n': [0, 316, 120, 121]
+
+
+}
+
 def read(d: dict, key: str, default_value=None):
     value = d.get(key, default_value)
     if isinstance(value, str) and value and value[0] == '@':
@@ -94,6 +103,31 @@ def on_enter_hotspot(a, b, c):
     if on_enter:
         getattr(scripts, on_enter[0])(a, b, *on_enter[1:])
 
+def link(room, dir):
+    h = monkey.Node()
+    shape = monkey.shapes.AABB(*link_aabb[dir])
+    h.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
+        shape, batch='lines'))
+    pos = [2 if dir == 'e' else 314 if dir == 'w' else 0, 2 if dir == 'n' else 118 if dir == 's' else 0]
+    on_enter_func = 'goto_room_y' if dir == 'e' or dir == 'w' else 'goto_room_x'
+    h.user_data = {
+        'on_enter': [on_enter_func, room, pos, dir]
+    }
+    return h
+
+
+def west(ciao):
+    return link(ciao.get('room'), 'w')
+
+def east(ciao):
+    return link(ciao.get('room'), 'e')
+
+def north(ciao):
+    return link(ciao.get('room'), 'n')
+
+def south(ciao):
+    return link(ciao.get('room'), 's')
+
 
 def on_leave_hotspot(a,b):
     on_leave = b.user_data.get('on_leave')
@@ -105,7 +139,10 @@ def process_action(a):
     b=a.lower().strip()
     b = '_'.join(b.split())
     #f = getattr(scripts, settings.room +'_' + b, None)
-    aa = settings.rooms[settings.room]['scripts'].get(b, None)
+    room_scripts = settings.rooms[settings.room].get('scripts', None)
+    if not room_scripts:
+        return
+    aa = room_scripts.get(b, None)
     if aa:
         print('found')
 
@@ -213,6 +250,17 @@ def create_room(room):
         w = monkey.Node()
         w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
         game_node.add(w)
+
+    if 'west' in room_info:
+        game_node.add(link(room_info['west'], 'w'))
+    if 'east' in room_info:
+        game_node.add(link(room_info['east'], 'e'))
+    if 'north' in room_info:
+        game_node.add(link(room_info['north'], 'n'))
+    if 'south' in room_info:
+        game_node.add(link(room_info['south'], 's'))
+
+
 
     for item in room_info.get('items', []):
         f = globals().get(item['type'])

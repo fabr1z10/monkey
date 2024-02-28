@@ -139,10 +139,14 @@ void PlayerSierra2DController::update(double dt) {
     // update z
     Sierra2DController::update(dt);
 
+    std::string dir(_dir);
+    if (dir == "w") {
+        dir = "e";
+    }
 	if (anyPressed) {
-		m_animatedRenderer->setAnimation(_walkAnimation + "_" + _dir);
+		m_animatedRenderer->setAnimation(_walkAnimation + "_" + dir);
 	} else {
-		m_animatedRenderer->setAnimation(_idleAnimation + "_" + _dir);
+		m_animatedRenderer->setAnimation(_idleAnimation + "_" + dir);
 	}
 
 

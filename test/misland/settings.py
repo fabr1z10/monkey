@@ -1,7 +1,7 @@
 import monkey
 
 device_size = (320, 200)
-room = 'wolf'
+room = 'start'
 pos = [213, 75]
 dir = 's'
 title = 'Hello world!'

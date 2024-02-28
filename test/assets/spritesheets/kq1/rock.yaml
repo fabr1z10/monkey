@@ -1,5 +1,5 @@
-id: '003'
-sheet: '003.png'
+id: 'rock'
+sheet: 'rock.png'
 sprites:
   rock:
     animations:

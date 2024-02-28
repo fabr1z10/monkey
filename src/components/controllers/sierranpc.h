@@ -12,11 +12,13 @@ public:
 private:
     void check_los(glm::vec3 normal = glm::vec3(0.f));
     ICollisionEngine* m_collisionEngine;
+    Renderer* m_animatedRenderer;
 
     int _targetId;
     Node * _target;
     float _fovAngle;
     float _speed;
+    //float _lookAngle;
     float _fovRange;
     glm::vec2 _lookDirection;
 };

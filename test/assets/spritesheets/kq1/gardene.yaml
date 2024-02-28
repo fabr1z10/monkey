@@ -1,0 +1,26 @@
+id: 'gardene'
+sheet: 'gardene.png'
+sprites:
+  fairy:
+    animations:
+      walk:
+        box: 0
+        frames:
+          - tex: [ 1, 167, 42, 30 ]
+            anchor: [ 26, 0 ]
+          - tex: [ 44, 167, 42, 30 ]
+            anchor: [ 26, 0 ]
+          - tex: [ 1, 198, 42, 30 ]
+            anchor: [ 26, 0 ]
+          - tex: [ 44, 198, 42, 30 ]
+            anchor: [ 26, 0 ]
+          - tex: [ 1, 229, 42, 30 ]
+            anchor: [ 22, 0 ]
+          - tex: [ 44, 229, 42, 30 ]
+            anchor: [ 26, 0 ]
+          - tex: [ 1, 260, 42, 30 ]
+            anchor: [26, 0]
+          - tex: [44, 260, 42, 30]
+            anchor: [42, 30]
+
+

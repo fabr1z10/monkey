@@ -1,7 +1,7 @@
 import monkey
 import game_state
 import settings
-
+import random
 
 def restart_room():
     monkey.close_room()
@@ -101,12 +101,39 @@ def message_item(script, item_id):
 def pippo(a, b, c):
     print('entering weppo')
 
+def caught_by_wolf(a,b):
+    msg(38)
+    c = monkey.get_sprite('007/wolf_fight')
+    c.set_position(a.x,a.y,a.z)
+    a.remove()
+    b.remove()
+    monkey.get_node(game_state.Ids.game_node).add(c)
+    s = monkey.Script()
+    s.add(monkey.actions.Delay(5))
+    s.add(monkey.actions.Remove(c.id))
+    message(s, 0)
+    monkey.play(s)
+
+
+
+def _wolf():
+    msg(37)
+    a = monkey.get_sprite('007/wolf')
+    a.set_position(180,10,0)
+    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 50,  z_func=settings.z_func))
+    a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
+                                               monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
+    a.user_data = {
+        'on_enter': ['caught_by_wolf']
+    }
+    monkey.get_node(game_state.Ids.game_node).add(a)
+
 
 def create_wolf():
-    a = monkey.get_sprite('007/wolf')
-    a.set_position(20,10,0)
-    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 50))
-    monkey.get_node(game_state.Ids.game_node).add(a)
+    script = monkey.Script()
+    script.add(monkey.actions.Delay(random.randint(1, 10)))
+    script.add(monkey.actions.CallFunc(_wolf))
+    monkey.play(script)
 
 
 
@@ -165,10 +192,26 @@ def rock_pos():
 #lookout_look_castle = _msg(4)
 
 def goto_room(playe, other, room, pos, dir):
-    settings.room=room
-    settings.pos=pos
+    settings.room = room
+    settings.pos = pos
     settings.dir = dir
     monkey.close_room()
+
+def goto_room_x(playe, other, room, pos, dir):
+    settings.room = room
+    settings.pos = pos
+    settings.pos[0] = monkey.get_node(game_state.Ids.player).x
+    settings.dir = dir
+    monkey.close_room()
+
+def goto_room_y(playe, other, room, pos, dir):
+    settings.room = room
+    settings.pos = pos
+    settings.pos[1] = monkey.get_node(game_state.Ids.player).y
+    print('fucami',settings.pos)
+    settings.dir = dir
+    monkey.close_room()
+
 
 def _goto_room(room, pos, dir):
     def f():

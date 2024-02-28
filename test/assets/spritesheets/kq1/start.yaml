@@ -1,5 +1,5 @@
-id: '001'
-sheet: '001.png'
+id: 'start'
+sheet: 'start.png'
 sprites:
   flag1:
     animations:

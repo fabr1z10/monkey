@@ -93,6 +93,7 @@
 #include "components/sprite_collider.h"
 #include "components/switch.h"
 #include "components/controllers/sierranpc.h"
+#include "shapes/circle.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -330,8 +331,8 @@ PYBIND11_MODULE(monkey, m) {
 //    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
 //        .def(py::init<float, float, const py::kwargs&>());
 //
-//    py::class_<Circle, Shape, std::shared_ptr<Circle>>(m, "Circle")
-//        .def(py::init<float, const py::kwargs&>());
+    py::class_<Circle, Shape, std::shared_ptr<Circle>>(ms, "Circle")
+        .def(py::init<float, const py::kwargs&>());
 //
 //
     py::class_<AABB, Shape, std::shared_ptr<AABB>>(ms, "AABB")

@@ -48,3 +48,22 @@ sprites:
             anchor: [ 5, 0 ]
           - tex: [ 45, 274, 10, 15 ]
             anchor: [ 5, 0 ]
+  wolf_fight:
+    animations:
+      default:
+        frames:
+          - tex: [229,234,32,31]
+            anchor: [17,0]
+          - tex: [263,237,30,28]
+            anchor: [15,0]
+          - tex: [229,266,32,31]
+            anchor: [17,0]
+          - tex: [263,266,30,28]
+            anchor: [15,0]
+          - tex: [229,298,32,31]
+            anchor: [17,0]
+          - tex: [263,295,30,28]
+            anchor: [15,0]
+
+
+

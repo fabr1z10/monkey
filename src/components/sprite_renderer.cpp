@@ -91,7 +91,7 @@ void SpriteRenderer::updateBatch() {
     for (const auto& quad : a.quads) {
         auto flipx = m_node->getFlipX();
 
-        auto bottomLeft = worldTransform * glm::vec4(quad.location.x, quad.location.y, quad.location.z, 1.f);
+        auto bottomLeft = worldTransform * glm::vec4( quad.location.x, quad.location.y, quad.location.z, 1.f) ;
         //glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);
         //auto bottomLeft = pos + scale * (m_shift + quad.location) - glm::vec3(delta, 0.f);
 //		if (m_node->getLabel()== "sword") {
