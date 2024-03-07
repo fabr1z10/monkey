@@ -241,7 +241,9 @@ void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) 
 		this->addComponent(renderer);
 		renderer->setModel(model, args);
 		if (Engine::instance().isRunning()) {
-			renderer->start();
+			this->start();
+		    //renderer->start();
+
 		}
 	}
 

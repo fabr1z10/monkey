@@ -130,7 +130,7 @@ void Text::updateText(const std::string & text) {
 	std::cout << "n rows = " << rowCount << "\n";
 	setModel(model, pybind11::dict("batch"_a=_batchId));
 
-	_size.x = (_width == std::numeric_limits<float>::infinity()) ? maxRowLength : _width;
+	_size.x = maxRowLength;
 	_size.y = rows.size() * _lineHeight;
 
 	switch (_anchor) {

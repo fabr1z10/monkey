@@ -1,0 +1,46 @@
+map:
+  rock: [rock]
+  door: [door_castle]
+
+items:
+  rock:
+    name: 94
+    room: rock
+    type: sprite
+    sprite: 'rock/rock'
+    pos: [236, 33, 0]
+    bounds: [0,34,-10,10]      # the player must be inside this rectangle to interact with object
+    auto_depth: True
+    can_pick_up: False
+    desc: 15
+    pick_up: 91
+  dagger:
+    name: 22
+    room: rock
+    pos: [254, 45, 0]
+    type: empty
+    bounds: [-20, 20, -10, 10]
+    can_pick_up: True
+    desc: 24
+    pick_up: 25
+    visible: 'game_state.rock_moved == 1'
+  lion:
+    name: 98
+    room: castle
+    desc: 8
+  castle:
+    name: 97
+    room: castle
+    desc: 9
+  door_castle:
+    room: castle
+    type: sprite
+    sprite: 'castle/door'
+    pos: [208, 46, 0]
+    desc: 11
+
+
+
+
+
+

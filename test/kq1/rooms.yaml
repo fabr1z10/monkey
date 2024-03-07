@@ -1,0 +1,857 @@
+pippo:
+  a: &a [0,0,316,166]
+goatpenw:
+  batches:
+    - "goatpenw"
+  walls:
+    - [316,12,290,21,229,37,145,37,104,60,80,84,114,91,150,99,200,99,236,99,236,95,300,88,316,88]
+
+  on_start: create_goat
+  items:
+    - type: bg
+      batch: "goatpenw"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree_1
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [148, 69, 0]
+      quad: [118,167,32,24]
+    - type: bg      # bush
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [8, 40, 0]
+      quad: [1,167,48,27]
+    - type: bg      # rock
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [164, 9, 0]
+      quad: [50,167,64,17]
+    - type: hotspot
+      aabb: [315,316,0,166]
+      mask: 4
+      on_enter: ['goat_east']
+  west: fairy
+  east: goatpene
+goatpene:
+  batches:
+    - "goatpene"
+  items:
+    - type: bg
+      batch: "goatpene"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+  west: goatpenw
+  south: stump
+rivtrees:
+  batches:
+    - "rivtrees"
+  east: troll
+  north: forkrive
+  west: bowl
+  south: cliff
+  items:
+    - type: bg
+      batch: "rivtrees"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+forkrive:
+  batches:
+    - "forkrive"
+  west: pebbles
+  south: rivtrees
+  items:
+    - type: bg
+      batch: "forkrive"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+southcas:
+  batches:
+    - "southcas"
+  south: pebbles
+  west: ogre
+  items:
+    - type: bg
+      batch: "southcas"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+ogre:
+  batches:
+    - "ogre"
+  east: southcas
+  north: rock
+  south: rockclou
+  items:
+    - type: bg
+      batch: "ogre"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+rockclou:
+  batches:
+    - "rockclou"
+  north: ogre
+  east: pebbles
+  south: walnut
+  items:
+    - type: bg
+      batch: "rockclou"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+doorclou:
+  batches:
+    - "doorclou"
+  north: walnut
+  south: goldegg
+  east: elf
+  items:
+    - type: bg
+      batch: "doorclou"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+cliff:
+  batches:
+    - "cliff"
+  south: gardene
+  north: rivtrees
+  west: elf
+  items:
+    - type: bg
+      batch: "cliff"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+elf:
+  batches:
+    - "elf"
+  west: doorclou
+  south: gardenw
+  north: bowl
+  east: cliff
+  items:
+    - type: bg
+      batch: "elf"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+sorcerer:
+  batches:
+    - "sorcerer"
+  east: walnut
+  south: lake3
+  west: witch
+  items:
+    - type: bg
+      batch: "sorcerer"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+house:
+  batches:
+    - "house"
+  south: swamp
+  items:
+    - type: bg
+      batch: "house"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+swamp:
+  batches:
+    - "swamp"
+  south: witch
+  north: house
+  items:
+    - type: bg
+      batch: "swamp"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+witchous:
+  batches:
+    - "witchous"
+  walls:
+    - [78,0,0,0,0,12,16,30,36,30,59,61,47,61,58,78,193,78,196,74,205,74,206,78,289,78,316,53,316,0,226,0,209,52,202,52,215,0,120,0]
+    - [214,7,264,7,254,22,210,22]
+    - [217,31,287,31,272,46,215,46,217,31]
+  walls_z:
+    - [202,51,216,0]
+  items:
+    - type: bg
+      batch: "witchous"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # table
+      batch: "witchous"
+      auto_depth: true
+      pos: [226,7,0]
+      quad: [27,167,38,32]
+    - type: bg      # bed
+      batch: "witchous"
+      auto_depth: true
+      pos: [226,31,0]
+      quad: [70,168,60,32]
+    - type: bg      # wall
+      batch: "witchous"
+      pos: [202,0,1]
+      quad: [291,167,24,133]
+    - type: bg      # tree
+      batch: "witchous"
+      tag: note
+      condition: "game_state.note_taken == 0"
+      pos: [236,26,0.96]
+      quad: [1,167,20,10]
+    - type: bg      # tree
+      batch: "witchous"
+      tag: note
+      condition: "game_state.cheese_taken == 0"
+      pos: [82,105,0.1]
+      quad: [5,180,12,12]
+      tag: cheese
+    - type: sprite
+      sprite: 'witchous/cupboard'
+      #auto_depth: true
+      tag: cupboard
+      pos: [70, 95, 0.2]
+
+  scripts:
+    look_table: ['look_witch_table']
+    get_note: ['pickup', {'item': 'note', 'msg': 81}]
+    get_cheese: [ 'pickup', { 'item': 'cheese', 'msg': 88 } ]
+
+    open_cupboard: ['open', {'item': 'cupboard'}]
+    close_cupboard: ['close', {'item': 'cupboard'}]
+    look_cage: ['msg', {'id': 78}]
+witch:
+  walls:
+    - [0,57,29,57,41,46,51,46,60,34,117,40,191,42,187,55]
+    - [42,16.9,85,16.9]
+    - [182,57,154,88,0,88]
+  walls_z:
+    - [14,57,42,16.9]
+    - [154,23,250,35]
+    - [154,65,250,34.9]
+  batches:
+    - "witch"
+  east: sorcerer
+  north:
+    room: swamp
+    pos: [292,6]
+  items:
+    - type: bg
+      batch: "witch"
+      pos: [ 0, 0, -1 ]
+      quad: *a
+    - type: sprite
+      sprite: 'witch/door'
+      auto_depth: true
+      tag: door
+      pos: [88, 38, 0]
+    - type: bg      # fence west
+      batch: "witch"
+      pos: [14, 17, 0.8976]
+      quad: [2,215,72,50]
+    - type: bg      # fence east
+      batch: "witch"
+      pos: [154, 23, 1.8615]
+      quad: [149,183,96,26]
+    - type: bg      # fence east
+      batch: "witch"
+      pos: [190, 38, 0.7711]
+      quad: [149,210,56,27]
+    - type: bg      # fence east
+      batch: "witch"
+      pos: [158, 41, 1.753]
+      quad: [2,277,50,53]
+    - type: bg      # fence east
+      batch: "witch"
+      pos: [0,88,1]
+      quad: [87,252,190,78]
+  scripts:
+    look_house: ['msg', {'id': 49}]
+    look_door: ['msg',71]
+    look_fence: ['msg',72]
+    look_window: ['msg',73]
+    eat_house: ['msg', 74]
+    open_door: ['open_witch_door']#, {'rect': [86, 33, 36, 8]}]
+lake3:
+  batches:
+    - "lake3"
+  east: doorclou
+  north: sorcerer
+  items:
+    - type: bg
+      batch: "lake3"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+walnut:
+  batches:
+    - "walnut"
+  north: rockclou
+  south: doorclou
+  west: sorcerer
+  items:
+    - type: bg
+      batch: "walnut"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+  scripts:
+      look_tree: [ 'msg', 60 ]
+      look_walnut: ['look_inventory_item', 'walnut', 64, 0]
+      get_walnut: ['pickup', 'walnut', 62, 65]
+pebbles:
+  batches:
+    - "pebbles"
+  south: bowl
+  north: southcas
+  east: forkrive
+  west: rockclou
+  walls:
+    - [66,86,138,86,138,91,66,91,66,86]
+  items:
+    - type: bg
+      batch: "pebbles"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # large trunk
+      batch: "pebbles"
+      auto_depth: true
+      pos: [66, 86, 0]
+      quad: [1,167,82,38]
+  scripts:
+      look_river: [ 'msg', 55 ]
+      look_beach: [ 'msg', 55 ]
+      look_pebbles: ['look_inventory_item', 'pebbles', 56, 0]
+      get_pebbles: ['pickup', 'pebbles', 57, 26]
+bowl:
+  batches:
+    - "bowl"
+  east: rivtrees
+  north: pebbles
+  west: walnut
+  items:
+    - type: bg
+      batch: "bowl"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree
+      batch: "bowl"
+      tag: bowl
+      condition: "game_state.bowl_taken == 0"
+      auto_depth: true
+      pos: [252,28,0]
+      quad: [1,167,24,14]
+  scripts:
+    look_bowl: ['look_inventory_item', 'bowl', 51, 0]
+    get_bowl: ['pickup', 'bowl', 52, 26]
+
+troll:
+  batches:
+    - "troll"
+  east: rivrbend
+  west: rivtrees
+  items:
+    - type: bg
+      batch: "troll"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+rivrbend:
+  batches:
+    - "rivrbend"
+  east: trunkbig
+  west: troll
+  south: rushes
+  items:
+    - type: bg
+      batch: "rivrbend"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+rushes:
+  batches:
+    - "rushes"
+  north: rivrbend
+  items:
+    - type: bg
+      batch: "rushes"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+trunkbig:
+  batches:
+    - "trunkbig"
+  north: flowrbed
+  west: rivrbend
+  items:
+    - type: bg
+      batch: "trunkbig"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # large trunk
+      batch: "trunkbig"
+      auto_depth: true
+      pos: [8, 0, 0]
+      quad: [3,166,240,166]
+    - type: bg      # tree1
+      batch: "trunkbig"
+      auto_depth: true
+      pos: [22, 79, 0]
+      quad: [251,167,64,64]
+    - type: bg      # tree2
+      batch: "trunkbig"
+      auto_depth: true
+      pos: [70, 95, 0]
+      quad: [253,232,32,62]
+    - type: bg      # tree3
+      batch: "trunkbig"
+      auto_depth: true
+      pos: [190, 103, 0]
+      quad: [256,296,56,35]
+    - type: bg      # tree4
+      batch: "trunkbig"
+      auto_depth: true
+      pos: [256, 88, 0]
+      quad: [318,3,54,69]
+    - type: bg      # bush
+      batch: "trunkbig"
+      auto_depth: true
+      pos: [128, 89, 0]
+      quad: [318,74,68,26]
+flowrbed:
+  batches:
+    - "flowrbed"
+  south: trunkbig
+  items:
+    - type: bg
+      batch: "flowrbed"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+rivinlak:
+  batches:
+    - "rivinlak"
+  west: lake2
+  items:
+    - type: bg
+      batch: "rivinlak"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: hotspot
+      poly: [0,105,13,105,25,97,59,97,63,93,70,96,84,98,128,89,133,87,133,78,128,71,128,54,144,31,140,25,129,19,120,19,108,17,84,6,77,5,69,9,48,9,34,6,11,7,0,5,0,105]
+      on_enter: ['start_swim']
+      on_leave: ['end_swim']
+    - type: hotspot
+      poly: [23,126,7,108,0,106,0,97,16,92,35,89,55,91,60,93,51,101,44,112,44,126]
+      on_enter: ['drown3']
+lake2:
+  batches:
+    - "lake2"
+  north: fairy
+  west: start
+  east: rivinlak
+  items:
+    - type: bg
+      batch: "lake2"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: hotspot
+      poly: [207,43,228,38,234,31,238,6,263,4,297,10,316,5,316,112,293,114,263,111,274,113,264,108,208,108,187,104,170,96,169,93,173,90,202,87,209,83,194,61,203,46]
+      on_enter: ['start_swim']
+      on_leave: ['end_swim']
+    - type: hotspot
+      poly: [235,32,221,15,207,8,195,8,173,0,209,0,238,8,276,8,295,10,235,32]
+      on_enter: ['drown3']
+
+lake:
+  batches:
+    - "lake"
+  north: stump
+  south: flowrbed
+  items:
+    - type: bg
+      batch: "lake"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # stump
+      batch: "lake"
+      auto_depth: true
+      pos: [220, 93, 0]
+      quad: [1,167,96,73]
+    - type: bg      # stump
+      batch: "lake"
+      auto_depth: true
+      pos: [238, 68, 0]
+      quad: [99,167,44,37]
+    - type: bg      # plant
+      batch: "lake"
+      auto_depth: true
+      pos: [218, 23, 0]
+      quad: [99,206,38,35]
+    - type: bg      # plant2
+      batch: "lake"
+      auto_depth: true
+      pos: [90, 23, 0]
+      quad: [148,174,38,30]
+    - type: bg      # small rock
+      batch: "lake"
+      auto_depth: true
+      pos: [214, 67, 0]
+      quad: [149,210,18,14]
+    - type: hotspot
+      poly: [0,44,44,33,73,33,112,26,125,16,171,9,215,17,248,57,238,89,196,107,196,113,201,120,189,127,0,127,0,44]
+      on_enter: ['start_swim']
+      on_leave: ['end_swim']
+stump:
+  batches:
+    - "stump"
+  items:
+    - type: bg
+      batch: "stump"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # stump
+      batch: "stump"
+      auto_depth: true
+      pos: [6, 31, 0]
+      quad: [1,167,52,39]
+    - type: bg      # stump2
+      batch: "stump"
+      auto_depth: true
+      pos: [66, 15, 0]
+      quad: [54,167,95,33]
+    - type: bg      # tree1
+      batch: "stump"
+      auto_depth: true
+      pos: [172, 32, 0]
+      quad: [150,167,48,64]
+    - type: bg      # tree2
+      batch: "stump"
+      auto_depth: true
+      pos: [244, 63, 0]
+      quad: [199,167,58,103]
+    - type: bg      # tree3
+      batch: "stump"
+      auto_depth: true
+      pos: [14, 79, 0]
+      quad: [54,201,70,87]
+  north: goatpene
+  south:
+    room: lake
+    pos: [237,118]
+  scripts:
+    look_stump: [ 'msg', 42 ]
+    look_in_stump: [ 'msg', 43 ]
+    get_pouch: ['pickup', 'pouch', 44, 26]
+fairy:
+  batches:
+    - "fairy"
+  west: gardene
+  east: goatpenw
+  items:
+    - type: bg
+      batch: "fairy"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+  on_start: create_fairy
+wolf:
+  batches:
+    - "wolf"
+  east: egg1
+  on_start: create_wolf
+  walls:
+    - [66,63,96,63]
+    - [118,40,144,40]
+    - [223,63,292,63]
+    - [205,102,235,102]
+    - [0,0,318,0,318,120,0,120,0,0]
+  scripts:
+  items:
+    - type: bg
+      batch: "wolf"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree
+      batch: "wolf"
+      auto_depth: true
+      pos: [48,63, 0]
+      quad: [74,168,106,70]
+    - type: bg      # tree
+      batch: "wolf"
+      auto_depth: true
+      pos: [172,102, 0]
+      quad: [185,168,106,64]
+    - type: bg      # tree
+      batch: "wolf"
+      auto_depth: true
+      pos: [220,63, 0]
+      quad: [98,241,80,51]
+    - type: bg      # tree
+      batch: "wolf"
+      auto_depth: true
+      pos: [118,41, 0]
+      quad: [186,243,38,23]
+    - type: bg      # tree
+      batch: "wolf"
+      auto_depth: true
+      pos: [220,63, 0]
+      quad: [98,241,80,51]
+    - type: bg      # tree
+      batch: "wolf"
+      auto_depth: true
+      pos: [156,49, 0]
+      quad: [186,273,36,19]
+#    - type: hotspot
+#      poly: [315,0,316,0,316,166,315,166]
+#      on_enter: ['goto_room', 'egg1', [2, 10], 'e']
+gardene:
+  z_func: zfunc2
+  batches:
+    - "gardene"
+  walls:
+    - [0,107,160,107,283,34,299,34,176,108,0,108,0,107]
+  south: start
+  west: gardenw
+  east: fairy
+  items:
+    - type: bg
+      batch: "gardene"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # slanted wall
+      batch: "gardene"
+      pos: [161, 35, 0.789]
+      quad: [173,167,139,89]
+    - type: bg      # slanted wall
+      batch: "gardene"
+      pos: [0,107,0.355]
+      quad: [1,170,161,17]
+gardenw:
+  z_func: zfunc1
+  batches:
+    - "gardenw"
+  walls:
+    - [316,107,166,107,46,35,64,35,183,107]
+  east: gardene
+  west: goldegg
+  scripts:
+    look_wall: ['msg', 30]
+    look_fence: ['msg', 30]
+    look_garden: ['msg', 31]
+    look_carrot: ['msg', 32]
+    get_carrot: ['pickup', 'carrot', 33, 34]
+  items:
+    - type: bg
+      batch: "gardenw"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree
+      batch: "gardenw"
+      auto_depth: true
+      pos: [44,35, 0]
+      quad: [1,167,139,89]
+    - type: bg      # tree
+      batch: "gardenw"
+      auto_depth: true
+      pos: [78,79,0]
+      quad: [147,168,66,43]
+    - type: bg      # tree
+      batch: "gardenw"
+      auto_depth: true
+      pos: [182,107,0]
+      quad: [144,217,134,17]
+    - type: bg      # tree
+      batch: "gardenw"
+      pos: [0,92,1]
+      quad: [144,235,82,74]
+    - type: bg      # tree
+      batch: "gardenw"
+      pos: [250,123,1]
+      quad: [228,235,50,43]
+
+treetop:
+  batches:
+    - "treetop"
+  items:
+    - type: bg
+      batch: "treetop"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+#    - type: hotspot
+#      poly: [0,0,316,0,316,1,0,1]
+#      on_enter: ['goto_room', 'egg1', [182, 41], 's']
+goldegg:
+  batches:
+    - "goldegg"
+  walls:
+    - [156,15,209,15,209,7,222,7,245,15,309,15,309,18,156,18,156,15]
+  west: wolf
+  east: gardenw
+  south: rock
+  items:
+    - type: bg
+      batch: "goldegg"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg      # tree
+      batch: "goldegg"
+      pos: [130,7, 0.9]
+      quad: [128,168,186,159]
+  scripts:
+    look_tree: ['msg', 18]
+    climb_tree: ['climb_tree']
+throne:
+  batches:
+    - "throne"
+  east: incastl2
+  items:
+    - type: bg
+      batch: "throne"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+incastl2:
+  batches:
+    - "incastl2"
+  walls:
+    - [0, 82, 83, 82, 83, 79, 99, 79, 102, 82, 214, 82, 218, 79, 228, 79, 285, 0]
+  south:
+    room: incastl1
+    pos: [158, 118, 0]
+  west: throne
+  items:
+    - type: bg
+      batch: "incastl2"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg
+      batch: "incastl2"
+      pos: [0, 0, 1]
+      quad: [0, 166, 316, 166]
+incastl1:
+  batches:
+    - "incastl1"
+  north: incastl2
+  south:
+    room: castle
+    pos: [228, 43, 0]
+  items:
+    - type: bg
+      batch: "incastl1"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg        # lamp
+      batch: "incastl1"
+      pos: [128, 76, 1]
+      quad: [1, 168, 62, 89]
+rock:
+  batches:
+    - "rock"
+  east: castle
+  north: egg1
+  south: ogre
+  items:
+    - type: bg
+      batch: "rock"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg      # tree
+      batch: "rock"
+      auto_depth: true
+      pos: [0,0, 0]
+      quad: [0,194,64,138]
+    - type: bg      # tree
+      batch: "rock"
+      auto_depth: true
+      pos: [130,71, 0]
+      quad: [80,195,98,36]
+    - type: bg      # tree
+      batch: "rock"
+      auto_depth: true
+      pos: [242,87, 0]
+      quad: [194,198,74,79]
+    - type: bg
+      batch: 'rock'
+      auto_depth: True
+      quad: [81,237,60,58]
+      pos: [120,107,0]
+#    - type: sprite
+#      sprite: 'rock/rock'
+#      auto_depth: true
+#      tag: rock
+#      movable: True
+#      pos: '@rock_pos'
+
+  scripts:
+    look_rock: ['msg', 15]
+    look_tree: ['msg', 12]
+    look_hole: ['switch', 'game_state.rock_moved == 1', ['msg', 14], ['msg', 16]]
+    push_rock: ['switch', 'game_state.rock_moved == 0', ['push_rock'], ['msg', 17]]
+    get_dagger: ['get_dagger']
+    move_rock: ['push_rock']
+castle:
+  batches:
+    - "castle"
+  east: start
+  west: rock
+  north: gardenw
+  items:
+    - type: bg
+      batch: "castle"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: hotspot
+      poly: [20,10,40,26,48,28,64,28,80,22,93,8,316,8]
+      on_enter: ['drown']
+  walls:
+    - [131, 23, 190,23,192,25,199,25,207,46,247,46,256,25,261,23,314,23]
+    - [0,10,20,10]
+  scripts:
+    look_lion: [ 'msg', 8 ]
+    look_castle: [ 'msg', 9 ]
+    look_flag: [ 'msg', 10 ]
+    look_door: [ 'msg', 11 ]
+
+start:
+  room_number: 38
+  size: [320, 144]
+  batches:
+    - "start"
+  west: castle
+  east: lake2
+  north: gardene
+  walls:
+    - [265,39,282,39,282,43,265,43,265,39]
+    - [0, 21, 10,21, 12, 19, 92, 19, 94, 20, 110, 20, 119, 23, 136, 21,146, 21, 148, 18,160,18,164, 22, 185,22 ]
+  items:
+    - type: bg
+      batch: "start"
+      pos: [0, 0, -1]
+      quad: [0, 0, 316, 166]
+    - type: bg      # tree
+      batch: "start"
+      auto_depth: true
+      pos: [198, 39, 0]
+      quad: [86, 167, 118, 127]
+    - type: bg      # castle
+      batch: "start"
+      quad: [208,167, 70,137]
+      pos: [118,24,-1]
+      auto_depth: True
+    - type: sprite
+      sprite: 'start/flag1'
+      pos: [6,155,0]
+    - type: sprite
+      sprite: 'start/flag2'
+      pos: [36,155,0]
+    - type: sprite
+      sprite: 'start/flag3'
+      pos: [66,155,0]
+    - type: hotspot
+      poly: [0,0,286,0,286,21,269,28,249,28,236,23,221,8,0,8]
+      on_enter: ['drown']
+    - type: hotspot
+      poly: [184,22,200,36,204,36,176,45]
+      on_enter: ['drown2']
+#    - type: hotspot
+#      poly: [0,8,2,8,2,22,0,22]
+#      on_enter: ['goto_room', 'castle', [314, 16], 'e']
+  scripts:
+    look_tree: ["msg", 7]
+    look_castle: ['msg', 4]
+    look_flag: ['msg', 5]
+    look_banner: ['msg', 5]
+
+#    - type: hotspot
+#      aabb: [50, 100, 20, 40]
+#      on_enter: pippo
+#      on_leave: pippa/

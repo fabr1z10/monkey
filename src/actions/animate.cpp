@@ -2,8 +2,8 @@
 #include "../pyhelper.h"
 #include "../node.h"
 
-Animate::Animate(int id, const std::string& animation, bool sync) : NodeAction(id),
-	m_animation(animation), m_sync(sync) {
+Animate::Animate(int id, const std::string& animation, bool sync, bool backwards) : NodeAction(id),
+	m_animation(animation), m_sync(sync), _back(backwards){
 
 
 
@@ -14,6 +14,7 @@ void Animate::start() {
 	m_renderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
 	assert(m_renderer != nullptr);
 	m_renderer->setAnimationForce(m_animation);
+	m_renderer->setDirection(_back ? -1 : 1);
 
 }
 

@@ -7,7 +7,8 @@
 
 
 
-SpriteRenderer::SpriteRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId), m_frame(0), m_ticks(0), _currentFrameTicks(0) {
+SpriteRenderer::SpriteRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId), m_frame(0), m_ticks(0), _currentFrameTicks(0),
+_direction(1) {
     //_batch = dynamic_cast<QuadBatch*>(batch);
     //assert(_batch != nullptr);
     //_paletteId = py_get_dict<unsigned>(args, "pal", 0);
@@ -44,7 +45,17 @@ void SpriteRenderer::setAnimationForce(const std::string & anim) {
     m_animation.clear();
     setAnimation(anim);
 }
+void SpriteRenderer::setDirection(int dir ) {
+    _direction = dir;
+    if (dir == 1) {
+        m_frame = 0;
+        m_ticks = 0;
 
+    } else if (dir == -1) {
+        m_frame = m_animInfo->frames.size()-1;
+        m_ticks = 0;
+    }
+}
 
 void SpriteRenderer::setAnimation(const std::string& anim) {
 	if (anim == m_animation) {
@@ -116,11 +127,13 @@ bool SpriteRenderer::updateTick(int tick) {
     int tck = tick % _currentFrameTicks;
     if (tck >= _currentFrameTicks) {
         // increment frame. if this animation is
-        m_frame++;
-        if (m_frame >= m_animInfo->frames.size()) {
+        m_frame += _direction;
+        if (_direction == 1 && m_frame >= m_animInfo->frames.size()) {
             m_frame = m_animInfo->loop == -1 ? m_animInfo->frames.size() - 1 : m_animInfo->loop;
             m_complete = true;
             return true;
+        } else if (_direction == -1 && m_frame < 0) {
+            m_frame = m_animInfo->loop == -1 ? 0 : m_animInfo->loop;
         }
         _currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
 
@@ -139,9 +152,9 @@ void SpriteRenderer::update(double dt) {
 
     if (m_ticks >= _currentFrameTicks) {
         // increment frame. if this animation is
-        m_frame++;
+        m_frame += _direction;
 
-        if (m_frame >= m_animInfo->frames.size()) {
+        if (_direction == 1 && m_frame >= m_animInfo->frames.size()) {
         	if (m_animInfo->_onEnd) {
         		m_animInfo->_onEnd(m_node);
         	}
@@ -151,6 +164,16 @@ void SpriteRenderer::update(double dt) {
 				m_frame = m_animInfo->loop == -1 ? m_animInfo->frames.size() - 1 : m_animInfo->loop;
 				m_complete = true;
 			}
+        } else if (_direction == -1 && m_frame < 0) {
+            if (m_animInfo->_onEnd) {
+                m_animInfo->_onEnd(m_node);
+            }
+            if (!m_animInfo->next.empty()) {
+                setAnimation(m_animInfo->next);
+            } else {
+                m_frame = m_animInfo->loop == -1 ? 0 : m_animInfo->loop;
+                m_complete = true;
+            }
         }
         m_ticks = 0;
 		_currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();

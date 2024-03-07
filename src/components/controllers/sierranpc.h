@@ -21,4 +21,8 @@ private:
     //float _lookAngle;
     float _fovRange;
     glm::vec2 _lookDirection;
+    std::string _walkEast;
+    std::string _walkNorth;
+    std::string _walkSouth;
+    int _flipPolicy;
 };

@@ -94,6 +94,8 @@
 #include "components/switch.h"
 #include "components/controllers/sierranpc.h"
 #include "shapes/circle.h"
+#include "runners/clock.h"
+#include "nodes/multinode.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -152,6 +154,7 @@ PYBIND11_MODULE(monkey, m) {
 //	//m.def("get_batch", &getBatch, py::return_value_policy::reference);
 //    m.def("get_camera", &getCamera, py::return_value_policy::reference);
 	m.def("close_room", &closeRoom);
+	m.def("getClock", &getClock, py::return_value_policy::reference);
     m.def("play", &playScript);
 //	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
@@ -228,6 +231,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")
 		.def(py::init<const std::string&, const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
 			 "batch"_a, "font"_a, "prompt"_a, "cursor"_a);
+
 
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
@@ -347,6 +351,7 @@ PYBIND11_MODULE(monkey, m) {
 //
 //	mm.def("make_plane", &ModelMaker::pippo);
 	mm.def("from_shape", &ModelMaker::makeModel);
+    mm.def("getSprite", &getSpriteModel);
     py::class_<Model, std::shared_ptr<Model>>(mm, "Model")
         .def("set_palette", &Model::setPalette)
         .def("set_color", &Model::setColor);
@@ -403,6 +408,10 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());
+    py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
+        .def(py::init<>())
+        .def("addEvent", &Clock::addEvent);
+
 //	py::class_<Lighting, Runner, std::shared_ptr<Lighting>>(m, "Lighting")
 //		.def(py::init<>())
 //		.def("set_ambient", &Lighting::setAmbient)
@@ -436,7 +445,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
 		.def(py::init<float>(), "time"_a);
     py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
-        .def(py::init<int, const std::string&, bool>(), "id"_a, "anim"_a, "sync"_a=false);
+        .def(py::init<int, const std::string&, bool, bool>(), "id"_a, "anim"_a, "sync"_a=false, "backwards"_a=false);
 //	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "Blink")
 //		.def(py::init<int, float, float>(), "id"_a, "duration"_a, "period"_a);
 	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "CallFunc")

@@ -28,6 +28,7 @@ public:
 
 	//std::shared_ptr<SpriteSheet> readSpritesheet (const std::string& directory);
     std::shared_ptr<Node> getSprite(const std::string&);
+    std::shared_ptr<Model> getSpriteModel(const std::string&);
 //    std::shared_ptr<MultiNode> getMulti(const std::string&, const std::string& batch);
     std::shared_ptr<Model> getTiled(const std::string&, const pybind11::kwargs&);
     std::shared_ptr<Tex> getTex(const std::string&);

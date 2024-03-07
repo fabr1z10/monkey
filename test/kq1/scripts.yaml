@@ -1,0 +1,7 @@
+# the scripts contained in this file can be executed from any room
+
+look_walnut: ['look_item', 'walnut']
+look_cheese: ['look_item', {'item': 'cheese'}]
+look_note: ['look_item', {'item': 'note'}]
+read_note: ['read_note']
+open_walnut: ['open_walnut']

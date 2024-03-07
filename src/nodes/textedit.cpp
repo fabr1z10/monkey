@@ -33,8 +33,7 @@ int TextEdit::TextEditListener::keyCallback(GLFWwindow *, int key, int scancode,
 		if (key == GLFW_KEY_ENTER) {
 			_node->sendMessage(_text);
 			_text.clear();
-		}
-		if (key == GLFW_KEY_BACKSPACE) {
+		} else if (key == GLFW_KEY_BACKSPACE) {
 			if (!_text.empty()) _text.pop_back();
 		} else if (key == GLFW_KEY_SPACE) {
 			_text += " ";
@@ -44,10 +43,12 @@ int TextEdit::TextEditListener::keyCallback(GLFWwindow *, int key, int scancode,
 				ciao += (key - GLFW_KEY_A);
 				char g = ciao;
 				_text += g;
-
+			} else {
+			    return 0;
 			}
 		}
-		_node->updateText(_prompt + _text + _cursor);
+        _node->updateText(_prompt + _text + _cursor);
+
 		//_node->setModel(_model, pybind11::dict("batch"_a="ui"));
 	}
 }

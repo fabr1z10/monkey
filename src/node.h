@@ -32,7 +32,7 @@ public:
     // node lifetime
     virtual void start();
     void startRecursive();
-    void update(double) ;
+    virtual void update(double) ;
     virtual void postProcess() {}
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
 

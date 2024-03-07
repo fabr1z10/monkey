@@ -85,6 +85,9 @@ fonts:
       '>': [176,216,8,8,8]
       '_': [56,216,8,8,8]
       '-': [208,216,8,8,8]
+      '"': [120,216,8,8,8]
+      '(': [40,216,8,8,8]
+      ')': [48,216,8,8,8]
 sprites:
   item_dagger:
     animations:
@@ -92,12 +95,191 @@ sprites:
         frames:
           - tex: [2,471,22,40]
             anchor: [11, 20]
+  item_cheese:
+    animations:
+      default:
+        frames:
+          - tex: [344,485,26,26]
+            anchor: [13, 13]
   item_carrot:
     animations:
       default:
         frames:
           - tex: [67,475,46,34]
             anchor: [23, 17]
+  item_pouch:
+    animations:
+      default:
+        frames:
+          - tex: [115,484,36,27]
+            anchor: [18, 14]
+  item_bowl:
+    animations:
+      default:
+        frames:
+          - tex: [155,488,38,21]
+            anchor: [19,10]
+  item_pebbles:
+    animations:
+      default:
+        frames:
+          - tex: [197,496,24,14]
+            anchor: [12,7]
+  item_walnut:
+    animations:
+      default:
+        frames:
+          - tex: [223,493,34,18]
+            anchor: [17, 9]
+  item_gold_walnut:
+    animations:
+      default:
+        frames:
+          - tex: [258,493,34,18]
+            anchor: [17, 9]
+  item_note:
+    animations:
+      default:
+        frames:
+          - tex: [293,475,48,36]
+            anchor: [24, 18]
+  goat:
+    animations:
+      walk:
+        frames:
+          - tex: [476, 0, 36, 24]
+            anchor: [16, 0]
+          - tex: [476, 25, 36, 24]
+            anchor: [16, 0]
+          - tex: [476, 50, 36, 24]
+            anchor: [16, 0]
+          - tex: [476, 75, 36, 24]
+            anchor: [16, 0]
+          - tex: [476, 100, 36, 24]
+            anchor: [16, 0]
+          - tex: [476, 125, 36, 24]
+            anchor: [16, 0]
+  graham_swim:
+    animations:
+      walk_e:
+        box: 0
+        frames:
+          - tex: [223,1,26,11]
+            anchor: [12,0]
+          - tex: [223,13,22,11]
+            anchor: [12,0]
+          - tex: [223,25,24,10]
+            anchor: [12,0]
+          - tex: [223,36,24,10]
+            anchor: [10,0]
+      idle_e:
+        box: 0
+        frames:
+          - tex: [223,1,26,11]
+            anchor: [12,0]
+          - tex: [223,13,22,11]
+            anchor: [12,0]
+          - tex: [223,25,24,10]
+            anchor: [12,0]
+          - tex: [223,36,24,10]
+            anchor: [10,0]
+      walk_s:
+        box: 0
+        frames:
+          - tex: [223,47,8,14]
+            anchor: [4,4]
+          - tex: [233,47,8,14]
+            anchor: [4,5]
+          - tex: [243,47,8,15]
+            anchor: [4,6]
+          - tex: [223,64,12,15]
+            anchor: [6, 5]
+          - tex: [237,64,8,14]
+            anchor: [6, 4]
+          - tex: [247,64,8,14]
+            anchor: [6,5]
+          - tex: [223,81,8,15]
+            anchor: [6,6]
+          - tex: [233,81,12,15]
+            anchor: [8,5]
+      idle_s:
+        box: 0
+        frames:
+          - tex: [223,47,8,14]
+            anchor: [4,4]
+          - tex: [233,47,8,14]
+            anchor: [4,5]
+          - tex: [243,47,8,15]
+            anchor: [4,6]
+          - tex: [223,64,12,15]
+            anchor: [6, 5]
+          - tex: [237,64,8,14]
+            anchor: [6, 4]
+          - tex: [247,64,8,14]
+            anchor: [6,5]
+          - tex: [223,81,8,15]
+            anchor: [6,6]
+          - tex: [233,81,12,15]
+            anchor: [8,5]
+      walk_n:
+        box: 0
+        frames:
+          - tex: [247,81,8,15]
+            anchor: [4,5]
+          - tex: [223,97,8,15]
+            anchor: [4,6]
+          - tex: [233,97,8,15]
+            anchor: [4,6]
+          - tex: [242,97,12,13]
+            anchor: [6,3]
+          - tex: [223,113,8,15]
+            anchor: [6,5]
+          - tex: [233,113,8,15]
+            anchor: [6,5]
+          - tex: [243,113,8,15]
+            anchor: [6,6]
+          - tex: [223,129,12,13]
+            anchor: [8,3]
+      idle_n:
+        box: 0
+        frames:
+          - tex: [247,81,8,15]
+            anchor: [4,5]
+          - tex: [223,97,8,15]
+            anchor: [4,6]
+          - tex: [233,97,8,15]
+            anchor: [4,6]
+          - tex: [242,97,12,13]
+            anchor: [6,3]
+          - tex: [223,113,8,15]
+            anchor: [6,5]
+          - tex: [233,113,8,15]
+            anchor: [6,5]
+          - tex: [243,113,8,15]
+            anchor: [6,6]
+          - tex: [223,129,12,13]
+            anchor: [8,3]
+      drown:
+        box: 0
+        frames:
+          - tex: [182,2,36, 10]
+            anchor: [15,3]
+          - tex: [182,13,38,15]
+            anchor: [17,5]
+          - tex: [182,29,38,15]
+            anchor: [17,5]
+          - tex: [182,45,30,12]
+            anchor: [15,4]
+          - tex: [182,58,32,10]
+            anchor: [15,4]
+          - tex: [182,69,38,12]
+            anchor: [17,5]
+          - tex: [182,82,32,12]
+            anchor: [15,3]
+          - tex: [182,95,34,11]
+            anchor: [15,3]
+          - tex: [182,107,38,11]
+            anchor: [15,5]
   graham:
     animations:
       idle_e:
@@ -160,6 +342,9 @@ sprites:
             anchor: [5, 0]
           - tex: [166, 36, 10, 31]
             anchor: [5, 0]
+
+
+
       drown:
         box: 0
         frames:

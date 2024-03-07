@@ -1,2 +1,15 @@
 id: 'castle'
 sheet: 'castle.png'
+sprites:
+  door:
+    animations:
+      closed:
+        frames:
+          - tex: [1,167,38,50]
+      open:
+        loop: -1
+        frames:
+          - tex: [1,167,38,50]
+          - tex: [41,168,38,49]
+          - tex: [81,167,42,50]
+

@@ -9,6 +9,11 @@ NPCSierraController::NPCSierraController(int target, float fovAngle, float fovRa
                                          const pybind11::kwargs &args) : Sierra2DController(args), _targetId(target),
 _target(nullptr), _fovAngle(glm::radians(fovAngle)), _fovRange(fovRange), _speed(speed) {
     _lookDirection = glm::normalize(py_get_dict<glm::vec2>(args, "direction", glm::vec2(1.f, 0.f)));
+
+    _walkEast = py_get_dict<std::string>(args, "walk_e", "walk_e");
+    _walkNorth = py_get_dict<std::string>(args, "walk_n", "walk_n");
+    _walkSouth = py_get_dict<std::string>(args, "walk_s", "walk_s");
+    _flipPolicy = py_get_dict<int>(args, "flip", 0);
 }
 
 void NPCSierraController::start() {
@@ -59,16 +64,15 @@ void NPCSierraController::check_los(glm::vec3 normal) {
 
 
     if (fabs(_lookDirection.x) > fabs(_lookDirection.y)) {
-        m_animatedRenderer->setAnimation("walk_e");
+        m_animatedRenderer->setAnimation(_walkEast);
         m_node->setFlipX(_lookDirection.x < 0);
     } else {
         if (_lookDirection.y > 0) {
-            m_animatedRenderer->setAnimation("walk_n");
+            m_animatedRenderer->setAnimation(_walkNorth);
         } else {
-            m_animatedRenderer->setAnimation("walk_s");
+            m_animatedRenderer->setAnimation(_walkSouth);
         }
-        m_node->setFlipX(false);
-
+        m_node->setFlipX(_flipPolicy == 0 ? false : _lookDirection.x < 0);
     }
     //m_animatedRenderer->setTransform(I);
 

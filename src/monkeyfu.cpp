@@ -17,6 +17,10 @@ Engine& getEngine() {
 }
 
 
+Clock* getClock() {
+    return Engine::instance().getRoom()->getRunner<Clock>();
+}
+
 void prova(glm::vec2 p) {
     std::cout << p.x << "\n";
 
@@ -39,6 +43,11 @@ std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs& a
 std::shared_ptr<Node> getSprite(const std::string& id) {
 	auto& am = AssetManager::instance();
 	return am.getSprite(id);
+}
+
+std::shared_ptr<Model> getSpriteModel(const std::string& id) {
+    auto& am = AssetManager::instance();
+    return am.getSpriteModel(id);
 }
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id) {
 //	auto& am = AssetManager::instance();

@@ -1,0 +1,23 @@
+id: 'witchous'
+sheet: 'witchous.png'
+
+sprites:
+  cupboard:
+    animations:
+      closed:
+        frames:
+          - tex: [136,168,32,26]
+      open:
+        loop: -1
+        frames:
+          - tex: [136,168,32,26]
+          - tex: [169,168,32,27]
+            anchor: [0,1]
+          - tex: [202,168,32,28]
+            anchor: [0,2]
+          - tex: [235,168,32,31]
+            anchor: [0,5]
+          - tex: [138,198,34,31]
+            anchor: [1,5]
+          - tex: [178,198,44,31]
+            anchor: [4,5]

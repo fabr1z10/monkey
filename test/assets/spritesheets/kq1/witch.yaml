@@ -1,0 +1,15 @@
+id: 'witch'
+sheet: 'witch.png'
+sprites:
+  door:
+    animations:
+      closed:
+        frames:
+          - tex: [2,167,34,45]
+      open:
+        loop: -1
+        frames:
+          - tex: [2,167,34,45]
+          - tex: [38,167,34,45]
+          - tex: [75,167,34,45]
+          - tex: [112,167,34,45]

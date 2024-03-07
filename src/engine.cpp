@@ -45,6 +45,8 @@ pybind11::function Engine::getScript(const std::string &name) const {
 void Engine::start() {
     // read the settings PY file
     try {
+
+
     	_factory = py::module::import("factory");
         auto settings = py::module::import("settings");
         _deviceSize = py_get<glm::ivec2>(settings, "device_size");

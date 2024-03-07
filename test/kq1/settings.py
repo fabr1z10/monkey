@@ -1,12 +1,15 @@
 import monkey
+#from .. import settings
+
 
 device_size = (320, 200)
-room = 'start'
+room = 'rock'
 pos = [213, 75]
 dir = 's'
 title = 'Hello world!'
 shaders = [monkey.SHADER_BATCH_QUAD_PALETTE, monkey.SHADER_BATCH_LINES]
 asset_directories = [ '../assets/spritesheets/kq1']
+actions = dict()
 
 class Keys:
     restart = 299

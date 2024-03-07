@@ -154,6 +154,15 @@ std::shared_ptr<Model> AssetManager::getTiled(const std::string & id, const pybi
 
 
 }
+std::shared_ptr<Model> AssetManager::getSpriteModel(const std::string & id) {
+    auto u = id.find('/');
+    auto batchId = id.substr(0, u);
+    auto spriteId = id.substr(u + 1);
+
+    auto quadBatch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
+    auto model = quadBatch->getSheet()->getSprite(spriteId);
+    return model;
+}
 
 std::shared_ptr<Node> AssetManager::getSprite(const std::string & id) {
 

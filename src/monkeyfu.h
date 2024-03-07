@@ -6,6 +6,8 @@
 #include "models/sprite.h"
 //#include "models/polymesh.h"
 #include "runners/scheduler.h"
+#include "runners/clock.h"
+
 //#include "batch.h"
 //#include "multinode.h"
 void prova(glm::vec2 c);
@@ -14,6 +16,9 @@ Engine& getEngine();
 
 std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs&);
 std::shared_ptr<Node> getSprite(const std::string& id);
+std::shared_ptr<Model> getSpriteModel(const std::string& id);
+
+Clock* getClock();
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id);
 glm::vec4 fromHex(const std::string&);
 //std::shared_ptr<MultiNode> getMulti(const std::string& id, const std::string& batch);

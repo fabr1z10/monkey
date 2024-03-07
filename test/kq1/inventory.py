@@ -87,5 +87,5 @@ def inventory_show_item():
     s = monkey.Script()
     #print (item_id)
     #print( game_state.items[item_id])
-    scripts.message_item(s, item_id)
+    scripts.show_item_detail(s, item_id)
     monkey.play(s)

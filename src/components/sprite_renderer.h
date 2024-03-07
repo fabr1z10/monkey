@@ -37,6 +37,7 @@ public:
     void updateBatch();
     inline int getTickCount() const;
 	const Sprite* getSprite() const;
+	void setDirection(int);
 private:
 	//QuadBatch* _spriteBatch;
 
@@ -48,6 +49,7 @@ private:
 	int m_ticks;
 	bool m_complete;
 	int _currentFrameTicks;
+	int _direction;
 
 };
 
