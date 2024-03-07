@@ -148,34 +148,11 @@ def look_witch_table(**kwargs):
 def pippo(a, b, c):
     print('entering weppo')
 
-def caught_by_wolf(a,b):
-    msg(38)
-    c = monkey.get_sprite('007/wolf_fight')
-    c.set_position(a.x,a.y,a.z)
-    a.remove()
-    b.remove()
-    monkey.get_node(game_state.Ids.game_node).add(c)
-    s = monkey.Script()
-    s.add(monkey.actions.Delay(5))
-    s.add(monkey.actions.Remove(c.id))
-    message(s, 0)
-    monkey.play(s)
 
 def goat_east(goat, a):
     game_state.goat_east = 1
     goat.remove()
 
-def _wolf():
-    msg(37)
-    a = monkey.get_sprite('007/wolf')
-    a.set_position(180,10,0)
-    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 50,  z_func=settings.z_func))
-    a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
-                                               monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
-    a.user_data = {
-        'on_enter': ['caught_by_wolf']
-    }
-    monkey.get_node(game_state.Ids.game_node).add(a)
 
 def spellEnd():
     game_state.protective_spell = 0
@@ -203,11 +180,6 @@ def _fairy():
 
 
 
-def create_wolf():
-    script = monkey.Script()
-    script.add(monkey.actions.Delay(random.randint(1, 10)))
-    script.add(monkey.actions.CallFunc(_wolf))
-    monkey.play(script)
 
 def create_fairy():
     script = monkey.Script()
@@ -309,11 +281,6 @@ def _goto_room(room, pos, dir):
     return f
 
 
-def climb_tree():
-    script = monkey.Script()
-    message(script, 28)
-    script.add(monkey.actions.CallFunc(_goto_room('treetop', [80,3], 'n')))
-    monkey.play(script)
 
 def get_dagger():
     if 'dagger' in game_state.inventory:

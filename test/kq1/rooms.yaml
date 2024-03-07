@@ -547,7 +547,7 @@ fairy:
 wolf:
   batches:
     - "wolf"
-  east: egg1
+  east: goldegg
   on_start: create_wolf
   walls:
     - [66,63,96,63]
@@ -662,14 +662,14 @@ gardenw:
 treetop:
   batches:
     - "treetop"
+  south:
+    room: goldegg
+    pos: [176,42,0]
   items:
     - type: bg
       batch: "treetop"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
-#    - type: hotspot
-#      poly: [0,0,316,0,316,1,0,1]
-#      on_enter: ['goto_room', 'egg1', [182, 41], 's']
 goldegg:
   batches:
     - "goldegg"
@@ -737,7 +737,7 @@ rock:
   batches:
     - "rock"
   east: castle
-  north: egg1
+  north: goldegg
   south: ogre
   items:
     - type: bg

@@ -1,5 +1,5 @@
 import monkey
-
+import random
 import settings
 import game_state
 from . import castle
@@ -95,12 +95,13 @@ def push_rock(item):
 
 def show_item_detail(script, item_id):
     import factory
+    idesc = settings.items['items'][item_id]
     script.add(monkey.actions.CallFunc(function=set_main_node_active(monkey.NodeState.PAUSED)))
     node = monkey.Node()
-    node.add(make_text(game_state.items[item_id]['desc']))
+    node.add(make_text(idesc.get('desc_inventory', idesc['desc'])))
     node.add(factory.make_solid_rect(136, 0, 42, 47, color='000000', z=2))
     node.add(factory.make_outline2_rect(136, 0, 42, 47, color='AA0000',z=2))
-    spr = monkey.get_sprite(game_state.items[item_id]['sprite'])
+    spr = monkey.get_sprite(settings.items['items'][item_id]['img_inventory'])
     spr.set_position(157, 22, 3)
     node.add(spr)
     script.add(monkey.actions.Add(id=game_state.Ids.text_node, node=node))
@@ -136,4 +137,42 @@ def open_door_castle(item):
     print(game_state.nodes)
     s.add(monkey.actions.Animate(id=game_state.nodes['door_castle'], anim='open', sync=True))
     s.add(monkey.actions.CallFunc(_goto_room('incastl1', [158, 2, 0], 'n')))
+    monkey.play(s)
+
+def climb_oak(item):
+    script = monkey.Script()
+    message(script, 28)
+    script.add(monkey.actions.CallFunc(_goto_room('treetop', [80,3], 'n')))
+    monkey.play(script)
+
+def _wolf():
+    msg(id=37)
+    a = monkey.get_sprite('wolf/wolf')
+    a.set_position(180,10,0)
+    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 50,  z_func=settings.z_func))
+    a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
+                                               monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
+    a.user_data = {
+        'on_enter': ['caught_by_wolf']
+    }
+    monkey.get_node(game_state.Ids.game_node).add(a)
+
+
+def create_wolf():
+    script = monkey.Script()
+    script.add(monkey.actions.Delay(random.randint(1, 10)))
+    script.add(monkey.actions.CallFunc(_wolf))
+    monkey.play(script)
+
+def caught_by_wolf(a,b):
+    msg(38)
+    c = monkey.get_sprite('wolf/wolf_fight')
+    c.set_position(a.x,a.y,a.z)
+    a.remove()
+    b.remove()
+    monkey.get_node(game_state.Ids.game_node).add(c)
+    s = monkey.Script()
+    s.add(monkey.actions.Delay(5))
+    s.add(monkey.actions.Remove(c.id))
+    message(s, 0)
     monkey.play(s)

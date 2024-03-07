@@ -1,5 +1,5 @@
-id: '007'
-sheet: '007.png'
+id: 'wolf'
+sheet: 'wolf.png'
 sprites:
   wolf:
     animations:

@@ -16,52 +16,52 @@ inventory_selected = 0
 inventory_nodes = []
 wallz = []
 
-items = {
-
-    'dagger': {
-        'id': 22,
-        'desc': 24,
-        'sprite': 'sprites/item_dagger'
-    },
-    'carrot': {
-        'id': 35,
-        'desc': 36,
-        'sprite': 'sprites/item_carrot'
-    },
-    'pouch': {
-        'id': 46,
-        'desc': 45,
-        'sprite': 'sprites/item_pouch'
-    },
-    'bowl': {
-        'id': 53,
-        'desc': 54,
-        'sprite': 'sprites/item_bowl'
-    },
-    'pebbles': {
-        'id': 58,
-        'desc': 59,
-        'sprite': 'sprites/item_pebbles'
-    },
-    'walnut': {
-        'id': 63,
-        'desc': 64,
-        'sprite': 'sprites/item_walnut'
-    },
-    'note': {
-        'id': 82,
-        'desc': 83,
-        'sprite': 'sprites/item_note'
-
-    },
-    'cheese': {
-        'id': 90,
-        'desc': 89,
-        'sprite': 'sprites/item_cheese'
-
-    }
-
-}
+# items = {
+#
+#     'dagger': {
+#         'id': 22,
+#         'desc': 24,
+#         'sprite': 'sprites/item_dagger'
+#     },
+#     'carrot': {
+#         'id': 35,
+#         'desc': 36,
+#         'sprite': 'sprites/item_carrot'
+#     },
+#     'pouch': {
+#         'id': 46,
+#         'desc': 45,
+#         'sprite': 'sprites/item_pouch'
+#     },
+#     'bowl': {
+#         'id': 53,
+#         'desc': 54,
+#         'sprite': 'sprites/item_bowl'
+#     },
+#     'pebbles': {
+#         'id': 58,
+#         'desc': 59,
+#         'sprite': 'sprites/item_pebbles'
+#     },
+#     'walnut': {
+#         'id': 63,
+#         'desc': 64,
+#         'sprite': 'sprites/item_walnut'
+#     },
+#     'note': {
+#         'id': 82,
+#         'desc': 83,
+#         'sprite': 'sprites/item_note'
+#
+#     },
+#     'cheese': {
+#         'id': 90,
+#         'desc': 89,
+#         'sprite': 'sprites/item_cheese'
+#
+#     }
+#
+# }
 
 
 

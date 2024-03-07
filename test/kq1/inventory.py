@@ -35,7 +35,7 @@ def _show_inventory(allow_keys: bool):
     if game_state.inventory:
         i = 0
         for item in game_state.inventory:
-            inode = factory.make_text(game_state.items[item]['id'], 8 if i % 2 == 0 else 312, y, anchor=monkey.ANCHOR_TOPLEFT if i % 2 == 0 else monkey.ANCHOR_TOPRIGHT)
+            inode = factory.make_text(settings.items['items'][item]['name'], 8 if i % 2 == 0 else 312, y, anchor=monkey.ANCHOR_TOPLEFT if i % 2 == 0 else monkey.ANCHOR_TOPRIGHT)
             inode.user_data = {'item_id': item}
             inv.add(inode)
             game_state.inventory_nodes.append(inode.id)

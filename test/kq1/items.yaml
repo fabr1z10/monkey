@@ -1,7 +1,7 @@
 map:
   rock: [rock]
   door: [door_castle]
-
+  tree: [oak]
 items:
   rock:
     name: 94
@@ -21,8 +21,10 @@ items:
     type: empty
     bounds: [-20, 20, -10, 10]
     can_pick_up: True
-    desc: 24
+    desc: 103
+    desc_inventory: 24
     pick_up: 25
+    img_inventory: 'sprites/item_dagger'
     visible: 'game_state.rock_moved == 1'
   lion:
     name: 98
@@ -38,6 +40,21 @@ items:
     sprite: 'castle/door'
     pos: [208, 46, 0]
     desc: 11
+  oak:
+    room: goldegg
+    desc: 18
+  egg:
+    room: treetop
+    type: bg
+    batch: 'treetop'
+    quad: [1,167,28,17]
+    pos: [138,81,0]
+    desc: 101
+    desc_inventory: 29
+    can_pick_up: True
+    pick_up: 102
+    name: 23
+    img_inventory: 'sprites/item_egg'
 
 
 

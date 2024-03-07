@@ -95,6 +95,12 @@ sprites:
         frames:
           - tex: [2,471,22,40]
             anchor: [11, 20]
+  item_egg:
+    animations:
+      default:
+        frames:
+          - tex: [27,475,34,36]
+            anchor: [17,18]
   item_cheese:
     animations:
       default:
