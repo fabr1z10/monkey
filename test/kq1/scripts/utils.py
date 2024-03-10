@@ -3,6 +3,7 @@ import game_state
 import settings
 import random
 import regex as re
+import shapely
 
 
 def id_to_string(string_id, **kwargs):
@@ -67,16 +68,17 @@ def rm_node(*args):
 def is_within_bounds(item):
     item_desc = settings.items['items'][item]
     bounds = item_desc.get('bounds')
-    node = monkey.get_node(game_state.nodes[item])
-    outside = False
     if bounds:
         player = monkey.get_node(game_state.Ids.player)
-        print(player.x, player.y, node.x, node.y, bounds)
-        outside = player.x < node.x + bounds[0] or \
-                  player.x > node.x + bounds[1] or \
-                  player.y < node.y + bounds[2] or \
-                  player.y > node.y + bounds[3]
-    return not outside
+        p = shapely.geometry.Point(player.x, player.y)
+        ppoints = []
+        assert len(bounds) % 2 == 0, "bounds must be made of a even number of floats"
+        for i in range(0, len(bounds), 2):
+            ppoints.append([bounds[i], bounds[i+1]])
+        poly = shapely.geometry.Polygon(ppoints)
+        return poly.contains(p)
+    else:
+        return True
 
 def move_item_by(item, delta):
     idesc = settings.items['items'][item]
@@ -90,3 +92,10 @@ def _goto_room(room, pos, dir):
         settings.dir = dir
         monkey.close_room()
     return f
+
+
+def interpret(s):
+    if isinstance(s, list):
+        if s[0] == 'if':
+            return s[2] if eval(s[1]) else s[3]
+    return s

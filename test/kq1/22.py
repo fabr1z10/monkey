@@ -149,56 +149,17 @@ def pippo(a, b, c):
     print('entering weppo')
 
 
-def goat_east(goat, a):
-    game_state.goat_east = 1
-    goat.remove()
-
-
-def spellEnd():
-    game_state.protective_spell = 0
-    msg(41)
-
-def spellStart():
-    print ('************************************************************************************')
-    game_state.protective_spell = 1
-    monkey.getClock().addEvent(True, True, 15, spellEnd)
-
-
-def _fairy():
-    a = monkey.get_sprite('fairy/fairy')
-    a.set_position(126,86,0)
-    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 10, z_func=settings.z_func,
-                                                          walk_e='walk', walk_n='walk', walk_s='walk'))
-    monkey.get_node(game_state.Ids.game_node).add(a)
-    spell_script = monkey.Script()
-    message(spell_script, 39)
-    spell_script.add(monkey.actions.CallFunc(spellStart))
-    spell_script.add(monkey.actions.Delay(2))
-    message(spell_script, 40)
-    spell_script.add(monkey.actions.Remove(a.id))
-    monkey.play(spell_script)
 
 
 
 
-def create_fairy():
-    script = monkey.Script()
-    script.add(monkey.actions.Delay(random.randint(1, 10)))
-    script.add(monkey.actions.CallFunc(_fairy))
-    monkey.play(script)
 
 
-def create_goat():
-    if game_state.goat_east == 0:
-        a = monkey.get_sprite('sprites/goat')
-        a.set_position(226,78,0)
-        angle = random.uniform(0, 2.0 * math.pi)
-        vector = [math.cos(angle), math.sin(angle)]
-        a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 10, z_func=settings.z_func,
-                                                              walk_e='walk', walk_n='walk', walk_s='walk', flip=1, direction=vector))
-        a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.foe, 0,
-                                                   monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
-        monkey.get_node(game_state.Ids.game_node).add(a)
+
+
+
+
+
 
 
 

@@ -75,6 +75,9 @@ def bg(ciao):
     n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-2*pos[1]/166.0 )
     if auto_depth:
         n.add_component(monkey.components.SierraController(z_func=settings.z_func))
+    baseline = ciao.get('baseline')
+    if baseline:
+        game_state.wallz.append(baseline)
     return n
     # root.add(n)
 
@@ -100,9 +103,10 @@ def hotspot(ciao):
         shape = monkey.shapes.AABB(aabb[0], aabb[1], aabb[2], aabb[3])
     else:
         shape = monkey.shapes.GenericPolygon(ciao['poly'])
+    flag = ciao.get('flag', settings.CollisionFlags.foe)
     mask = ciao.get('mask', settings.CollisionFlags.player)
-    h.add_component(monkey.components.Collider(settings.CollisionFlags.foe, mask, 1,
-                                               shape, batch='lines'))
+    print('ADDING HOTSPOT with mask',mask)
+    h.add_component(monkey.components.Collider(flag, mask, 1, shape, batch='lines'))
     h.user_data = {
         'on_enter': ciao.get('on_enter', None),
         'on_leave': ciao.get('on_leave', None)

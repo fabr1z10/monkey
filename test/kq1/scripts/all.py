@@ -2,10 +2,11 @@ import monkey
 import random
 import settings
 import game_state
+import math
 from . import castle
 
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
-    move_item_by, _goto_room
+    move_item_by, _goto_room,interpret
 
 
 
@@ -21,12 +22,11 @@ def restart_room():
 def zfunc_default (x, y):
     z = 1.0 - y / 166.0
     for wall in game_state.wallz:
-        if x >= wall[0] and x <= wall[2]:
-            print(wall)
-            yl = wall[1] + ((wall[3] - wall[1]) / (wall[2] - wall[0])) * (x - wall[0])
-            print(x, y, yl, z)
-            if y < yl:
-                z += 1
+        for i in range(0, len(wall)-2, 2):
+            if x >= wall[i] and x <= wall[i+2]:
+                yl = wall[i+1] + ((wall[i+3] - wall[i+1]) / (wall[i+2] - wall[i])) * (x - wall[i])
+                if y < yl:
+                    z += 1
     return z
 
 def look(item):
@@ -37,7 +37,12 @@ def look(item):
         show_item_detail(s, item)
         monkey.play(s)
     else:
-        msg(id=settings.items['items'][item]['desc'] if item else 92)
+        id = 92
+        if item:
+            desc = settings.items['items'][item].get('desc')
+            if desc:
+                id = interpret(desc)
+        msg(id=id)
 
 def pickup(item):
     if not item:
@@ -57,7 +62,9 @@ def pickup(item):
                 # check if item can be picked up
                 if can_pick_up:
                     game_state.inventory.add(item)
-                    monkey.get_node(game_state.nodes[item]).remove()
+                    game_state.collected.add(item)
+                    if item in game_state.nodes:
+                        monkey.get_node(game_state.nodes[item]).remove()
                     msg(id = line)
             else:
                 # outside bounds
@@ -176,3 +183,56 @@ def caught_by_wolf(a,b):
     s.add(monkey.actions.Remove(c.id))
     message(s, 0)
     monkey.play(s)
+
+def create_fairy():
+    script = monkey.Script()
+    script.add(monkey.actions.Delay(random.randint(1, 10)))
+    script.add(monkey.actions.CallFunc(_fairy))
+    monkey.play(script)
+
+def _fairy():
+    a = monkey.get_sprite('fairy/fairy')
+    a.set_position(126,86,0)
+    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 10, z_func=settings.z_func,
+                                                          walk_e='walk', walk_n='walk', walk_s='walk'))
+    monkey.get_node(game_state.Ids.game_node).add(a)
+    spell_script = monkey.Script()
+    message(spell_script, 39)
+    spell_script.add(monkey.actions.CallFunc(spellStart))
+    spell_script.add(monkey.actions.Delay(2))
+    message(spell_script, 40)
+    spell_script.add(monkey.actions.Remove(a.id))
+    monkey.play(spell_script)
+
+def spellEnd():
+    game_state.protective_spell = 0
+    msg(41)
+
+def spellStart():
+    print ('************************************************************************************')
+    game_state.protective_spell = 1
+    monkey.getClock().addEvent(True, True, 15, spellEnd)
+
+def create_goat():
+    if game_state.goat_east == 0:
+        _goat(226,78)
+
+def _goat(x, y):
+    a = monkey.get_sprite('sprites/goat')
+    a.set_position(x, y, 0)
+    angle = random.uniform(0, 2.0 * math.pi)
+    vector = [math.cos(angle), math.sin(angle)]
+    a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 10, z_func=settings.z_func,
+                                                          walk_e='walk', walk_n='walk', walk_s='walk', flip=1,
+                                                          direction=vector))
+    a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.foe_hotspot, 0,
+                                               monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
+    monkey.get_node(game_state.Ids.game_node).add(a)
+def create_goat_e():
+    if game_state.goat_east == 1:
+        _goat(114,57)
+
+
+def goat_east(goat, a):
+    game_state.goat_east = 1
+    goat.remove()

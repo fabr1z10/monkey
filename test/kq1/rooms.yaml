@@ -5,7 +5,6 @@ goatpenw:
     - "goatpenw"
   walls:
     - [316,12,290,21,229,37,145,37,104,60,80,84,114,91,150,99,200,99,236,99,236,95,300,88,316,88]
-
   on_start: create_goat
   items:
     - type: bg
@@ -27,9 +26,27 @@ goatpenw:
       auto_depth: true
       pos: [164, 9, 0]
       quad: [50,167,64,17]
+    - type: bg      # tree
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [154, 96, 0]
+      quad: [156,172,36,20]
+    - type: bg      # fence south
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [78, 84, 0]
+      quad: [1,293,238,37,]
+      baseline: [78,84,114,91,150,99,200,99,249,98,300,88,316,88]
+    - type: bg      # fence south
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [78, 13, 0]
+      quad: [2, 196, 238, 93]
+      baseline: [78,84,104,60,142,37,232,37,291,21,316,13]
     - type: hotspot
       aabb: [315,316,0,166]
       mask: 4
+      flag: 8
       on_enter: ['goat_east']
   west: fairy
   east: goatpene
@@ -43,6 +60,7 @@ goatpene:
       quad: [ 0, 0, 316, 166 ]
   west: goatpenw
   south: stump
+  on_start: create_goat_e
 rivtrees:
   batches:
     - "rivtrees"
@@ -595,7 +613,7 @@ wolf:
 #      poly: [315,0,316,0,316,166,315,166]
 #      on_enter: ['goto_room', 'egg1', [2, 10], 'e']
 gardene:
-  z_func: zfunc2
+  #z_func: zfunc2
   batches:
     - "gardene"
   walls:
@@ -612,12 +630,13 @@ gardene:
       batch: "gardene"
       pos: [161, 35, 0.789]
       quad: [173,167,139,89]
+      baseline: [161,107,282,35]
     - type: bg      # slanted wall
       batch: "gardene"
       pos: [0,107,0.355]
       quad: [1,170,161,17]
 gardenw:
-  z_func: zfunc1
+  #z_func: zfunc1
   batches:
     - "gardenw"
   walls:
@@ -635,11 +654,12 @@ gardenw:
       batch: "gardenw"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
-    - type: bg      # tree
+    - type: bg      # fence --
       batch: "gardenw"
       auto_depth: true
       pos: [44,35, 0]
       quad: [1,167,139,89]
+      baseline: [62,35,183,107]
     - type: bg      # tree
       batch: "gardenw"
       auto_depth: true

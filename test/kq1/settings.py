@@ -3,7 +3,7 @@ import monkey
 
 
 device_size = (320, 200)
-room = 'rock'
+room = 'goatpenw'
 pos = [213, 75]
 dir = 's'
 title = 'Hello world!'
@@ -25,3 +25,4 @@ class CollisionFlags:
     player = 1
     wall = 2
     foe = 4
+    foe_hotspot = 8

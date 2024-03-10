@@ -2,6 +2,10 @@ map:
   rock: [rock]
   door: [door_castle]
   tree: [oak]
+  fence: [fence_garden_w, fence_garden_e]
+  garden: [garden_w, garden_e]
+  carrot_patch: [garden_w, garden_e]
+  carrot: [carrot, carrot_e]
 items:
   rock:
     name: 94
@@ -26,6 +30,40 @@ items:
     pick_up: 25
     img_inventory: 'sprites/item_dagger'
     visible: 'game_state.rock_moved == 1'
+  carrot:
+    name: 35
+    room: gardenw
+    can_pick_up: True
+    desc: 32
+    desc_inventory: 36
+    pick_up: 33
+    bounds: [86, 31, 316, 31, 316, 102, 195, 102]
+    img_inventory: 'sprites/item_carrot'
+  carrot_e:
+    name: 35
+    room: gardene
+    can_pick_up: True
+    desc: 32
+    desc_inventory: 36
+    pick_up: 33
+    bounds: [0,27,247,27,155,101,0,101]
+    img_inventory: 'sprites/item_carrot'
+  hole:
+    room: rock
+    type: empty
+    pos: [ 254, 45, 0 ]
+    bounds: [ -20, 20, -10, 10 ]
+    visible: 'game_state.rock_moved == 1'
+    desc: ['if', '"dagger" in game_state.collected', 104, 14]
+  fence_garden_w:
+    room: gardenw
+    desc: 30
+  garden_w:
+    room: gardenw
+    desc: 31
+  garden_e:
+    room: gardene
+    desc: 105
   lion:
     name: 98
     room: castle

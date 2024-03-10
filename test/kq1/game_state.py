@@ -11,6 +11,8 @@ cheese_taken=0
 walnut_opened = 0
 
 inventory = set()
+collected = set()
+
 
 inventory_selected = 0
 inventory_nodes = []
