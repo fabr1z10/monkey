@@ -3,10 +3,11 @@ import random
 import settings
 import game_state
 import math
+import shapely
 from . import castle
 
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
-    move_item_by, _goto_room,interpret
+    move_item_by, _goto_room,interpret, get_item
 
 
 
@@ -21,12 +22,30 @@ def restart_room():
 
 def zfunc_default (x, y):
     z = 1.0 - y / 166.0
+    a = 0
+    md = -1
+    iwall = -1
+    cwall = -1
     for wall in game_state.wallz:
-        for i in range(0, len(wall)-2, 2):
-            if x >= wall[i] and x <= wall[i+2]:
-                yl = wall[i+1] + ((wall[i+3] - wall[i+1]) / (wall[i+2] - wall[i])) * (x - wall[i])
+        cwall += 1
+        bl = wall['baseline']
+        if x < bl[0] or x > bl[-2]:
+            continue
+        for i in range(0, len(bl)-2, 2):
+            if x >= bl[i] and x <= bl[i+2]:
+                yl = bl[i+1] + ((bl[i+3] - bl[i+1]) / (bl[i+2] - bl[i])) * (x - bl[i])
                 if y < yl:
-                    z += 1
+                    if md < 0 or md > (yl - y):
+                        md = yl - y
+                        iwall = cwall
+    if iwall != -1:
+
+        zwall = monkey.get_node(game_state.wallz[iwall]['id']).z
+        #print('under wall', iwall, 'corrected by', game_state.wallz[iwall]['z'] + 0.5, zwall)
+        z += game_state.wallz[iwall]['z'] + 1.0
+    else:
+        pass
+        #print('no wall',z)
     return z
 
 def look(item):
@@ -65,6 +84,7 @@ def pickup(item):
                     game_state.collected.add(item)
                     if item in game_state.nodes:
                         monkey.get_node(game_state.nodes[item]).remove()
+                    settings.items['items'][item]['room'] = None
                     msg(id = line)
             else:
                 # outside bounds
@@ -214,6 +234,7 @@ def spellStart():
     monkey.getClock().addEvent(True, True, 15, spellEnd)
 
 def create_goat():
+    setup3d()
     if game_state.goat_east == 0:
         _goat(226,78)
 
@@ -229,6 +250,7 @@ def _goat(x, y):
                                                monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
     monkey.get_node(game_state.Ids.game_node).add(a)
 def create_goat_e():
+    setup3d()
     if game_state.goat_east == 1:
         _goat(114,57)
 
@@ -236,3 +258,82 @@ def create_goat_e():
 def goat_east(goat, a):
     game_state.goat_east = 1
     goat.remove()
+
+def _gateMove(x, y, line):
+    settings.items['items']['gate']['pos'][0] = 32 + x
+    settings.items['items']['gate']['baseline'] =[30 + x,12,86+x,12]
+    a = monkey.get_node(game_state.nodes['gate'])
+    s = monkey.Script()
+    message(s, id=line)
+    s.add(monkey.actions.MoveBy(id=a.id, delta=(y, 0), time=1))
+    monkey.play(s)
+
+def open_gate(item):
+    _gateMove(60, 60, 106)
+
+def close_gate(item):
+    _gateMove(0, -60, 107)
+
+#lookin_stump = msg(1)
+
+
+def setup3d():
+
+    # sort all walls
+    in_edges = dict()
+    out_edges = dict()
+    z = dict()
+    for i in range(0, len(game_state.wallz)):
+        in_edges[i] = []
+        out_edges[i] = []
+        z[i] = 0
+    for i in range(0, len(game_state.wallz)-1):
+        wi = game_state.wallz[i]['baseline']
+        lsi = shapely.geometry.LineString([[wi[i], wi[i + 1]] for i in range(0, len(wi), 2)])
+        for j in range(i+1, len(game_state.wallz)):
+            wj = game_state.wallz[j]['baseline']
+            lsj = shapely.geometry.LineString([[wj[i], wj[i + 1]] for i in range(0, len(wj), 2)])
+            print('checking walls',i,j)
+            if lsj.intersects(shapely.geometry.LineString([ [wi[0], wi[1]], [wi[0], 0]] )) or \
+                lsj.intersects(shapely.geometry.LineString([ [wi[-2], wi[-1]], [wi[-2], 0]] )):
+                print(j,'below',i)
+                in_edges[j].append(i)
+                out_edges[i].append(j)
+            elif lsi.intersects(shapely.geometry.LineString([ [wj[0], wj[1]], [wj[0], 0]] )) or \
+                lsi.intersects(shapely.geometry.LineString([ [wj[-2], wi[-1]], [wj[-2], 0]] )):
+                print(game_state.wallz[0],'below',game_state.wallz[1])
+                in_edges[i].append(j)
+                out_edges[j].append(i)
+    print(in_edges)
+    # items with 0 in edges
+    sources = [x for x in range(0, len(game_state.wallz)) if not in_edges[x]]
+    l = sources
+    while l:
+        cw = l.pop(0)
+        for x in out_edges[cw]:
+            if z[x] < z[cw]+1:
+                z[x] = z[cw]+1
+                l.append(x)
+    print(sources)
+    print(z)
+    for i in range(0, len(game_state.wallz)):
+        node = monkey.get_node(game_state.wallz[i]['id'])
+        monkey.get_node(game_state.wallz[i]['id']).set_position(node.x, node.y, 2*z[i]+1)
+        game_state.wallz[i]['z'] = 2*z[i]+1
+    print(out_edges)
+
+def start_swim(player, other):
+    player.set_model(monkey.models.getSprite('sprites/graham_swim'), batch='sprites')
+
+def end_swim(player, other):
+    player.set_model(monkey.models.getSprite('sprites/graham'), batch='sprites')
+
+
+def open_walnut(item):
+    msg(id=66)
+    item = get_item('walnut')
+    item['desc_inventory'] = 67
+    item['img_inventory'] = 'sprites/item_gold_walnut'
+    item['name'] = 69
+
+

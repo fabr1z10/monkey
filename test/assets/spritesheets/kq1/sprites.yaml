@@ -292,7 +292,7 @@ sprites:
         box: 0
         frames:
           - tex: [106, 1, 12, 32]
-            anchor: [7, 0]
+            anchor: [7, 0]            
       walk_e:
         box: 0
         frames:

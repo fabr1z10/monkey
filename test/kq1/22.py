@@ -191,11 +191,6 @@ def drown3(player, other):
     monkey.play(script)
 
 
-def start_swim(player, other):
-    player.set_model(monkey.models.getSprite('sprites/graham_swim'), batch='sprites')
-
-def end_swim(player, other):
-    player.set_model(monkey.models.getSprite('sprites/graham'), batch='sprites')
 
 def drown2(player, other):
     _drown(player, 188, 38)

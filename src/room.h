@@ -54,7 +54,7 @@ public:
         return nullptr;
     }
 
-    void setOnStart(pybind11::function);
+    void addOnStart(pybind11::function);
     void setOnEnd(pybind11::function);
 
     void start();
@@ -78,7 +78,7 @@ private:
     float m_ambientStrength;
     //std::vector<std::shared_ptr<Light>> m_lights;
     glm::vec4 m_clearColor;
-    pybind11::function m_onStart;
+    std::vector<pybind11::function> m_onStart;
     pybind11::function m_onEnd;
 
 	std::list<pybind11::function> _callbacks;

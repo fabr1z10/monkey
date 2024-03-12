@@ -14,6 +14,8 @@ inventory = set()
 collected = set()
 
 
+
+
 inventory_selected = 0
 inventory_nodes = []
 wallz = []

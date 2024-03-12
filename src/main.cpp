@@ -198,7 +198,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_runner", &Room::addRunner)
 		.def("add_camera", &Room::addCamera)
 		.def("add_batch", &Room::addBatch)
-		.def_property("on_start", nullptr, &Room::setOnStart)
+		.def("addOnStart", &Room::addOnStart)
 //        //.def("add_line_batch", &Room::addLinesBatch)
 		.def("set_clear_color", &Room::setClearColor)
 //		.def("set_main_cam", &Room::setMainCam)
@@ -221,8 +221,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("z", &Node::getZ)
         .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("state", &Node::getState, &Node::setState)
-		.def_property("user_data", &Node::getUserData, &Node::setUserData);
-
+		.def_property("user_data", &Node::getUserData, &Node::setUserData)
+		.def_property("scale", &Node::getScale, &Node::setScale);
 
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
     	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
@@ -235,7 +235,7 @@ PYBIND11_MODULE(monkey, m) {
 
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
-//		.def_property("scale", &Node::getScale, &Node::setScale)
+
 
 //        .def("get_parent",&Node::getParent, py::return_value_policy::reference)
 

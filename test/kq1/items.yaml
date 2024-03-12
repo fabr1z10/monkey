@@ -7,6 +7,26 @@ map:
   carrot_patch: [garden_w, garden_e]
   carrot: [carrot, carrot_e]
 items:
+  bowl:
+    name: 53
+    img_inventory: 'sprites/item_bowl'
+    desc: 111
+    desc_inventory: 54
+    room: bowl
+    type: bg
+    batch: "bowl"
+    auto_depth: true
+    pos: [252,28,0]
+    quad: [1,167,24,14]
+    can_pick_up: True
+    pick_up: 52
+  gate:
+    room: goatpene
+    type: bg
+    batch: 'goatpene'
+    quad: [4,243,54,18]
+    pos: [32, 16, 0.928]
+    baseline: [30,12,86,12]
   rock:
     name: 94
     room: rock
@@ -48,6 +68,28 @@ items:
     pick_up: 33
     bounds: [0,27,247,27,155,101,0,101]
     img_inventory: 'sprites/item_carrot'
+  beach:
+    room: pebbles
+    desc: 55
+  pebbles:
+    name: 58
+    room: pebbles
+    desc: 56
+    pick_up: 57
+    desc_inventory: 59
+    img_inventory: 'sprites/item_pebbles'
+    can_pick_up: True
+  walnut:
+    name: 63
+    room: walnut
+    desc: 61
+    pick_up: 62
+    desc_inventory: 64
+    img_inventory: 'sprites/item_walnut'
+    can_pick_up: True
+
+
+
   hole:
     room: rock
     type: empty
@@ -72,6 +114,24 @@ items:
     name: 97
     room: castle
     desc: 9
+  fence_garden_e:
+    room: goatpene
+    desc: 108
+    msg:
+      jump: 109
+  stump:
+    room: stump
+    desc: 42
+    msg:
+      lookin: ['if', '"pouch" in game_state.collected', 110, 43]
+  pouch:
+    name: 46
+    room: stump
+    desc: 68
+    pick_up: 44
+    desc_inventory: 45
+    img_inventory: 'sprites/item_pouch'
+    can_pick_up: True
   door_castle:
     room: castle
     type: sprite

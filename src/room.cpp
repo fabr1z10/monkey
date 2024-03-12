@@ -251,8 +251,8 @@ void Room::draw(Shader* s) {
 //
 }
 
-void Room::setOnStart(pybind11::function f) {
-    m_onStart = f;
+void Room::addOnStart(pybind11::function f) {
+    m_onStart.push_back(f);
 }
 
 void Room::setOnEnd(pybind11::function f) {
@@ -271,7 +271,11 @@ void Room::start() {
 	}
     iterate_dfs([] (Node* n) { n->start(); });
 
-    if (m_onStart) m_onStart();
+    if (!m_onStart.empty()) {
+        for (const auto& f : m_onStart) {
+            f();
+        }
+    }
 
 }
 void Room::end() {

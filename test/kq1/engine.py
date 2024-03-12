@@ -6,7 +6,8 @@ import game_state
 phrasal_verbs = {
     'pick_up',
     'turn_on',
-    'turn_off'
+    'turn_off',
+    'look_in'
 }
 
 verb_map = {
@@ -44,6 +45,8 @@ def process_action(a):
     # one item action
     action = ''
     verb = verb_map.get(verb, verb)
+    item_id_1 = None
+    item_id_2 = None
     if item1 and not item2:
         item_id_1 = is_valid_item(item1)
         if item_id_1:
@@ -62,9 +65,18 @@ def process_action(a):
     print('action to perform:', action)
 
     f = None
+
     if action:
         f = getattr(scripts, action, None)
         if f is None:
             f = getattr(scripts, verb, None)
         if f:
             f(item_id_1)
+        else:
+            # check if I have a custom msg
+            if item_id_1 and not item_id_2:
+                msg = settings.items['items'][item_id_1].get('msg')
+                if msg and verb in msg:
+                    scripts.msg(scripts.utils.interpret(msg[verb]))
+
+

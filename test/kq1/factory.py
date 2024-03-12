@@ -15,11 +15,12 @@ link_aabb = {
 
 
 
-def graham(sprite, x, y):
+def graham(sprite, x, y, scale):
     b = monkey.get_sprite('sprites/' + sprite)
     b.add_component(monkey.components.PlayerSierraController(half_width=2, z_func=settings.z_func, dir=settings.dir, skinWidth=1))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
     b.set_position(x, y, 0)
+    b.scale=scale
     game_state.Ids.player = b.id
     return b
 
@@ -72,12 +73,20 @@ def bg(ciao):
     pos = ciao.get('pos', [0,0,0])
     n = monkey.Node()
     n.set_model(a)
-    n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-2*pos[1]/166.0 )
-    if auto_depth:
-        n.add_component(monkey.components.SierraController(z_func=settings.z_func))
+    n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-pos[1]/166.0 )
+    print('SUCA TREE',n.y,n.z)
+    #if auto_depth:
+    #    n.add_component(monkey.components.SierraController(z_func=settings.z_func))
     baseline = ciao.get('baseline')
+    wall = ciao.get('wall')
     if baseline:
-        game_state.wallz.append(baseline)
+        game_state.wallz.append({'baseline': baseline, 'id': n.id})
+        if ciao.get('solid', True):
+            m = [baseline[i] - pos[i % 2] for i in range(0, len(baseline))]
+            n.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=m), batch='lines'))
+    if wall:
+        m = [wall[i] - pos[i % 2] for i in range(0, len(wall))]
+        n.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=m), batch='lines'))
     return n
     # root.add(n)
 
@@ -171,7 +180,6 @@ def on_leave_hotspot(a,b):
 
 
 def create_room(room):
-
     ce = monkey.CollisionEngine2D(80, 80)
     ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
     room.add_runner(ce)
@@ -180,8 +188,9 @@ def create_room(room):
 
     room_info = settings.rooms[settings.room]
     on_start = room_info.get('on_start')
+    room.addOnStart(scripts.setup3d)
     if on_start:
-        room.on_start = getattr(scripts, on_start)
+        room.addOnStart(getattr(scripts, on_start))
 
     zfunc = room_info.get('z_func', 'zfunc_default')
     settings.z_func = getattr(scripts, zfunc)
@@ -241,7 +250,8 @@ def create_room(room):
     # b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
     # b.set_position(settings.pos[0], settings.pos[1], 0)
     # game_state.Ids.player = b.id
-    game_node.add(graham('graham', settings.pos[0], settings.pos[1]))
+    scale_player = room_info.get('scale_player', 1.0)
+    game_node.add(graham('graham', settings.pos[0], settings.pos[1], scale_player))
 
     # create parser
     parser = monkey.TextEdit(batch='ui', font='sierra', prompt='>', cursor='_', width=2000,pal=0, on_enter=engine.process_action)

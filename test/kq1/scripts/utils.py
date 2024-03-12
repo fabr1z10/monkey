@@ -6,6 +6,9 @@ import regex as re
 import shapely
 
 
+def get_item(id):
+    return settings.items['items'].get(id)
+
 def id_to_string(string_id, **kwargs):
     message = settings.strings[string_id]
     aa = dict(kwargs, random=random, msg=id_to_string)

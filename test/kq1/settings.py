@@ -3,8 +3,8 @@ import monkey
 
 
 device_size = (320, 200)
-room = 'goatpenw'
-pos = [213, 75]
+room = 'bowl'
+pos = [2, 2]
 dir = 's'
 title = 'Hello world!'
 shaders = [monkey.SHADER_BATCH_QUAD_PALETTE, monkey.SHADER_BATCH_LINES]
