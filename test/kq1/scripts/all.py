@@ -248,6 +248,7 @@ def _goat(x, y):
                                                           direction=vector))
     a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.foe_hotspot, 0,
                                                monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
+    game_state.nodes['goat'] = a.id
     monkey.get_node(game_state.Ids.game_node).add(a)
 def create_goat_e():
     setup3d()
@@ -255,9 +256,17 @@ def create_goat_e():
         _goat(114,57)
 
 
-def goat_east(goat, a):
-    game_state.goat_east = 1
+def goat_move(goat, value):
+    game_state.goat_east = value
+    del game_state.nodes['goat']
     goat.remove()
+
+
+def goat_east(goat, a):
+    goat_move(goat, 1)
+
+def goat_west(goat, a):
+    goat_move(goat, 0)
 
 def _gateMove(x, y, line):
     settings.items['items']['gate']['pos'][0] = 32 + x
@@ -337,11 +346,24 @@ def open_walnut(item):
     item['name'] = 69
 
 def show_carrot(item):
-    player = monkey.get_node(game_state.Ids.player)
+    # check if goat is here
+    if 'goat' in game_state.nodes:
+        player = monkey.get_node(game_state.Ids.player)
+        goat = monkey.get_node(game_state.nodes['goat'])
+        if monkey.shapes.check_los((player.x, player.y), (goat.x, goat.y), 2):
+            goat.remove()
+            msg(id=113)
+            player.set_model(monkey.models.getSprite('sprites/graham_goat'), batch='sprites')
+        else:
+            msg(id=114)
+    else:
+        msg(id=112)
+    return
+
+
     #a = monkey.models.MultiSprite()
     #a.addSprite(monkey.models.getSprite('sprites/graham'))
     #a.addSprite(monkey.models.getSprite('sprites/goat'))
     #player.set_model(a, batch='sprites')
 
-    player.set_model(monkey.models.getSprite('sprites/graham_goat'), batch='sprites')
 

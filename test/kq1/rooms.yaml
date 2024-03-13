@@ -234,6 +234,11 @@ goatpene:
       auto_depth: True
       batch: "goatpene"
       wall: [210,97,270,97,270,105,210,105,210,97]
+    - type: hotspot
+      aabb: [0,1,0,166]
+      mask: 4
+      flag: 8
+      on_enter: ['goat_west']
   west: goatpenw
   south: stump
   north: birdcave

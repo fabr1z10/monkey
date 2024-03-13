@@ -2,6 +2,7 @@
 #include "assetmanager.h"
 #include "pyhelper.h"
 #include "pycast.h"
+#include "runners/collision_engine.h"
 
 py::dict readDataFile(const std::string& path) {
     py::object os = py::module_::import("yaml");
@@ -48,6 +49,13 @@ std::shared_ptr<Node> getSprite(const std::string& id) {
 std::shared_ptr<Model> getSpriteModel(const std::string& id) {
     auto& am = AssetManager::instance();
     return am.getSpriteModel(id);
+}
+
+bool checkLOS(glm::vec2 P0, glm::vec2 P1, int mask) {
+    auto collisionEngine = Engine::instance().getRoom()->getRunner<ICollisionEngine>();
+    auto result = collisionEngine->rayCast(glm::vec3(P0.x, P0.y, 0.f), glm::vec3(P1.x, P1.y, 0.f), mask);
+    return !result.collide;
+
 }
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id) {
 //	auto& am = AssetManager::instance();

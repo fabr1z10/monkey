@@ -180,6 +180,7 @@ def on_leave_hotspot(a,b):
 
 
 def create_room(room):
+    game_state.nodes = dict()
     ce = monkey.CollisionEngine2D(80, 80)
     ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
     room.add_runner(ce)

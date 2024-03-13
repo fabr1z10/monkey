@@ -18,6 +18,8 @@ std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs&);
 std::shared_ptr<Node> getSprite(const std::string& id);
 std::shared_ptr<Model> getSpriteModel(const std::string& id);
 
+bool checkLOS(glm::vec2 P0, glm::vec2 P1, int mask = 0);
+
 Clock* getClock();
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id);
 glm::vec4 fromHex(const std::string&);

@@ -318,6 +318,8 @@ PYBIND11_MODULE(monkey, m) {
 
     // -- shapes
     py::module_ ms = m.def_submodule("shapes");
+
+    ms.def("check_los", &checkLOS);
     py::class_<Shape, std::shared_ptr<Shape>>(ms, "Shape")
         .def(py::init<>());
     py::class_<Segment, Shape, std::shared_ptr<Segment>>(ms, "Segment")
