@@ -93,7 +93,7 @@ void SpriteRenderer::updateBatch() {
 	//glm::vec3 ciao=pos;
 
 
-    auto worldTransform = m_node->getWorldMatrix();
+    auto worldTransform = m_rendererTransform * m_node->getWorldMatrix();
     //glm::vec3 pos = worldTransform * glm::vec4(a.anchor_point, 0.f, 1.f);
 
     // draw all quads in the frame

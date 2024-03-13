@@ -34,6 +34,10 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 		_tileSize = f["tile_size"].as<glm::ivec2>(glm::ivec2(1, 1));
 		_texture = std::make_shared<Tex>(directory + "/" + sheet);
 
+		if (f["multi_sprites"]) {
+			_multiNodes = f["multi_sprites"];
+		}
+
 		if (_texture->hasPalette()) {
 			std::vector<unsigned char> colors;
 			if (f["palettes"]) {
@@ -147,7 +151,37 @@ std::shared_ptr<QuadBatch> SpriteSheet::getBatch() {
 }
 
 std::shared_ptr<Sprite> SpriteSheet::getSprite(const std::string& id) {
-	return _sprites.at(id);
+	auto iter = _sprites.find(id);
+	if (iter == _sprites.end()) {
+		return nullptr;
+	}
+	return iter->second;
+}
+
+std::shared_ptr<MultiSprite> SpriteSheet::getMulti(const std::string & id) {
+	auto cino = _multiNodes[id];
+	if (cino) {
+		std::cout << "multi model " << id << " found.\n";
+		auto model = std::make_shared<MultiSprite>();
+		for (const auto& sprite : cino["sprites"]) {
+			model->addSprite(_sprites.at(sprite.as<std::string>()));
+		}
+		for (const auto& anim : cino["animations"]) {
+			auto animId = anim.first.as<std::string>();
+			model->addAnimation(animId);
+			int spriteId{0};
+			for (const auto& b : anim.second) {
+			    auto subAnim = b["anim"].as<std::string>();
+                auto offset = b["pos"].as<glm::vec3>(glm::vec3(0.f));
+                model->setAnimationData(animId, spriteId, subAnim, offset);
+                spriteId++;
+			}
+		}
+		return model;
+	} else {
+		return nullptr;
+	}
+
 }
 
 //std::shared_ptr<MultiNode> SpriteSheet::getMultiNode(const std::string& id, const std::string& batch) {

@@ -88,6 +88,46 @@ fonts:
       '"': [120,216,8,8,8]
       '(': [40,216,8,8,8]
       ')': [48,216,8,8,8]
+multi_sprites:
+  graham_goat:
+    sprites:
+      - graham
+      - goat
+    animations:
+      idle_e:
+        - anim: idle_e
+          pos: [0, 0, 0]
+        - anim: idle_e
+          pos: [0, 0, 0.1]
+      idle_n:
+        - anim: idle_n
+          pos: [-5, 0, 0]
+        - anim: idle_n
+          pos: [5, 0, 0]
+      idle_s:
+        - anim: idle_s
+          pos: [5, 0, 0]
+        - anim: idle_s
+          pos: [-5, 0, 0]
+      walk_e:
+        - anim: walk_e
+          pos: [0, 0, 0]
+        - anim: walk_e
+          pos: [0, 0, 0.1]
+      walk_n:
+        - anim: walk_n
+          pos: [-5, 0, 0]
+        - anim: walk_n
+          pos: [5, 0, 0]
+      walk_s:
+        - anim: walk_s
+          pos: [5, 0, 0]
+        - anim: walk_s
+          pos: [-5, 0, 0]
+
+
+
+
 sprites:
   item_dagger:
     animations:
@@ -151,7 +191,19 @@ sprites:
             anchor: [24, 18]
   goat:
     animations:
-      walk:
+      idle_e:
+        frames:
+          - tex: [476, 100, 36, 24]
+            anchor: [16, 0]
+      idle_s:
+        frames:
+          - tex: [436, 3, 10, 23]
+            anchor: [5,0]
+      idle_n:
+        frames:
+          - tex: [460,2,10,24]
+            anchor: [5,0]
+      walk_e:
         frames:
           - tex: [476, 0, 36, 24]
             anchor: [16, 0]
@@ -165,6 +217,43 @@ sprites:
             anchor: [16, 0]
           - tex: [476, 125, 36, 24]
             anchor: [16, 0]
+      walk_n:
+        frames:
+          - tex: [460,2,10,24]
+            anchor: [5,0]
+          - tex: [460,27,10,25]
+            anchor: [5, 0]
+          - tex: [460,53,10,26]
+            anchor: [5, 0]
+          - tex: [460,80,10,25]
+            anchor: [5, 0]
+          - tex: [460,2,10,24]
+            anchor: [5,0]
+          - tex: [449,27,10,25]
+            anchor: [5,0]
+          - tex: [449,53,10,25]
+            anchor: [5,0]
+          - tex: [449,80,10,25]
+            anchor: [5,0]
+      walk_s:
+        frames:
+          - tex: [436, 3, 10, 23]
+            anchor: [5,0]
+          - tex: [436,27,10,24]
+            anchor: [5,0]
+          - tex: [436,53,10,25]
+            anchor: [5,0]
+          - tex: [436,80,10,25]
+            anchor: [5,0]
+          - tex: [436, 3, 10, 23]
+            anchor: [5,0]
+          - tex: [425,27,10,24]
+            anchor: [5,0]
+          - tex: [425,53,10,25]
+            anchor: [5,0]
+          - tex: [425,81,10,24]
+            anchor: [5,0]
+
   graham_swim:
     animations:
       walk_e:

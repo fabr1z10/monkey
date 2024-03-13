@@ -10,7 +10,7 @@ note_taken = 0
 cheese_taken=0
 walnut_opened = 0
 
-inventory = set()
+inventory = {'carrot'}
 collected = set()
 
 

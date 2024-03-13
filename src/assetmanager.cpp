@@ -160,20 +160,28 @@ std::shared_ptr<Model> AssetManager::getSpriteModel(const std::string & id) {
     auto spriteId = id.substr(u + 1);
 
     auto quadBatch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
-    auto model = quadBatch->getSheet()->getSprite(spriteId);
+    std::shared_ptr<Model> model = quadBatch->getSheet()->getSprite(spriteId);
+    if (model == nullptr) {
+        model = quadBatch->getSheet()->getMulti(spriteId);
+    }
+    M_Assert(model != nullptr, (" -- cannot find model: " + spriteId).c_str());
+
     return model;
 }
 
 std::shared_ptr<Node> AssetManager::getSprite(const std::string & id) {
-
-
 
 	auto u = id.find('/');
 	auto batchId = id.substr(0, u);
 	auto spriteId = id.substr(u + 1);
 
     auto quadBatch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
-	auto model = quadBatch->getSheet()->getSprite(spriteId);
+    std::shared_ptr<Model> model = quadBatch->getSheet()->getSprite(spriteId);
+    if (model == nullptr) {
+        model = quadBatch->getSheet()->getMulti(spriteId);
+    }
+
+    M_Assert(model != nullptr, (" -- cannot find model: " + spriteId).c_str());
 	auto node = std::make_shared<Node>();
 	node->setModel(model, py::dict("batch"_a=batchId));
 	return node;

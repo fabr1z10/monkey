@@ -244,7 +244,7 @@ def _goat(x, y):
     angle = random.uniform(0, 2.0 * math.pi)
     vector = [math.cos(angle), math.sin(angle)]
     a.add_component(monkey.components.NPCSierraController(game_state.Ids.player, 60, 1000, 10, z_func=settings.z_func,
-                                                          walk_e='walk', walk_n='walk', walk_s='walk', flip=1,
+                                                          flip=1,
                                                           direction=vector))
     a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.foe_hotspot, 0,
                                                monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
@@ -336,4 +336,12 @@ def open_walnut(item):
     item['img_inventory'] = 'sprites/item_gold_walnut'
     item['name'] = 69
 
+def show_carrot(item):
+    player = monkey.get_node(game_state.Ids.player)
+    #a = monkey.models.MultiSprite()
+    #a.addSprite(monkey.models.getSprite('sprites/graham'))
+    #a.addSprite(monkey.models.getSprite('sprites/goat'))
+    #player.set_model(a, batch='sprites')
+
+    player.set_model(monkey.models.getSprite('sprites/graham_goat'), batch='sprites')
 

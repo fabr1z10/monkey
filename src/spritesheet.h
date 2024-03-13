@@ -5,6 +5,7 @@
 #include "models/sprite.h"
 //#include "multinode.h"
 #include "font.h"
+#include "models/multisprite.h"
 
 class SpriteSheet {
 
@@ -19,6 +20,7 @@ public:
 	std::string toString();
 	std::string getId() const;
 	glm::ivec2 getTileSize() const;
+	std::shared_ptr<MultiSprite> getMulti(const std::string&);
 private:
 	std::shared_ptr<Tex> _texture;
 	std::shared_ptr<Palette> _palette;
@@ -30,6 +32,7 @@ private:
 	std::shared_ptr<QuadBatch> _batch;
 	std::string _id;
     glm::ivec2 _tileSize;
+    YAML::Node _multiNodes;
 };
 
 inline glm::ivec2 SpriteSheet::getTileSize() const {

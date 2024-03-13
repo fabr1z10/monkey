@@ -96,6 +96,7 @@
 #include "shapes/circle.h"
 #include "runners/clock.h"
 #include "nodes/multinode.h"
+#include "models/multisprite.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -363,6 +364,10 @@ PYBIND11_MODULE(monkey, m) {
         .def("prova", &IQuads::prova)
         .def("add", &IQuads::addQuad);
     py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite");
+    py::class_<MultiSprite, Model, std::shared_ptr<MultiSprite>>(mm, "MultiSprite")
+        .def(py::init<>())
+        .def("addSprite", &MultiSprite::addSprite);
+
 ////        .def(py::init<const pybind11::kwargs&>());
 //    //py::class_<Lines, Model, std::shared_ptr<Lines>>(mm)
 //    py::class_<PolyChain, Model, std::shared_ptr<PolyChain>>(mm, "Lines")

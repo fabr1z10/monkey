@@ -76,9 +76,9 @@ namespace YAML
 			if (!node.IsSequence() || node.size() != 3)
 				return false;
 
-			rhs.x = node[0].as<int>();
-			rhs.y = node[1].as<int>();
-			rhs.z = node[2].as<int>();
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
 			return true;
 		}
 	};
