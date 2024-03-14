@@ -314,6 +314,7 @@ house:
   batches:
     - "house"
   south: swamp
+  north: park
   items:
     - type: bg
       batch: "house"
@@ -421,6 +422,20 @@ lake3:
       batch: "lake3"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: hotspot
+      poly: [112,0,190,0,203,8,214,28,238,40,254,55,254,74,241,85,217,93,211,99,198,103,175,108,170,111,170,114,157,125,81,124,66,123,60,118,56,100,48,87,44,65,49,41,59,24,97,7]
+      on_enter: ['start_swim']
+      on_leave: ['end_swim']
+largrock:
+  batches:
+    - "largrock"
+  south: well
+  north: witch
+  items:
+    - type: bg
+      batch: "largrock"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
 
 ogre:
   batches:
@@ -435,7 +450,16 @@ ogre:
       quad: [ 0, 0, 316, 166 ]
 
 
-
+park:
+  batches:
+    - "park"
+  south: house
+  north: well
+  items:
+    - type: bg
+      batch: "park"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
 pebbles:
   batches:
     - "pebbles"
@@ -692,6 +716,11 @@ swamp:
       batch: "swamp"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+test_walkarea:
+  walls:
+    - [108,83,208,83]
+  items: []
+  on_start: pino
 test3d:
   batches:
     - "test3d"
@@ -818,21 +847,35 @@ walnut:
       look_tree: [ 'msg', 60 ]
       look_walnut: ['look_inventory_item', 'walnut', 64, 0]
       get_walnut: ['pickup', 'walnut', 62, 65]
+well:
+  batches:
+    - "well"
+  south: park
+  north: largrock
+  west: goatpene
+  items:
+    - type: bg
+      batch: "well"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
 witch:
   walls:
-    - [0,57,29,57,41,46,51,46,60,34,117,40,191,42,187,55]
-    - [42,16.9,85,16.9]
-    - [182,57,154,88,0,88]
-  walls_z:
-    - [14,57,42,16.9]
-    - [154,23,250,35]
-    - [154,65,250,34.9]
+    - [0,64,28,64]
+    - [190,54,192,42]
+    - [16,57,10,64]
+#    - [42,16.9,85,16.9]
+#    - [182,57,154,88,0,88]
+#  walls_z:
+#    - [14,57,42,16.9]
+#    - [154,23,250,35]
+#    - [154,65,250,34.9]
   batches:
     - "witch"
   east: sorcerer
   north:
     room: swamp
     pos: [292,6]
+  south: largrock
   items:
     - type: bg
       batch: "witch"
@@ -845,40 +888,44 @@ witch:
       pos: [88, 38, 0]
     - type: bg      # fence west
       batch: "witch"
-      pos: [14, 17, 0.8976]
+      pos: [14, 17, 0]
       quad: [2,215,72,50]
+      baseline: [16,57,42,17,86,18]
     - type: bg      # fence east
       batch: "witch"
-      pos: [154, 23, 1.8615]
+      pos: [154, 23, 0]
       quad: [149,183,96,26]
+      auto_depth: True
+      baseline: [154,23,250,35]
     - type: bg      # fence east
       batch: "witch"
       pos: [190, 38, 0.7711]
       quad: [149,210,56,27]
+      auto_depth: True
+      baseline: [190,54,250,35.01]
     - type: bg      # fence east
       batch: "witch"
-      pos: [158, 41, 1.753]
-      quad: [2,277,50,53]
-    - type: bg      # fence east
-      batch: "witch"
-      pos: [0,88,1]
-      quad: [87,252,190,78]
+      pos: [18,34,0]
+      quad: [6,274,190,105]
+      auto_depth: True
+      baseline: [28,64,34,53,40,46,51,46,60,34,122,40,192,42]
   scripts:
-    look_house: ['msg', {'id': 49}]
+    #look_house: ['msg', {'id': 49}]
     look_door: ['msg',71]
     look_fence: ['msg',72]
     look_window: ['msg',73]
-    eat_house: ['msg', 74]
+    #eat_house: ['msg', 74]
     open_door: ['open_witch_door']#, {'rect': [86, 33, 36, 8]}]
 witchous:
   batches:
     - "witchous"
   walls:
-    - [78,0,0,0,0,12,16,30,36,30,59,61,47,61,58,78,193,78,196,74,205,74,206,78,289,78,316,53,316,0,226,0,209,52,202,52,215,0,120,0]
+    - [78,2,0,2,0,12,16,30,36,30,59,61,47,61,58,78,193,78,196,74,205,74,206,78,289,78,316,53,316,2,226,2,209,52,202,52,215,2,120,2]
     - [214,7,264,7,254,22,210,22]
     - [217,31,287,31,272,46,215,46,217,31]
-  walls_z:
-    - [202,51,216,0]
+  south: witch
+#  walls_z:
+#    - [202,51,216,0]
   items:
     - type: bg
       batch: "witchous"
@@ -898,33 +945,21 @@ witchous:
       batch: "witchous"
       pos: [202,0,1]
       quad: [291,167,24,133]
-    - type: bg      # tree
-      batch: "witchous"
-      tag: note
-      condition: "game_state.note_taken == 0"
-      pos: [236,26,0.96]
-      quad: [1,167,20,10]
-    - type: bg      # tree
-      batch: "witchous"
-      tag: note
-      condition: "game_state.cheese_taken == 0"
-      pos: [82,105,0.1]
-      quad: [5,180,12,12]
-      tag: cheese
-    - type: sprite
-      sprite: 'witchous/cupboard'
-      #auto_depth: true
-      tag: cupboard
-      pos: [70, 95, 0.2]
+      baseline: [202,51,216,0]
 
-  scripts:
-    look_table: ['look_witch_table']
-    get_note: ['pickup', {'item': 'note', 'msg': 81}]
-    get_cheese: [ 'pickup', { 'item': 'cheese', 'msg': 88 } ]
+#    - type: bg      # tree
+#      batch: "witchous"
+#      tag: note
+#      condition: "game_state.cheese_taken == 0"
+#      pos: [82,105,0.1]
+#      quad: [5,180,12,12]
+#      tag: cheese
+#    - type: sprite
+#      sprite: 'witchous/cupboard'
+#      #auto_depth: true
+#      tag: cupboard
+#      pos: [70, 95, 0.2]
 
-    open_cupboard: ['open', {'item': 'cupboard'}]
-    close_cupboard: ['close', {'item': 'cupboard'}]
-    look_cage: ['msg', {'id': 78}]
 
 
 

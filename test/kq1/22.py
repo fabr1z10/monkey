@@ -107,11 +107,7 @@ def open_walnut():
 
 def caa():
     exit(1)
-def open_witch_door(**kwargs):
-    s = monkey.Script()
-    s.add(monkey.actions.Animate(id=game_state.nodes['door'], anim='open', sync=True))
-    s.add(monkey.actions.CallFunc(_goto_room('witchous', [100,5], 's')))
-    monkey.play(s)
+
 
 def open(**kwargs):
     s = monkey.Script()

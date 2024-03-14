@@ -187,6 +187,10 @@ def create_room(room):
     room.add_runner(monkey.Scheduler())
     room.add_runner(monkey.Clock())
 
+    wa = monkey.WalkArea([0,0,316,0,316,166,0,166], 2)
+
+    room.add_runner(wa)
+
     room_info = settings.rooms[settings.room]
     on_start = room_info.get('on_start')
     room.addOnStart(scripts.setup3d)
@@ -275,6 +279,7 @@ def create_room(room):
     for wall in room_info.get('walls', []):
         w = monkey.Node()
         w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
+        wa.addLinearWall(wall)
         game_node.add(w)
 
     game_state.wallz = []

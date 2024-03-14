@@ -6,6 +6,8 @@ map:
   garden: [garden_w, garden_e]
   carrot_patch: [garden_w, garden_e]
   carrot: [carrot, carrot_e]
+  house: [witch_house]
+  door: [door_witch_house]
 items:
   bowl:
     name: 53
@@ -20,20 +22,50 @@ items:
     quad: [1,167,24,14]
     can_pick_up: True
     pick_up: 52
+  cage:
+    room: witchous
+    desc: 78
+  cheese:
+    room: witchous
+    type: bg
+    batch: "witchous"
+    pos: [82,105,0.1]
+    quad: [5,180,12,12]
+    desc: 87
+    can_pick_up: True
+    pick_up: 88
+    desc_inventory: 89
+    img_inventory: 'sprites/item_cheese'
+  cupboard:
+    room: witchous
+    pos: [70, 95, 0.2]
+    type: sprite
+    sprite: 'witchous/cupboard'
+    desc: 85
+
   gate:
     room: goatpene
     type: bg
     batch: 'goatpene'
     quad: [4,243,54,18]
-    pos: [32, 16, 0.928]
+    pos: [32, 16, 1.928]
     baseline: [30,12,86,12]
+  door_witch_house:
+    room: witch
+    desc: 71
+  witch_house:
+    room: witch
+    desc: 49
+    msg:
+      eat: 74
   rock:
     name: 94
     room: rock
     type: sprite
     sprite: 'rock/rock'
     pos: [236, 33, 0]
-    bounds: [0,34,-10,10]      # the player must be inside this rectangle to interact with object
+    bounds: [0,-10,34,-10,34,10,0,10]      # the player must be inside this rectangle to interact with object
+    bounds_relative: True
     auto_depth: True
     can_pick_up: False
     desc: 15
@@ -43,7 +75,8 @@ items:
     room: rock
     pos: [254, 45, 0]
     type: empty
-    bounds: [-20, 20, -10, 10]
+    bounds: [-20, -10, 20, -10, 20, 10, -20,10]
+    bounds_relative: True
     can_pick_up: True
     desc: 103
     desc_inventory: 24
@@ -71,6 +104,17 @@ items:
   beach:
     room: pebbles
     desc: 55
+  note:
+    room: witchous
+    type: bg
+    batch: "witchous"
+    pos: [236, 26, 0.96]
+    quad: [1, 167, 20, 10]
+    desc: 115
+    can_pick_up: True
+    pick_up: 81
+    desc_inventory: 83
+    img_inventory: 'sprites/item_note'
   pebbles:
     name: 58
     room: pebbles
@@ -94,7 +138,7 @@ items:
     room: rock
     type: empty
     pos: [ 254, 45, 0 ]
-    bounds: [ -20, 20, -10, 10 ]
+    bounds: [ -20, -10, 20, -10, 20, 10, -20, 10 ]
     visible: 'game_state.rock_moved == 1'
     desc: ['if', '"dagger" in game_state.collected', 104, 14]
   fence_garden_w:

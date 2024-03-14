@@ -25,7 +25,7 @@ def make_text(string_id, **kwargs):
     msg = monkey.Text(batch='sprites', font='sierra', anchor=monkey.ANCHOR_CENTER,
                       text=message,
                       width=29 * 8, pal=1)
-    msg.set_position(160, 100, 2)
+    msg.set_position(160, 100, 5)
     border = monkey.Node()
     border.set_model(monkey.models.from_shape('tri',
                                               monkey.shapes.AABB(-10, msg.size[0] + 10, -msg.size[1] - 5, 5),
@@ -71,13 +71,22 @@ def rm_node(*args):
 def is_within_bounds(item):
     item_desc = settings.items['items'][item]
     bounds = item_desc.get('bounds')
+    brel = item_desc.get('bounds_relative', False)
+
     if bounds:
+        ox = 0
+        oy = 0
+        if brel:
+            it = monkey.get_node(game_state.nodes[item])
+            ox = it.x
+            oy = it.y
+
         player = monkey.get_node(game_state.Ids.player)
         p = shapely.geometry.Point(player.x, player.y)
         ppoints = []
         assert len(bounds) % 2 == 0, "bounds must be made of a even number of floats"
         for i in range(0, len(bounds), 2):
-            ppoints.append([bounds[i], bounds[i+1]])
+            ppoints.append([bounds[i] + ox, bounds[i+1] + oy])
         poly = shapely.geometry.Polygon(ppoints)
         return poly.contains(p)
     else:

@@ -63,6 +63,17 @@ def look(item):
                 id = interpret(desc)
         msg(id=id)
 
+
+def open(item):
+    s = monkey.Script()
+    s.add(monkey.actions.Animate(id=game_state.nodes[item], anim='open', sync=True))
+    monkey.play(s)
+
+def close(item):
+    s = monkey.Script()
+    s.add(monkey.actions.Animate(id=game_state.nodes[item], anim='open', sync=True, backwards=True))
+    monkey.play(s)
+
 def pickup(item):
     if not item:
         msg(id=95)
@@ -166,6 +177,12 @@ def open_door_castle(item):
     s.add(monkey.actions.CallFunc(_goto_room('incastl1', [158, 2, 0], 'n')))
     monkey.play(s)
 
+def open_door_witch_house(item):
+    s = monkey.Script()
+    s.add(monkey.actions.Animate(id=game_state.nodes['door'], anim='open', sync=True))
+    s.add(monkey.actions.CallFunc(_goto_room('witchous', [100,5], 's')))
+    monkey.play(s)
+
 def climb_oak(item):
     script = monkey.Script()
     message(script, 28)
@@ -184,6 +201,11 @@ def _wolf():
     }
     monkey.get_node(game_state.Ids.game_node).add(a)
 
+def pino():
+    a = monkey.get_sprite('sprites/goat')
+    a.set_position(160,150,0)
+    a.add_component(monkey.components.NPCSierraFollow(game_state.Ids.player, z_func=settings.z_func))
+    monkey.get_node(game_state.Ids.game_node).add(a)
 
 def create_wolf():
     script = monkey.Script()
@@ -366,4 +388,5 @@ def show_carrot(item):
     #a.addSprite(monkey.models.getSprite('sprites/goat'))
     #player.set_model(a, batch='sprites')
 
-
+def read_note(item):
+    msg(id=84)

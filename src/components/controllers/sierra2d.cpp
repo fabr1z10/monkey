@@ -73,6 +73,10 @@ void Sierra2DController::updateZ(float x, float y) {
 
 }
 
+void CustomSierra2DController::update(double dt) {
+    _callback(dt);
+}
+
 void PlayerSierra2DController::update(double dt) {
 	if (!_enableControls) {
 		return;

@@ -97,6 +97,8 @@
 #include "runners/clock.h"
 #include "nodes/multinode.h"
 #include "models/multisprite.h"
+#include "runners/walkarea.h"
+#include "components/controllers/sierrafollow.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -415,6 +417,10 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());
+    py::class_<WalkArea, Runner, std::shared_ptr<WalkArea>>(m, "WalkArea")
+        .def("addPolyWall", &WalkArea::addPolyWall)
+        .def("addLinearWall", &WalkArea::addLineWall)
+        .def(py::init<std::vector<float>&, int>());
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
         .def(py::init<>())
         .def("addEvent", &Clock::addEvent);
@@ -546,6 +552,9 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<NPCSierraController, Sierra2DController, std::shared_ptr<NPCSierraController>>(mc, "NPCSierraController")
         .def(py::init<int, float, float, float, py::kwargs&>());
+    py::class_<NPCSierraFollow, Sierra2DController, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
+        .def(py::init<int, py::kwargs&>());
+
 	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
 		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,

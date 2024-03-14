@@ -45,3 +45,11 @@ private:
 	std::string _idleAnimation;
 	std::string _walkAnimation;
 };
+
+class CustomSierra2DController : public Sierra2DController {
+public:
+    explicit CustomSierra2DController(const pybind11::kwargs& args);
+    void update(double) override;
+private:
+    pybind11::function _callback;
+};
