@@ -11,11 +11,15 @@ public:
     // polygon needs to be supplied in CCW!!!
     void addPolyWall(std::vector<float>& points);
     void addLineWall(std::vector<float>& points);
-    void findPath(glm::vec2 source, glm::vec2 target);
+    void addDynamic(Node*);
+    std::vector<glm::vec2> findPath(glm::vec2 source, glm::vec2 target);
     void start() override;
     void update(double) override {}
     glm::vec2 getClosestPointInArea(glm::vec2);
+    void recompute();
 private:
+    static std::vector<glm::vec2> vecCvt(const std::vector<float>& p) ;
+    void processPoly(const std::vector<glm::vec2>& p, bool isHole, glm::vec2 origin= glm::vec2(0.f, 0.f));
     int addNode(glm::vec2 P);
     bool intersectsGeometry(glm::vec2 A, glm::vec2 B);
     void updateClosestPoint(std::vector<glm::vec2>& path, glm::vec2 P, float& bestSoFar, glm::vec2& closest, glm::vec2& normal);
@@ -36,7 +40,9 @@ private:
     std::vector<WallInfo> _walls;
     std::vector<glm::vec2> _walkArea;
     std::vector<std::vector<glm::vec2>> _holes;
+    std::vector<Node*> _dynamicHoles;
     std::unordered_set<std::pair<int, int>> _adjacentNodes;
     int _currentPoly;
     float _adjust;
+    std::vector<std::vector<glm::vec2>> _geometry;
 };

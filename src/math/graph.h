@@ -23,7 +23,7 @@ public:
 
     const GraphNode& getNode(int index) const;
 
-    std::vector<int> findPath(int source, int target) const;
+    std::vector<glm::vec2> findPath(int source, int target) const;
 
     void rmNode(int id);
 

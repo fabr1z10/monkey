@@ -163,19 +163,8 @@ def pippo(a, b, c):
 def pippa(a, b):
     print('leaving jiko')
 
-def _drown(player, x, y):
-    script = monkey.Script()
-    script.add(monkey.actions.SierraEnable(id=player.id, value=False))
-    script.add(monkey.actions.Move(id=player.id, position=(x, y, player.z), speed=0))
-    script.add(monkey.actions.Animate(id=player.id, anim='drown'))
-    message(script, 1)
-    script.add(monkey.actions.Delay(time=2))
-    message(script, 0)
-    monkey.play(script)
 
 
-def drown(player, other):
-    _drown(player, player.x, 4)
 
 def drown3(player, other):
     script = monkey.Script()
@@ -188,8 +177,7 @@ def drown3(player, other):
 
 
 
-def drown2(player, other):
-    _drown(player, 188, 38)
+
 
 
 def pickup(**kwargs):

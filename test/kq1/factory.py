@@ -74,19 +74,44 @@ def bg(ciao):
     n = monkey.Node()
     n.set_model(a)
     n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-pos[1]/166.0 )
-    print('SUCA TREE',n.y,n.z)
+
     #if auto_depth:
     #    n.add_component(monkey.components.SierraController(z_func=settings.z_func))
-    baseline = ciao.get('baseline')
+
+
+
+
+
     wall = ciao.get('wall')
-    if baseline:
-        game_state.wallz.append({'baseline': baseline, 'id': n.id})
-        if ciao.get('solid', True):
-            m = [baseline[i] - pos[i % 2] for i in range(0, len(baseline))]
-            n.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=m), batch='lines'))
     if wall:
-        m = [wall[i] - pos[i % 2] for i in range(0, len(wall))]
-        n.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=m), batch='lines'))
+        baseline = wall.get('baseline', False)
+        shape = None
+        if 'poly' in wall:
+            shape = monkey.shapes.Polygon(wall['poly'])
+        elif 'polyline' in wall:
+            pl = points=wall['polyline']
+            shape = monkey.shapes.PolyLine(points=pl)
+            if baseline:
+                abs_polyline = [pl[i] + pos[i%2] for i in range(0,len(pl))]
+                game_state.wallz.append({'baseline': abs_polyline, 'id': n.id})
+        else:
+            print('wall must have poly or polyline')
+            exit(1)
+        n.add_component(monkey.components.Collider(2, 0, 0, shape, batch='lines'))
+        game_state.walkArea.addDynamic(n)
+
+
+
+
+    #
+    #
+    # if baseline:
+    #     if ciao.get('solid', True):
+    #         m = [baseline[i] - pos[i % 2] for i in range(0, len(baseline))]
+    #         n.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=m), batch='lines'))
+    # if wall:
+    #     #m = [wall[i] - pos[i % 2] for i in range(0, len(wall))]
+    #     n.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.Polygon(wall), batch='lines'))
     return n
     # root.add(n)
 
@@ -111,7 +136,7 @@ def hotspot(ciao):
         aabb = ciao['aabb']
         shape = monkey.shapes.AABB(aabb[0], aabb[1], aabb[2], aabb[3])
     else:
-        shape = monkey.shapes.GenericPolygon(ciao['poly'])
+        shape = monkey.shapes.Polygon(ciao['poly'])
     flag = ciao.get('flag', settings.CollisionFlags.foe)
     mask = ciao.get('mask', settings.CollisionFlags.player)
     print('ADDING HOTSPOT with mask',mask)
@@ -178,6 +203,14 @@ def on_leave_hotspot(a,b):
         getattr(scripts, on_leave[0])(a, b, *on_leave[1:])
 
 
+def make_wall(points):
+    a = []
+    a.extend(points)
+    a.extend(points[:2])
+    w = monkey.Node()
+    w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=a), batch='lines'))
+    return w
+
 
 def create_room(room):
     game_state.nodes = dict()
@@ -186,12 +219,28 @@ def create_room(room):
     room.add_runner(ce)
     room.add_runner(monkey.Scheduler())
     room.add_runner(monkey.Clock())
-
-    wa = monkey.WalkArea([0,0,316,0,316,166,0,166], 2)
-
-    room.add_runner(wa)
+    root = room.root()
 
     room_info = settings.rooms[settings.room]
+    wa = room_info['walkarea']
+
+    poly = wa['poly']
+    walkArea = monkey.WalkArea(poly, 2)
+
+    if wa.get('solid', True):
+        root.add(make_wall(poly))
+    for hole in wa.get('holes', []):
+        hp = hole['poly']
+        walkArea.addPolyWall(hp)
+        if hole.get('solid', True):
+            root.add(make_wall(hp))
+        else:
+            root.add(hotspot(hole))
+    game_state.walkArea = walkArea
+
+    room.add_runner(walkArea)
+
+
     on_start = room_info.get('on_start')
     room.addOnStart(scripts.setup3d)
     if on_start:
@@ -220,7 +269,7 @@ def create_room(room):
     room.add_batch('tri', monkey.TriangleBatch(max_elements=1000, cam=0))
 
 
-    root = room.root()
+
     game_state.Ids.root = root.id
 
 
@@ -320,7 +369,7 @@ def create_room(room):
             if item_type:
                 f = globals().get(item_type)
                 if f:
-                    node = f(desc)
+                    node = f(desc, walkArea)
                     game_node.add(node)
                     game_state.nodes[item] = node.id
 

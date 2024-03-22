@@ -351,7 +351,15 @@ def setup3d():
         node = monkey.get_node(game_state.wallz[i]['id'])
         monkey.get_node(game_state.wallz[i]['id']).set_position(node.x, node.y, 2*z[i]+1)
         game_state.wallz[i]['z'] = 2*z[i]+1
-    print(out_edges)
+    #print(out_edges)
+    if game_state.goat_follow == 1:
+        a = monkey.get_sprite('sprites/goat')
+        p = monkey.get_node(game_state.Ids.player)
+        a.set_position(p.x, p.y, 0)
+        a.add_component(monkey.components.NPCSierraFollow(game_state.Ids.player, 50, 1, z_func=settings.z_func))
+        monkey.get_node(game_state.Ids.game_node).add(a)
+
+
 
 def start_swim(player, other):
     player.set_model(monkey.models.getSprite('sprites/graham_swim'), batch='sprites')
@@ -387,6 +395,23 @@ def show_carrot(item):
     #a.addSprite(monkey.models.getSprite('sprites/graham'))
     #a.addSprite(monkey.models.getSprite('sprites/goat'))
     #player.set_model(a, batch='sprites')
+
+def drown(player, other):
+    _drown(player, player.x, 4)
+
+def drown2(player, other):
+    _drown(player, 184, 34)
+
+def _drown(player, x, y):
+    script = monkey.Script()
+    script.add(monkey.actions.SierraEnable(id=player.id, value=False))
+    script.add(monkey.actions.Move(id=player.id, position=(x, y, 1-y/166), speed=0))
+    script.add(monkey.actions.Animate(id=player.id, anim='drown'))
+    message(script, 1)
+    script.add(monkey.actions.Delay(time=2))
+    message(script, 0)
+    monkey.play(script)
+
 
 def read_note(item):
     msg(id=84)

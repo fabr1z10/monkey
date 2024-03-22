@@ -334,7 +334,7 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<const py::array_t<float>&>());
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
 		.def(py::init<const py::kwargs&>());
-    py::class_<GenericPolygon, Shape, std::shared_ptr<GenericPolygon>>(ms, "GenericPolygon")
+    py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(ms, "Polygon")
         .def(py::init<const std::vector<float>&>());
 //
 //    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
@@ -420,6 +420,8 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<WalkArea, Runner, std::shared_ptr<WalkArea>>(m, "WalkArea")
         .def("addPolyWall", &WalkArea::addPolyWall)
         .def("addLinearWall", &WalkArea::addLineWall)
+        .def("addDynamic", &WalkArea::addDynamic)
+        .def("recompute", &WalkArea::recompute)
         .def(py::init<std::vector<float>&, int>());
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
         .def(py::init<>())
@@ -553,7 +555,7 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<NPCSierraController, Sierra2DController, std::shared_ptr<NPCSierraController>>(mc, "NPCSierraController")
         .def(py::init<int, float, float, float, py::kwargs&>());
     py::class_<NPCSierraFollow, Sierra2DController, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
-        .def(py::init<int, py::kwargs&>());
+        .def(py::init<int, float, float, py::kwargs&>());
 
 	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")

@@ -13,7 +13,7 @@ void Move::start() {
 	auto startPosition = m_node->getWorldPosition();
 	_dir = (_targetPos - startPosition);
 	if (_speed == 0.f) {
-		m_node->move(_dir);
+		m_node->setPosition(_targetPos.x, _targetPos.y, _targetPos.z);
 		stop();
 	} else {
 		_length = glm::length(_dir);

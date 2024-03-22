@@ -3,11 +3,22 @@
 #include "../engine.h"
 #include <iostream>
 #include "../util.h"
+#include "../shapes/polygon.h"
 
 // define a walkarea with a polygon
 WalkArea::WalkArea(std::vector<float> &p, float wallThickness) : Runner(), _wallThickness(wallThickness), _currentPoly(0) {
     _graph = std::make_unique<Graph>();
-    addPolygon(p, false);
+
+    //addPolygon(p, false);
+    _geometry.push_back(vecCvt(p));
+}
+
+std::vector<glm::vec2> WalkArea::vecCvt(const std::vector<float>& p) {
+    std::vector<glm::vec2> pts;
+    for (size_t i = 0; i < p.size(); i+= 2) {
+        pts.emplace_back(p[i], p[i+1]);
+    }
+    return pts;
 }
 
 int WalkArea::addNode(glm::vec2 P) {
@@ -33,79 +44,27 @@ bool WalkArea::intersectsGeometry(glm::vec2 A, glm::vec2 B) {
         }
     }
     return false;
-}
-
-void WalkArea::start() {
-    // we need all colliders with
-    _collisionEngine = Engine::instance().getRoom()->getRunner<ICollisionEngine>();
-
-    // add edges to graph
-    int n = _graph->getNodeCount();
-    for (int i = 0; i < n; i++) {
-        for (int j=i+1; j <n; j++) {
-            const auto& ni= _graph->getNode(i);
-            const auto& nj= _graph->getNode(j);
-            std::cout << " checking node " << i << " vs node " << j << "\n";
-            std::cout << "(" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
-
-            float t = 0.f;
-            bool addEdge = true;
-            for (auto& w : _walls) {
-                if (w.node1 == i || w.node2 == i || w.node1 == j || w.node2 == j) {
-                    continue;
-                }
-
-                if (seg2seg(ni.pos, nj.pos, w.p0, w.p1, t) && t >=0 && t <= 1) {
-                    addEdge = false;
-                }
-
-
-            }
-            // check mid point is internal to walkarea and external to holes
-            // unless edge is between consecutive points
-            if (addEdge && _adjacentNodes.count(std::make_pair(i, j)) == 0) {
-
-                    glm::vec2 midPoint = 0.5f * (ni.pos + nj.pos);
-                    bool isInWalkArea = pnpoly(_walkArea, midPoint);
-                    if (!isInWalkArea) {
-                        addEdge = false;
-                    } else {
-                        for (const auto &h : _holes) {
-                            if (pnpoly(h, midPoint)) {
-                                addEdge = false;
-                                break;
-                            }
-                        }
-                    }
-
-            }
-            if (addEdge) {
-                std::cout << "ADDED EDGE: (" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
-            }
-
-        }
-    }
 
 }
 
-void WalkArea::addPolygon(std::vector<float> &p, bool isHole) {
-    auto l = p.size();
-    glm::vec2 p0(p[l-2], p[l-1]);
+void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::vec2 origin) {
+    int l = p.size();
+    auto p0 = p.back() + origin;
     // check every internal angle. If angle is convex (< 180) --> add point if hole,
     // if angle is concave --> add point if walkarea
     int previousPointNodeId = -1;
     std::vector<glm::vec2> pp;
     int currentPointNodeId = -1;
     int originNodeId = -1;
-    for (int i = 0; i < p.size(); i+=2) {
+    for (int i = 0; i < p.size(); i++) {
         currentPointNodeId = -1;
-        int j = (i + 2) % l;
-        glm::vec2 p1(p[i], p[i+1]);
-        glm::vec2 p2(p[j], p[j+1]);
+        int j = (i + 1) % l;
+        auto p1 = p[i] + origin;
+        auto p2 = p[j] + origin;
         // check angle
         bool isConvex = cross2D(p1 - p0, p2 -p1) > 0;
         if (isConvex == isHole) {
-            currentPointNodeId = _graph->addNode(GraphNode{p1});
+            currentPointNodeId =  _graph->addNode(GraphNode{p1});
             if (i == 0) originNodeId = currentPointNodeId;
             //_nodeToPoly[currentPointNodeId] = _currentPoly;
         }
@@ -132,7 +91,86 @@ void WalkArea::addPolygon(std::vector<float> &p, bool isHole) {
         _walkArea = pp;
     }
     _currentPoly++;
+}
+void WalkArea::recompute() {
 
+    for (size_t i = 0; i < _geometry.size(); ++i) {
+        processPoly(_geometry[i], i > 0);
+    }
+
+    for (const auto& n : _dynamicHoles) {
+        auto poly = std::dynamic_pointer_cast<Polygon>(n->getComponent<Collider>()->getShape());
+        if (poly != nullptr) {
+            auto outline = poly->getOutline();
+            auto pos = n->getWorldPosition();
+            processPoly(outline, true, glm::vec2(pos));
+        }
+    }
+    // add edges to graph
+    int n = _graph->getNodeCount();
+    for (int i = 0; i < n; i++) {
+        for (int j=i+1; j <n; j++) {
+            const auto& ni= _graph->getNode(i);
+            const auto& nj= _graph->getNode(j);
+            std::cout << " checking node " << i << " vs node " << j << "\n";
+            std::cout << "(" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
+
+            float t = 0.f;
+            bool addEdge = true;
+            for (auto& w : _walls) {
+                if (w.node1 == i || w.node2 == i || w.node1 == j || w.node2 == j) {
+                    continue;
+                }
+
+                if (seg2seg(ni.pos, nj.pos, w.p0, w.p1, t) && t > 0 && t < 1) {
+                    addEdge = false;
+                }
+
+
+            }
+            // check mid point is internal to walkarea and external to holes
+            // unless edge is between consecutive points
+            if (addEdge && _adjacentNodes.count(std::make_pair(i, j)) == 0) {
+
+                glm::vec2 midPoint = 0.5f * (ni.pos + nj.pos);
+                bool isInWalkArea = pnpoly(_walkArea, midPoint);
+                if (!isInWalkArea) {
+                    addEdge = false;
+                } else {
+                    for (const auto &h : _holes) {
+                        if (pnpoly(h, midPoint)) {
+                            addEdge = false;
+                            break;
+                        }
+                    }
+                }
+
+            }
+            if (addEdge) {
+                std::cout << "ADDED EDGE: (" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
+                _graph->addEdge(i,j);
+            }
+
+        }
+    }
+}
+
+void WalkArea::start() {
+    // we need all colliders with
+    _collisionEngine = Engine::instance().getRoom()->getRunner<ICollisionEngine>();
+    recompute();
+
+
+
+}
+
+void WalkArea::addPolygon(std::vector<float> &p, bool isHole) {
+    _geometry.push_back(vecCvt(p));
+
+}
+
+void WalkArea::addDynamic(Node * n) {
+    _dynamicHoles.push_back(n);
 }
 
 void WalkArea::addPolyWall(std::vector<float> &points) {
@@ -224,7 +262,7 @@ glm::vec2 WalkArea::getClosestPointInArea(glm::vec2 P) {
     }
 }
 
-void WalkArea::findPath(glm::vec2 source, glm::vec2 target) {
+std::vector<glm::vec2> WalkArea::findPath(glm::vec2 source, glm::vec2 target) {
     // first, check that both source and target are inside the valid area
     glm::vec2 rs = getClosestPointInArea(source);
     glm::vec2 rt = getClosestPointInArea(target);
@@ -234,11 +272,11 @@ void WalkArea::findPath(glm::vec2 source, glm::vec2 target) {
     int targetId = addNode(rt);
 
     // find path
-    _graph->findPath(sourceId, targetId);
+    auto path = _graph->findPath(sourceId, targetId);
 
     // remove nodes
     _graph->rmNode(targetId);
     _graph->rmNode(sourceId);
 
-
+    return path;
 }

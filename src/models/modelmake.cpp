@@ -26,10 +26,10 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
     _dss[std::type_index(typeid(CompoundShape))] = &ModelMaker::makeCompoundShape;
     _dss[std::type_index(typeid(AABB))] = &ModelMaker::makeAABB;
 	_dss[std::type_index(typeid(AABB3D))] = &ModelMaker::makeAABB3D;
-	_dss[std::type_index(typeid(GenericPolygon))] = &ModelMaker::makePoly;
+	_dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
 	_dss[std::type_index(typeid(PolyLine))] = &ModelMaker::makePolyLine;
 
-	_dssolid[std::type_index(typeid(GenericPolygon))] = &ModelMaker::makePolySolid;
+	_dssolid[std::type_index(typeid(Polygon))] = &ModelMaker::makePolySolid;
 	_dssolid[std::type_index(typeid(AABB))] = &ModelMaker::makeAABBSolid;
 
 	//
@@ -101,7 +101,7 @@ std::shared_ptr<Model> ModelMaker::makeAABBSolid(const std::shared_ptr<Shape> &s
 std::shared_ptr<Model> ModelMaker::makePolySolid(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
 
 	std::vector<float> data;
-	auto* p = static_cast<GenericPolygon*>(s.get());
+	auto* p = static_cast<Polygon*>(s.get());
 	const auto& outline = p->getOutline();
 	for (const auto& point : outline) {
 		data.push_back(point.x);
@@ -114,7 +114,7 @@ std::shared_ptr<Model> ModelMaker::makePolySolid(const std::shared_ptr<Shape> &s
 }
 
 std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm::vec4 color, FillType ft) {
-	auto* p = static_cast<GenericPolygon*>(s.get());
+	auto* p = static_cast<Polygon*>(s.get());
 	const auto& outline = p->getOutline();
 	std::vector<float> data;
 	for (const auto& point : outline) {

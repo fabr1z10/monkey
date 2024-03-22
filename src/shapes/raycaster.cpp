@@ -2,6 +2,7 @@
 #include "../shapes/convexpoly.h"
 #include "../shapes/aabb.h"
 #include "../shapes/polyline.h"
+#include "../shapes/polygon.h"
 #include "../util.h"
 
 std::vector<glm::ivec3> RayCaster::_axes;
@@ -32,7 +33,10 @@ RayCaster2D::RayCaster2D() {
     /// axis
     m_functionsX[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastXGeneric(P, length, shape, t); };
 	m_functionsY[std::type_index(typeid(PolyLine))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastYGeneric(P, length, shape, t); };
-//    m_functionAxisMap[std::type_index(typeid(ConvexPoly))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
+    m_functionsX[std::type_index(typeid(Polygon))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastXGeneric(P, length, shape, t); };
+    m_functionsY[std::type_index(typeid(Polygon))] = [&] (const glm::vec3& P, float length, const Shape* shape, const glm::mat4& t) { return rayCastYGeneric(P, length, shape, t); };
+
+	//    m_functionAxisMap[std::type_index(typeid(ConvexPoly))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
 //    	return rayCastAxid2DGeneric(P, d, length, aabb, t);
 //	};
 //	m_functionAxisMap[std::type_index(typeid(Rect))] = [&] (const glm::vec3 &P, Direction d, float length, const Shape * aabb, const glm::mat4 &t) {
