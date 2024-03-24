@@ -11,7 +11,7 @@ cheese_taken=0
 walnut_opened = 0
 goat_follow=1
 
-inventory = {'carrot'}
+inventory = set()
 collected = set()
 
 

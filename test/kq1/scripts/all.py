@@ -15,8 +15,11 @@ def interpret(s):
         return globals()[s[0]](*s[1:])
     return s
 
-def rand(*args):
+def rand(*args, **kwargs):
     return random.choice(args)
+
+def cond(*args, **kwargs):
+    return args[1] if eval(args[0]) else args[2]
 
 
 def restart_room():
@@ -56,20 +59,13 @@ def zfunc_default (x, y):
         #print('no wall',z)
     return z
 
-def look(item):
-    if not item:
-        msg(id = 95)
-    elif item in game_state.inventory:
+def look(*args):
+    if args[0] in game_state.inventory:
         s = monkey.Script()
-        show_item_detail(s, item)
+        show_item_detail(s, args[0])
         monkey.play(s)
     else:
-        id = 92
-        if item:
-            desc = settings.items['items'][item].get('desc')
-            if desc:
-                id = interpret(desc)
-        msg(id=id)
+        msg(id=args[1])
 
 
 def open(item):
@@ -82,32 +78,30 @@ def close(item):
     s.add(monkey.actions.Animate(id=game_state.nodes[item], anim='open', sync=True, backwards=True))
     monkey.play(s)
 
-def pickup(item):
-    if not item:
-        msg(id=95)
-    elif item in game_state.inventory:
+def pickup(item, line):
+    if item in game_state.inventory:
         # trying to pickup something you already have
         msg(id=26)
     else:
         # check bounds
         item_desc = settings.items['items'][item]
-        can_pick_up = item_desc.get('can_pick_up', False)
-        line = settings.items['items'][item].get('pick_up', 96)
-        if not can_pick_up:
-            msg(id=line, x=item)
-        else:
-            if is_within_bounds(item):
-                # check if item can be picked up
-                if can_pick_up:
-                    game_state.inventory.add(item)
-                    game_state.collected.add(item)
-                    if item in game_state.nodes:
-                        monkey.get_node(game_state.nodes[item]).remove()
-                    settings.items['items'][item]['room'] = None
-                    msg(id = line)
-            else:
-                # outside bounds
-                msg(id=93, x=item)
+        #can_pick_up = item_desc.get('can_pick_up', False)
+        #line = settings.items['items'][item].get('pick_up', 96)
+        #if not can_pick_up:
+        #    msg(id=line, x=item)
+        #else:
+        if is_within_bounds(item):
+            # check if item can be picked up
+            # if can_pick_up:
+            game_state.inventory.add(item)
+            game_state.collected.add(item)
+            if item in game_state.nodes:
+                monkey.get_node(game_state.nodes[item]).remove()
+                settings.items['items'][item]['room'] = None
+                msg(id = line)
+            #else:
+            # outside bounds
+            #    msg(id=93, x=item)
 
 
 
@@ -125,29 +119,29 @@ def message(script, id, **kwargs):
     wk.add(settings.Keys.enter, func=rm_node(msg.id))
     script.add(wk)
 
-def push_rock(item):
+def push_rock():
     if game_state.rock_moved:
         msg(id=17)
     else:
-        if is_within_bounds(item):
+        if is_within_bounds('rock'):
             game_state.rock_moved = True
             script = monkey.Script()
             message(script, 13)
             script.add(monkey.actions.MoveBy(id=game_state.nodes['rock'], delta=(0,-12), time=1))
-            move_item_by(item, (0, -12, 0))
+            move_item_by('rock', (0, -12, 0))
             monkey.play(script)
         else:
-            msg(id=93, x=item)
+            msg(id=93, x='rock')
 
 def show_item_detail(script, item_id):
     import factory
-    idesc = settings.items['items'][item_id]
+    idesc = settings.items['items'][item_id]['inventory']
     script.add(monkey.actions.CallFunc(function=set_main_node_active(monkey.NodeState.PAUSED)))
     node = monkey.Node()
     node.add(make_text(idesc.get('desc_inventory', idesc['desc'])))
     node.add(factory.make_solid_rect(136, 0, 42, 47, color='000000', z=2))
     node.add(factory.make_outline2_rect(136, 0, 42, 47, color='AA0000',z=2))
-    spr = monkey.get_sprite(settings.items['items'][item_id]['img_inventory'])
+    spr = monkey.get_sprite(idesc['image'])
     spr.set_position(157, 22, 3)
     node.add(spr)
     script.add(monkey.actions.Add(id=game_state.Ids.text_node, node=node))
@@ -191,10 +185,12 @@ def open_door_witch_house(item):
     s.add(monkey.actions.CallFunc(_goto_room('witchous', [100,5], 's')))
     monkey.play(s)
 
-def climb_oak(item):
+def change_room(*args):
     script = monkey.Script()
-    message(script, 28)
-    script.add(monkey.actions.CallFunc(_goto_room('treetop', [80,3], 'n')))
+    if len(args) > 3:
+        message(script, args[3])
+    #script.add(monkey.actions.CallFunc(_goto_room('treetop', [80,3], 'n')))
+    script.add(monkey.actions.CallFunc(_goto_room(args[0], args[1], args[2])))
     monkey.play(script)
 
 def _wolf():

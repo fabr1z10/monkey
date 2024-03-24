@@ -7,18 +7,21 @@ map:
   carrot_patch: [garden_w, garden_e]
   carrot: [carrot, carrot_e]
   house: [witch_house]
-  door: [door_witch_house]
+  door: [door_witch_house, door_castle]
   castle: [castle_west, castle_east]
 items:
   tree:
     room: start
-    desc: ['rand', 3, 7]
+    actions:
+      look: [msg, [rand, 3, 7]]
   castle_east:
     room: start
-    desc: 4
+    actions:
+      look: [msg, 4]
   flags:
     room: start
-    desc: 5
+    actions:
+      look: [msg, 5]
   bowl:
     name: 53
     img_inventory: 'sprites/item_bowl'
@@ -78,8 +81,10 @@ items:
     bounds_relative: True
     auto_depth: True
     can_pick_up: False
-    desc: 15
-    pick_up: 91
+    actions:
+      look: [msg, 15]
+      push: [push_rock]
+      pickup: [msg, 91]
   dagger:
     name: 22
     room: rock
@@ -88,10 +93,12 @@ items:
     bounds: [-20, -10, 20, -10, 20, 10, -20,10]
     bounds_relative: True
     can_pick_up: True
-    desc: 103
-    desc_inventory: 24
-    pick_up: 25
-    img_inventory: 'sprites/item_dagger'
+    actions:
+      look: [look, dagger, 103]
+      pickup: [pickup, dagger, 25]
+    inventory:
+      image: 'sprites/item_dagger'
+      desc: 24
     visible: 'game_state.rock_moved == 1'
   carrot:
     name: 35
@@ -150,7 +157,9 @@ items:
     pos: [ 254, 45, 0 ]
     bounds: [ -20, -10, 20, -10, 20, 10, -20, 10 ]
     visible: 'game_state.rock_moved == 1'
-    desc: ['if', '"dagger" in game_state.collected', 104, 14]
+    actions:
+      look: [msg, [cond, '"dagger" in game_state.collected', 104, 14]]
+
   fence_garden_w:
     room: gardenw
     desc: 30
@@ -194,19 +203,24 @@ items:
     desc: 11
   oak:
     room: goldegg
-    desc: 18
+    actions:
+      look: [msg, 18]
+      climb: [change_room, 'treetop', [80, 3], 'n', 28]
   egg:
     room: treetop
     type: bg
     batch: 'treetop'
     quad: [1,167,28,17]
     pos: [138,81,0]
-    desc: 101
-    desc_inventory: 29
     can_pick_up: True
-    pick_up: 102
     name: 23
-    img_inventory: 'sprites/item_egg'
+    inventory:
+      image: 'sprites/item_egg'
+      desc: 29
+    actions:
+      look: [look, egg, 101]
+      pickup: [pickup, egg, 102]
+
 
 
 

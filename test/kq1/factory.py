@@ -8,7 +8,7 @@ import engine
 
 link_aabb = {
     'w': [0, 5, 0, 166],
-    'e': [315, 316, 0, 166],
+    'e': [311, 316, 0, 166],
     's': [0, 316, 0, 1],
     'n': [0, 316, 120, 121]
 }
@@ -170,7 +170,7 @@ def link(room, dir):
         pos = pos_target
         on_enter_func = 'goto_room'
     else:
-        pos = [2 if dir == 'e' else 314 if dir == 'w' else 0, 2 if dir == 'n' else 118 if dir == 's' else 0]
+        pos = [5 if dir == 'e' else 310 if dir == 'w' else 0, 2 if dir == 'n' else 118 if dir == 's' else 0]
         on_enter_func = 'goto_room_y' if dir == 'e' or dir == 'w' else 'goto_room_x'
     h.user_data = {
         'on_enter': [on_enter_func, room_target, pos, dir]

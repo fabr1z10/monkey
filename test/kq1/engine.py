@@ -1,6 +1,7 @@
 import scripts
 import settings
 import game_state
+import random
 #from scripts.utils import
 
 phrasal_verbs = {
@@ -13,6 +14,15 @@ phrasal_verbs = {
 verb_map = {
     'get': 'pickup'
 }
+
+def read(value):
+    if isinstance(value, list) and value and isinstance(value[0], str):
+        func = getattr(scripts, value[0])
+        if func:
+            largs = [read(x) for x in value[1:]]
+            return func(*largs)
+    else:
+        return value
 
 def is_valid_item(item):
     # first map the item name into item_id
@@ -69,17 +79,35 @@ def process_action(a):
 
     f = None
 
-    if action:
-        f = getattr(scripts, action, None)
-        if f is None:
-            f = getattr(scripts, verb, None)
-        if f:
-            f(item_id_1)
+    key = verb
+    if item_id_1:
+        print(' -- check item:', item_id_1, ', key:',key)
+        cc = settings.items['items'][item_id_1].get('actions', None)
+        if cc:
+            cc = cc.get(key, None)
+            if cc:
+                read(cc)
+            # func = getattr(scripts, cc[0])
+            # if func:
+            #     largs = [read(x) for x in cc[1:]]
+            #     func(*largs)
+            # else:
+            #     print('function:',func,'not found!')
+            #     exit(1)
         else:
-            # check if I have a custom msg
-            if item_id_1 and not item_id_2:
-                msg = settings.items['items'][item_id_1].get('msg')
-                if msg and verb in msg:
-                    scripts.msg(scripts.utils.interpret(msg[verb]))
+            print(' -- action: <',key,'> not found for',item_id_1)
+
+    # if action:
+    #     f = getattr(scripts, action, None)
+    #     if f is None:
+    #         f = getattr(scripts, verb, None)
+    #     if f:
+    #         f(item_id_1)
+    #     else:
+    #         # check if I have a custom msg
+    #         if item_id_1 and not item_id_2:
+    #             msg = settings.items['items'][item_id_1].get('msg')
+    #             if msg and verb in msg:
+    #                 scripts.msg(scripts.utils.interpret(msg[verb]))
 
 
