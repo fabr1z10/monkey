@@ -7,8 +7,16 @@ import shapely
 from . import castle
 
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
-    move_item_by, _goto_room,interpret, get_item
+    move_item_by, _goto_room, get_item
 
+
+def interpret(s):
+    if isinstance(s, list):
+        return globals()[s[0]](*s[1:])
+    return s
+
+def rand(*args):
+    return random.choice(args)
 
 
 def restart_room():
@@ -396,11 +404,11 @@ def show_carrot(item):
     #a.addSprite(monkey.models.getSprite('sprites/goat'))
     #player.set_model(a, batch='sprites')
 
-def drown(player, other):
-    _drown(player, player.x, 4)
+def drown(player, other, x, y):
+    _drown(player, x, y)
 
-def drown2(player, other):
-    _drown(player, 184, 34)
+def drownx(player, other, y):
+    _drown(player, player.x, y)
 
 def _drown(player, x, y):
     script = monkey.Script()

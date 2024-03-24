@@ -106,8 +106,3 @@ def _goto_room(room, pos, dir):
     return f
 
 
-def interpret(s):
-    if isinstance(s, list):
-        if s[0] == 'if':
-            return s[2] if eval(s[1]) else s[3]
-    return s

@@ -23,6 +23,7 @@ def is_valid_item(item):
             item_id = iid
             break
         desc = settings.items['items'].get(iid)
+        print('kollo',desc)
         if desc and desc['room'] == settings.room:
             # check disambiguity
             if 'disambigue' not in desc or eval(desc['disambigue']):
@@ -32,6 +33,7 @@ def is_valid_item(item):
 
 
 def process_action(a):
+    print('sucalo')
     b = a.lower().split()
     if not b:
         return
@@ -48,6 +50,7 @@ def process_action(a):
     item_id_1 = None
     item_id_2 = None
     if item1 and not item2:
+        print('check',item1)
         item_id_1 = is_valid_item(item1)
         if item_id_1:
             # the item is valid (either in inventory or in room)

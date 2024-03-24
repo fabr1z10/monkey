@@ -1,14 +1,24 @@
 map:
   rock: [rock]
   door: [door_castle]
-  tree: [oak]
+  tree: [oak, tree]
   fence: [fence_garden_w, fence_garden_e]
   garden: [garden_w, garden_e]
   carrot_patch: [garden_w, garden_e]
   carrot: [carrot, carrot_e]
   house: [witch_house]
   door: [door_witch_house]
+  castle: [castle_west, castle_east]
 items:
+  tree:
+    room: start
+    desc: ['rand', 3, 7]
+  castle_east:
+    room: start
+    desc: 4
+  flags:
+    room: start
+    desc: 5
   bowl:
     name: 53
     img_inventory: 'sprites/item_bowl'
@@ -154,7 +164,7 @@ items:
     name: 98
     room: castle
     desc: 8
-  castle:
+  castle_west:
     name: 97
     room: castle
     desc: 9

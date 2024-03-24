@@ -7,7 +7,7 @@ import engine
 
 
 link_aabb = {
-    'w': [0, 1, 0, 166],
+    'w': [0, 5, 0, 166],
     'e': [315, 316, 0, 166],
     's': [0, 316, 0, 1],
     'n': [0, 316, 120, 121]
@@ -369,7 +369,7 @@ def create_room(room):
             if item_type:
                 f = globals().get(item_type)
                 if f:
-                    node = f(desc, walkArea)
+                    node = f(desc)
                     game_node.add(node)
                     game_state.nodes[item] = node.id
 
