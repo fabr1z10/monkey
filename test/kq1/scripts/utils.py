@@ -6,6 +6,10 @@ import regex as re
 import shapely
 
 
+def addNode(node):
+    monkey.get_node(game_state.Ids.game_node).add(node)
+
+
 def get_item(id):
     return settings.items['items'].get(id)
 
@@ -61,7 +65,9 @@ def set_main_node_active(value):
 
 def rm_node(*args):
     def f():
+        print('sucalo bene ', args)
         for id in args:
+            print('removing')
             monkey.get_node(id).remove()
         set_main_node_active(monkey.NodeState.ACTIVE)()
     return f

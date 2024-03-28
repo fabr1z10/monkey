@@ -7,7 +7,7 @@ import shapely
 from . import castle
 
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
-    move_item_by, _goto_room, get_item
+    move_item_by, _goto_room, get_item, addNode
 
 
 def interpret(s):
@@ -25,7 +25,9 @@ def cond(*args, **kwargs):
 def restart_room():
     monkey.close_room()
 
-
+def func_follow_player():
+    player= monkey.get_node(game_state.Ids.player)
+    return (player.x, player.y)
 
 
 
@@ -54,9 +56,11 @@ def zfunc_default (x, y):
         zwall = monkey.get_node(game_state.wallz[iwall]['id']).z
         #print('under wall', iwall, 'corrected by', game_state.wallz[iwall]['z'] + 0.5, zwall)
         z += game_state.wallz[iwall]['z'] + 1.0
+        print('ADJUSTED BY: ',game_state.wallz[iwall])
     else:
         pass
         #print('no wall',z)
+
     return z
 
 def look(*args):
@@ -71,11 +75,13 @@ def look(*args):
 def open(item):
     s = monkey.Script()
     s.add(monkey.actions.Animate(id=game_state.nodes[item], anim='open', sync=True))
+    settings.items['items'][item]['open'] = 1
     monkey.play(s)
 
 def close(item):
     s = monkey.Script()
     s.add(monkey.actions.Animate(id=game_state.nodes[item], anim='open', sync=True, backwards=True))
+    settings.items['items'][item]['open'] = 0
     monkey.play(s)
 
 def pickup(item, line):
@@ -98,7 +104,7 @@ def pickup(item, line):
             if item in game_state.nodes:
                 monkey.get_node(game_state.nodes[item]).remove()
                 settings.items['items'][item]['room'] = None
-                msg(id = line)
+            msg(id = line)
             #else:
             # outside bounds
             #    msg(id=93, x=item)
@@ -110,6 +116,11 @@ def msg(id, **kwargs):
     message(script, id, **kwargs)
     monkey.play(script)
 
+def msgi(item, id, **kwargs):
+    script = monkey.Script()
+    eid = id if item in game_state.inventory else 68
+    message(script, eid, **kwargs)
+    monkey.play(script)
 
 def message(script, id, **kwargs):
     script.add(monkey.actions.CallFunc(function=set_main_node_active(monkey.NodeState.PAUSED)))
@@ -171,7 +182,7 @@ def goto_room_y(playee, other, room, pos, dir):
     settings.dir = dir
     monkey.close_room()
 
-def open_door_castle(item):
+def open_door_castle():
     s = monkey.Script()
     message(s, 100)
     print(game_state.nodes)
@@ -179,7 +190,7 @@ def open_door_castle(item):
     s.add(monkey.actions.CallFunc(_goto_room('incastl1', [158, 2, 0], 'n')))
     monkey.play(s)
 
-def open_door_witch_house(item):
+def open_door_witch_house():
     s = monkey.Script()
     s.add(monkey.actions.Animate(id=game_state.nodes['door'], anim='open', sync=True))
     s.add(monkey.actions.CallFunc(_goto_room('witchous', [100,5], 's')))
@@ -294,20 +305,29 @@ def goat_east(goat, a):
 def goat_west(goat, a):
     goat_move(goat, 0)
 
+def recompute_walkarea():
+    game_state.walkArea.recompute()
+
 def _gateMove(x, y, line):
     settings.items['items']['gate']['pos'][0] = 32 + x
     settings.items['items']['gate']['baseline'] =[30 + x,12,86+x,12]
     a = monkey.get_node(game_state.nodes['gate'])
+
     s = monkey.Script()
     message(s, id=line)
     s.add(monkey.actions.MoveBy(id=a.id, delta=(y, 0), time=1))
+    s.add(monkey.actions.CallFunc(recompute_walkarea))
     monkey.play(s)
 
-def open_gate(item):
-    _gateMove(60, 60, 106)
+def open_gate():
+    if game_state.gate_open == 0:
+        game_state.gate_open = 1
+        _gateMove(60, 60, 106)
 
-def close_gate(item):
-    _gateMove(0, -60, 107)
+def close_gate():
+    if game_state.gate_open == 1:
+        game_state.gate_open = 0
+        _gateMove(0, -60, 107)
 
 #lookin_stump = msg(1)
 
@@ -359,8 +379,9 @@ def setup3d():
     if game_state.goat_follow == 1:
         a = monkey.get_sprite('sprites/goat')
         p = monkey.get_node(game_state.Ids.player)
+        game_state.nodes['goat'] = a.id
         a.set_position(p.x, p.y, 0)
-        a.add_component(monkey.components.NPCSierraFollow(game_state.Ids.player, 50, 1, z_func=settings.z_func))
+        a.add_component(monkey.components.NPCSierraFollow(func_follow_player, 50, 1, z_func=settings.z_func))
         monkey.get_node(game_state.Ids.game_node).add(a)
 
 
@@ -372,11 +393,11 @@ def end_swim(player, other):
     player.set_model(monkey.models.getSprite('sprites/graham'), batch='sprites')
 
 
-def open_walnut(item):
+def open_walnut():
     msg(id=66)
     item = get_item('walnut')
-    item['desc_inventory'] = 67
-    item['img_inventory'] = 'sprites/item_gold_walnut'
+    item['inventory']['desc'] = 67
+    item['inventory']['image'] = 'sprites/item_gold_walnut'
     item['name'] = 69
 
 def show_carrot(item):
@@ -400,22 +421,51 @@ def show_carrot(item):
     #a.addSprite(monkey.models.getSprite('sprites/goat'))
     #player.set_model(a, batch='sprites')
 
-def drown(player, other, x, y):
+def drown(player, other, x, y, line):
     _drown(player, x, y)
 
-def drownx(player, other, y):
-    _drown(player, player.x, y)
+def drownx(player, other, y, line):
+    _drown(player, player.x, y, line)
 
-def _drown(player, x, y):
+def gigio():
+    return (random.randint(51,100), random.randint(100,114))
+
+def goat_attack():
+    s = monkey.Script()
+    message(s, 121)
+    s.add(monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['troll_block']).remove()))
+    s.add(monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['goat']).sendMessage(id="setFunc", func=None)))
+    monkey.play(s)
+
+
+def enter_troll_bridge(player, other):
+    other.remove()
+    troll = monkey.get_sprite('sprites/troll')
+    troll.set_position(75,100,0)
+    troll.add_component(monkey.components.WalkableCharacter(100, anim_dir=False, idle_anim='walk_s', walk_anim='walk_s'))
+
+    addNode(troll)
+
+    s = monkey.Script()
+    message(s, 119)
+    if game_state.goat_follow == 1:
+        s.add(monkey.actions.CallFunc(goat_attack))
+
+    s.add(monkey.actions.WalkDynamic(troll.id, gigio), loop=True)
+
+    monkey.play(s)
+
+    #msg(id=119)
+
+def _drown(player, x, y, line):
     script = monkey.Script()
     script.add(monkey.actions.SierraEnable(id=player.id, value=False))
     script.add(monkey.actions.Move(id=player.id, position=(x, y, 1-y/166), speed=0))
     script.add(monkey.actions.Animate(id=player.id, anim='drown'))
-    message(script, 1)
+    message(script, line)
     script.add(monkey.actions.Delay(time=2))
     message(script, 0)
     monkey.play(script)
 
 
-def read_note(item):
-    msg(id=84)
+

@@ -23,6 +23,12 @@ void Graph::rmNode(int id) {
     _nextNodeId=id;
 }
 
+void Graph::clear() {
+    _nodes.clear();
+    _edges.clear();
+    _nextNodeId = 0;
+}
+
 const GraphNode & Graph::getNode(int index) const {
     return _nodes.at(index);
 

@@ -189,6 +189,19 @@ sprites:
         frames:
           - tex: [293,475,48,36]
             anchor: [24, 18]
+  troll:
+    animations:
+      walk_s:
+        frames:
+          - tex: [261,1,20,31]
+            anchor: [10,0]
+          - tex: [282,1,22,31]
+            anchor: [8,0]
+          - tex: [261,1,20,31]
+            fliph: True
+            anchor: [10,0]
+          - tex: [305,1,22,31]
+            anchor: [14,0]
   goat:
     animations:
       idle_e:

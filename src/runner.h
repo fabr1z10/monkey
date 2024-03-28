@@ -6,7 +6,9 @@ class Runner {
 public:
     Runner() = default;
     virtual ~Runner() = default;
-    virtual void start() {}
+    virtual void start() {
+
+    }
     virtual void update(double) = 0;
     virtual std::type_index getType();
 };

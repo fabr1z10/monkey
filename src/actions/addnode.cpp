@@ -10,6 +10,7 @@ AddNode::AddNode(int id, std::shared_ptr<Node> node) : NodeAction(id), _nodeToAd
 void AddNode::start() {
 	NodeAction::start();
 	m_node->add(_nodeToAdd);
+	_nodeToAdd = nullptr;
 }
 
 int AddNode::process(double) {

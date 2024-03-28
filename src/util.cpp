@@ -34,6 +34,13 @@ float cross2d (glm::vec2 a, glm::vec2 b) {
     return a.x * b.y - a.y * b.x;
 }
 
+bool seg2segStrict(glm::vec2 A, glm::vec2 B , glm::vec2 C, glm::vec2 D) {
+    float t{0.f};
+    bool collide = seg2seg(A, B, C, D, t);
+    return collide && t > 0.f && t < 1.f;
+
+}
+
 bool seg2seg(glm::vec2 A, glm::vec2 B, glm::vec2 C, glm::vec2 D, float &t) {
     // eq for segment 1 is
     // Ax + t(Bx - Ax) = Cx + u(Dx - Cx)
@@ -51,7 +58,8 @@ bool seg2seg(glm::vec2 A, glm::vec2 B, glm::vec2 C, glm::vec2 D, float &t) {
     glm::vec2 CD = C - D;
     float den = cross2d(AB, CD);
     if (isZero(den)) {
-        // if den is zero -> AB || CD -> AB and CD are parallel
+        // if den is zero -> AB || CD -> AB and CD are parallel or collineare.
+        // IN both cases we treat this as no collision
         return false;
     }
     glm::vec2 AC = C - A;
@@ -86,9 +94,18 @@ bool pnpoly(const std::vector<glm::vec2>& points, glm::vec2 p) {
     bool c = false;
     int nvert = points.size();
     for (i = 0, j = nvert-1; i < nvert; j = i++) {
-        if ( ((points[i].y > p.y) != (points[j].y > p.y)) &&
-             (p.x <= (points[j].x-points[i].x) * (p.y-points[i].y) / (points[j].y-points[i].y) + points[i].x) )
-            c = !c;
+        if (points[i].y == p.y && points[j].y == p.y) {
+            continue;
+        }
+        if ( ((points[i].y > p.y) != (points[j].y > p.y))) {
+            float x =(points[j].x-points[i].x) * (p.y-points[i].y) / (points[j].y-points[i].y) + points[i].x;
+            if (x == p.x) {
+                return true;
+            }
+            if (p.x <= x) {
+                c = !c;
+            }
+        }
     }
     return c;
 }

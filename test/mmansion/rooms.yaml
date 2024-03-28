@@ -1,0 +1,41 @@
+pippo:
+  walkarea:
+    poly: [0,0,320,0,320,200,160,200,160,100,0,100]
+  items:
+    - type: bg
+      batch: "birdcave"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+test_hole:
+  walkarea:
+    poly: [1,1,319,0,319,199,0,199]
+    holes:
+      - poly: [80,90,240,90,240,110,80,110]
+  items:
+    - type: bg
+      batch: "birdcave"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+test_hole2:
+  walkarea:
+    poly: [1,1,319,0,319,199,0,199]
+    holes:
+      - poly: [0,90,200,90,200,110,0,110]
+  items:
+    - type: bg
+      batch: "birdcave"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+test_hole_dynamic:
+  walkarea:
+    poly: [1,1,319,0,319,199,0,199]
+  items:
+    - type: bg      # fence north
+      pos: [0,77,0]
+      wall:
+        polyline: [-1,7,14,7,54,12,90,15,124,16,164,14,200,0]
+        #polyline: [-1,0,100,0]
+ms:
+  walkarea:
+    poly: [1,1,319,0,319,199,0,199]
+

@@ -27,6 +27,7 @@ public:
 
     void rmNode(int id);
 
+    void clear();
 private:
     int _nextNodeId;
 

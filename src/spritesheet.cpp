@@ -159,28 +159,29 @@ std::shared_ptr<Sprite> SpriteSheet::getSprite(const std::string& id) {
 }
 
 std::shared_ptr<MultiSprite> SpriteSheet::getMulti(const std::string & id) {
-	auto cino = _multiNodes[id];
-	if (cino) {
-		std::cout << "multi model " << id << " found.\n";
-		auto model = std::make_shared<MultiSprite>();
-		for (const auto& sprite : cino["sprites"]) {
-			model->addSprite(_sprites.at(sprite.as<std::string>()));
-		}
-		for (const auto& anim : cino["animations"]) {
-			auto animId = anim.first.as<std::string>();
-			model->addAnimation(animId);
-			int spriteId{0};
-			for (const auto& b : anim.second) {
-			    auto subAnim = b["anim"].as<std::string>();
-                auto offset = b["pos"].as<glm::vec3>(glm::vec3(0.f));
-                model->setAnimationData(animId, spriteId, subAnim, offset);
-                spriteId++;
-			}
-		}
-		return model;
-	} else {
-		return nullptr;
-	}
+    return nullptr;
+//	auto cino = _multiNodes[id];
+//	if (cino) {
+//		std::cout << "multi model " << id << " found.\n";
+//		auto model = std::make_shared<MultiSprite>();
+//		for (const auto& sprite : cino["sprites"]) {
+//			model->addSprite(_sprites.at(sprite.as<std::string>()));
+//		}
+//		for (const auto& anim : cino["animations"]) {
+//			auto animId = anim.first.as<std::string>();
+//			model->addAnimation(animId);
+//			int spriteId{0};
+//			for (const auto& b : anim.second) {
+//			    auto subAnim = b["anim"].as<std::string>();
+//                auto offset = b["pos"].as<glm::vec3>(glm::vec3(0.f));
+//                model->setAnimationData(animId, spriteId, subAnim, offset);
+//                spriteId++;
+//			}
+//		}
+//		return model;
+//	} else {
+//		return nullptr;
+//	}
 
 }
 

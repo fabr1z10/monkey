@@ -44,14 +44,44 @@ void MultiSpriteRenderer::start() {
 
 void MultiSpriteRenderer::update(double dt) {
     // simply update all renderers
-    for (const auto& renderer : _renderers) {
-        renderer->update(dt);
+    std::list<SpriteInfo> l;
+    l.push_back({glm::vec2(0.f), -1, 0,0});
+    auto f = m_node->getFlipX() ? -1.f : 1.f;
+    while (!l.empty()) {
+        auto info = l.front();
+        l.pop_front();
+        glm::vec2 offset(0.f);
+        if (info.parent != -1) {
+            const auto& frame = _renderers[info.parent]->getFrameInfo();
+            if (!frame.links.empty() && info.link < frame.links.size()) {
+                offset = (frame.links[info.link] - frame.anchor);
+                offset.x *= f;
+            }
+        }
+        glm::vec2 p = info.offset + offset;
+        glm::mat4 t = glm::translate(glm::vec3(p, info.z));
+        _renderers[info.spriteIndex]->setTransform(t);
+        _renderers[info.spriteIndex]->update(dt);
+        for (const auto& r : _multi->getNext(info.spriteIndex)) {
+            l.push_back({p, info.spriteIndex, r.link, r.next, r.z});
+        }
     }
+
 }
 
 
-void MultiSprite::addSprite(const std::shared_ptr<Sprite> sprite) {
+void MultiSprite::addSprite(std::shared_ptr<Sprite> sprite, const pybind11::kwargs& args) {
+    _next.emplace_back();
+    int parent = py_get_dict<int>(args, "parent", -1);
+
+    if (parent != -1) {
+        int link = py_get_dict<int>(args, "link");
+        auto z = py_get_dict<float>(args, "z", 0.f);
+        _next[parent].push_back(SubSpriteInfo(_sprites.size(), link, z));
+    }
+
     _sprites.push_back(sprite);
+
 }
 
 

@@ -3,8 +3,12 @@ pippo:
 birdcave:
   batches:
     - "birdcave"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 160, 0, 160]
   south: goatpene
   west: rushes
+  north: trunkbig
+  east: rushes
   items:
     - type: bg
       batch: "birdcave"
@@ -13,6 +17,8 @@ birdcave:
 bowl:
   batches:
     - "bowl"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 121, 0, 121]
   east: rivtrees
   north: pebbles
   west: walnut
@@ -26,6 +32,18 @@ bowl:
   scripts:
     look_bowl: ['look_inventory_item', 'bowl', 51, 0]
     get_bowl: ['pickup', 'bowl', 52, 26]
+bridge:
+  batches:
+    - "bridge"
+  walkarea:
+    poly: [ 0, 0, 316, 0, 316, 160, 0, 160 ]
+  north: lake2
+  items:
+    - type: bg
+      batch: "bridge"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+
 castle:
   batches:
     - "castle"
@@ -82,12 +100,44 @@ cliff:
       batch: "cliff"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+clover:
+  batches:
+    - "clover"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
+  north: troll
+  south: fairy
+  west: cliff
+  east: rushes
+  items:
+    - type: bg
+      batch: "clover"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # left tree
+      batch: "clover"
+      auto_depth: true
+      pos: [0,47,0]
+      quad: [2,167,80,119]
+    - type: bg      # right tree
+      batch: "clover"
+      auto_depth: true
+      pos: [148,63,0]
+      quad: [92,169,116,103]
+    - type: bg      # bush
+      batch: "clover"
+      auto_depth: true
+      pos: [86,103,0]
+      quad: [2,290,54,16]
 doorclou:
   batches:
     - "doorclou"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   north: walnut
   south: goldegg
   east: elf
+  west: lake3
   items:
     - type: bg
       batch: "doorclou"
@@ -108,8 +158,12 @@ elf:
 fairy:
   batches:
     - "fairy"
+  walkarea:
+    poly: [0,0,316,0,316,166,0,166]
+  north: clover
   west: gardene
   east: goatpenw
+  south: lake2
   items:
     - type: bg
       batch: "fairy"
@@ -119,8 +173,11 @@ fairy:
 flowrbed:
   batches:
     - "flowrbed"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 121, 0, 121]
   south: trunkbig
   north: lake
+  east: swamp
   items:
     - type: bg
       batch: "flowrbed"
@@ -129,6 +186,8 @@ flowrbed:
 forkrive:
   batches:
     - "forkrive"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   west: pebbles
   south: rivtrees
   items:
@@ -193,7 +252,9 @@ gardenw:
       auto_depth: true
       pos: [44,35, 0]
       quad: [1,167,139,89]
-      baseline: [62,35,183,107]
+      wall:
+        polyline: [0,0,18,0,139,72]
+        baseline: True
     - type: bg      # tree
       batch: "gardenw"
       auto_depth: true
@@ -204,6 +265,9 @@ gardenw:
       auto_depth: true
       pos: [182,107,0]
       quad: [144,217,134,17]
+      wall:
+        polyline: [0,0,134,0]
+        baseline: True
     - type: bg      # tree
       batch: "gardenw"
       pos: [0,92,1]
@@ -216,10 +280,12 @@ gardenw:
 goatpene:
   batches:
     - "goatpene"
-  walls:
-    - [0,12,30,12]
-    - [86,12,142,12,178,37,202,52]
-    - [202,52,200,77]
+  walkarea:
+    poly: [0,0,316,0,316,166,0,166]
+  #walls:
+  #  - [0,12,30,12]
+  #  - [86,12,142,12,178,37,202,52]
+  #  - [202,52,200,77]
   #  - [0,10,30,10]
   #  - [86,10,144,12,178,37,202,52]
 
@@ -231,26 +297,37 @@ goatpene:
     - type: bg      # fence south
       batch: "goatpene"
       pos: [0,12,0]
+      auto_depth: True
       quad: [1,167,204,65]
-      baseline: [0,12,142,12,178,37,202,52]
-      solid: False
+    - type: bg
+      wall:
+        polyline: [-1,12,32,12]
+    - type: bg
+      wall:
+        polyline: [86,12,146,12,178,37,204,52]
+        baseline: True
+    - type: bg
+      wall:
+        polyline: [200,77,204,52]
     - type: bg      # fence north
       batch: "goatpene"
       pos: [0,77,0]
       quad: [2, 293, 202, 37]
-      baseline: [0,84,14,84,54,89,90,92,124,93,164,91,200,77]
+      wall:
+        polyline: [-1,7,14,7,54,12,90,15,124,16,164,14,200,0]
+        baseline: True
     - type: bg
       quad: [207,266,108,64]
       pos: [78,102,0]
       auto_depth: True
       batch: "goatpene"
-      wall: [118,102,136,102,136,108,118,108,118,102]
+#      wall: [118,102,136,102,136,108,118,108,118,102]
     - type: bg
       quad: [263,167,52,78]
       pos: [16,88,0]
       auto_depth: True
       batch: "goatpene"
-      wall: [0,91,68,91]
+
     - type: bg
       quad: [73,241,44,26]
       pos: [110,67,0]
@@ -266,7 +343,7 @@ goatpene:
       pos: [210,97,0]
       auto_depth: True
       batch: "goatpene"
-      wall: [210,97,270,97,270,105,210,105,210,97]
+#      wall: [210,97,270,97,270,105,210,105,210,97]
     - type: hotspot
       aabb: [0,1,0,166]
       mask: 4
@@ -275,11 +352,14 @@ goatpene:
   west: goatpenw
   south: stump
   north: birdcave
+  east: well
   on_start: create_goat_e
 goatpenw:
   batches:
     - "goatpenw"
   on_start: create_goat
+  walkarea:
+    poly: [0,0,316,0,316,166,0,166]
   items:
     - type: bg
       batch: "goatpenw"
@@ -309,13 +389,26 @@ goatpenw:
       batch: "goatpenw"
       pos: [78, 84, 0]
       quad: [1,293,238,37]
-      baseline: [78,84,114,91,150,99,200,99,249,98,300,88,316,88]
+      wall:
+        polyline: [0,0,36,7,72,15,122,15,171,14,222,4,238,4]
+        baseline: true
     - type: bg      # fence south
       batch: "goatpenw"
       pos: [78, 13, 0]
       quad: [2, 196, 238, 93]
-      baseline: [78,84,104,60,142,37,232,37,291,21,316,13]
-
+      wall:
+        polyline: [0,71,26,47,64,24,155,24,213,8,238,0]
+        baseline: true
+    - type: bg
+      quad: [156,172,36,20]
+      pos: [154,96,0]
+      auto_depth: True
+      batch: "goatpenw"
+    - type: bg
+      quad: [118,167,32,24]
+      pos: [148,69,0]
+      auto_depth: True
+      batch: "goatpenw"
     - type: hotspot
       aabb: [315,316,0,166]
       mask: 4
@@ -323,6 +416,8 @@ goatpenw:
       on_enter: ['goat_east']
   west: fairy
   east: goatpene
+  north: rushes
+  south: rivinlak
 goldegg:
   batches:
     - "goldegg"
@@ -348,6 +443,8 @@ goldegg:
 house:
   batches:
     - "house"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 160, 0, 160]
   south: swamp
   north: park
   items:
@@ -405,8 +502,18 @@ incastl2:
 lake:
   batches:
     - "lake"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 121, 0, 121]
+    holes:
+      - poly: [0,44,44,33,73,33,112,26,125,16,171,9,215,17,248,57,238,89,196,107,196,113,201,120,189,127,0,127,0,44]
+        solid: False
+        on_enter: ['start_swim']
+        on_leave: ['end_swim']
+
   north: stump
   south: flowrbed
+  east: house
+
   items:
     - type: bg
       batch: "lake"
@@ -437,16 +544,19 @@ lake:
       auto_depth: true
       pos: [214, 67, 0]
       quad: [149,210,18,14]
-    - type: hotspot
-      poly: [0,44,44,33,73,33,112,26,125,16,171,9,215,17,248,57,238,89,196,107,196,113,201,120,189,127,0,127,0,44]
-      on_enter: ['start_swim']
-      on_leave: ['end_swim']
+    #- type: hotspot
+    #  poly: [0,44,44,33,73,33,112,26,125,16,171,9,215,17,248,57,238,89,196,107,196,113,201,120,189,127,0,127,0,44]
+    #  on_enter: ['start_swim']
+    #  on_leave: ['end_swim']
 lake2:
   batches:
     - "lake2"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   north: fairy
   west: start
   east: rivinlak
+  south: bridge
   items:
     - type: bg
       batch: "lake2"
@@ -464,6 +574,8 @@ lake3:
     - "lake3"
   east: doorclou
   north: sorcerer
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   items:
     - type: bg
       batch: "lake3"
@@ -476,6 +588,8 @@ lake3:
 largrock:
   batches:
     - "largrock"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   south: well
   north: witch
   items:
@@ -487,6 +601,8 @@ largrock:
 ogre:
   batches:
     - "ogre"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   east: southcas
   north: rock
   south: rockclou
@@ -500,6 +616,8 @@ ogre:
 park:
   batches:
     - "park"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   south: house
   north: well
   items:
@@ -510,12 +628,14 @@ park:
 pebbles:
   batches:
     - "pebbles"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   south: bowl
   north: southcas
   east: forkrive
   west: rockclou
-  walls:
-    - [66,86,138,86,138,91,66,91,66,86]
+  #walls:
+  #  - [66,86,138,86,138,91,66,91,66,86]
   items:
     - type: bg
       batch: "pebbles"
@@ -551,6 +671,8 @@ rivinlak:
 rivrbend:
   batches:
     - "rivrbend"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 121, 0, 121]
   east: trunkbig
   west: troll
   south: rushes
@@ -562,6 +684,8 @@ rivrbend:
 rivtrees:
   batches:
     - "rivtrees"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 121, 0, 121]
   east: troll
   north: forkrive
   west: bowl
@@ -621,6 +745,8 @@ rock:
 rockclou:
   batches:
     - "rockclou"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   north: ogre
   east: pebbles
   south: walnut
@@ -632,7 +758,10 @@ rockclou:
 rushes:
   batches:
     - "rushes"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   north: rivrbend
+  south: goatpenw
   items:
     - type: bg
       batch: "rushes"
@@ -642,6 +771,8 @@ rushes:
 sorcerer:
   batches:
     - "sorcerer"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   east: walnut
   south: lake3
   west: witch
@@ -653,6 +784,8 @@ sorcerer:
 southcas:
   batches:
     - "southcas"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   south: pebbles
   west: ogre
   items:
@@ -668,10 +801,11 @@ start:
     holes:
       - poly: [175,45,164,45,164,26,175,26,186,22,199,35,204,36]
         solid: False
-        on_enter: ['drown', 184, 34]
+        on_enter: ['drown', 184, 34, 1]
       - poly: [0,0,288,0,288,21,269,28,249,28,236,23,221,8,0,8]
         solid: False
-        on_enter: ['drownx', 3]
+        on_enter: ['drownx', 3, 1]
+
   batches:
     - "start"
   west: castle
@@ -706,6 +840,8 @@ start:
 stump:
   batches:
     - "stump"
+  walkarea:
+    poly: [0,0,316,0,316,166,0,166]
   items:
     - type: bg
       batch: "stump"
@@ -753,6 +889,8 @@ swamp:
     - "swamp"
   south: witch
   north: house
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 160, 0, 160]
   items:
     - type: bg
       batch: "swamp"
@@ -827,19 +965,38 @@ treetop:
 troll:
   batches:
     - "troll"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 94,138,94,138,75,131,75,100,100,88,114,61,114,51,100,23,75,20,75,20,94,0,94]
+#    holes:
+#      - poly: [ 138,75,154,78,186,79,201,81,224,79,246,81,270,78,287,81,316,79,316,92,138,92]
+#        solid: False
+#        on_enter: [ 'drownx', 84, 118 ]
+
   east: rivrbend
   west: rivtrees
+  south: clover
   items:
     - type: bg
       batch: "troll"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: hotspot
+      poly: [24,75,132,75,100,99,48,99]
+      on_enter: ['enter_troll_bridge']
+    - type: bg
+      tag: troll_block
+      wall:
+        polyline: [0,93,316,93]
+
 trunkbig:
   batches:
     - "trunkbig"
+  walkarea:
+    poly: [0, 0, 316, 0, 316, 121, 0, 121]
   north: flowrbed
   west: rivrbend
   south: birdcave
+  east: witch
   items:
     - type: bg
       batch: "trunkbig"
@@ -878,6 +1035,8 @@ trunkbig:
 walnut:
   batches:
     - "walnut"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   north: rockclou
   south: doorclou
   west: sorcerer
@@ -894,6 +1053,8 @@ walnut:
 well:
   batches:
     - "well"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
   south: park
   north: largrock
   west: goatpene
@@ -903,10 +1064,14 @@ well:
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
 witch:
-  walls:
-    - [0,64,28,64]
-    - [190,54,192,42]
-    - [16,57,10,64]
+  walkarea:
+    poly: [ 0,0,316,0,316,160,0,160,0,86,100,86,100,57,0,57]
+    holes:
+      - poly: [187,42,188,42,188,55,187,55]
+#  walls:
+#    - [0,64,28,64]
+#    - [190,54,192,42]
+#    - [16,57,10,64]
 #    - [42,16.9,85,16.9]
 #    - [182,57,154,88,0,88]
 #  walls_z:
@@ -920,6 +1085,7 @@ witch:
     room: swamp
     pos: [292,6]
   south: largrock
+  west: trunkbig
   items:
     - type: bg
       batch: "witch"
@@ -934,25 +1100,54 @@ witch:
       batch: "witch"
       pos: [14, 17, 0]
       quad: [2,215,72,50]
-      baseline: [16,57,42,17,86,18]
+      wall:
+        #polyline: [161,107,282,35]
+        polyline: [2,40,28,0,72,1]
+        baseline: True
+      #baseline: [16,57,42,17,86,18]
     - type: bg      # fence east
       batch: "witch"
       pos: [154, 23, 0]
       quad: [149,183,96,26]
-      auto_depth: True
-      baseline: [154,23,250,35]
+      wall:
+        polyline: [0,0,96,12]
+        baseline: True
     - type: bg      # fence east
       batch: "witch"
-      pos: [190, 38, 0.7711]
+      pos: [190, 38, 0]
       quad: [149,210,56,27]
-      auto_depth: True
-      baseline: [190,54,250,35.01]
+      wall:
+        polyline: [-36,16,0, 16, 60, -2.9]
+        baseline: True
+      #baseline: [190,54,250,35.01]
     - type: bg      # fence east
       batch: "witch"
       pos: [18,34,0]
       quad: [6,274,190,105]
+      wall:
+        polyline: [10,30,16,19,22,12,33,12,42,0,104,6,174,8]
+        baseline: True
+    - type: bg      # left tree
+      batch: 'witch'
+      pos: [0,62,0]
       auto_depth: True
-      baseline: [28,64,34,53,40,46,51,46,60,34,122,40,192,42]
+      quad: [275,167,38,104]
+    - type: bg      # right tree
+      batch: 'witch'
+      pos: [242,54,0]
+      auto_depth: True
+      quad: [237,275,74,110]
+    - type: bg      # right tree
+      batch: 'witch'
+      pos: [220,79,0]
+      auto_depth: True
+      quad: [4,385,62,87]
+    - type: bg      # right tree
+      batch: 'witch'
+      pos: [108,100,0]
+      auto_depth: True
+      quad: [74,391,78,64]
+      #      baseline: [28,64,34,53,40,46,51,46,60,34,122,40,192,42]
   scripts:
     #look_house: ['msg', {'id': 49}]
     look_door: ['msg',71]
@@ -963,11 +1158,13 @@ witch:
 witchous:
   batches:
     - "witchous"
-  walls:
-    - [78,2,0,2,0,12,16,30,36,30,59,61,47,61,58,78,193,78,196,74,205,74,206,78,289,78,316,53,316,2,226,2,209,52,202,52,215,2,120,2]
-    - [214,7,264,7,254,22,210,22]
-    - [217,31,287,31,272,46,215,46,217,31]
-  south: witch
+  walkarea:
+    poly: [0,2,78,2,78,0,120,0,120,2,316,2,316,52,288,78,203,78,203,75,196,75,196,78,52,78,52,66,66,66,35,29,16,29,0,12]
+  #walls:
+  #  - [78,2,0,2,0,12,16,30,36,30,59,61,47,61,58,78,193,78,196,74,205,74,206,78,289,78,316,53,316,2,226,2,209,52,202,52,215,2,120,2]
+  #  - [214,7,264,7,254,22,210,22]
+  #  - [217,31,287,31,272,46,215,46,217,31]
+  south: {'room': witch, 'pos': [105,36]}
 #  walls_z:
 #    - [202,51,216,0]
   items:
@@ -980,17 +1177,38 @@ witchous:
       auto_depth: true
       pos: [226,7,0]
       quad: [27,167,38,32]
+      wall:
+        poly: [0,0,38,0,29,12,0,12]
+    - type: bg      # table2
+      batch: "witchous"
+      auto_depth: true
+      pos: [104,29,0]
+      quad: [4,206,72,36]
+      wall:
+        poly: [0,0,72,0,72,18,0,18]
     - type: bg      # bed
       batch: "witchous"
       auto_depth: true
       pos: [226,31,0]
       quad: [70,168,60,32]
+      wall:
+        poly: [0,0,60,0,48,12,0,12]
     - type: bg      # wall
       batch: "witchous"
       pos: [202,0,1]
       quad: [291,167,24,133]
-      baseline: [202,51,216,0]
-
+      wall:
+        #polyline: [202,51,216,0]
+        polyline: [0,51,14,0]
+        baseline: True
+    - type: bg      # stove
+      batch: "witchous"
+      pos: [16,34,0]
+      quad: [85,204,44,53]
+      wall:
+        #polyline: [202,51,216,0]
+        polyline: [0,0,22,0,40,21]
+        baseline: True
 #    - type: bg      # tree
 #      batch: "witchous"
 #      tag: note

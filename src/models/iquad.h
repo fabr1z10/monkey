@@ -7,7 +7,6 @@
 #include "../components/batchrenderer.h"
 //#include "../vec.h"
 
-const int MAX_JOINTS = 2;
 
 // describe a single quad
 struct QuadInfo {

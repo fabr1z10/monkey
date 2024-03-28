@@ -15,16 +15,30 @@ public:
 
 
     MultiSprite() : Model() {}
-    void addSprite(const std::shared_ptr<Sprite> sprite);
+    void addSprite(std::shared_ptr<Sprite> sprite, const pybind11::kwargs& args);
     std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
     std::vector<std::shared_ptr<Sprite>>& getSprites();
     void addAnimation(const std::string& animId);
     void setAnimationData(const std::string& animId, int spriteId, const std::string& subAnim, glm::vec3 offset);
     std::vector<AnimationData>* getAnimationData(const std::string& id);
+    struct SubSpriteInfo {
+        SubSpriteInfo() : next(-1), link(0), z(0.f) {}
+        SubSpriteInfo(int next, int link, float z) : next(next), link(link), z(z) {}
+        int next;
+        int link;
+        float z;
+    };
+    const std::vector<SubSpriteInfo>& getNext(int) const;
+
 private:
     std::unordered_map<std::string, std::vector<AnimationData>> _animations;
     std::vector<std::shared_ptr<Sprite>> _sprites;
+    std::vector<std::vector<SubSpriteInfo>> _next;
+
 };
+inline const std::vector<MultiSprite::SubSpriteInfo> & MultiSprite::getNext(int i) const {
+    return _next[i];
+}
 
 class MultiSpriteRenderer : public BatchRenderer<QuadBatch> {
 public:
@@ -36,6 +50,13 @@ public:
     std::type_index getType() override;
 
 private:
+    struct SpriteInfo {
+        glm::vec2 offset;
+        int parent;
+        int link;
+        int spriteIndex;
+        float z;
+    };
     // compound animations
     std::vector<std::shared_ptr<SpriteRenderer>> _renderers;
     MultiSprite* _multi;

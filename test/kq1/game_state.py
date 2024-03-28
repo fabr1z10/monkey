@@ -9,7 +9,8 @@ bowl_taken = 0
 note_taken = 0
 cheese_taken=0
 walnut_opened = 0
-goat_follow=1
+goat_follow = 1
+gate_open = 0
 
 inventory = set()
 collected = set()

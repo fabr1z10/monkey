@@ -17,8 +17,11 @@ int WaitForKey::keyCallback(GLFWwindow * w, int key, int scancode, int action, i
 	if (_status != 1) return 0;
 	auto it = m_functions.find(KeyboardEvent{key, action, mods});
 	if (it != m_functions.end()) {
-		if (it->second()) it->second();
+		if (it->second) {
+		    it->second();
+		}
 		_complete = true;
+		_status = 0;
 		//Engine::instance().getRoom()->addCallback(it->second);
 
 	}

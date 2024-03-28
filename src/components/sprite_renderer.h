@@ -38,6 +38,9 @@ public:
     inline int getTickCount() const;
 	const Sprite* getSprite() const;
 	void setDirection(int);
+	const Frame& getFrameInfo() const {
+	    return m_sprite->getFrameInfo(m_animation, m_frame);
+	}
 private:
 	//QuadBatch* _spriteBatch;
 

@@ -44,6 +44,7 @@ private:
 	float _skinWidth;
 	std::string _idleAnimation;
 	std::string _walkAnimation;
+	float _speed;
 };
 
 class CustomSierra2DController : public Sierra2DController {

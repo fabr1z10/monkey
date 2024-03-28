@@ -62,6 +62,7 @@ inline float signf (float f) {
 float computeOverlap(glm::vec2& p1, glm::vec2& p2);
 
 bool seg2seg(glm::vec2 A, glm::vec2 B, glm::vec2 C, glm::vec2 D, float &t);
+bool seg2segStrict(glm::vec2 A, glm::vec2 B, glm::vec2 C, glm::vec2 D);
 
 int solve2x2(float a11, float a12, float b1, float a21, float a22, float b2, float& x, float& y);
 
@@ -72,3 +73,5 @@ bool pnpoly(const std::vector<glm::vec2>& points, glm::vec2 P);
 glm::vec2 rot90(glm::vec2 in, bool clockwise = false);
 
 std::vector<glm::vec2> DouglasPeucker(std::vector<glm::vec2>& pointList, float epsilon, int i0, int i1) ;
+
+

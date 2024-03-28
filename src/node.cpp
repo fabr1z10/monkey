@@ -56,9 +56,9 @@ Node::~Node() {
 //	return getComponent<Renderer>()->getAnimation();
 //}
 //
-//void Node::setAnimation(const std::string& animId) {
-//	getComponent<Renderer>()->setAnimation(animId);
-//}
+void Node::setAnimation(const std::string& animId) {
+	getComponent<Renderer>()->setAnimation(animId);
+}
 
 void Node::setParent(Node * node) {
     m_parent = node;
@@ -330,4 +330,10 @@ void Node::rotate(float angle, glm::vec3 axis) {
 	m_modelMatrix *= glm::rotate(glm::radians(angle), axis);
 	notifyMove();
 
+}
+
+void Node::sendMessage(const pybind11::kwargs & args) {
+    for (const auto& component : m_components) {
+        component.second->sendMessage(args);
+    }
 }

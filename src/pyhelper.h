@@ -41,6 +41,8 @@ T py_get(const pybind11::handle& obj, const std::string& key) {
 
 template <typename T>
 T py_get_dict(const pybind11::handle& obj, const std::string& key) {
+    auto ox = obj[key.c_str()];
+    auto value = py::cast<T>(ox);
     return obj[key.c_str()].cast<T>();
 }
 

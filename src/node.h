@@ -21,7 +21,7 @@ public:
     Node* getParent();
     void setParent(Node*);
     //std::string getAnimation() const;
-    //virtual void setAnimation(const std::string&);
+    virtual void setAnimation(const std::string&);
 
     virtual void add(std::shared_ptr<Node>);
     void moveTo(std::shared_ptr<Node> node);
@@ -60,7 +60,7 @@ public:
 	void movea(glm::vec3 delta);
 	std::shared_ptr<Model> getModel();
 	virtual void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());
-
+    virtual void sendMessage(const pybind11::kwargs&);
 
 	Bounds getBounds();
 //	std::string getState() const;

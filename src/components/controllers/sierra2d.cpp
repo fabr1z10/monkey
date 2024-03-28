@@ -25,6 +25,7 @@ PlayerSierra2DController::PlayerSierra2DController(const pybind11::kwargs &args)
 	_idleAnimation = py_get_dict<std::string>(args, "idle", "idle");
 	_walkAnimation = py_get_dict<std::string>(args, "walk", "walk");
 	_dir = py_get_dict<std::string>(args, "dir", "e");
+	_speed = py_get_dict<float>(args, "speed");
 }
 
 void PlayerSierra2DController::setAnim(const std::string &idle, const std::string &walk) {
@@ -105,8 +106,8 @@ void PlayerSierra2DController::update(double dt) {
 
 
 
-	float dx = (leftPressed || rightPressed ? 1.f : 0.f);
-	float dy = upPressed ? 1.f : (downPressed ? -1.f : 0.f);
+	float dx = (leftPressed || rightPressed ? 1.f : 0.f) * _speed * dt;
+	float dy = (upPressed ? 1.f : (downPressed ? -1.f : 0.f)) * _speed * dt;
 
 	m_node->setFlipX(_lookingLeft);
 	float dir_x = _lookingLeft ? -1.f : 1.f;

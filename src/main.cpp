@@ -99,6 +99,8 @@
 #include "models/multisprite.h"
 #include "runners/walkarea.h"
 #include "components/controllers/sierrafollow.h"
+#include "runners/mousemanager.h"
+#include "actions/walk.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -218,10 +220,12 @@ PYBIND11_MODULE(monkey, m) {
         .def("remove", &Node::remove)
         .def("clear", &Node::clearChildren)
         .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
+        .def("sendMessage", &Node::sendMessage)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
 		.def_property_readonly("z", &Node::getZ)
+        .def("setAnimation", &Node::setAnimation)
         .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("state", &Node::getState, &Node::setState)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData)
@@ -252,7 +256,7 @@ PYBIND11_MODULE(monkey, m) {
 //        .def("rotate", &Node::rotate)
 //        .def("set_palette", &Node::setPalette)
 //        .def_property_readonly("anim", &Node::getAnimation)
-//        .def("set_animation", &Node::setAnimation)
+
 //		.def("set_state", &Node::setState)
 //		.def_property_readonly("state", &Node::getState)
 //		.def_property_readonly("x", &Node::getX)
@@ -426,6 +430,9 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
         .def(py::init<>())
         .def("addEvent", &Clock::addEvent);
+    py::class_<MouseManager, Runner, std::shared_ptr<MouseManager>>(m, "MouseManager")
+        .def("setFunc", &MouseManager::setDefaultCallback)
+        .def(py::init<>());
 
 //	py::class_<Lighting, Runner, std::shared_ptr<Lighting>>(m, "Lighting")
 //		.def(py::init<>())
@@ -469,6 +476,10 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<int, std::shared_ptr<Node>>(), "id"_a, "node"_a);
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "Remove")
 		.def(py::init<int>(), "id"_a);
+    py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "Walk")
+        .def(py::init<int, glm::vec2>(), "id"_a, "target"_a);
+    py::class_<WalkDynamic, NodeAction, std::shared_ptr<WalkDynamic>>(ma, "WalkDynamic")
+        .def(py::init<int, pybind11::function>(), "id"_a, "func"_a);
 	py::class_<WaitForKey, Action, std::shared_ptr<WaitForKey>>(ma, "WaitForKey")
 		.def(py::init<>())
 		.def("add", &WaitForKey::add);
@@ -554,8 +565,10 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<NPCSierraController, Sierra2DController, std::shared_ptr<NPCSierraController>>(mc, "NPCSierraController")
         .def(py::init<int, float, float, float, py::kwargs&>());
-    py::class_<NPCSierraFollow, Sierra2DController, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
-        .def(py::init<int, float, float, py::kwargs&>());
+    py::class_<WalkableCharacter, Sierra2DController, std::shared_ptr<WalkableCharacter>>(mc, "WalkableCharacter")
+        .def(py::init<float, py::kwargs&>());
+    py::class_<NPCSierraFollow, WalkableCharacter, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
+        .def(py::init<pybind11::function, float, float, py::kwargs&>());
 
 	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")

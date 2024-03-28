@@ -4,10 +4,12 @@
 #include <iostream>
 #include "../util.h"
 #include "../shapes/polygon.h"
+#include "../shapes/polyline.h"
 
 // define a walkarea with a polygon
 WalkArea::WalkArea(std::vector<float> &p, float wallThickness) : Runner(), _wallThickness(wallThickness), _currentPoly(0) {
     _graph = std::make_unique<Graph>();
+    _adjust = 1.f;
 
     //addPolygon(p, false);
     _geometry.push_back(vecCvt(p));
@@ -28,7 +30,10 @@ int WalkArea::addNode(glm::vec2 P) {
     for (int i = 0; i < n; i++) {
         if (i == newNodeId) continue;
         const auto& node = _graph->getNode(i);
-        if (!intersectsGeometry(node.pos, P)) {
+        glm::vec2 midPoint = (node.pos + P) * 0.5f;
+
+
+        if (pointInWalkArea(midPoint) && !intersectsGeometry(node.pos, P)) {
             _graph->addEdge(newNodeId, i);
         }
     }
@@ -37,14 +42,53 @@ int WalkArea::addNode(glm::vec2 P) {
 }
 
 bool WalkArea::intersectsGeometry(glm::vec2 A, glm::vec2 B) {
-    float t{0.f};
+
     for (auto& w : _walls) {
-        if (seg2seg(A, B, w.p0, w.p1, t) && t > 0 && t < 1) {
+        if (seg2segStrict(A, B, w.p0, w.p1)) {
             return true;
         }
     }
     return false;
 
+}
+
+void WalkArea::processPolyline(const std::vector<Seg> &p, glm::vec2 origin) {
+
+    glm::vec2 previousNormal(0.f);
+    std::vector<glm::vec2> points;
+    std::vector<glm::vec2> normals;
+    std::vector<glm::vec2> above;
+    std::vector<glm::vec2> below;
+
+    points.push_back(p[0].P0 + origin);
+    normals.push_back(p[0].n);
+    for (size_t i = 0; i< p.size()-1; ++i) {
+        glm::vec2 n = (p[i].n + p[i+1].n) * 0.5f;
+        points.push_back(p[i].P1 + origin);
+        normals.push_back(n);
+
+    }
+    points.push_back(p.back().P1 + origin);
+    normals.push_back(p.back().n);
+
+    for (size_t i = 0; i < points.size(); ++i) {
+        below.push_back(points[i] - normals[i] * _wallThickness);
+        above.push_back(points[i] + normals[i] * _wallThickness);
+    }
+    below.insert(below.end(), above.rbegin(), above.rend());
+    processPoly(below, true);
+}
+
+bool WalkArea::pointInWalkArea(glm::vec2 P) {
+    if (!pnpoly(_walkArea, P)) {
+        return false;
+    }
+    for (const auto& hole : _holes) {
+        if (pnpoly(hole, P)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::vec2 origin) {
@@ -86,24 +130,33 @@ void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::ve
         _adjacentNodes.insert(std::make_pair(currentPointNodeId, originNodeId));
     }
     if (isHole) {
-        _holes.push_back(pp);
+        _holes.push_back(p);
     } else {
-        _walkArea = pp;
+        _walkArea = p;
     }
     _currentPoly++;
 }
 void WalkArea::recompute() {
 
+    _graph->clear();
     for (size_t i = 0; i < _geometry.size(); ++i) {
         processPoly(_geometry[i], i > 0);
     }
 
     for (const auto& n : _dynamicHoles) {
-        auto poly = std::dynamic_pointer_cast<Polygon>(n->getComponent<Collider>()->getShape());
-        if (poly != nullptr) {
-            auto outline = poly->getOutline();
+        auto shape = n->getComponent<Collider>()->getShape();
+        if (shape->getShapeType() == ShapeType::POLYGON) {
+            auto poly = std::dynamic_pointer_cast<Polygon>(shape);
+            if (poly != nullptr) {
+                auto outline = poly->getOutline();
+                auto pos = n->getWorldPosition();
+                processPoly(outline, true, glm::vec2(pos));
+            }
+        } else if (shape->getShapeType() == ShapeType::POLYLINE) {
+            auto poly = std::dynamic_pointer_cast<PolyLine>(shape);
+            auto* segs = poly->getSegments();
             auto pos = n->getWorldPosition();
-            processPoly(outline, true, glm::vec2(pos));
+            processPolyline(*segs, glm::vec2(pos));
         }
     }
     // add edges to graph
@@ -122,8 +175,9 @@ void WalkArea::recompute() {
                     continue;
                 }
 
-                if (seg2seg(ni.pos, nj.pos, w.p0, w.p1, t) && t > 0 && t < 1) {
+                if (seg2segStrict(ni.pos, nj.pos, w.p0, w.p1)) {
                     addEdge = false;
+                    break;
                 }
 
 

@@ -8,19 +8,16 @@
 #include "../batch/quadbatch.h"
 
 struct Frame {
-	Frame() : ticks(0), boxId(-1), tickMin(-1), maxTicks(0) {
-		for (int i = 0; i < MAX_JOINTS; ++i) {
-			joints[i] = glm::vec2(0.f, 0.f);
-		}
+	Frame() : ticks(0), boxId(-1), tickMin(-1), maxTicks(0), anchor(0.f) {
 	}
 	std::vector<QuadInfo> quads;
 	int ticks;
 	int tickMin;
 	int maxTicks;
 	int getTicks() const;
-
+    glm::vec2 anchor;
 	int boxId;
-	std::array<glm::vec2, MAX_JOINTS> joints;
+	std::vector<glm::vec2> links;
 };
 
 struct Animation {
@@ -101,6 +98,7 @@ private:
     std::unordered_map<std::pair<std::string, int>, std::vector<glm::vec2>> m_jointOverride;
 	std::vector<float> _boxData;
 	std::vector<std::pair<unsigned, unsigned>> _boxOffset;
+
 	unsigned long _maxBoxes;
 	Bounds _staticBounds;
 };

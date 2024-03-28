@@ -10,14 +10,14 @@ link_aabb = {
     'w': [0, 5, 0, 166],
     'e': [311, 316, 0, 166],
     's': [0, 316, 0, 1],
-    'n': [0, 316, 120, 121]
+    'n': [0, 316, 120, 125]
 }
 
 
 
 def graham(sprite, x, y, scale):
     b = monkey.get_sprite('sprites/' + sprite)
-    b.add_component(monkey.components.PlayerSierraController(half_width=2, z_func=settings.z_func, dir=settings.dir, skinWidth=1))
+    b.add_component(monkey.components.PlayerSierraController(half_width=2, speed=100,z_func=settings.z_func, dir=settings.dir, skinWidth=1))
     b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
     b.set_position(x, y, 0)
     b.scale=scale
@@ -67,16 +67,18 @@ def make_outline2_rect(x, y, w, h, color='FFFFFF', z=0):
 
 
 def bg(ciao):
-    a = monkey.models.Quad(ciao['batch'])
-    a.add(ciao['quad'])
-    auto_depth = ciao.get('auto_depth', False)
-    pos = ciao.get('pos', [0,0,0])
     n = monkey.Node()
-    n.set_model(a)
-    n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1-pos[1]/166.0 )
+    pos = ciao.get('pos', [0, 0, 0])
+    auto_depth = ciao.get('auto_depth', False)
+    n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1 - pos[1] / 166.0)
+    if 'batch' in ciao:
+        a = monkey.models.Quad(ciao['batch'])
+        a.add(ciao['quad'])
+        n.set_model(a)
 
-    #if auto_depth:
-    #    n.add_component(monkey.components.SierraController(z_func=settings.z_func))
+
+    if auto_depth:
+        n.add_component(monkey.components.SierraController(z_func=settings.z_func))
 
 
 

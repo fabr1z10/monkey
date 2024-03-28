@@ -98,16 +98,57 @@ void Camera::setBounds(float xMin, float xMax, float yMin, float yMax, float zMi
 
 }
 
+glm::vec2 Camera::getViewportCoordinates(float x, float y) {
+    auto vv = Engine::instance().getWindowViewport();
+
+    auto deviceSize = Engine::instance().getDeviceSize();
+    auto winSize = Engine::instance().getWindowSize();
+    float yf = winSize.y - y;
+    float x_vp = (x - vv.x) * (deviceSize.x / vv[2]);
+    float y_vp = (yf - vv.y) * (deviceSize.y / vv[3]);
+    return glm::vec2(x_vp, y_vp);
+}
+
 bool Camera::isInViewport(float x, float y) {
-    float winHeight = Engine::instance().getWindowSize().y;
-    float yf = winHeight - y;
-    if (x < _screenViewport[0] || x > _screenViewport[2]) {
-        return false;
-    }
-    if (yf < _screenViewport[1] || yf > _screenViewport[3]) {
-        return false;
-    }
+
+
+//    auto vv = Engine::instance().getWindowViewport();
+//
+//    auto deviceSize = Engine::instance().getDeviceSize();
+//    auto winSize = Engine::instance().getWindowSize();
+//    float yf = winSize.y - y;
+///*
+//    glm::mat4 vTransform(1.f);
+//    vTransform[0][0] = vv[2] / deviceSize.x;
+//    vTransform[1][1] = vv[3] / deviceSize.y;
+//    vTransform[0][3] = vv[0];
+//    vTransform[1][3] = vv[1];
+//*/
+//    float x_vp = (x - vv.x) * (deviceSize.x / vv[2]);
+//    float y_vp = (yf - vv.y) * (deviceSize.y / vv[3]);
+//    //std::cout << x_vp << " -- " << y_vp << "\n";
+    return (x >= _viewport.x && x <= _viewport.x + _viewport[2] &&
+        y >= _viewport.y && y <= _viewport.y + _viewport[3]);
+
+//    // transform viewport in real viewport
+//    glm::mat4 vTransform(1.f);
+//
+//    glm::vec2 vBottomLeft (vTransform * glm::vec4(_viewport.x, _viewport.y, 0.f, 1.f));
+//    glm::vec2 vSize (vTransform * glm::vec4(_viewport.z, _viewport.w, 0.f, 0.f));
+//
+//
+//
+//
+//    std::cout << " viewport (" << vBottomLeft.x << ", " << vBottomLeft.y << ", " << vSize.x << ", " << vSize.y << ")\n";
     return true;
+
+//    if (x < _screenViewport[0] || x > _screenViewport[2]) {
+//        return false;
+//    }
+//    if (yf < _screenViewport[1] || yf > _screenViewport[3]) {
+//        return false;
+//    }
+//    return true;
 
 }
 

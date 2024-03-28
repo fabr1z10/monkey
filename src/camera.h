@@ -19,6 +19,8 @@ public:
     const glm::mat4& getViewMatrix() const;
     const glm::mat4& getProjectionMatrix() const;
     bool isInViewport(float, float);
+    virtual glm::vec2 getWorldCooridnates(float x, float y) { return glm::vec2(0.f);}
+    static glm::vec2 getViewportCoordinates(float x, float y);
     virtual Bounds getViewingBounds() const = 0;
     //std::string getCameraName() const;
     glm::vec4 getViewport() const;
@@ -49,7 +51,7 @@ inline const glm::mat4 & Camera::getProjectionMatrix() const {
 class OrthoCamera : public Camera {
 public:
     OrthoCamera(float width, float height, const py::kwargs& kwargs);
-    glm::vec2 getWorldCooridnates(float x, float y);
+    glm::vec2 getWorldCooridnates(float x, float y) override;
 	Bounds getViewingBounds() const override;
 private:
     float _orthoWidth;

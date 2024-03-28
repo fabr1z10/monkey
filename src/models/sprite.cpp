@@ -137,10 +137,12 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
             desc.textureCoordinates[1] = (texc[0] + texc[2]) / texw;
             desc.textureCoordinates[2] = texc[1] / texh;
             desc.textureCoordinates[3] = (texc[1] + texc[3]) / texh;
+            auto anchor = el["anchor"].as<glm::vec2>(glm::vec2(0.f));
             if (desc.fliph) {
                 std::swap(desc.textureCoordinates[0], desc.textureCoordinates[1]);
+                anchor.x = texc[2] - anchor.x;
             }
-            auto anchor = el["anchor"].as<glm::vec2>(glm::vec2(0.f));
+            frameInfo.anchor = anchor;
 			desc.repeat = el["repeat"].as<glm::vec2>(glm::vec2(1.f, 1.f));
             desc.location = glm::vec3(-anchor.x, -anchor.y, 0.f);
             //desc.location = el["pos"]. py_get_dict<glm::vec3>(el, "pos", glm::vec3(0.f));
@@ -154,14 +156,12 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
             frameInfo.quads.push_back(desc);
             quadCurrentFrame++;
 			_quadCount = 1;
-            if (el["joints"]) {
-                int jointIndex {0};
-                for (auto joint : el["joints"]) {
-                    frameInfo.joints[jointIndex++] = joint.as<glm::vec2>();
-                    if (jointIndex >= MAX_JOINTS) break;
+            if (el["links"]) {
+                for (auto joint : el["links"]) {
+                    auto link = joint.as<glm::vec2>();
+                    if (desc.fliph) link.x = texc[2] - link.x;
+                    frameInfo.links.push_back(link);
                 }
-
-                //m_jointOverride[std::make_pair(animId, frameCount)] = py_get_dict<std::vector<glm::vec2>>(el, "joints");
             }
 
 			frameCount++;
@@ -311,7 +311,7 @@ std::shared_ptr<Shape> Sprite::getShape (const std::string& anim, int frame) con
 //}
 //
 glm::vec2 Sprite::getJoint(const std::string &anim, int frame, int joint) const {
-    return _animations.at(anim).frames[frame].joints[joint];
+    return _animations.at(anim).frames[frame].links[joint];
 //    auto it = m_jointOverride.find(std::make_pair(anim, frame));
 //    if (it == m_jointOverride.end()) {
 //        return m_joints[joint];
