@@ -137,30 +137,30 @@ void NPCSierraFollow::update(double dt) {
         _time = 0.0;
         recomputePath();
     }
-
+    WalkableCharacter::update(dt);
     //_delta = glm::vec2(0, 0);
-    _moving = false;
-    if (!_toGoPoints.empty() && _currentIndex < _toGoPoints.size()) {
-        _moving= true;
-        auto& step = _toGoPoints[_currentIndex];
-        auto length = _speed * dt;
-        _delta = step.direction * static_cast<float>(length);
-        _distanceCovered += length;
-        m_node->setFlipX(_delta.x < 0);
-        if (_distanceCovered >= step.length) {
-            m_node->setPosition(step.arrivalPoint.x, step.arrivalPoint.y, 0.f);
-            _currentIndex ++;
-            _distanceCovered =0.0;
-        } else {
-            m_node->move(glm::vec3(fabs(_delta.x), _delta.y, 0.0f));
-        }
-
-    }
-
-    animate();
-
-
-
-
-    Sierra2DController::update(dt);
+//    _moving = false;
+//    if (!_toGoPoints.empty() && _currentIndex < _toGoPoints.size()) {
+//        _moving= true;
+//        auto& step = _toGoPoints[_currentIndex];
+//        auto length = _speed * dt;
+//        _delta = step.direction * static_cast<float>(length);
+//        _distanceCovered += length;
+//        m_node->setFlipX(_delta.x < 0);
+//        if (_distanceCovered >= step.length) {
+//            m_node->setPosition(step.arrivalPoint.x, step.arrivalPoint.y, 0.f);
+//            _currentIndex ++;
+//            _distanceCovered =0.0;
+//        } else {
+//            m_node->move(glm::vec3(fabs(_delta.x), _delta.y, 0.0f));
+//        }
+//
+//    }
+//
+//    animate();
+//
+//
+//
+//
+//    Sierra2DController::update(dt);
 }

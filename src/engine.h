@@ -52,7 +52,7 @@ public:
     // node handling
     Node* getNode(int);
     std::unordered_set<Node*> getNodes(const std::string&);
-    void addNode(std::shared_ptr<Node>);
+    void addNode(Node*);
     void rmNode(Node*);
     void scheduleForRemoval(Node*);
     pybind11::object getConfig();

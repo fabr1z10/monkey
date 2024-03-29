@@ -30,6 +30,7 @@ Node* getNode(int id);
 //Camera* getCamera(int id);
 //
 int playScript(const std::shared_ptr<Script> s);
+int killScript(const std::string& scriptId);
 void closeRoom();
 
 

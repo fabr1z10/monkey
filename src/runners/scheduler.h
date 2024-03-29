@@ -90,11 +90,11 @@ public:
 	void update(double) override;
 //    void start() override;
 	long add(std::shared_ptr<Script>);
-	void kill(long);
+	void kill(const std::string& id);
 private:
 	std::list<std::shared_ptr<Script>> m_scripts;
 	//std::unordered_map<std::string, std::shared_ptr<Script>> m_tags;
-	std::unordered_map<long, std::shared_ptr<Script>> m_ids;
+	//std::unordered_map<long, std::shared_ptr<Script>> m_ids;
 	long _nextId;
 	std::vector<long> m_toErase;
 	std::unordered_map<std::string, std::list<std::shared_ptr<Script>>::iterator> m_scriptMap;

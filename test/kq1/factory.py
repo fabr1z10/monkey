@@ -359,7 +359,10 @@ def create_room(room):
             continue
         if f:
             node = f(item)
+            print(item)
+            print('suco',node.id)
             if 'tag' in item:
+                print('adding tag ',item['tag'], node.id)
                 game_state.nodes[item['tag']] = node.id
             game_node.add(node)
 

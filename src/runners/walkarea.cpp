@@ -139,6 +139,9 @@ void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::ve
 void WalkArea::recompute() {
 
     _graph->clear();
+    _walkArea.clear();
+    _holes.clear();
+    _walls.clear();
     for (size_t i = 0; i < _geometry.size(); ++i) {
         processPoly(_geometry[i], i > 0);
     }
@@ -225,6 +228,9 @@ void WalkArea::addPolygon(std::vector<float> &p, bool isHole) {
 
 void WalkArea::addDynamic(Node * n) {
     _dynamicHoles.push_back(n);
+    n->onRemove.reg([&] (Node* m) {
+        _dynamicHoles.erase(std::remove(_dynamicHoles.begin(),_dynamicHoles.end(), m));
+    });
 }
 
 void WalkArea::addPolyWall(std::vector<float> &points) {

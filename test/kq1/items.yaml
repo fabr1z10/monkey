@@ -157,6 +157,11 @@ items:
     actions:
       open: [open_gate]
       close: [close_gate]
+  gnome:
+    room: gnome
+    actions:
+      look: [msg, 125]
+      talk: [talk_man]
   tree:
     room: start
     actions:

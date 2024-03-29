@@ -410,14 +410,14 @@ void Engine::setActualDeviceViewport(glm::vec4 viewport) {
     //std::cout << m_actualDeviceViewport[2] << ", " << m_actualDeviceViewport[3] << "\n";
 }
 
-void Engine::addNode(std::shared_ptr<Node> node) {
-    m_allNodes[node->getId()] = node.get();
+void Engine::addNode(Node* node) {
+    m_allNodes[node->getId()] = node;
     auto label = node->getTag();
     if (!label.empty()) {
     	if (m_labeledNodes.count(label) == 0) {
     		m_labeledNodes[label] = std::unordered_set<Node*>();
     	}
-    	m_labeledNodes.at(label).insert(node.get());
+    	m_labeledNodes.at(label).insert(node);
     }
 }
 

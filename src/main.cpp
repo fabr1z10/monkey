@@ -161,6 +161,7 @@ PYBIND11_MODULE(monkey, m) {
 	m.def("close_room", &closeRoom);
 	m.def("getClock", &getClock, py::return_value_policy::reference);
     m.def("play", &playScript);
+    m.def("kill", &killScript);
 //	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 	m.def("engine", &getEngine, py::return_value_policy::reference, "Gets the engine");
 

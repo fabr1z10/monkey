@@ -1,6 +1,7 @@
 import scripts
 import settings
 import game_state
+
 import random
 #from scripts.utils import
 
@@ -41,9 +42,28 @@ def is_valid_item(item):
                     item_id = iid
     return item_id
 
+def guess_name(a):
+    b = a.lower().split()
+    if not b:
+        return
+
+    if a == settings.strings[127]:
+        scripts.msg(1)
+    else:
+        if game_state.guess_number == 0:
+            scripts.msg(128)
+        elif game_state.guess_number == 1:
+            scripts.msgs(129,130)
+        elif game_state.guess_number == 2:
+            scripts.last_wrong_guess()
+        game_state.guess_number+=1
 
 def process_action(a):
-    print('sucalo')
+    # this can be redirected if
+    if game_state.parser_override:
+        globals()[game_state.parser_override](a)
+        return
+
     b = a.lower().split()
     if not b:
         return
@@ -51,6 +71,7 @@ def process_action(a):
         if (b[0] + '_' + b[1]) in phrasal_verbs:
             b[1] = b[0] + b[1]
             b.pop(0)
+
     verb = b[0]
     item1 = b[1] if len(b) > 1 else None
     item2 = b[3] if len(b) > 3 else None

@@ -202,6 +202,26 @@ sprites:
             anchor: [10,0]
           - tex: [305,1,22,31]
             anchor: [14,0]
+  gnome:
+    animations:
+      walk:
+        frames:
+          - tex: [331,1,32,27]
+            anchor: [14,0]
+          - tex: [365,1,30,27]
+            anchor: [14,0]
+          - tex: [331,30,32,27]
+            anchor: [14,0]
+          - tex: [365,31,28,27]
+            anchor: [12,0]
+          - tex: [331,58,24,27]
+            anchor: [10,0]
+          - tex: [364,60,26,27]
+            anchor: [12,0]
+          - tex: [331,58,24,27]
+            anchor: [10,0]
+          - tex: [331,87,28,27]
+            anchor: [12,0]
   goat:
     animations:
       idle_e:

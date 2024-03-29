@@ -9,6 +9,8 @@
 Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), _state(NodeState::ACTIVE),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
     m_model(nullptr), _scale(1.0f) {
+
+    Engine::instance().addNode(this);
 }
 
 Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nullptr) {
@@ -46,6 +48,7 @@ void Node::setTag(const std::string& tag) {
 
 Node::~Node() {
 
+    onRemove.fire(this);
     m_components.clear();
     m_children.clear();
     Engine::instance().rmNode(this);
@@ -70,7 +73,7 @@ void Node::add(std::shared_ptr<Node> node) {
     node->setParent(this);
 
     auto& engine = Engine::instance();
-    engine.addNode(node);
+    //engine.addNode(node);
     // call start if engine is running (node added on the fly)
     if (engine.isRunning()) {
         node->startRecursive();

@@ -14,7 +14,7 @@
 
 Room::Room() : m_mainCamera(nullptr), m_clearColor(0.f, 0.f, 0.f, 255.f) {
     m_root = std::make_shared<Node>();
-    Engine::instance().addNode(m_root);
+    //Engine::instance().addNode(m_root);
 
 	//addLinesBatch();
 

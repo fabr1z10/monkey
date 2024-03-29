@@ -199,7 +199,7 @@ void Scheduler::update(double dt) {
 }
 
 long Scheduler::add(std::shared_ptr<Script> s) {
-	m_ids[_nextId] = s;
+	//m_ids[_nextId] = s;
 	m_scripts.push_back(s);
 	auto sid = s->getId();
 	if (!sid.empty()) {
@@ -214,7 +214,10 @@ long Scheduler::add(std::shared_ptr<Script> s) {
 
 }
 
-void Scheduler::kill(long id) {
-	m_ids.at(id)->kill();
+void Scheduler::kill(const std::string& id) {
+    auto it = m_scriptMap.at(id);
+    (*it)->kill();
+    //m_scripts.erase(it);
+	//m_ids[m_scriptMap.at(id)]->kill();
 
 }

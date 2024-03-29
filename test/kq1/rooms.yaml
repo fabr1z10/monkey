@@ -178,6 +178,7 @@ flowrbed:
   south: trunkbig
   north: lake
   east: swamp
+  west: trollsid
   items:
     - type: bg
       batch: "flowrbed"
@@ -190,6 +191,7 @@ forkrive:
     poly: [0,0,316,0,316,160,0,160]
   west: pebbles
   south: rivtrees
+  east: gnome
   items:
     - type: bg
       batch: "forkrive"
@@ -276,7 +278,20 @@ gardenw:
       batch: "gardenw"
       pos: [250,123,1]
       quad: [228,235,50,43]
-
+gnome:
+  batches:
+    - "gnome"
+  walkarea:
+    poly: [0,0,316,0,316,160,213,160,213,96,184,93,185,80,135,74,0,69]
+  south: troll
+  east: trollsid
+  west: forkrive
+  items:
+    - type: bg
+      batch: "gnome"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+  on_start: create_gnome
 goatpene:
   batches:
     - "goatpene"
@@ -966,15 +981,22 @@ troll:
   batches:
     - "troll"
   walkarea:
-    poly: [0, 0, 316, 0, 316, 94,138,94,138,75,131,75,100,100,88,114,61,114,51,100,23,75,20,75,20,94,0,94]
-#    holes:
-#      - poly: [ 138,75,154,78,186,79,201,81,224,79,246,81,270,78,287,81,316,79,316,92,138,92]
-#        solid: False
-#        on_enter: [ 'drownx', 84, 118 ]
-
+    #poly: [0,0,316,0,316,94,138,94,138,75,131,75,100,100,88,114,143,114,143,109,316,109,316,125,0,125,0,114,61,114,51,100,23,75,20,75,20,94,0,94]
+    poly: [0,0,316,0,316,130,0,130]
+    holes:
+      - poly: [21,75,50,98,62,115,21,115]
+        solid: True
+      - poly: [89,115,103,98,136,75,136,115]
+      - poly: [137,80,316,80,316,110,137,110]
+        solid: False
+        on_enter: [ 'drownx', 84, 118 ]
+      - poly: [0,80,20,80,20,110,0,110]
+        solid: False
+        on_enter: [ 'drownx', 84, 118 ]
   east: rivrbend
   west: rivtrees
   south: clover
+  north: gnome
   items:
     - type: bg
       batch: "troll"
@@ -987,7 +1009,53 @@ troll:
       tag: troll_block
       wall:
         polyline: [0,93,316,93]
-
+    - type: bg      # rail left
+      batch: "troll"
+      pos: [21,75,0]
+      quad: [1, 167, 42, 56]
+      wall:
+        polyline: [0,0,29,23,41,40]
+        baseline: True
+    - type: bg      # rail left
+      batch: "troll"
+      pos: [88,75,0]
+      quad: [46, 167, 50, 55]
+      wall:
+        polyline: [1,40,15,23,48,0]
+        baseline: True
+trollsid:
+  batches:
+    - "trollsid"
+  walkarea:
+    poly: [0,0,316,0,316,160,0,160]
+    holes:
+      - poly: [6, 0, 184,0,177,10,163,20,159,51,152,55,150,86,27,86,29,67,21,54,29,41,20,13]
+        solid: False
+        on_enter: ['drown', 86, 34, 124]
+      - poly: [47,111,134,111,124,121,63,121]
+        solid: False
+        on_enter: ['drown', 96,117, 124]
+      - poly: [22,86,158,86,158,89,22,89]
+        solid: True
+      - poly: [40,111,142,111,142,112,40,112]
+        solid: True
+  west: gnome
+  east: flowrbed
+  items:
+    - type: bg
+      batch: "trollsid"
+      pos: [ 0, 0, -1 ]
+      quad: [ 0, 0, 316, 166 ]
+    - type: bg      # large trunk
+      batch: "trollsid"
+      auto_depth: true
+      pos: [22,86,0]
+      quad: [2,167,136,18]
+    - type: bg      # large trunk
+      batch: "trollsid"
+      auto_depth: true
+      pos: [38,111,0]
+      quad: [148,168,108,11]
 trunkbig:
   batches:
     - "trunkbig"

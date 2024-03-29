@@ -8,7 +8,7 @@ from . import castle
 
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
     move_item_by, _goto_room, get_item, addNode
-
+from .actions import removeNode
 
 def interpret(s):
     if isinstance(s, list):
@@ -115,6 +115,20 @@ def msg(id, **kwargs):
     script = monkey.Script()
     message(script, id, **kwargs)
     monkey.play(script)
+
+def msgs(*args):
+    script = monkey.Script()
+    for arg in args:
+        message(script, arg)
+    monkey.play(script)
+
+def last_wrong_guess():
+    monkey.get_node(game_state.nodes['gnome']).remove()
+    s = monkey.Script()
+    message(s, 131)
+    monkey.play(s)
+
+
 
 def msgi(item, id, **kwargs):
     script = monkey.Script()
@@ -246,6 +260,18 @@ def create_fairy():
     script.add(monkey.actions.Delay(random.randint(1, 10)))
     script.add(monkey.actions.CallFunc(_fairy))
     monkey.play(script)
+
+def create_gnome():
+    a = monkey.get_sprite('sprites/gnome')
+    a.set_position(77, 53, 0)
+    a.add_component(monkey.components.WalkableCharacter(10, anim_dir=False, idle_anim='walk',
+        walk_anim='walk', z_func=settings.z_func))
+    monkey.get_node(game_state.Ids.game_node).add(a)
+    game_state.nodes['gnome'] = a.id
+    s = monkey.Script()
+    message(s, 123)
+    s.add(monkey.actions.WalkDynamic(a.id, gigio), loop=True)
+    monkey.play(s)
 
 def _fairy():
     a = monkey.get_sprite('fairy/fairy')
@@ -422,19 +448,39 @@ def show_carrot(item):
     #player.set_model(a, batch='sprites')
 
 def drown(player, other, x, y, line):
-    _drown(player, x, y)
+    _drown(player, x, y, line)
 
 def drownx(player, other, y, line):
     _drown(player, player.x, y, line)
 
+def drowny(player, other, x, line):
+    _drown(player, x, player.y, line)
+
 def gigio():
     return (random.randint(51,100), random.randint(100,114))
 
+def talk_man():
+    msg(id=126)
+    game_state.parser_override = 'guess_name'
+
 def goat_attack():
+    game_state.goat_follow = 0
     s = monkey.Script()
     message(s, 121)
-    s.add(monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['troll_block']).remove()))
+    print(game_state.nodes)
+    print('figa')
+    s.add(removeNode('troll_block'))
+    s.add(monkey.actions.CallFunc(lambda: game_state.walkArea.recompute() ))
     s.add(monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['goat']).sendMessage(id="setFunc", func=None)))
+    s.add(monkey.actions.Walk(game_state.nodes['goat'], (75, 106)))
+    message(s, 122)
+    s.add(monkey.actions.CallFunc(lambda: monkey.kill('troll')))
+    s.add(removeNode('troll'))
+    s.add(monkey.actions.Walk(game_state.nodes['goat'], (75, 0)))
+    s.add(removeNode('goat'))
+
+    # kill troll script!
+
     monkey.play(s)
 
 
@@ -442,11 +488,12 @@ def enter_troll_bridge(player, other):
     other.remove()
     troll = monkey.get_sprite('sprites/troll')
     troll.set_position(75,100,0)
-    troll.add_component(monkey.components.WalkableCharacter(100, anim_dir=False, idle_anim='walk_s', walk_anim='walk_s'))
-
+    troll.add_component(monkey.components.WalkableCharacter(10, anim_dir=False, idle_anim='walk_s',
+                                                            walk_anim='walk_s', z_func=settings.z_func))
+    game_state.nodes['troll'] = troll.id
     addNode(troll)
 
-    s = monkey.Script()
+    s = monkey.Script(id='troll')
     message(s, 119)
     if game_state.goat_follow == 1:
         s.add(monkey.actions.CallFunc(goat_attack))

@@ -44,7 +44,9 @@ public:
     void start() override;
     void update(double) override;
     void sendMessage(const pybind11::kwargs& args) override;
-
+    std::type_index getType() {
+        return std::type_index(typeid(WalkableCharacter));
+    }
 private:
     pybind11::function _func;
     void recomputePath();
