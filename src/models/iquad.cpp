@@ -178,7 +178,7 @@ void IQuadsRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwar
 }
 
 void IQuadsRenderer::update(double) {
-	auto worldTransform = m_node->getWorldMatrix();
+	auto worldTransform = m_rendererTransform * m_node->getWorldMatrix();//m_node->getWorldMatrix();
 	auto tex = _batch->getSheet()->getTex();
 	auto tw = tex->getWidth();
 	auto th = tex->getHeight();

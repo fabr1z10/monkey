@@ -117,7 +117,10 @@ def process_action(a):
             #     exit(1)
         else:
             print(' -- action: <',key,'> not found for',item_id_1)
-
+    else:
+        f = getattr(scripts, action, None)
+        if f is not None:
+            f()
     # if action:
     #     f = getattr(scripts, action, None)
     #     if f is None:

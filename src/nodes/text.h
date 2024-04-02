@@ -46,7 +46,7 @@ private:
 	Anchor _anchor;
 	//std::string _sheetId;
 	std::string _batchId;
-    void setPosition(float, float, float) override;
+    //void setPosition(float, float, float) override;
 
 
 };

@@ -202,6 +202,12 @@ sprites:
             anchor: [10,0]
           - tex: [305,1,22,31]
             anchor: [14,0]
+      walk_e:
+        frames:
+          - tex: [259,66,22,31]
+            anchor: [11,0]
+          - tex: [282,66,22,31]
+            anchor: [11,0]
   gnome:
     animations:
       walk:
@@ -470,9 +476,26 @@ sprites:
             anchor: [5, 0]
           - tex: [166, 36, 10, 31]
             anchor: [5, 0]
-
-
-
+      bow:
+        frames:
+          - tex: [134,126,18,29]
+            anchor: [8,0]
+          - tex: [153,126,24,20]
+            anchor: [8,0]
+          - tex: [153,147,24,19]
+            anchor: [8,0]
+          - tex: [178,126,24,18]
+            anchor: [8,0]
+          - tex: [178,147,24,17]
+            anchor: [8,0]
+          - tex: [178,165,22,18]
+            anchor: [8,0]
+          - tex: [203, 146,22,20]
+            anchor: [8,0]
+          - tex: [203,167,23,20]
+            anchor: [8,0]
+          - tex: [227,144,24,27]
+            anchor: [8,0]
       drown:
         box: 0
         frames:

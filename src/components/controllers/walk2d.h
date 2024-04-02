@@ -33,7 +33,8 @@ protected:
 	float _maxSpeedAir;
 	float _accelerationTime;
 	int _flags;
-	bool _jumping;
+    //bool _jumping;
+	bool _active;
 	// bits
 	// 0 - face (0=right, 1=left)
 	// 1 - moving (0=false, 1=true)

@@ -16,7 +16,7 @@ def get_item(id):
 
 def id_to_string(string_id, **kwargs):
     message = settings.strings[string_id]
-    aa = dict(kwargs, random=random, msg=id_to_string)
+    aa = dict(kwargs, random=random, msg=id_to_string, game_state=game_state)
     expr = set(re.findall('(\#\#[^\#]*\#\#)', message))
     for ex in expr:
         message = message.replace(ex, str(eval(ex[2:-2], aa)))
@@ -32,20 +32,23 @@ def make_text(string_id, **kwargs):
                       width=29 * 8, pal=1)
     msg.set_position(160, 100, 5)
     border = monkey.Node()
+    mw = msg.size[0]
+    mh = msg.size[1]
     border.set_model(monkey.models.from_shape('tri',
-                                              monkey.shapes.AABB(-10, msg.size[0] + 10, -msg.size[1] - 5, 5),
+                                              monkey.shapes.AABB(-10-mw*0.5, mw*0.5 + 10, -mh*0.5 - 5, mh*0.5+5),
                                               (1, 1, 1, 1),
                                               monkey.FillType.Solid))
     border.set_position(0, 0, -0.1)
+
     border2 = monkey.Node()
     border2.set_model(monkey.models.from_shape('lines',
-                                               monkey.shapes.AABB(-5, msg.size[0] + 5, -msg.size[1] - 3, 3),
+                                               monkey.shapes.AABB(-mw*0.5-5, mw*0.5+ 5, -mh*0.5 - 3,mh*0.5+ 3),
                                                monkey.from_hex('AA0000'),
                                                monkey.FillType.Outline))
     border2.set_position(0, 0, -0.01)
     border3 = monkey.Node()
     border3.set_model(monkey.models.from_shape('lines',
-                                               monkey.shapes.AABB(-6, msg.size[0] + 6, -msg.size[1] - 3, 3),
+                                               monkey.shapes.AABB(-mw*0.5-6, mw*0.5 + 6, -mh*0.5 - 3, mh*0.5+3),
                                                monkey.from_hex('AA0000'),
                                                monkey.FillType.Outline))
     border3.set_position(0, 0, -0.01)

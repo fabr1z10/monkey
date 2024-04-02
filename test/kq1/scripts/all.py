@@ -5,10 +5,17 @@ import game_state
 import math
 import shapely
 from . import castle
-
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
-    move_item_by, _goto_room, get_item, addNode
+    move_item_by, _goto_room, get_item, addNode, id_to_string
 from .actions import removeNode
+
+def updateScore():
+    monkey.get_node(game_state.Ids.score_label).updateText(id_to_string(132))
+
+def updateSound():
+    monkey.get_node(game_state.Ids.sound_label).updateText(id_to_string(133))
+
+
 
 def interpret(s):
     if isinstance(s, list):
@@ -359,7 +366,8 @@ def close_gate():
 
 
 def setup3d():
-
+    updateScore()
+    updateSound()
     # sort all walls
     in_edges = dict()
     out_edges = dict()
@@ -465,6 +473,7 @@ def talk_man():
 
 def goat_attack():
     game_state.goat_follow = 0
+    game_state.troll_gone = 1
     s = monkey.Script()
     message(s, 121)
     print(game_state.nodes)
@@ -484,22 +493,33 @@ def goat_attack():
     monkey.play(s)
 
 
-def enter_troll_bridge(player, other):
-    other.remove()
+def _addTroll(x, y, anim):
     troll = monkey.get_sprite('sprites/troll')
-    troll.set_position(75,100,0)
-    troll.add_component(monkey.components.WalkableCharacter(10, anim_dir=False, idle_anim='walk_s',
-                                                            walk_anim='walk_s', z_func=settings.z_func))
+    troll.set_position(x, y, 0)
+    troll.add_component(monkey.components.WalkableCharacter(50, anim_dir=False, idle_anim=anim, flip_horizontal=False,
+                                                            walk_anim=anim, z_func=settings.z_func))
     game_state.nodes['troll'] = troll.id
     addNode(troll)
+    return troll.id
+
+
+def enter_troll_bridge_side(player, other):
+    other.remove()
+    id = _addTroll(50, 100, 'walk_e')
+    s = monkey.Script(id='troll')
+    message(s, 134)
+    s.add(monkey.actions.WalkDynamic(id, gigio), loop=True)
+    monkey.play(s)
+
+def enter_troll_bridge(player, other):
+    other.remove()
+    id = _addTroll(75, 100, 'walk_s')
 
     s = monkey.Script(id='troll')
     message(s, 119)
     if game_state.goat_follow == 1:
         s.add(monkey.actions.CallFunc(goat_attack))
-
-    s.add(monkey.actions.WalkDynamic(troll.id, gigio), loop=True)
-
+    s.add(monkey.actions.WalkDynamic(id, gigio), loop=True)
     monkey.play(s)
 
     #msg(id=119)
@@ -514,5 +534,23 @@ def _drown(player, x, y, line):
     message(script, 0)
     monkey.play(script)
 
+def bow():
+    if settings.room != 'throne':
+        msg(id=112)
+    else:
+        player = monkey.get_node(game_state.Ids.player)
+        #if player.x < 120 or player.x > 130 or player.y < 60 or player.y > 80:
+        #    msg(id=1)
+        #else:
+        #print('FOOFOFOFOF')
+        s = monkey.Script()
+        #player.sendMessage(id='pause')
+        s.add(monkey.actions.SierraEnable(id=player.id, value=False))
+        s.add(monkey.actions.Turn(id=player.id, dir='w'))
+        s.add(monkey.actions.Animate(id=player.id, anim='bow', sync=True))
+        s.add(monkey.actions.Turn(id=player.id, dir='w'))
+        message(s, id=137)
+        s.add(monkey.actions.SierraEnable(id=player.id, value=True))
+        monkey.play(s)
 
 

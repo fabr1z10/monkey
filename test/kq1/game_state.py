@@ -1,7 +1,12 @@
 class Ids:
     game_node = None
     text_node = None
+    score_label = None
 
+score = 0
+max_score = 158
+sound='on'
+troll_gone = 0
 rock_moved = 0
 protective_spell = 0
 goat_east = 0

@@ -4,7 +4,7 @@
 #include "../pyhelper.h"
 #include "../models/iquad.h"
 #include "../util.h"
-
+#include <glm/gtx/transform.hpp>
 ///#include "../vec.h"
 
 using namespace pybind11::literals; // to bring in the `_a` literal
@@ -141,11 +141,17 @@ void Text::updateText(const std::string & text) {
 	    case Anchor::TOPRIGHT:
 	        _offset.x = - _size.x;
 	        break;
+	    case Anchor::BOTTOMLEFT:
+	        _offset.y = _size.y;
+	        break;
 	}
-    Node::move(glm::vec3(_offset.x, _offset.y, _offset.z));
+
+	getComponent<Renderer>()->setTransform(glm::translate(_offset));
+
+    //Node::move(glm::vec3(_offset.x, _offset.y, _offset.z));
 
 }
 
-void Text::setPosition(float x, float y, float z) {
-    Node::setPosition(x + _offset.x, y + _offset.y, z);
-}
+//void Text::setPosition(float x, float y, float z) {
+//    Node::setPosition(x + _offset.x, y + _offset.y, z);
+//}

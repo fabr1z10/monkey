@@ -10,6 +10,8 @@ public:
 protected:
     void update(double) override;
     void updateZ(float, float);
+
+
 private:
     pybind11::function _zFunc;
     pybind11::function _scaleFunc;
@@ -17,6 +19,7 @@ private:
     //float _yBack;
     //float _a, _b;
     glm::vec3 _previousPosition;
+
 
 };
 

@@ -101,6 +101,7 @@
 #include "components/controllers/sierrafollow.h"
 #include "runners/mousemanager.h"
 #include "actions/walk.h"
+#include "actions/turn.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -235,6 +236,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
     	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
     	        "batch"_a, "font"_a, "text"_a)
+        .def("updateText", &Text::updateText)
 		.def_property_readonly("size", &Text::getSize);
 	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")
 		.def(py::init<const std::string&, const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
@@ -479,6 +481,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<int>(), "id"_a);
     py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "Walk")
         .def(py::init<int, glm::vec2>(), "id"_a, "target"_a);
+    py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "Turn")
+        .def(py::init<int, const std::string&>(), "id"_a, "dir"_a);
     py::class_<WalkDynamic, NodeAction, std::shared_ptr<WalkDynamic>>(ma, "WalkDynamic")
         .def(py::init<int, pybind11::function>(), "id"_a, "func"_a);
 	py::class_<WaitForKey, Action, std::shared_ptr<WaitForKey>>(ma, "WaitForKey")

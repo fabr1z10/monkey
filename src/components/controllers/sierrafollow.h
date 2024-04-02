@@ -33,6 +33,7 @@ protected:
     std::string _walkAnim;
     bool _useAnimDirection;
     glm::vec2 _delta;
+    bool _flipHorizontal;
 };
 inline bool WalkableCharacter::moving() const {
     return !_toGoPoints.empty();

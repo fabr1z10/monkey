@@ -8,8 +8,12 @@ map:
   carrot: [carrot, carrot_e]
   house: [witch_house]
   door: [door_witch_house, door_castle]
-  castle: [castle_west, castle_east]
+  castle: [castle_west, castle_east, castle_inside]
 items:
+  armor:
+    room: incastl1
+    actions:
+      look: [msg, 135]
   beach:
     room: pebbles
     desc: 55
@@ -65,6 +69,11 @@ items:
     room: start
     actions:
       look: [msg, 4]
+  castle_inside:
+    room: incastl1
+    actions:
+      look: [msg, 136]
+
   castle_west:
     name: 97
     room: castle
@@ -162,6 +171,15 @@ items:
     actions:
       look: [msg, 125]
       talk: [talk_man]
+  king:
+    room: throne
+    actions:
+      talk: [msgs, 138, 139, 140, 141, 142, 143]
+      look: [msg, 144]
+  throne:
+    room: throne
+    actions:
+      look: [msg, 145]
   tree:
     room: start
     actions:
@@ -292,6 +310,9 @@ items:
     sprite: 'castle/door'
     pos: [208, 46, 0]
     desc: 11
+    actions:
+      look: [msg,11]
+      open: [open_door_castle]
   oak:
     room: goldegg
     actions:

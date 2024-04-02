@@ -269,6 +269,7 @@ def create_room(room):
         room.add_batch(batch, monkey.SpriteBatch(max_elements=10000, cam=0, sheet=batch))
     room.add_batch('lines', monkey.LineBatch(max_elements=200, cam=0))
     room.add_batch('tri', monkey.TriangleBatch(max_elements=1000, cam=0))
+    room.add_batch('tri2', monkey.TriangleBatch(max_elements=1000, cam=1))
 
 
 
@@ -277,6 +278,24 @@ def create_room(room):
 
     game_node = monkey.Node()
     text_node = monkey.Node()
+
+    menu_node = monkey.Node()
+    menu_bar = monkey.Node()
+    menu_bar.set_model(monkey.models.from_shape('tri2', monkey.shapes.AABB(0,320,0,8), (1,1,1,1), monkey.FillType.Solid))
+    menu_bar.set_position(0,192,0)
+    menu_node.add(menu_bar)
+    score_label = monkey.Text(batch='ui', font='sierra', text='Ciao', anchor=monkey.ANCHOR_BOTTOMLEFT, pal=1)
+    score_label.set_position(8, 0, 0)
+    sound_label = monkey.Text(batch='ui', font='sierra', text='Ciao', anchor=monkey.ANCHOR_BOTTOMLEFT, pal=1)
+    sound_label.set_position(240, 0, 0)
+    menu_bar.add(score_label)
+    menu_bar.add(sound_label)
+    root.add(menu_node)
+    game_state.Ids.score_label = score_label.id
+    game_state.Ids.sound_label = sound_label.id
+
+
+
     #inventory_node = monkey.Node()
     game_state.Ids.game_node = game_node.id
     game_state.Ids.text_node = text_node.id

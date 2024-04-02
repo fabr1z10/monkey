@@ -7,6 +7,7 @@ WalkableCharacter::WalkableCharacter(float speed, const pybind11::kwargs &args) 
     _idleAnim = py_get_dict<std::string>(args, "idle_anim", "idle");
     _walkAnim = py_get_dict<std::string>(args, "walk_anim", "walk");
     _useAnimDirection = py_get_dict<bool>(args, "anim_dir", true);
+    _flipHorizontal = py_get_dict<bool>(args, "flip_horizontal", true);
 }
 
 void WalkableCharacter::sendMessage(const pybind11::kwargs &args) {
@@ -111,7 +112,11 @@ void WalkableCharacter::update(double dt) {
         auto length = _speed * dt;
         _delta = step.direction * static_cast<float>(length);
         _distanceCovered += length;
-        m_node->setFlipX(_delta.x < 0);
+        float dx = _delta.x;
+        if (_flipHorizontal) {
+            m_node->setFlipX(_delta.x < 0);
+            dx = fabs(dx);
+        }
         if (_distanceCovered >= step.length) {
             //std::cout << " moved to " << step.arrivalPoint.x << ", " << step.arrivalPoint.y << "\n";
             m_node->setPosition(step.arrivalPoint.x, step.arrivalPoint.y, 0.f);
@@ -120,7 +125,7 @@ void WalkableCharacter::update(double dt) {
             _toGoPoints.clear();
         } else {
 
-            m_node->move(glm::vec3(fabs(_delta.x), _delta.y, 0.0f));
+            m_node->move(glm::vec3(dx, _delta.y, 0.0f));
         }
 
     }
