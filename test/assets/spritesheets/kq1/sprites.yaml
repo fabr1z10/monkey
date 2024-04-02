@@ -208,6 +208,19 @@ sprites:
             anchor: [11,0]
           - tex: [282,66,22,31]
             anchor: [11,0]
+  sorcerer:
+    animations:
+      walk:
+        frames:
+          - tex: [259, 99, 16, 29]
+            anchor: [9, 0]
+          - tex: [276, 98, 16, 30]
+            anchor: [9, 0]
+          - tex: [293, 98, 16, 30]
+            anchor: [9, 0]
+          - tex: [310, 98, 16, 30]
+            anchor: [9, 0]
+
   gnome:
     animations:
       walk:

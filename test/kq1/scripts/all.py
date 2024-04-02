@@ -262,11 +262,32 @@ def caught_by_wolf(a,b):
     message(s, 0)
     monkey.play(s)
 
+def caught_by_sorcerer(a,b):
+    s = monkey.Script()
+    message(s, 147)
+    s.add(monkey.actions.SierraEnable(game_state.Ids.player, False))
+    s.add(monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['sorcerer']).
+                                  sendMessage(id="setFunc", func=None)))
+    s.add(monkey.actions.Walk(game_state.nodes['sorcerer'], (316, 50)))
+    s.add(removeNode('sorcerer'))
+    s.add(monkey.actions.Delay(10))
+    message(s, 148)
+    s.add(monkey.actions.SierraEnable(game_state.Ids.player, True))
+    monkey.play(s)
+
 def create_fairy():
     script = monkey.Script()
     script.add(monkey.actions.Delay(random.randint(1, 10)))
     script.add(monkey.actions.CallFunc(_fairy))
     monkey.play(script)
+
+def create_sorcerer():
+    script = monkey.Script()
+    script.add(monkey.actions.Delay(random.randint(1, 10)))
+    script.add(monkey.actions.CallFunc(_sorcerer))
+    monkey.play(script)
+
+
 
 def create_gnome():
     a = monkey.get_sprite('sprites/gnome')
@@ -293,6 +314,22 @@ def _fairy():
     message(spell_script, 40)
     spell_script.add(monkey.actions.Remove(a.id))
     monkey.play(spell_script)
+
+def _sorcerer():
+    a = monkey.get_sprite('sprites/sorcerer')
+    a.set_position(88, 40, 0)
+    a.add_component(monkey.components.NPCSierraFollow(func_follow_player, 50, 1, z_func=settings.z_func,
+                                                      anim_dir=False, walk_anim='walk', idle_anim='walk'))
+    a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
+                                               monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
+    a.user_data = {
+        'on_enter': ['caught_by_sorcerer']
+    }
+    game_state.nodes['sorcerer'] = a.id
+    monkey.get_node(game_state.Ids.game_node).add(a)
+    s = monkey.Script()
+    message(s, 146)
+    monkey.play(s)
 
 def spellEnd():
     game_state.protective_spell = 0
