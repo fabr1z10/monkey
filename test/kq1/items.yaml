@@ -16,7 +16,8 @@ items:
       look: [msg, 135]
   beach:
     room: pebbles
-    desc: 55
+    actions:
+      look: [msg, 55]
   bowl:
     name: 53
     room: bowl

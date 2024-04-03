@@ -30,7 +30,7 @@ def make_text(string_id, **kwargs):
     msg = monkey.Text(batch='sprites', font='sierra', anchor=monkey.ANCHOR_CENTER,
                       text=message,
                       width=29 * 8, pal=1)
-    msg.set_position(160, 100, 5)
+    msg.set_position(160, 100, 10)
     border = monkey.Node()
     mw = msg.size[0]
     mh = msg.size[1]

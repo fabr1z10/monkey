@@ -58,10 +58,10 @@ castle:
     holes:
       - poly: [128,20,149,46,116,33]
         solid: False
-        on_enter: ['drown', 128, 33]
+        on_enter: ['drown', 128, 33, 1]
       - poly: [20,0,316,0,316,7,92,7,79,21,62,28,49,28,35,22,20,10]
         solid: False
-        on_enter: ['drownx', 3]
+        on_enter: ['drownx', 3, 1]
 
   items:
     - type: bg
@@ -786,6 +786,34 @@ rivtrees:
       batch: "rivtrees"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg     # tree 2
+      batch: "rivtrees"
+      pos: [ 43,31,0 ]
+      quad: [ 2,168,92,46]
+      wall:
+        polyline: [ 0,7,7,3,14,0, 38,0,64,7,64,15,92,21]
+        baseline: True
+    - type: bg     # tree 2
+      batch: "rivtrees"
+      pos: [ 210,42,0 ]
+      quad: [1,217,62,70]
+      wall:
+        polyline: [ 0,6,20,0,27,6,62,6]
+        baseline: True
+    - type: bg     # tree 2
+      batch: "rivtrees"
+      pos: [ 0,95,0 ]
+      quad: [100,169,42,70]
+      wall:
+        polyline: [0,0,42,0]
+        baseline: True
+    - type: bg     # tree 2
+      batch: "rivtrees"
+      pos: [52,89,0]
+      quad: [152,168,74,77]
+      wall:
+        polyline: [0,0,74,0]
+        baseline: True
 rock:
   batches:
     - "rock"
@@ -855,6 +883,8 @@ rushes:
     poly: [0,0,316,0,316,160,0,160]
   north: rivrbend
   south: goatpenw
+  east: birdcave
+  west: clover
   items:
     - type: bg
       batch: "rushes"
@@ -876,6 +906,48 @@ sorcerer:
       batch: "sorcerer"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg     # tree 1
+      batch: "sorcerer"
+      pos: [ 16,19,0 ]
+      quad: [ 1, 167, 104, 116 ]
+      wall:
+        polyline: [ 0,0,104,0]
+        baseline: True
+    - type: bg     # tree 2
+      batch: "sorcerer"
+      pos: [ 84,63,0 ]
+      quad: [ 1,287,64,27 ]
+      wall:
+        polyline: [ 0,0,64,0]
+        baseline: True
+    - type: bg     # tree 3
+      batch: "sorcerer"
+      pos: [ 0,71,0 ]
+      quad: [ 109,168,38,87 ]
+      wall:
+        polyline: [ 0,0,38,0]
+        baseline: True
+    - type: bg     # tree 4
+      batch: "sorcerer"
+      pos: [ 122,80,0 ]
+      quad: [ 152,168,48,67 ]
+      wall:
+        polyline: [ 0,0,48,0]
+        baseline: True
+    - type: bg     # rock
+      batch: "sorcerer"
+      pos: [ 30,103,0 ]
+      quad: [ 69,284,104,30 ]
+      wall:
+        polyline: [ 0,0,104,0]
+        baseline: True
+    - type: bg     # tree 5
+      batch: "sorcerer"
+      pos: [ 186,79,0 ]
+      quad: [ 202,168,76,87 ]
+      wall:
+        polyline: [ 0,0,76,0]
+        baseline: True
 southcas:
   batches:
     - "southcas"

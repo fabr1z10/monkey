@@ -122,7 +122,9 @@ void WalkableCharacter::update(double dt) {
             m_node->setPosition(step.arrivalPoint.x, step.arrivalPoint.y, 0.f);
             _currentIndex ++;
             _distanceCovered =0.0;
-            _toGoPoints.clear();
+            if (_currentIndex >= _toGoPoints.size()) {
+                _toGoPoints.clear();
+            }
         } else {
 
             m_node->move(glm::vec3(dx, _delta.y, 0.0f));
