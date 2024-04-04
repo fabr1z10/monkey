@@ -1341,6 +1341,34 @@ walnut:
       batch: "walnut"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg     # tree 3
+      batch: "walnut"
+      pos: [ 56,7,0 ]
+      quad: [ 1,167,120,159 ]
+      wall:
+        polyline: [ 44,0,82,0]
+        baseline: True
+    - type: bg     # rock
+      batch: "walnut"
+      pos: [ 188,39,0 ]
+      quad: [ 253,295,60,19 ]
+      wall:
+        polyline: [ 0,7,8,3,28,3,36,0,44,0,59,5]
+        baseline: True
+    - type: bg     # tree 3
+      batch: "walnut"
+      pos: [246,55,0 ]
+      quad: [ 242,169,68,91]
+      wall:
+        polyline: [0,0,68,0]
+        baseline: True
+    - type: bg     # tree 3
+      batch: "walnut"
+      pos: [210,71,0 ]
+      quad: [134,167,62,95]
+      wall:
+        polyline: [0,0,62,0]
+        baseline: True
   scripts:
       look_tree: [ 'msg', 60 ]
       look_walnut: ['look_inventory_item', 'walnut', 64, 0]
@@ -1359,6 +1387,14 @@ well:
       batch: "well"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg     # tree 3
+      batch: "well"
+      pos: [ 20,23,0 ]
+      quad: [ 4,167,128,101 ]
+      wall:
+        poly: [15,11,39,0,92,0,115,10,92,22,39,22]
+        zw: [15,11,39,0,92,0,115,10]
+        baseline: True
 witch:
   walkarea:
     poly: [ 0,0,316,0,316,160,0,160,0,86,100,86,100,57,0,57]

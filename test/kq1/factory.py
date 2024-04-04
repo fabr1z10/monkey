@@ -67,6 +67,7 @@ def make_outline2_rect(x, y, w, h, color='FFFFFF', z=0):
 
 def bg(ciao):
     n = monkey.Node()
+    print('merda',ciao)
     pos = ciao.get('pos', [0, 0, 0])
     auto_depth = ciao.get('auto_depth', False)
     n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1 - pos[1] / 166.0)
@@ -88,9 +89,15 @@ def bg(ciao):
         baseline = wall.get('baseline', False)
         shape = None
         if 'poly' in wall:
+            pl =wall['poly']
+            print('sucalo',pl)
             shape = monkey.shapes.Polygon(wall['poly'])
+            if baseline:
+                zw = wall['zw']
+                abs_polyline = [zw[i] + pos[i%2] for i in range(0,len(zw))]
+                game_state.wallz.append({'baseline': abs_polyline, 'id': n.id})
         elif 'polyline' in wall:
-            pl = points=wall['polyline']
+            pl =wall['polyline']
             shape = monkey.shapes.PolyLine(points=pl)
             if baseline:
                 abs_polyline = [pl[i] + pos[i%2] for i in range(0,len(pl))]

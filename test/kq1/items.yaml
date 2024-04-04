@@ -162,7 +162,7 @@ items:
     pos: [32, 12, 1.928]
     auto_depth: True
     wall:
-      poly: [0,0,54,0]
+      polyline: [0,0,54,0]
       baseline: True
     actions:
       open: [open_gate]
