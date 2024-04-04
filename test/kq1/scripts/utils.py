@@ -69,7 +69,6 @@ def set_main_node_active(value):
 
 def rm_node(*args):
     def f():
-        print('sucalo bene ', args)
         for id in args:
             print('removing')
             monkey.get_node(id).remove()

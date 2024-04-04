@@ -39,7 +39,6 @@ def make_text(id,x,y, **kwargs):
 
 def make_solid_rect(x, y, w, h, color = 'FFFFFF', z = 0):
     node = monkey.Node()
-    print(color,'sucalo')
     node.set_model(monkey.models.from_shape(
         'tri',
              monkey.shapes.AABB(0, w, 0, h),
@@ -153,7 +152,7 @@ def init():
     settings.rooms = monkey.read_data_file('rooms.yaml')
     settings.items = monkey.read_data_file('items.yaml')
     settings.strings = monkey.read_data_file('strings.yaml')
-    settings.actions = monkey.read_data_file('scripts.yaml')
+    #settings.actions = monkey.read_data_file('scripts.yaml')
 
 
 def link(room, dir):
