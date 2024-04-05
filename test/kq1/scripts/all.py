@@ -10,6 +10,9 @@ from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
 from .actions import removeNode
 
 
+def addScore(score):
+    game_state.score += score
+    updateScore()
 def updateScore():
     monkey.get_node(game_state.Ids.score_label).updateText(id_to_string(132))
 
@@ -196,6 +199,7 @@ def show_item_detail(script, item_id):
 
 
 def goto_room(playe, other, room, pos, dir):
+    settings.previous_room = settings.room
     settings.room = room
     settings.pos = pos
     settings.dir = dir
@@ -203,6 +207,7 @@ def goto_room(playe, other, room, pos, dir):
 
 
 def goto_room_x(playe, other, room, pos, dir):
+    settings.previous_room = settings.room
     settings.room = room
     settings.pos = pos
     settings.pos[0] = monkey.get_node(game_state.Ids.player).x
@@ -211,6 +216,8 @@ def goto_room_x(playe, other, room, pos, dir):
 
 
 def goto_room_y(playee, other, room, pos, dir):
+    settings.previous_room = settings.room
+
     settings.room = room
     settings.pos = pos
     settings.pos[1] = monkey.get_node(game_state.Ids.player).y
@@ -619,6 +626,7 @@ def bow():
         #    msg(id=1)
         # else:
         # print('FOOFOFOFOF')
+        addScore(3)
         s = monkey.Script()
         # player.sendMessage(id='pause')
         s.add(monkey.actions.SierraEnable(id=player.id, value=False))
@@ -627,4 +635,10 @@ def bow():
         s.add(monkey.actions.Turn(id=player.id, dir='w'))
         message(s, id=137)
         s.add(monkey.actions.SierraEnable(id=player.id, value=True))
+        monkey.play(s)
+
+def start_castle():
+    if settings.previous_room == 'incastl1':
+        s = monkey.Script()
+        s.add(monkey.actions.Animate(game_state.nodes['door_castle'], 'open', False, True ))
         monkey.play(s)

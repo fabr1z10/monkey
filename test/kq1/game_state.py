@@ -3,6 +3,7 @@ class Ids:
     text_node = None
     score_label = None
 
+action_history = {}
 score = 0
 max_score = 158
 sound='on'

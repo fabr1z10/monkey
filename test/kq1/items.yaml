@@ -13,7 +13,10 @@ items:
   armor:
     room: incastl1
     actions:
-      look: [msg, 135]
+      look:
+        - func: msg
+          args: 135
+          score: 10
   beach:
     room: pebbles
     actions:
@@ -312,14 +315,19 @@ items:
     pos: [208, 46, 0]
     desc: 11
     actions:
-      look: [msg,11]
-      open: [open_door_castle]
+      look: [msg, 11]
+      open:
+        - func: open_door_castle #], [addScore, 1]]
+          score: 1
   oak:
     room: goldegg
     actions:
       look: [msg, 18]
       climb: [change_room, 'treetop', [80, 3], 'n', 28]
-
+  well:
+    room: well
+    actions:
+      look: [msg, 149]
 
 
 

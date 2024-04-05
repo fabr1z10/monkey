@@ -16,12 +16,18 @@ verb_map = {
     'get': 'pickup'
 }
 
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
+
 def read(value):
-    if isinstance(value, list) and value and isinstance(value[0], str):
-        func = getattr(scripts, value[0])
-        if func:
-            largs = [read(x) for x in value[1:]]
-            return func(*largs)
+    if isinstance(value, list):
+        if value and isinstance(value[0], str):
+            func = getattr(scripts, value[0])
+            if func:
+                largs = [read(x) for x in value[1:]]
+                return func(*largs)
+        else:
+            for v in value:
+                read(v)
     else:
         return value
 
@@ -105,9 +111,36 @@ def process_action(a):
         print(' -- check item:', item_id_1, ', key:',key)
         cc = settings.items['items'][item_id_1].get('actions', None)
         if cc:
-            cc = cc.get(key, None)
+            actions = cc.get(key, None)
             if cc:
-                read(cc)
+                for action in actions:
+                    print(action, id(action))
+                    if 'condition' in action:
+                        if not eval(action['condition']):
+                            continue
+                    if 'score' in action and id(action) not in game_state.action_history:
+                        scripts.addScore(action['score'])
+                    game_state.action_history[id(action)] = game_state.action_history.get(id(action), 0) + 1
+                    f_id = action['func']
+                    # check if function exists
+                    f = getattr(scripts, f_id, None)
+                    if f:
+                        args = action.get('args', None)
+                        if not args:
+                            f()
+                        elif isinstance(args, dict):
+                            f(**args)
+                        elif isinstance(args, list):
+                            f(*args)
+                        else:
+                            f(*[args])
+                    else:
+                        prRed(" -- don't know function: "+f_id)
+                        exit(1)
+
+                    print(f)
+                    #exit(1)
+                    #read(cc)
             # func = getattr(scripts, cc[0])
             # if func:
             #     largs = [read(x) for x in cc[1:]]

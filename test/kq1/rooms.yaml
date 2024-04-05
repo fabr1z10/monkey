@@ -53,6 +53,7 @@ castle:
   east: start
   west: rock
   north: gardenw
+  on_start: start_castle
   walkarea:
     poly: [0,10,20,10,20,0,316,0,316,20,260,20,251,47,203,47,191,20,128,20,149,46,149,130,0,130,0,20]
     holes:
