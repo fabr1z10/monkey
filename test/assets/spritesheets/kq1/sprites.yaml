@@ -129,6 +129,33 @@ multi_sprites:
 
 
 sprites:
+  flag1:
+    animations:
+      default:
+        frames:
+          - tex: [1,1,24,9]
+          - tex: [1,11,22,9]
+          - tex: [1,21,20,9]
+          - tex: [1,31,22,9]
+          - tex: [1,41,22,9]
+  flag2:
+    animations:
+      default:
+        frames:
+          - tex: [26,1,24,9]
+          - tex: [26,11,22,9]
+          - tex: [26,21,22,9]
+          - tex: [26,31,22,9]
+          - tex: [26,41,24,9]
+  flag3:
+    animations:
+      default:
+        frames:
+          - tex: [51,1,22,9]
+          - tex: [51,11,22,9]
+          - tex: [51,21,22,9]
+          - tex: [51,31,22,9]
+          - tex: [52,41,24,9]
   item_dagger:
     animations:
       default:

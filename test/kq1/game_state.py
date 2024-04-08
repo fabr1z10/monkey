@@ -10,7 +10,7 @@ sound='on'
 troll_gone = 0
 rock_moved = 0
 protective_spell = 0
-goat_east = 0
+goat_east = 1
 bowl_taken = 0
 note_taken = 0
 cheese_taken=0
@@ -20,7 +20,7 @@ gate_open = 0
 parser_override = None
 guess_number = 0
 
-inventory = set()
+inventory = {'carrot'}#set()
 collected = set()
 
 

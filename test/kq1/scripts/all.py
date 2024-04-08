@@ -87,7 +87,7 @@ def look(*args):
         show_item_detail(s, args[0])
         monkey.play(s)
     else:
-        msg(id=args[1])
+        msg(args[1])
 
 
 def open(item):
@@ -124,23 +124,18 @@ def pickup(item, line):
             if item in game_state.nodes:
                 monkey.get_node(game_state.nodes[item]).remove()
                 settings.items['items'][item]['room'] = None
-            msg(id=line)
+            msg(line)
             # else:
             # outside bounds
             #    msg(id=93, x=item)
 
 
-def msg(id, **kwargs):
-    script = monkey.Script()
-    message(script, id, **kwargs)
-    monkey.play(script)
-
-
-def msgs(*args):
+def msg(*args, **kwargs):
     script = monkey.Script()
     for arg in args:
-        message(script, arg)
+        message(script, arg, **kwargs)
     monkey.play(script)
+
 
 
 def last_wrong_guess():
@@ -333,10 +328,11 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
         # if anim_dir is True, the sprites need to h
         anim_dir = kwargs.get('anim_dir', True)
         func_ai = kwargs.get('func_ai', func_follow_player)
+        call_every = kwargs.get('period', 1)
         on_create = kwargs.get('on_create', None)
         a = monkey.get_sprite(sprite)
         a.set_position(x, y, 0)
-        a.add_component(monkey.components.NPCSierraFollow(func_ai, speed, 1, z_func=settings.z_func,
+        a.add_component(monkey.components.NPCSierraFollow(func_ai, speed, call_every, z_func=settings.z_func,
                                                           anim_dir=anim_dir, walk_anim='walk', idle_anim='walk'))
         if callback:
             a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
@@ -390,7 +386,9 @@ def _goat(x, y):
 def create_goat_e():
     setup3d()
     if game_state.goat_east == 1:
-        _goat(114, 57)
+        create_foe('goat', 'sprites/goat', 114, 57, 50, None, -1,
+            anim_dir=True, period=100, func_ai=func_random(0, 316, 0, 120))()
+        #_goat(114, 57)
 
 
 def goat_move(goat, value):
@@ -501,16 +499,20 @@ def end_swim(player, other):
 
 
 def open_walnut():
-    msg(id=66)
-    item = get_item('walnut')
-    item['inventory']['desc'] = 67
-    item['inventory']['image'] = 'sprites/item_gold_walnut'
-    item['name'] = 69
+    if 'walnut' in game_state.inventory:
+        msg(66)
+        item = get_item('walnut')
+        item['inventory']['desc'] = 67
+        item['inventory']['image'] = 'sprites/item_gold_walnut'
+        item['name'] = 69
+    else:
+        msg(68)
 
 
-def show_carrot(item):
+def show_carrot():
     # check if goat is here
-    if 'goat' in game_state.nodes:
+    if 'goat' in game_state.nodes and game_state.goat_follow == 0:
+        game_state.goat_follow = 1
         player = monkey.get_node(game_state.Ids.player)
         goat = monkey.get_node(game_state.nodes['goat'])
         if monkey.shapes.check_los((player.x, player.y), (goat.x, goat.y), 2):
@@ -520,13 +522,7 @@ def show_carrot(item):
         else:
             msg(id=114)
     else:
-        msg(id=112)
-    return
-
-    # a = monkey.models.MultiSprite()
-    # a.addSprite(monkey.models.getSprite('sprites/graham'))
-    # a.addSprite(monkey.models.getSprite('sprites/goat'))
-    # player.set_model(a, batch='sprites')
+        msg(112)
 
 
 def drown(player, other, x, y, line):

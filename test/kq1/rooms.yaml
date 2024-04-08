@@ -81,7 +81,15 @@ castle:
       auto_depth: true
       pos: [128, 20, 0]
       quad: [221,168,72,139]
-
+    - type: sprite
+      sprite: 'sprites/flag1'
+      pos: [226,155,0]
+    - type: sprite
+      sprite: 'sprites/flag2'
+      pos: [256,155,0]
+    - type: sprite
+      sprite: 'sprites/flag3'
+      pos: [286,155,0]
     #- type: hotspot
     #  poly: [20,10,40,26,48,28,64,28,80,22,93,8,316,8]
     #  on_enter: ['drown']
@@ -341,10 +349,10 @@ goatpene:
       quad: [1,167,204,65]
     - type: bg
       wall:
-        polyline: [-1,12,32,12]
+        polyline: [-1,12,33,12]
     - type: bg
       wall:
-        polyline: [86,12,146,12,178,37,204,52]
+        polyline: [85,12,146,12,178,37,204,52]
         baseline: True
     - type: bg
       wall:
@@ -999,13 +1007,13 @@ start:
       pos: [118,24,-1]
       auto_depth: True
     - type: sprite
-      sprite: 'start/flag1'
+      sprite: 'sprites/flag1'
       pos: [6,155,0]
     - type: sprite
-      sprite: 'start/flag2'
+      sprite: 'sprites/flag2'
       pos: [36,155,0]
     - type: sprite
-      sprite: 'start/flag3'
+      sprite: 'sprites/flag3'
       pos: [66,155,0]
 stonebri:
   batches:

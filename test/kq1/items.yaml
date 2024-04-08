@@ -20,7 +20,9 @@ items:
   beach:
     room: pebbles
     actions:
-      look: [msg, 55]
+      look:
+        - func: msg
+          args: 55
   bowl:
     name: 53
     room: bowl
@@ -34,13 +36,21 @@ items:
       image: 'sprites/item_bowl'
       desc: 54
     actions:
-      look: [look, bowl, 111]
-      pickup: [pickup, bowl, 52]
-      read: [msg, [cond, "'bowl' in game_state.inventory", 120, 68]]
+      look:
+        - func: look
+          args: ['bowl', 111]
+      pickup:
+        - func: pickup
+          args: ['bowl', 52]
+      read:
+        - func: msg
+          args: ['@cond', "'bowl' in game_state.inventory", 120, 68]
   cage:
     room: witchous
     actions:
-      look: [msg, 78]
+      look:
+        - func: msg
+          args: 78
   carrot:
     name: 35
     room: gardenw
@@ -53,8 +63,14 @@ items:
       image: 'sprites/item_carrot'
       desc: 36
     actions:
-      look: [look, carrot, 32]
-      pickup: [pickup, carrot, 33]
+      look:
+        - func: look
+          args: ['carrot', 32 ]
+      pickup:
+        - func: pickup
+          args: ['carrot', 33]
+      show:
+        - func: show_carrot
   carrot_e:
     name: 35
     room: gardene
@@ -67,21 +83,31 @@ items:
       image: 'sprites/item_carrot'
       desc: 36
     actions:
-      look: [look, carrot, 32]
-      pickup: [pickup, carrot, 33]
+      look:
+        - func: look
+          args: ['carrot', 32 ]
+      pickup:
+        - func: pickup
+          args: ['carrot', 33]
   castle_east:
     room: start
     actions:
-      look: [msg, 4]
+      look:
+        - func: msg
+          args: 4
   castle_inside:
     room: incastl1
     actions:
-      look: [msg, 136]
-
+      look:
+        - func: msg
+          args: 136
   castle_west:
     name: 97
     room: castle
-    desc: 9
+    actions:
+      look:
+        - func: msg
+          args: 9
   cheese:
     room: witchous
     type: bg
@@ -94,9 +120,12 @@ items:
       image: 'sprites/item_cheese'
       desc: 89
     actions:
-      look: [look, cheese, 87]
-      pickup: [pickup, cheese, 88]
-      read: [msg, [cond, "'bowl' in game_state.inventory", 120, 68]]
+      look:
+        - func: look
+          args: ['cheese', 87 ]
+      pickup:
+        - func: pickup
+          args: ['cheese', 88]
   cupboard:
     room: witchous
     pos: [70, 95, 0.2]
@@ -105,9 +134,15 @@ items:
     desc: 85
     open: 0
     actions:
-      look: [msg,85]
-      open: [open, 'cupboard']
-      close: [close, 'cupboard']
+      look:
+        - func: msg
+          args: 85
+      open:
+        - func: open
+          args: 'cupboard'
+      close:
+        - func: close
+          args: 'cupboard'
   dagger:
     name: 22
     room: rock
@@ -117,23 +152,38 @@ items:
     bounds_relative: True
     can_pick_up: True
     actions:
-      look: [look, dagger, 103]
-      pickup: [pickup, dagger, 25]
+      look:
+        - func: look
+          args: ['dagger', 103 ]
+      pickup:
+        - func: pickup
+          args: ['dagger', 25]
     inventory:
       image: 'sprites/item_dagger'
       desc: 24
     visible: 'game_state.rock_moved == 1'
+  door_castle:
+    room: castle
+    type: sprite
+    sprite: 'castle/door'
+    pos: [208, 46, 0]
+    desc: 11
+    actions:
+      look:
+        - func: msg
+          args: 11
+      open:
+        - func: open_door_castle #], [addScore, 1]]
+          score: 1
   door_witch_house:
     room: witch
     desc: 71
     actions:
-      look: [msg, 71]
-      open: [open_door_witch_house]
-  window:
-    room: witch
-    actions:
-      look: [msg, 73]
-
+      look:
+        - func: msg
+          args: 71
+      open:
+        - func: open_door_witch_house
   egg:
     room: treetop
     type: bg
@@ -146,17 +196,67 @@ items:
       image: 'sprites/item_egg'
       desc: 29
     actions:
-      look: [look, egg, 101]
-      pickup: [pickup, egg, 102]
+      look:
+        - func: look
+          args: ['egg', 101 ]
+      pickup:
+        - func: pickup
+          args: ['egg', 102]
+  fence_garden_e:
+    room: goatpene
+    actions:
+      jump:
+        - func: msg
+          args: 109
+  fence_garden_w:
+    room: gardenw
+    actions:
+      look:
+        - func: msg
+          args: 30
+  fence_goatpen_e:
+    room: goatpene
+    actions:
+      look:
+        - func: msg
+          args: 108
+      jump:
+        - func: msg
+          args: 109
+  fence_goatpen_w:
+    room: goatpenw
+    actions:
+      look:
+        - func: msg
+          args: 117
+      jump:
+        - func: msg
+          args: 109
+
   fence_witch:
     room: witch
     actions:
-      look: [msg, 72]
-
+      look:
+        - func: msg
+          args: 72
   flags:
     room: start
     actions:
-      look: [msg, 5]
+      look:
+        - func: msg
+          args: 5
+  garden_e:
+    room: gardene
+    actions:
+      look:
+        - func: msg
+          args: 116
+  garden_w:
+    room: gardenw
+    actions:
+      look:
+        - func: msg
+          args: 31
   gate:
     room: goatpene
     type: bg
@@ -165,57 +265,39 @@ items:
     pos: [32, 12, 1.928]
     auto_depth: True
     wall:
-      polyline: [0,0,54,0]
+      poly: [0,-1.5,54,-1.5,54,1.5,0,1.5]
+      zw: [0,0,54,0]
       baseline: True
     actions:
-      open: [open_gate]
-      close: [close_gate]
+      open:
+        - func: open_gate
+      close:
+        - func: close_gate
+  hole:
+    room: rock
+    type: empty
+    pos: [ 254, 45, 0 ]
+    bounds: [ -20, -10, 20, -10, 20, 10, -20, 10 ]
+    visible: 'game_state.rock_moved == 1'
+    actions:
+      look:
+        - func: msg
+          args: [ '@cond', '"dagger" in game_state.collected', 104, 14 ]
   gnome:
     room: gnome
     actions:
-      look: [msg, 125]
-      talk: [talk_man]
-  king:
-    room: throne
+      look:
+        - func: msg
+          args: 125
+      talk:
+        - func: talk_man
+  lion:
+    name: 98
+    room: castle
     actions:
-      talk: [msgs, 138, 139, 140, 141, 142, 143]
-      look: [msg, 144]
-  throne:
-    room: throne
-    actions:
-      look: [msg, 145]
-  tree:
-    room: start
-    actions:
-      look: [msg, [rand, 3, 7]]
-
-
-
-
-  witch_house:
-    room: witch
-    desc: 49
-    actions:
-      look: [msg, 49]
-      eat: [msg, 74]
-  rock:
-    name: 94
-    room: rock
-    type: sprite
-    sprite: 'rock/rock'
-    pos: [236, 33, 0]
-    bounds: [0,-10,34,-10,34,10,0,10]      # the player must be inside this rectangle to interact with object
-    bounds_relative: True
-    auto_depth: True
-    can_pick_up: False
-    actions:
-      look: [msg, 15]
-      push: [push_rock]
-      pickup: [msg, 91]
-
-
-
-
+      look:
+        - func: msg
+          args: 8
   note:
     room: witchous
     type: bg
@@ -227,10 +309,24 @@ items:
       image: 'sprites/item_note'
       desc: 83
     actions:
-      look: [look, note, 115]
-      pickup: [pickup, note, 81]
-      read: [msgi, note, 84]
-
+      look:
+        - func: look
+          args: ['note', 115]
+      pickup:
+        - func: pickup
+          args: ['note', 81]
+      read:
+        - func: msg
+          args: ['@cond', "'note' in game_state.inventory", 84, 68]
+  oak:
+    room: goldegg
+    actions:
+      look:
+        - func: msg
+          args: 18
+      climb:
+        - func: change_room
+          args: ['treetop', [80, 3], 'n', 28]
   pebbles:
     name: 58
     room: pebbles
@@ -239,65 +335,12 @@ items:
       image: 'sprites/item_pebbles'
       desc: 59
     actions:
-      look: [look, pebbles, 56]
-      pickup: [pickup, pebbles, 57]
-  walnut:
-    name: 63
-    room: walnut
-    can_pick_up: True
-    inventory:
-      image: 'sprites/item_walnut'
-      desc: 64
-    actions:
-      look: [look, walnut, 61]
-      pickup: [pickup, walnut, 62]
-      open: [open_walnut]
-
-
-  hole:
-    room: rock
-    type: empty
-    pos: [ 254, 45, 0 ]
-    bounds: [ -20, -10, 20, -10, 20, 10, -20, 10 ]
-    visible: 'game_state.rock_moved == 1'
-    actions:
-      look: [msg, [cond, '"dagger" in game_state.collected', 104, 14]]
-  fence_goatpen_w:
-    room: goatpenw
-    actions:
-      look: [msg, 117]
-      jump: [msg, 109]
-  fence_goatpen_e:
-    room: goatpene
-    actions:
-      look: [msg, 108]
-      jump: [msg, 109]
-  fence_garden_w:
-    room: gardenw
-    desc: 30
-  garden_w:
-    room: gardenw
-    actions:
-      look: [msg,31]
-  garden_e:
-    room: gardene
-    actions:
-      look: [msg,116]
-  lion:
-    name: 98
-    room: castle
-    desc: 8
-
-  fence_garden_e:
-    room: goatpene
-    desc: 108
-    msg:
-      jump: 109
-  stump:
-    room: stump
-    actions:
-      look: ['msg', 42]
-      lookin: ['msg', ['cond', '"pouch" in game_state.collected', 110, 43]]
+      look:
+        - func: look
+          args: [ 'pebbles', 56 ]
+      pickup:
+        - func: pickup
+          args: [ 'pebbles', 57 ]
   pouch:
     name: 46
     room: stump
@@ -306,28 +349,136 @@ items:
       image: 'sprites/item_pouch'
       desc: 45
     actions:
-      look: [look, pouch, 68]
-      pickup: [pickup, pouch, 44]
-  door_castle:
-    room: castle
+      look:
+        - func: look
+          args: [ 'pouch', 68 ]
+      pickup:
+        - func: pickup
+          args: [ 'pouch', 44 ]
+  rock:
+    name: 94
+    room: rock
     type: sprite
-    sprite: 'castle/door'
-    pos: [208, 46, 0]
-    desc: 11
+    sprite: 'rock/rock'
+    pos: [236, 33, 0]
+    bounds: [0,-10,34,-10,34,10,0,10]      # the player must be inside this rectangle to interact with object
+    bounds_relative: True
+    auto_depth: True
+    can_pick_up: False
     actions:
-      look: [msg, 11]
+      look:
+        - func: msg
+          args: 15
+      push:
+        - func: push_rock
+      pickup:
+        - func: msg
+          args: 91
+  king:
+    room: throne
+    actions:
+      talk:
+        - func: msg
+          args: [138, 139, 140, 141, 142, 143]
+      look:
+        - func: msg
+          args: 144
+  stump:
+    room: stump
+    actions:
+      look:
+        - func: msg
+          args: 42
+      lookin:
+        - func: msg
+          args: ['@cond', '"pouch" in game_state.collected', 110, 43]
+  throne:
+    room: throne
+    actions:
+      look:
+        - func: msg
+          args: 145
+  tree:
+    room: start
+    actions:
+      look:
+        - func: msg
+          args: ['@rand', 3, 7]
+  walnut:
+    name: 63
+    room: walnut
+    can_pick_up: True
+    inventory:
+      image: 'sprites/item_walnut'
+      desc: 64
+    actions:
+      look:
+        - func: look
+          args: ['walnut', 61]
+      pickup:
+        - func: pickup
+          args: ['walnut', 62]
       open:
-        - func: open_door_castle #], [addScore, 1]]
-          score: 1
-  oak:
-    room: goldegg
-    actions:
-      look: [msg, 18]
-      climb: [change_room, 'treetop', [80, 3], 'n', 28]
+        - func: open_walnut
   well:
     room: well
     actions:
-      look: [msg, 149]
+      look:
+        - func: msg
+          args: 149
+  window:
+    room: witch
+    actions:
+      look:
+        - func: msg
+          args: 73
+
+  witch_house:
+    room: witch
+    desc: 49
+    actions:
+      look:
+        - func: msg
+          args: 49
+      eat:
+        - func: msg
+          args: 74
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

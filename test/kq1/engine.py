@@ -20,14 +20,14 @@ def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 
 def read(value):
     if isinstance(value, list):
-        if value and isinstance(value[0], str):
-            func = getattr(scripts, value[0])
+        # if it's a list, return a new list,
+        if value and isinstance(value[0], str) and value[0][0] == '@':
+            func = getattr(scripts, value[0][1:])
             if func:
                 largs = [read(x) for x in value[1:]]
                 return func(*largs)
         else:
-            for v in value:
-                read(v)
+            return [read(x) for x in value]
     else:
         return value
 
@@ -131,7 +131,11 @@ def process_action(a):
                         elif isinstance(args, dict):
                             f(**args)
                         elif isinstance(args, list):
-                            f(*args)
+                            targs = read(args)
+                            if isinstance(targs, list):
+                                f(*targs)
+                            else:
+                                f(*[targs])
                         else:
                             f(*[args])
                     else:

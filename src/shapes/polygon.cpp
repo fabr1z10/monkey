@@ -9,6 +9,7 @@ Polygon::Polygon(const std::vector<float> &points) {
 		m_bounds.addPoint(glm::vec3(points[i], points[i+1], 0.f));
 	}
     addSegments(_points);
+	m_type = ShapeType::POLYGON;
 
 }
 

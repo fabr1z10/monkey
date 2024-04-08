@@ -140,7 +140,7 @@ void WalkableCharacter::update(double dt) {
 void NPCSierraFollow::update(double dt) {
 
     _time += dt;
-    if (_time > _recomputeEvery) {
+    if (_time > _recomputeEvery || _toGoPoints.empty()) {
         _time = 0.0;
         recomputePath();
     }
