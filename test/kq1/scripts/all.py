@@ -334,12 +334,16 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
         a.set_position(x, y, 0)
         a.add_component(monkey.components.NPCSierraFollow(func_ai, speed, call_every, z_func=settings.z_func,
                                                           anim_dir=anim_dir, walk_anim='walk', idle_anim='walk'))
-        if callback:
-            a.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
+        collide = kwargs.get('collider', False)
+        if collide:
+            flag = kwargs.get('flag', settings.CollisionFlags.foe)
+            mask = kwargs.get('mask', settings.CollisionFlags.player)
+            a.add_component(monkey.components.Collider(flag, mask, 1,
                                                        monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
-            a.user_data = {
-                'on_enter': [callback]
-            }
+            if callback:
+                a.user_data = {
+                    'on_enter': [callback]
+                }
         game_state.nodes[id] = a.id
         monkey.get_node(game_state.Ids.game_node).add(a)
         if msg != -1:
@@ -363,10 +367,6 @@ def spellStart():
     monkey.getClock().addEvent(True, True, 15, spellEnd)
 
 
-def create_goat():
-    setup3d()
-    if game_state.goat_east == 0:
-        _goat(226, 78)
 
 
 def _goat(x, y):
@@ -382,12 +382,24 @@ def _goat(x, y):
     game_state.nodes['goat'] = a.id
     monkey.get_node(game_state.Ids.game_node).add(a)
 
+def saxx(k,p,m):
+    exit(1)
+    print('ok')
+
+
+def create_goat():
+    setup3d()
+    if game_state.goat_east == 0:
+        create_foe('goat', 'sprites/goat', 226, 78, 50, None, -1, collider=True,
+            anim_dir=True, mask=settings.CollisionFlags.foe_hotspot, period=100, func_ai=func_random(0, 316, 0, 120))()
 
 def create_goat_e():
     setup3d()
     if game_state.goat_east == 1:
-        create_foe('goat', 'sprites/goat', 114, 57, 50, None, -1,
-            anim_dir=True, period=100, func_ai=func_random(0, 316, 0, 120))()
+        create_foe('goat', 'sprites/goat', 114, 57, 50, None, -1, collider=True,
+            anim_dir=True, mask=settings.CollisionFlags.foe_hotspot, period=100, func_ai=func_random(0, 316, 0, 120))()
+        #a = monkey.get_node(game_state.nodes['goat'])
+
         #_goat(114, 57)
 
 
@@ -397,11 +409,11 @@ def goat_move(goat, value):
     goat.remove()
 
 
-def goat_east(goat, a):
+def goat_east(hotspot, goat):
     goat_move(goat, 1)
 
 
-def goat_west(goat, a):
+def goat_west(hotspot, goat):
     goat_move(goat, 0)
 
 

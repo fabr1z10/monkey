@@ -393,10 +393,12 @@ goatpene:
       batch: "goatpene"
 #      wall: [210,97,270,97,270,105,210,105,210,97]
     - type: hotspot
-      aabb: [0,1,0,166]
+      aabb: [0,10,0,166]
       mask: 4
       flag: 8
+      tag: 0
       on_enter: ['goat_west']
+
   west: goatpenw
   south: stump
   north: birdcave
@@ -438,14 +440,14 @@ goatpenw:
       pos: [78, 84, 0]
       quad: [1,293,238,37]
       wall:
-        polyline: [0,0,36,7,72,15,122,15,171,14,222,4,238,4]
+        polyline: [0,0,36,7,72,15,122,15,171,14,222,4,239,4]
         baseline: true
     - type: bg      # fence south
       batch: "goatpenw"
       pos: [78, 13, 0]
       quad: [2, 196, 238, 93]
       wall:
-        polyline: [0,71,26,47,64,24,155,24,213,8,238,0]
+        polyline: [0,71,26,47,64,24,155,24,213,8,239,0]
         baseline: true
     - type: bg
       quad: [156,172,36,20]
@@ -458,9 +460,10 @@ goatpenw:
       auto_depth: True
       batch: "goatpenw"
     - type: hotspot
-      aabb: [315,316,0,166]
+      aabb: [306,316,0,166]
       mask: 4
       flag: 8
+      tag: 0
       on_enter: ['goat_east']
   west: fairy
   east: goatpene

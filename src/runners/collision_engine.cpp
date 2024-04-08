@@ -476,7 +476,7 @@ void ICollisionEngine::update(double) {
                             if (processed.find(pair) != processed.end()) continue;
                             processed.insert(UPair<Collider *>(c1, c2));
                             if (c1 == c2 || c2->getState() != NodeState::ACTIVE) continue;
-                            if (((c1->getCollisionMask() & c2->getCollisionFlag()) == 0) &&
+                            if (((c1->getCollisionMask() & c2->getCollisionFlag()) == 0) ||
                                 ((c2->getCollisionMask() & c1->getCollisionFlag()) == 0)) {
                                 continue;
                             }

@@ -18,7 +18,7 @@ link_aabb = {
 def graham(sprite, x, y, scale):
     b = monkey.get_sprite('sprites/' + sprite)
     b.add_component(monkey.components.PlayerSierraController(half_width=2, speed=100,z_func=settings.z_func, dir=settings.dir, skinWidth=1))
-    b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe, 0, monkey.shapes.Point()))
+    b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe | settings.CollisionFlags.foe_hotspot, 1, monkey.shapes.Point()))
     b.set_position(x, y, 0)
     b.scale=scale
     game_state.Ids.player = b.id
@@ -147,8 +147,9 @@ def hotspot(ciao):
         shape = monkey.shapes.Polygon(ciao['poly'])
     flag = ciao.get('flag', settings.CollisionFlags.foe)
     mask = ciao.get('mask', settings.CollisionFlags.player)
+    tag = ciao.get('tag', 1)
     print('ADDING HOTSPOT with mask',mask)
-    h.add_component(monkey.components.Collider(flag, mask, 1, shape, batch='lines'))
+    h.add_component(monkey.components.Collider(flag, mask, tag, shape, batch='lines'))
     h.user_data = {
         'on_enter': ciao.get('on_enter', None),
         'on_leave': ciao.get('on_leave', None)
@@ -172,7 +173,7 @@ def link(room, dir):
         pos_target = room['pos']
     h = monkey.Node()
     shape = monkey.shapes.AABB(*link_aabb[dir])
-    h.add_component(monkey.components.Collider(settings.CollisionFlags.foe, settings.CollisionFlags.player, 1,
+    h.add_component(monkey.components.Collider(settings.CollisionFlags.foe_hotspot, settings.CollisionFlags.player, 0,
         shape, batch='lines'))
     if pos_target:
         pos = pos_target
@@ -199,10 +200,10 @@ def south(ciao):
     return link(ciao.get('room'), 's')
 
 
-def on_enter_hotspot(a, b, c):
-    on_enter = b.user_data.get('on_enter')
+def on_enter_hotspot(hotspot, character, c):
+    on_enter = hotspot.user_data.get('on_enter')
     if on_enter:
-        getattr(scripts, on_enter[0])(a, b, *on_enter[1:])
+        getattr(scripts, on_enter[0])(hotspot, character, *on_enter[1:])
 
 
 def on_leave_hotspot(a,b):
