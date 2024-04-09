@@ -332,8 +332,10 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
         on_create = kwargs.get('on_create', None)
         a = monkey.get_sprite(sprite)
         a.set_position(x, y, 0)
+        walk_anim= kwargs.get('walk_anim', 'walk')
+        idle_anim = kwargs.get('idle_anim', 'walk')
         a.add_component(monkey.components.NPCSierraFollow(func_ai, speed, call_every, z_func=settings.z_func,
-                                                          anim_dir=anim_dir, walk_anim='walk', idle_anim='walk'))
+                                                          anim_dir=anim_dir, walk_anim=walk_anim, idle_anim=idle_anim))
         collide = kwargs.get('collider', False)
         if collide:
             flag = kwargs.get('flag', settings.CollisionFlags.foe)
@@ -389,14 +391,14 @@ def saxx(k,p,m):
 
 def create_goat():
     setup3d()
-    if game_state.goat_east == 0:
-        create_foe('goat', 'sprites/goat', 226, 78, 50, None, -1, collider=True,
+    if game_state.goat_follow == 0 and game_state.goat_east == 0:
+        create_foe('goat', 'sprites/goat', 226, 78, 50, None, -1, collider=True, idle_anim='idle',
             anim_dir=True, mask=settings.CollisionFlags.foe_hotspot, period=100, func_ai=func_random(0, 316, 0, 120))()
 
 def create_goat_e():
     setup3d()
-    if game_state.goat_east == 1:
-        create_foe('goat', 'sprites/goat', 114, 57, 50, None, -1, collider=True,
+    if game_state.goat_follow == 0 and game_state.goat_east == 1:
+        create_foe('goat', 'sprites/goat', 114, 57, 50, None, -1, collider=True, idle_anim='idle',
             anim_dir=True, mask=settings.CollisionFlags.foe_hotspot, period=100, func_ai=func_random(0, 316, 0, 120))()
         #a = monkey.get_node(game_state.nodes['goat'])
 
@@ -527,12 +529,13 @@ def show_carrot():
         game_state.goat_follow = 1
         player = monkey.get_node(game_state.Ids.player)
         goat = monkey.get_node(game_state.nodes['goat'])
-        if monkey.shapes.check_los((player.x, player.y), (goat.x, goat.y), 2):
-            goat.remove()
-            msg(id=113)
-            player.set_model(monkey.models.getSprite('sprites/graham_goat'), batch='sprites')
-        else:
-            msg(id=114)
+        #if monkey.shapes.check_los((player.x, player.y), (goat.x, goat.y), 2):
+        #    goat.remove()
+        #    msg(id=113)
+        #    player.set_model(monkey.models.getSprite('sprites/graham_goat'), batch='sprites')
+        #else:
+        msg(113)
+        goat.sendMessage(id='setFunc', func=func_follow_player)
     else:
         msg(112)
 
