@@ -67,7 +67,6 @@ def make_outline2_rect(x, y, w, h, color='FFFFFF', z=0):
 
 def bg(ciao):
     n = monkey.Node()
-    print('merda',ciao)
     pos = ciao.get('pos', [0, 0, 0])
     auto_depth = ciao.get('auto_depth', False)
     n.set_position(pos[0], pos[1], pos[2] if not auto_depth else 1 - pos[1] / 166.0)
@@ -84,29 +83,29 @@ def bg(ciao):
 
 
 
-    wall = ciao.get('wall')
-    if wall:
-        baseline = wall.get('baseline', False)
-        shape = None
-        if 'poly' in wall:
-            pl =wall['poly']
-            print('sucalo',pl)
-            shape = monkey.shapes.Polygon(wall['poly'])
-            if baseline:
-                zw = wall['zw']
-                abs_polyline = [zw[i] + pos[i%2] for i in range(0,len(zw))]
-                game_state.wallz.append({'baseline': abs_polyline, 'id': n.id})
-        elif 'polyline' in wall:
-            pl =wall['polyline']
-            shape = monkey.shapes.PolyLine(points=pl)
-            if baseline:
-                abs_polyline = [pl[i] + pos[i%2] for i in range(0,len(pl))]
-                game_state.wallz.append({'baseline': abs_polyline, 'id': n.id})
-        else:
-            print('wall must have poly or polyline')
-            exit(1)
-        n.add_component(monkey.components.Collider(2, 0, 0, shape, batch='lines'))
-        game_state.walkArea.addDynamic(n)
+    # wall = ciao.get('wall')
+    # if wall:
+    #     baseline = wall.get('baseline', False)
+    #     shape = None
+    #     if 'poly' in wall:
+    #         pl =wall['poly']
+    #         print('sucalo',pl)
+    #         shape = monkey.shapes.Polygon(wall['poly'])
+    #         if baseline:
+    #             zw = wall['zw']
+    #             abs_polyline = [zw[i] + pos[i%2] for i in range(0,len(zw))]
+    #             game_state.wallz.append({'baseline': abs_polyline, 'id': n.id})
+    #     elif 'polyline' in wall:
+    #         pl =wall['polyline']
+    #         shape = monkey.shapes.PolyLine(points=pl)
+    #         if baseline:
+    #             abs_polyline = [pl[i] + pos[i%2] for i in range(0,len(pl))]
+    #             game_state.wallz.append({'baseline': abs_polyline, 'id': n.id})
+    #     else:
+    #         print('wall must have poly or polyline')
+    #         exit(1)
+    #     n.add_component(monkey.components.Collider(2, 0, 0, shape, batch='lines'))
+    #     game_state.walkArea.addDynamic(n)
 
 
 
@@ -143,12 +142,14 @@ def hotspot(ciao):
     if 'aabb' in ciao:
         aabb = ciao['aabb']
         shape = monkey.shapes.AABB(aabb[0], aabb[1], aabb[2], aabb[3])
-    else:
+    elif 'poly' in ciao:
         shape = monkey.shapes.Polygon(ciao['poly'])
-    flag = ciao.get('flag', settings.CollisionFlags.foe)
+    else:
+        shape = monkey.shapes.PolyLine(points=ciao['polyline'])
+    flag = ciao.get('flag', settings.CollisionFlags.foe_hotspot)
     mask = ciao.get('mask', settings.CollisionFlags.player)
-    tag = ciao.get('tag', 1)
-    print('ADDING HOTSPOT with mask',mask)
+    tag = ciao.get('tag', 0)
+    print(' -- added hotspot (', flag, ', ', mask, ', ', tag, ')')
     h.add_component(monkey.components.Collider(flag, mask, tag, shape, batch='lines'))
     h.user_data = {
         'on_enter': ciao.get('on_enter', None),
@@ -161,6 +162,42 @@ def init():
     settings.items = monkey.read_data_file('items.yaml')
     settings.strings = monkey.read_data_file('strings.yaml')
     #settings.actions = monkey.read_data_file('scripts.yaml')
+
+
+# this is called for every node.
+# every node can have a <area> section which defines a polygonal area
+# you can define: who can access the area: no one, the player only, player and npcs
+
+def area(node, ciao):
+    if not 'area' in ciao:
+        return
+    a = ciao['area']
+    access = a['access']
+    assert(access in ['player', 'all', 'none'])
+    shape = None
+    if access == 'none':
+        if 'poly' in ciao:
+            poly = ciao['poly']
+            game_state.walkArea.addPolyWall(poly)
+            shape = monkey.shapes.Poly(poly)
+        elif 'polyline' in ciao:
+            polyline = ciao['polyline']
+            game_state.walkArea.addLinearWall(polyline)
+            shape = monkey.shapes.PolyLine(points=polyline)
+        node.add_component(monkey.components.Collider(2, 0, 0, shape, batch='lines'))
+    else:
+        bb = monkey.polyLineToPolygon(a['polyline'], 2) if 'polyline' in a else a['poly']
+        shape = monkey.shapes.Polygon(bb)
+        if access == 'player':
+            game_state.walkArea.addPolyWall(bb)
+        if 'on_enter' in a or 'on_leave' in a:
+            node.add_component(monkey.components.Collider(settings.CollisionFlags.foe_hotspot, settings.CollisionFlags.player, 0,
+                shape, batch='lines'))
+            node.user_data = {
+                'on_enter': a.get('on_enter', None),
+                'on_leave': a.get('on_leave', None)
+            }
+
 
 
 def link(room, dir):
@@ -206,10 +243,10 @@ def on_enter_hotspot(hotspot, character, c):
         getattr(scripts, on_enter[0])(hotspot, character, *on_enter[1:])
 
 
-def on_leave_hotspot(a,b):
-    on_leave = b.user_data.get('on_leave')
+def on_leave_hotspot(hotspot, character):
+    on_leave = hotspot.user_data.get('on_leave')
     if on_leave:
-        getattr(scripts, on_leave[0])(a, b, *on_leave[1:])
+        getattr(scripts, on_leave[0])(hotspot, character, *on_leave[1:])
 
 
 def make_wall(points):
@@ -353,18 +390,18 @@ def create_room(room):
 
 
     # make room
-    for wall in room_info.get('walls', []):
-        w = monkey.Node()
-        w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
-        wa.addLinearWall(wall)
-        game_node.add(w)
-
-    game_state.wallz = []
-    for wall in room_info.get('walls_z', []):
-        w = monkey.Node()
-        w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
-        game_state.wallz.append(wall)
-        game_node.add(w)
+    # for wall in room_info.get('walls', []):
+    #     w = monkey.Node()
+    #     w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
+    #     wa.addLinearWall(wall)
+    #     game_node.add(w)
+    #
+    # game_state.wallz = []
+    # for wall in room_info.get('walls_z', []):
+    #     w = monkey.Node()
+    #     w.add_component(monkey.components.Collider(2, 0, 0, monkey.shapes.PolyLine(points=wall), batch='lines'))
+    #     game_state.wallz.append(wall)
+    #     game_node.add(w)
 
 
     if 'west' in room_info:
@@ -385,12 +422,11 @@ def create_room(room):
             continue
         if f:
             node = f(item)
-            print(item)
-            print('suco',node.id)
             if 'tag' in item:
-                print('adding tag ',item['tag'], node.id)
+                #print('adding tag ',item['tag'], node.id)
                 game_state.nodes[item['tag']] = node.id
             game_node.add(node)
+            area(game_node, item)
 
     # place dynamic items
     print (' --- adding dynamic items...')
@@ -402,6 +438,7 @@ def create_room(room):
                 if f:
                     node = f(desc)
                     game_node.add(node)
+                    area(node, desc)
                     game_state.nodes[item] = node.id
 
 

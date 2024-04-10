@@ -17,7 +17,7 @@ Engine& getEngine();
 std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs&);
 std::shared_ptr<Node> getSprite(const std::string& id);
 std::shared_ptr<Model> getSpriteModel(const std::string& id);
-
+std::vector<float> polyLineToPolygon(const std::vector<float>& in, float);
 bool checkLOS(glm::vec2 P0, glm::vec2 P1, int mask = 0);
 
 Clock* getClock();

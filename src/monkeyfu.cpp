@@ -3,6 +3,8 @@
 #include "pyhelper.h"
 #include "pycast.h"
 #include "runners/collision_engine.h"
+#include "util.h"
+
 
 py::dict readDataFile(const std::string& path) {
     py::object os = py::module_::import("yaml");
@@ -96,3 +98,39 @@ int killScript(const std::string& id) {
     Engine::instance().getRoom()->getRunner<Scheduler>()->kill(id);
 }
 //
+
+
+std::vector<float> polyLineToPolygon(const std::vector<float>& p, float thickness) {
+	glm::vec2 u0(0.f);
+	std::vector<glm::vec2> pointsBelow;
+	std::vector<glm::vec2> pointsAbove;
+	glm::vec2 p1;
+	glm::vec2 n;
+	for (int i = 0; i < p.size(); i+=2) {
+		p1 = glm::vec2(p[i], p[i+1]);
+		if (i < p.size() - 2) {
+			glm::vec2 p2(p[i+2], p[i+3]);
+			glm::vec2 u1 = glm::normalize(p2 - p1);
+			n = (u0 == glm::vec2(0.f)) ?  rot90(u1) : (0.5f * (rot90(u0) + rot90(u1)));
+			u0 = u1;
+		} else {
+			n = rot90(u0);
+		}
+		// rotate counterclockwise
+		glm::vec2 above = p1 + n * thickness;
+		glm::vec2 below = p1 - n * thickness;
+		pointsBelow.push_back(below);
+		pointsAbove.push_back(above);
+	}
+
+	std::vector<float> points;
+	for (int i = 0; i < pointsBelow.size(); i++) {
+		points.push_back(pointsBelow[i].x);
+		points.push_back(pointsBelow[i].y);
+	}
+	for (int i = pointsAbove.size()-1; i >= 0; i--) {
+		points.push_back(pointsAbove[i].x);
+		points.push_back(pointsAbove[i].y);
+	}
+	return points;
+}

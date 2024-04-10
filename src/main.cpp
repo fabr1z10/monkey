@@ -146,6 +146,7 @@ PYBIND11_MODULE(monkey, m) {
         .export_values();
 
     m.def("add", &add);
+    m.def("polyLineToPolygon", &polyLineToPolygon);
 //    m.def("read", &read_png);
 //    m.def("test",&add2, "i"_a = 1, "j"_a = 3);
     m.def("from_hex", &fromHex, py::arg("color"));

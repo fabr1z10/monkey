@@ -114,7 +114,7 @@ void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::ve
         }
         _walls.emplace_back(WallInfo(p0, p1,previousPointNodeId,currentPointNodeId));
         if (previousPointNodeId != -1 && currentPointNodeId != -1) {
-            std::cout << "ADJACENT: " << previousPointNodeId << ", " << currentPointNodeId << "\n";
+            //std::cout << "ADJACENT: " << previousPointNodeId << ", " << currentPointNodeId << "\n";
             _adjacentNodes.insert(std::make_pair(previousPointNodeId, currentPointNodeId));
             _adjacentNodes.insert(std::make_pair(currentPointNodeId, previousPointNodeId));
         }
@@ -125,7 +125,7 @@ void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::ve
 
     }
     if (originNodeId != -1 && currentPointNodeId != -1) {
-        std::cout << "ADJACENT: " << originNodeId << ", " << currentPointNodeId << "\n";
+        //std::cout << "ADJACENT: " << originNodeId << ", " << currentPointNodeId << "\n";
         _adjacentNodes.insert(std::make_pair(originNodeId, currentPointNodeId));
         _adjacentNodes.insert(std::make_pair(currentPointNodeId, originNodeId));
     }
@@ -168,8 +168,8 @@ void WalkArea::recompute() {
         for (int j=i+1; j <n; j++) {
             const auto& ni= _graph->getNode(i);
             const auto& nj= _graph->getNode(j);
-            std::cout << " checking node " << i << " vs node " << j << "\n";
-            std::cout << "(" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
+            //std::cout << " checking node " << i << " vs node " << j << "\n";
+            //std::cout << "(" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
 
             float t = 0.f;
             bool addEdge = true;
@@ -204,7 +204,7 @@ void WalkArea::recompute() {
 
             }
             if (addEdge) {
-                std::cout << "ADDED EDGE: (" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
+                //std::cout << "ADDED EDGE: (" << ni.pos.x << ", " << ni.pos.y << ") --> (" << nj.pos.x << ", " << nj.pos.y << ")\n";
                 _graph->addEdge(i,j);
             }
 

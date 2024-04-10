@@ -420,16 +420,16 @@ goatpenw:
 #      auto_depth: true
 #      pos: [148, 69, 0]
 #      quad: [118,167,32,24]
-#    - type: bg      # bush
-#      batch: "goatpenw"
-#      auto_depth: true
-#      pos: [8, 40, 0]
-#      quad: [1,167,48,27]
-#    - type: bg      # rock
-#      batch: "goatpenw"
-#      auto_depth: true
-#      pos: [164, 9, 0]
-#      quad: [50,167,64,17]
+    - type: bg      # bush
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [8, 40, 0]
+      quad: [1,167,48,27]
+    - type: bg      # rock
+      batch: "goatpenw"
+      auto_depth: true
+      pos: [164, 9, 0]
+      quad: [50,167,64,17]
 #    - type: bg      # tree
 #      batch: "goatpenw"
 #      auto_depth: true
@@ -786,6 +786,36 @@ rivrbend:
       batch: "rivrbend"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg     # rock
+      batch: "rivrbend"
+      pos: [94,79,0]
+      quad: [1,167,36,9]
+      wall:
+        poly: [ 0,2,18,0,26,0,35,2]
+        zw: [ 0,2,18,0,26,0,35,2]
+        baseline: True
+    - type: bg     # rock
+      batch: "rivrbend"
+      pos: [134,31,0]
+      quad: [1,177,76,98]
+      wall:
+        polyline: [0,0,76,0]
+        baseline: True
+    - type: bg     # rock
+      batch: "rivrbend"
+      pos: [184,15,0]
+      quad: [1,277,68,30]
+      wall:
+        polyline: [0,0,68,0]
+        baseline: True
+    - type: bg     # rock
+      batch: "rivrbend"
+      pos: [240,1,0]
+      quad: [86,168,70,64]
+      wall:
+        poly: [0,17,32,14,39,8,46,7,52,0,56,0,56,15,86,17]
+        zw: [0,17,32,14,39,8,46,7,52,0,56,0,56,15,86,17]
+        baseline: True
 rivtrees:
   batches:
     - "rivtrees"
@@ -979,20 +1009,27 @@ start:
   #room_number: 38
   walkarea:
     poly: [0,0, 288, 0, 288, 10, 316,10, 316,128, 164,128,164,20,0,20]
-    holes:
-      - poly: [175,45,164,45,164,26,175,26,186,22,199,35,204,36]
-        solid: False
-        on_enter: ['drown', 184, 34, 1]
-      - poly: [0,0,288,0,288,21,269,28,249,28,236,23,221,8,0,8]
-        solid: False
-        on_enter: ['drownx', 3, 1]
-
+#    holes:
+#      - poly: [175,45,164,45,164,26,175,26,186,22,199,35,204,36]
+#        solid: False
+#        on_enter: ['drown', 184, 34, 1]
+      #- polyline: [0,6,226,6,237,17,243,20,312,0]
+        #poly: [0,0,288,0,288,21,269,28,249,28,236,23,221,8,0,8]
+      #  solid: False
+      #  on_enter: ['drownx', 3, 1]
+  on_start: create_alli
   batches:
     - "start"
   west: castle
   east: lake2
   north: gardene
   items:
+    - type: bg
+      area:
+        access: player
+        polyline: [-1,6,226,6,237,17,243,20,312,0]
+        #poly: [0,6,100,6,100,8,0,8]
+        on_enter: ['drownx', 3, 1]
     - type: bg
       batch: "start"
       pos: [0, 0, -1]
@@ -1018,6 +1055,9 @@ start:
     - type: sprite
       sprite: 'sprites/flag3'
       pos: [66,155,0]
+#    - type: hotspot
+#      polyline: [0,6,226,6,237,17,243,20,312,0]
+#      solid: False
 stonebri:
   batches:
     - "stonebri"

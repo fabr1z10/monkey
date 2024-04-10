@@ -129,6 +129,20 @@ multi_sprites:
 
 
 sprites:
+  alligator:
+    animations:
+      walk:
+        frames:
+          - tex: [75,23,26,4]
+            anchor: [8,0]
+          - tex: [75,1,26,8]
+            anchor: [8,0]
+          - tex: [75,11,24,11]
+            anchor: [8,0]
+          - tex: [75,1,26,8]
+            anchor: [8,0]
+
+
   flag1:
     animations:
       default:

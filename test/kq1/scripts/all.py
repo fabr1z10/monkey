@@ -389,6 +389,12 @@ def saxx(k,p,m):
     print('ok')
 
 
+def create_alli():
+    setup3d()
+    create_foe('a1', 'sprites/alligator', 2, 2, 50, None, -1, collider=False, idle_anim='walk',
+        anim_dir=False, period=100, func_ai=func_random(0, 316, 0, 120))()
+
+
 def create_goat():
     setup3d()
     if game_state.goat_follow == 0 and game_state.goat_east == 0:
@@ -504,11 +510,13 @@ def setup3d():
         monkey.get_node(game_state.Ids.game_node).add(a)
 
 
-def start_swim(player, other):
+def start_swim(other, player):
+    print('FOKKAMI2')
     player.set_model(monkey.models.getSprite('sprites/graham_swim'), batch='sprites')
 
 
-def end_swim(player, other):
+def end_swim(other, player):
+    print('FOKKAMI')
     player.set_model(monkey.models.getSprite('sprites/graham'), batch='sprites')
 
 
@@ -540,15 +548,15 @@ def show_carrot():
         msg(112)
 
 
-def drown(player, other, x, y, line):
+def drown(other, player, x, y, line):
     _drown(player, x, y, line)
 
 
-def drownx(player, other, y, line):
+def drownx(other, player, y, line):
     _drown(player, player.x, y, line)
 
 
-def drowny(player, other, x, line):
+def drowny(other, player, x, line):
     _drown(player, x, player.y, line)
 
 
@@ -594,8 +602,8 @@ def _addTroll(x, y, anim):
     return troll.id
 
 
-def enter_troll_bridge_side(player, other):
-    other.remove()
+def enter_troll_bridge_side(hotspot, player):
+    hotspot.remove()
     id = _addTroll(50, 100, 'walk_e')
     s = monkey.Script(id='troll')
     message(s, 134)
@@ -603,8 +611,8 @@ def enter_troll_bridge_side(player, other):
     monkey.play(s)
 
 
-def enter_troll_bridge(player, other):
-    other.remove()
+def enter_troll_bridge(hotspot, player):
+    hotspot.remove()
     id = _addTroll(75, 100, 'walk_s')
 
     s = monkey.Script(id='troll')
