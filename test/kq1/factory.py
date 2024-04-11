@@ -5,12 +5,18 @@ import game_state
 import inventory
 import engine
 
+link_width = 5
+link_up = 120
 
 link_aabb = {
-    'w': [0, 5, 0, 166],
-    'e': [311, 316, 0, 166],
-    's': [0, 316, 0, 1],
-    'n': [0, 316, 120, 125]
+    'w': [0, 0, link_width,0, link_width, 166, 0, 166],
+    'e': [316 - link_width, 0, 316 ,0, 316, 166, 316 - link_width, 166],
+    'n': [0, link_up, 316, link_up, 316,link_up + link_width,0, link_up + link_width],
+    's': [0,0,316,0,316,link_width,0,link_width]
+    #'w': [0, 5, 0, 166],
+    #'e': [311, 316, 0, 166],
+    #'s': [0, 316, 0, 1],
+    #'n': [0, 316, 120, 125]
 }
 
 
@@ -189,9 +195,13 @@ def area(node, ciao):
         bb = monkey.polyLineToPolygon(a['polyline'], 2) if 'polyline' in a else a['poly']
         shape = monkey.shapes.Polygon(bb)
         if access == 'player':
+            # if only player can access here, we need to add the poly to the walkarea
             game_state.walkArea.addPolyWall(bb)
         if 'on_enter' in a or 'on_leave' in a:
-            node.add_component(monkey.components.Collider(settings.CollisionFlags.foe_hotspot, settings.CollisionFlags.player, 0,
+            character = a.get('character', 'player')
+            assert (character in ['player', 'npc'])
+            mask = settings.CollisionFlags.player if character=='player' else settings.CollisionFlags.foe
+            node.add_component(monkey.components.Collider(settings.CollisionFlags.foe_hotspot, mask, 0,
                 shape, batch='lines'))
             node.user_data = {
                 'on_enter': a.get('on_enter', None),
@@ -201,40 +211,23 @@ def area(node, ciao):
 
 
 def link(room, dir):
-    room_target = ''
-    pos_target = None
+    node = monkey.Node()
+    x = None
+    y = None
     if isinstance(room, str):
         room_target = room
     else:
         room_target = room['room']
-        pos_target = room['pos']
-    h = monkey.Node()
-    shape = monkey.shapes.AABB(*link_aabb[dir])
-    h.add_component(monkey.components.Collider(settings.CollisionFlags.foe_hotspot, settings.CollisionFlags.player, 0,
-        shape, batch='lines'))
-    if pos_target:
-        pos = pos_target
-        on_enter_func = 'goto_room'
-    else:
-        pos = [5 if dir == 'e' else 310 if dir == 'w' else 0, 2 if dir == 'n' else 118 if dir == 's' else 0]
-        on_enter_func = 'goto_room_y' if dir == 'e' or dir == 'w' else 'goto_room_x'
-    h.user_data = {
-        'on_enter': [on_enter_func, room_target, pos, dir]
-    }
-    return h
+        x = room.get('x', None)
+        y = room.get('y', None)
+    if not x:
+        x = link_width + 1 if dir == 'e' else (316 - link_width - 1 if dir == 'w' else None)
+    if not y:
+        y = link_width + 1 if dir == 'n' else (link_up - link_width - 1 if dir == 's' else None)
+    area(node, {'area': {'poly': link_aabb[dir], 'access': 'all', 'on_enter': ['goto_room', room_target, [x, y], dir] } })
+    return node
 
 
-def west(ciao):
-    return link(ciao.get('room'), 'w')
-
-def east(ciao):
-    return link(ciao.get('room'), 'e')
-
-def north(ciao):
-    return link(ciao.get('room'), 'n')
-
-def south(ciao):
-    return link(ciao.get('room'), 's')
 
 
 def on_enter_hotspot(hotspot, character, c):

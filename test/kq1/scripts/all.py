@@ -196,28 +196,14 @@ def show_item_detail(script, item_id):
 def goto_room(playe, other, room, pos, dir):
     settings.previous_room = settings.room
     settings.room = room
-    settings.pos = pos
+    player = monkey.get_node(game_state.Ids.player)
+    p = [pos[0] if pos[0] else player.x, pos[1] if pos[1] else player.y]
+    settings.pos = p
     settings.dir = dir
     monkey.close_room()
 
 
-def goto_room_x(playe, other, room, pos, dir):
-    settings.previous_room = settings.room
-    settings.room = room
-    settings.pos = pos
-    settings.pos[0] = monkey.get_node(game_state.Ids.player).x
-    settings.dir = dir
-    monkey.close_room()
 
-
-def goto_room_y(playee, other, room, pos, dir):
-    settings.previous_room = settings.room
-
-    settings.room = room
-    settings.pos = pos
-    settings.pos[1] = monkey.get_node(game_state.Ids.player).y
-    settings.dir = dir
-    monkey.close_room()
 
 
 def open_door_castle():
