@@ -36,16 +36,69 @@ bridge:
   batches:
     - "bridge"
   walkarea:
-    poly: [ 0, 0, 316, 0, 316, 160, 0, 160 ]
+    poly: [ 40, 0, 316, 0, 316, 160, 25, 160, 25,110, 90,110,75,104,56,104,51,95,40,64 ]
   north: lake2
   east: stonebr
   south: gnome
-  west: bridge
+  #west: bridge
   items:
     - type: bg
       batch: "bridge"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg      # tree
+      batch: "bridge"
+      auto_depth: true
+      pos: [0, 83, 0]
+      quad: [1, 167, 88, 83]
+      baseline: [0,0,23,0,35,12,50,12,55,18,55,22,71,22,88,27]
+    - type: bg      # tree
+      batch: "bridge"
+      pos: [48, 64, 0]
+      quad: [95, 167, 48, 36]
+      area:
+        access: none
+        poly: [0,0,25,0,34,2,46,10,48,10,8,8]
+      baseline: [0,0,25,0,34,2,46,10,48,10]
+    - type: bg      # tree
+      batch: "bridge"
+      pos: [192, 95, 0]
+      auto_depth: True
+      quad: [148, 167, 58, 40]
+      area:
+        access: none
+        polyline: [20,0,30,0]
+    - type: bg
+      area:
+        access: player
+        poly: [40,0,60,0,82,7,86,12,104,18,108,16,123,18,133,23,135,21,146,21,152,17,182,63,141,62,122,66,119,64,106,67,97,65,91,60,86,59,70,59,65,62,60,62,46,60,40,64]
+        collide:
+          0:
+            on_enter: drown_bridge
+    - type: bg      # tree
+      batch: "bridge"
+      pos: [110, 88, 0]
+      auto_depth: True
+      quad: [100, 212, 118, 78]
+      area:
+        access: none
+        polyline: [35,0,58,0]
+    - type: bg      # tree
+      batch: "bridge"
+      pos: [154, 81, 0]
+      quad: [239,168,38,24]
+      area:
+        access: none
+        poly: [0,2,10,0,18,0,32,2,38,7,10,7]
+      baseline: [0,2,10,0,18,0,32,2,38,7]
+    - type: bg      # tree
+      batch: "bridge"
+      auto_depth: True
+      pos: [122,62,0]
+      quad: [210,167,26,16]
+      area:
+        access: none
+        polyline: [0,5,26,0]
 
 castle:
   batches:
@@ -56,19 +109,35 @@ castle:
   on_start: start_castle
   walkarea:
     poly: [0,10,20,10,20,0,316,0,316,20,260,20,251,47,203,47,191,20,128,20,149,46,149,130,0,130,0,20]
-    holes:
-      - poly: [128,20,149,46,116,33]
-        solid: False
-        on_enter: ['drown', 128, 33, 1]
-      - poly: [20,0,316,0,316,7,92,7,79,21,62,28,49,28,35,22,20,10]
-        solid: False
-        on_enter: ['drownx', 3, 1]
+#    holes:
+#      - poly: [128,20,149,46,116,33]
+#        solid: False
+#        on_enter: ['drown', 128, 33, 1]
+#      - poly: [20,0,316,0,316,7,92,7,79,21,62,28,49,28,35,22,20,10]
+#        solid: False
+#        on_enter: ['drownx', 3, 1]
 
   items:
     - type: bg
       batch: "castle"
       pos: [0, 0, -1]
       quad: [0, 0, 316, 166]
+      # drown areas
+    - type: bg
+      area:
+        access: player
+        #poly: [-1,4,226,4,237,15,243,18,312,0,312,2,296,10,286,21,270,28,247,28,234,21,220,8,-1,8]
+        poly: [317,4,317,8,93,8,91,14,76,25,64,28,48,28,40,26,21,12,21,8,0,4,0,0,18,0,72,20,80,15,86,4]
+        collide:
+          0:
+            on_enter: ['drownx', 3, 1]
+    - type: bg
+      area:
+        access: player
+        poly: [128,20,149,46,116,33]
+        collide:
+          0:
+            on_enter: ['drown', 128, 33, 1]
     - type: bg      # tree
       batch: "castle"
       auto_depth: true
@@ -625,19 +694,67 @@ lake2:
   north: fairy
   west: start
   east: rivinlak
-  south: bridge
+  south:
+    room: bridge
+    x_bounds: [28, 316]
   items:
     - type: bg
       batch: "lake2"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
-    - type: hotspot
-      poly: [207,43,228,38,234,31,238,6,263,4,297,10,316,5,316,112,293,114,263,111,274,113,264,108,208,108,187,104,170,96,169,93,173,90,202,87,209,83,194,61,203,46]
-      on_enter: ['start_swim']
-      on_leave: ['end_swim']
-    - type: hotspot
-      poly: [235,32,221,15,207,8,195,8,173,0,209,0,238,8,276,8,295,10,235,32]
-      on_enter: ['drown3']
+    - type: bg
+      area:
+        access: player
+        poly: [207,43,228,38,234,31,238,6,263,4,297,10,316,5,316,112,293,114,263,111,274,113,264,108,208,108,187,104,170,96,169,93,173,90,202,87,209,83,194,61,203,46]
+        collide:
+          0:
+            on_enter: 'start_swim'
+            on_exit: 'end_swim'
+    - type: bg
+      area:
+        access: player
+        poly: [235,32,221,15,207,8,195,8,173,0,209,0,238,8,276,8,295,10,235,32]
+        collide:
+          0:
+            on_enter: ['drownxy', 50]
+    - type: bg      # tree
+      batch: "lake2"
+      auto_depth: true
+      pos: [10, 95, 0]
+      quad: [1, 167, 105, 71]
+      area:
+        access: none
+        polyline: [34,0,66,0]
+    - type: bg      # tree
+      batch: "lake2"
+      auto_depth: true
+      pos: [180, 79, 0]
+      quad: [115, 219, 24, 44]
+      area:
+        access: none
+        polyline: [0,0,24,0]
+    - type: bg      # tree
+      batch: "lake2"
+      auto_depth: true
+      pos: [114, 120, 1]
+      quad: [107, 167, 60, 46]
+    - type: bg      # tree
+      batch: "lake2"
+      auto_depth: true
+      pos: [154, 31, 0]
+      quad: [176, 168, 138, 135]
+      area:
+        access: none
+        polyline: [50,0,74,0]
+    - type: bg      # tree
+      batch: "lake2"
+      auto_depth: true
+      pos: [32, 48, 0]
+      quad: [27, 271, 86, 31]
+      area:
+        access: none
+        poly: [0,0,86,0,27,9,2,9]
+
 lake3:
   batches:
     - "lake3"
@@ -1006,17 +1123,8 @@ southcas:
       quad: [ 0, 0, 316, 166 ]
 
 start:
-  #room_number: 38
   walkarea:
     poly: [0,0, 288, 0, 288, 10, 316,10, 316,128, 164,128,164,20,0,20]
-#    holes:
-#      - poly: [175,45,164,45,164,26,175,26,186,22,199,35,204,36]
-#        solid: False
-#        on_enter: ['drown', 184, 34, 1]
-      #- polyline: [0,6,226,6,237,17,243,20,312,0]
-        #poly: [0,0,288,0,288,21,269,28,249,28,236,23,221,8,0,8]
-      #  solid: False
-      #  on_enter: ['drownx', 3, 1]
   on_start: create_alli
   batches:
     - "start"
@@ -1027,9 +1135,17 @@ start:
     - type: bg
       area:
         access: player
-        #polyline: [-1,6,226,6,237,17,243,20,312,0]
         poly: [-1,4,226,4,237,15,243,18,312,0,312,2,296,10,286,21,270,28,247,28,234,21,220,8,-1,8]
-        on_enter: ['drownx', 3, 1]
+        collide:
+          0:
+            on_enter: ['drownx', 3, 1]
+    - type: bg
+      area:
+        access: player
+        poly: [175,45,164,45,164,26,175,26,186,22,199,35,204,36]
+        collide:
+          0:
+            on_enter: ['drown', 184, 34, 1]
     - type: bg
       batch: "start"
       pos: [0, 0, -1]
@@ -1039,8 +1155,10 @@ start:
       auto_depth: true
       pos: [198, 39, 0]
       quad: [86, 167, 118, 127]
-      wall:
+      area:
+        access: none
         poly: [65,0,85,0,85,10,65,10]
+
     - type: bg      # castle
       batch: "start"
       quad: [208,167, 70,137]
@@ -1055,9 +1173,6 @@ start:
     - type: sprite
       sprite: 'sprites/flag3'
       pos: [66,155,0]
-#    - type: hotspot
-#      polyline: [0,6,226,6,237,17,243,20,312,0]
-#      solid: False
 stonebri:
   batches:
     - "stonebri"

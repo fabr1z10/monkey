@@ -52,10 +52,10 @@ void PlayerSierra2DController::start() {
 void Sierra2DController::update(double) {
 
     auto currentPos = m_node->getWorldPosition();
-    if (currentPos != _previousPosition) {
+    //if (currentPos != _previousPosition) {
         updateZ(currentPos.x, currentPos.y);
         _previousPosition = currentPos;
-    }
+    //}
 
 }
 

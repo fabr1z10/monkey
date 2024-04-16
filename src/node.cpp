@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "components/renderer.h"
 #include "util.h"
+#include "components/collider.h"
 //#include "components/statemachine.h"
 //#include "models/text.h"
 
@@ -314,6 +315,9 @@ float Node::getZ() const {
 	return m_worldMatrix[3][2];
 }
 
+int Node::getCollisionTag() const {
+	return getComponent<Collider>()->getCollisionTag();
+}
 
 
 void Node::setScale(float scale) {

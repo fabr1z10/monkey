@@ -228,11 +228,13 @@ PYBIND11_MODULE(monkey, m) {
         .def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
 		.def_property_readonly("z", &Node::getZ)
+		.def_property_readonly("collisionTag", &Node::getCollisionTag)
         .def("setAnimation", &Node::setAnimation)
         .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("state", &Node::getState, &Node::setState)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData)
 		.def_property("scale", &Node::getScale, &Node::setScale);
+
 
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
     	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
@@ -418,8 +420,8 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
 	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
 	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
-		.def(py::init<float, float>(), "width"_a, "height"_a)
-		.def("add_response", &CollisionEngine2D::addResponse);
+		.def(py::init<float, float>(), "width"_a, "height"_a);
+		//.def("add_response", &CollisionEngine2D::addResponse);
 //    py::class_<CollisionEngine3D, ICollisionEngine, std::shared_ptr<CollisionEngine3D>>(m, "CollisionEngine3D")
 //        .def(py::init<float, float, float>(), "width"_a, "height"_a, "depth"_a);
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
@@ -537,6 +539,7 @@ PYBIND11_MODULE(monkey, m) {
 //
 	py::class_<Collider, Component, std::shared_ptr<Collider>>(mc, "icollider")
 		.def_property_readonly("bounds", &Collider::bounds)
+		.def("setResponse", &Collider::setResponse)
 		.def("set_collision_flag", &Collider::setCollisionFlag);
 
 	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(mc, "Collider")

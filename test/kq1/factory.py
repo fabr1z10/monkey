@@ -24,7 +24,7 @@ link_aabb = {
 def graham(sprite, x, y, scale):
     b = monkey.get_sprite('sprites/' + sprite)
     b.add_component(monkey.components.PlayerSierraController(half_width=2, speed=100,z_func=settings.z_func, dir=settings.dir, skinWidth=1))
-    b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe | settings.CollisionFlags.foe_hotspot, 1, monkey.shapes.Point()))
+    b.add_component(monkey.components.Collider(settings.CollisionFlags.player, settings.CollisionFlags.foe | settings.CollisionFlags.foe_hotspot, 0, monkey.shapes.Point()))
     b.set_position(x, y, 0)
     b.scale=scale
     game_state.Ids.player = b.id
@@ -174,7 +174,19 @@ def init():
 # every node can have a <area> section which defines a polygonal area
 # you can define: who can access the area: no one, the player only, player and npcs
 
+def getFunc(f):
+    if isinstance(f, str):
+        return getattr(scripts, f)
+    elif isinstance(f, list):
+        return getattr(scripts, f[0])(*f[1:])
+    else:
+        return f
+
+
 def area(node, ciao):
+    if 'baseline' in ciao:
+        baseline = ciao['baseline']
+        game_state.wallz.append({'baseline': baseline, 'id': node.id})
     if not 'area' in ciao:
         return
     a = ciao['area']
@@ -182,14 +194,15 @@ def area(node, ciao):
     assert(access in ['player', 'all', 'none'])
     shape = None
     if access == 'none':
-        if 'poly' in ciao:
-            poly = ciao['poly']
+        if 'poly' in a:
+            poly = a['poly']
             game_state.walkArea.addPolyWall(poly)
-            shape = monkey.shapes.Poly(poly)
-        elif 'polyline' in ciao:
-            polyline = ciao['polyline']
+            shape = monkey.shapes.Polygon(poly)
+        elif 'polyline' in a:
+            polyline = a['polyline']
             game_state.walkArea.addLinearWall(polyline)
             shape = monkey.shapes.PolyLine(points=polyline)
+        print('FIIIFIF')
         node.add_component(monkey.components.Collider(2, 0, 0, shape, batch='lines'))
     else:
         bb = monkey.polyLineToPolygon(a['polyline'], 2) if 'polyline' in a else a['poly']
@@ -197,16 +210,19 @@ def area(node, ciao):
         if access == 'player':
             # if only player can access here, we need to add the poly to the walkarea
             game_state.walkArea.addPolyWall(bb)
-        if 'on_enter' in a or 'on_leave' in a:
+        if 'collide' in a:
             character = a.get('character', 'player')
             assert (character in ['player', 'npc'])
             mask = settings.CollisionFlags.player if character=='player' else settings.CollisionFlags.foe
-            node.add_component(monkey.components.Collider(settings.CollisionFlags.foe_hotspot, mask, 0,
-                shape, batch='lines'))
-            node.user_data = {
-                'on_enter': a.get('on_enter', None),
-                'on_leave': a.get('on_leave', None)
-            }
+            collider = monkey.components.Collider(settings.CollisionFlags.foe_hotspot, mask, 0,
+                shape, batch='lines')
+            for tag, r in a['collide'].items():
+                collider.setResponse(tag,
+                                     on_enter=getFunc(r.get('on_enter')),
+                                     on_exit=getFunc(r.get('on_exit')),
+                                     on_continue=getFunc(r.get('on_continue')))
+            node.add_component(collider)
+
 
 
 
@@ -214,32 +230,40 @@ def link(room, dir):
     node = monkey.Node()
     x = None
     y = None
+    x_bounds = [0, 316]
+    y_bounds = [0, 166]
     if isinstance(room, str):
         room_target = room
     else:
         room_target = room['room']
         x = room.get('x', None)
         y = room.get('y', None)
+        x_bounds = room.get('x_bounds', None)
+        y_bounds = room.get('x_bounds', None)
     if not x:
         x = link_width + 1 if dir == 'e' else (316 - link_width - 1 if dir == 'w' else None)
     if not y:
         y = link_width + 1 if dir == 'n' else (link_up - link_width - 1 if dir == 's' else None)
-    area(node, {'area': {'poly': link_aabb[dir], 'access': 'all', 'on_enter': ['goto_room', room_target, [x, y], dir] } })
+    area(node, {'area': {'poly': link_aabb[dir], 'access': 'all',
+                         'collide': {0: {'on_enter': ['goto_room', room_target, [x, y], dir, x_bounds, y_bounds]}}}})
     return node
 
 
 
 
-def on_enter_hotspot(hotspot, character, c):
-    on_enter = hotspot.user_data.get('on_enter')
-    if on_enter:
-        getattr(scripts, on_enter[0])(hotspot, character, *on_enter[1:])
-
-
-def on_leave_hotspot(hotspot, character):
-    on_leave = hotspot.user_data.get('on_leave')
-    if on_leave:
-        getattr(scripts, on_leave[0])(hotspot, character, *on_leave[1:])
+# def on_enter_hotspot(c1, c2, c):
+#     on_enter = c1.user_data.get('on_enter')
+#     if on_enter
+#         getattr(scripts, on_enter[0])(hotspot, character, *on_enter[1:])
+#
+#     on_enter = c2.user_data.get('on_enter')
+#     if on_enter:
+#         getattr(scripts, on_enter[0])(hotspot, character, *on_enter[1:])
+#
+# def on_leave_hotspot(hotspot, character):
+#     on_leave = hotspot.user_data.get('on_leave')
+#     if on_leave:
+#         getattr(scripts, on_leave[0])(hotspot, character, *on_leave[1:])
 
 
 def make_wall(points):
@@ -252,9 +276,10 @@ def make_wall(points):
 
 
 def create_room(room):
+    game_state.wallz = []
     game_state.nodes = dict()
     ce = monkey.CollisionEngine2D(80, 80)
-    ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
+    #ce.add_response(0, 0, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
     room.add_runner(ce)
     room.add_runner(monkey.Scheduler())
     room.add_runner(monkey.Clock())
@@ -418,8 +443,9 @@ def create_room(room):
             if 'tag' in item:
                 #print('adding tag ',item['tag'], node.id)
                 game_state.nodes[item['tag']] = node.id
+            area(node, item)
             game_node.add(node)
-            area(game_node, item)
+
 
     # place dynamic items
     print (' --- adding dynamic items...')

@@ -23,8 +23,19 @@ public:
     void setCollisionMask(int);
     void setCollisionTag(int);
     void start() override;
+	void update(double) override;
 	using Base = Collider;
+	void setResponse(int tag, const pybind11::kwargs& args);
+	bool respondTo(Collider*);
+	void startCollision(Collider*);
+	void endCollision(Collider*);
 protected:
+	struct ColliderResponse {
+		pybind11::function onStart;
+		pybind11::function onEnd;
+		pybind11::function onContinue;
+	};
+
     virtual void generateDebugMesh() {}
     int m_callbackHandle;
     Bounds m_staticBounds;
@@ -34,6 +45,10 @@ protected:
     int m_mask;
     int m_tag;
 	std::string _batchId;
+
+	//std::unordered_set<Collider*> _previous;
+	std::unordered_set<Collider*> _current;
+	std::unordered_map<int, ColliderResponse> _response;
 
 };
 

@@ -6,7 +6,7 @@ import math
 import shapely
 
 from .utils import make_text, set_main_node_active, rm_node, is_within_bounds, \
-    move_item_by, _goto_room, get_item, addNode, id_to_string
+    move_item_by, _goto_room, get_item, addNode, id_to_string, clamp
 from .actions import removeNode
 
 
@@ -59,13 +59,17 @@ def zfunc_default(x, y):
     cwall = -1
     for wall in game_state.wallz:
         cwall += 1
-        bl = wall['baseline']
+        node = monkey.get_node(wall['id'])
+        ba = wall['baseline']
+        pos = (node.x, node.y)
+        bl = [ba[i] + pos[i%2] for i in range(0, len(ba))]
         if x < bl[0] or x > bl[-2]:
             continue
         for i in range(0, len(bl) - 2, 2):
             if x >= bl[i] and x <= bl[i + 2]:
                 yl = bl[i + 1] + ((bl[i + 3] - bl[i + 1]) / (bl[i + 2] - bl[i])) * (x - bl[i])
                 if y < yl:
+                    print('FIGA',x,y)
                     if md < 0 or md > (yl - y):
                         md = yl - y
                         iwall = cwall
@@ -193,15 +197,21 @@ def show_item_detail(script, item_id):
     script.add(wk)
 
 
-def goto_room(playe, other, room, pos, dir):
-    settings.previous_room = settings.room
-    settings.room = room
-    player = monkey.get_node(game_state.Ids.player)
-    p = [pos[0] if pos[0] else player.x, pos[1] if pos[1] else player.y]
-    settings.pos = p
-    settings.dir = dir
-    monkey.close_room()
+def goto_room(room, pos, dir, xb, yb):
+    def f(hotspot, player):
+        settings.previous_room = settings.room
+        settings.room = room
+        player = monkey.get_node(game_state.Ids.player)
+        p = [pos[0] if pos[0] else player.x, pos[1] if pos[1] else player.y]
+        if xb:
+            p[0] = clamp(p[0], xb[0], xb[1])
+        if yb:
+            p[1] = clamp(p[1], yb[0], yb[1])
 
+        settings.pos = p
+        settings.dir = dir
+        monkey.close_room()
+    return f
 
 
 
@@ -211,7 +221,7 @@ def open_door_castle():
     message(s, 100)
     print(game_state.nodes)
     s.add(monkey.actions.Animate(id=game_state.nodes['door_castle'], anim='open', sync=True))
-    s.add(monkey.actions.CallFunc(_goto_room('incastl1', [158, 2, 0], 'n')))
+    s.add(monkey.actions.CallFunc(_goto_room('incastl1', [158, 5, 0], 'n')))
     monkey.play(s)
 
 
@@ -326,7 +336,7 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
         if collide:
             flag = kwargs.get('flag', settings.CollisionFlags.foe)
             mask = kwargs.get('mask', settings.CollisionFlags.player)
-            a.add_component(monkey.components.Collider(flag, mask, 1,
+            a.add_component(monkey.components.Collider(flag, mask, 0,
                                                        monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
             if callback:
                 a.user_data = {
@@ -375,10 +385,6 @@ def saxx(k,p,m):
     print('ok')
 
 
-def create_alli():
-    setup3d()
-    create_foe('a1', 'sprites/alligator', 2, 2, 50, None, -1, collider=False, idle_anim='walk',
-        anim_dir=False, period=100, func_ai=func_random(0, 316, 0, 120))()
 
 
 def create_goat():
@@ -449,6 +455,7 @@ def setup3d():
     in_edges = dict()
     out_edges = dict()
     z = dict()
+    #game_state.wallz = []
     for i in range(0, len(game_state.wallz)):
         in_edges[i] = []
         out_edges[i] = []
@@ -497,12 +504,11 @@ def setup3d():
 
 
 def start_swim(other, player):
-    print('FOKKAMI2')
     player.set_model(monkey.models.getSprite('sprites/graham_swim'), batch='sprites')
 
 
 def end_swim(other, player):
-    print('FOKKAMI')
+    print('DDDO')
     player.set_model(monkey.models.getSprite('sprites/graham'), batch='sprites')
 
 
@@ -534,17 +540,28 @@ def show_carrot():
         msg(112)
 
 
-def drown(other, player, x, y, line):
-    _drown(player, x, y, line)
+
+def drown(x, y, line):
+    def f(hotspot, player):
+        _drown(player, x, y, line)
+    return f
 
 
-def drownx(other, player, y, line):
-    _drown(player, player.x, y, line)
+def drownx(y, line):
+    def f(hotspot, player):
+        _drown(player, player.x, y, line)
+    return f
 
 
-def drowny(other, player, x, line):
-    _drown(player, x, player.y, line)
+def drowny(x, line):
+    def f(hotspot, player):
+        _drown(player, x, player.y, line)
+    return f
 
+def drownxy(line):
+    def f(hotspot, player):
+        _drown(player, player.x, player.y, line)
+    return f
 
 def gigio():
     return (random.randint(51, 100), random.randint(100, 114))
@@ -621,6 +638,9 @@ def _drown(player, x, y, line):
     message(script, 0)
     monkey.play(script)
 
+def drown_bridge(hs, player):
+    pos = (54, 12) if player.x < 90 else (125, 27)
+    _drown(player,pos[0], pos[1], 150)
 
 def bow():
     if settings.room != 'throne':
@@ -642,7 +662,15 @@ def bow():
         s.add(monkey.actions.SierraEnable(id=player.id, value=True))
         monkey.play(s)
 
+def create_alli():
+    setup3d()
+    create_foe('a1', 'sprites/alligator', random.randint(16,300), 2, 50, None, -1, collider=False, idle_anim='walk',
+        anim_dir=False, period=100, func_ai=func_random(0, 316, 0, 120))()
+    create_foe('a1', 'sprites/alligator', random.randint(16,300), 2, 50, None, -1, collider=False, idle_anim='walk',
+        anim_dir=False, period=100, func_ai=func_random(0, 316, 0, 120))()
+
 def start_castle():
+    create_alli()
     if settings.previous_room == 'incastl1':
         s = monkey.Script()
         s.add(monkey.actions.Animate(game_state.nodes['door_castle'], 'open', False, True ))

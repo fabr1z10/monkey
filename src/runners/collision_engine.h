@@ -39,7 +39,7 @@ public:
 
     void update(double) override;
 
-    void addResponse(int, int, const pybind11::kwargs&);
+    //void addResponse(int, int, const pybind11::kwargs&);
 
     // cast a ray parallel to one axis
     RayCastHit rayCastX(glm::vec3 origin, float length, int mask, Node* node=nullptr);
@@ -62,10 +62,10 @@ protected:
     std::unordered_map<glm::ivec3, CollisionEngineCell> m_cells;
     std::unordered_set<Collider*> m_removed;
     // TODO add response manager --> object that holds the callback for collision
-    std::shared_ptr<CollisionResponseManager> m_responseManager;
+    //std::shared_ptr<CollisionResponseManager> m_responseManager;
     std::shared_ptr<Intersector> m_intersector;
     std::shared_ptr<RayCaster> m_raycast;
-    std::unordered_map<std::pair<Collider*, Collider*>, CollisionInfo> m_previouslyCollidingPairs;
+    //std::unordered_map<std::pair<Collider*, Collider*>, CollisionInfo> m_previouslyCollidingPairs;
 
     bool _staticTest;
     bool _use3D;

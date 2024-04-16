@@ -16,6 +16,19 @@ Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : 
 	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
+bool Collider::respondTo(Collider * other) {
+	return (_response.count(other->getCollisionTag()) > 0);
+}
+
+void Collider::setResponse(int tag, const pybind11::kwargs& args) {
+	_response[tag] = {
+			py_get_dict<pybind11::function>(args, "on_enter", pybind11::function()),
+			py_get_dict<pybind11::function>(args, "on_exit", pybind11::function()),
+			py_get_dict<pybind11::function>(args, "on_continue", pybind11::function())};
+
+
+}
+
 Collider::~Collider() {
     if (m_engine != nullptr)
         m_engine->remove(this);
@@ -56,6 +69,58 @@ void Collider::start() {
     if (!_batchId.empty()) {
         generateDebugMesh();
     }
+}
+
+void Collider::startCollision(Collider * c) {
+	if (_current.count(c) == 0) {
+		_current.insert(c);
+		auto it = _response.find(c->getCollisionTag());
+		if (it != _response.end() && it->second.onStart) {
+			it->second.onStart(getNode(), c->getNode());
+		}
+	}
+}
+
+void Collider::endCollision(Collider * c) {
+	if (_current.count(c) > 0) {
+		_current.erase(c);
+		auto it = _response.find(c->getCollisionTag());
+		if (it != _response.end() && it->second.onEnd) {
+			it->second.onEnd(getNode(), c->getNode());
+		}
+
+	}
+}
+
+void Collider::update(double) {
+//	for (auto* c : _previous) {
+//		auto it = _response.find(c->getCollisionTag());
+//		if (_current.count(c) == 0) {
+//			if (it != _response.end() && it->second.onEnd) {
+//				it->second.onEnd(getNode(), c->getNode());
+//			}
+//		}
+//	}
+//
+//	for (auto* c : _current) {
+//		auto it = _response.find(c->getCollisionTag());
+//		if (it == _response.end()) {
+//			continue;
+//		}
+//		if (_previous.count(c) > 0) {
+//			if (it->second.onContinue) {
+//				it->second.onContinue(getNode(), c->getNode());
+//			}
+//		} else {
+//			if (it->second.onStart) {
+//				it->second.onStart(getNode(), c->getNode());
+//			}
+//		}
+//	}
+//
+//	_previous = _current;
+//	_current.clear();
+
 }
 
 Bounds Collider::getStaticBounds() const {

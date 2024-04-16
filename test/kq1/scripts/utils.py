@@ -5,6 +5,13 @@ import random
 import regex as re
 import shapely
 
+def clamp(x, x0, x1):
+    if x < x0:
+        return x0
+    elif x > x1:
+        return x1
+    return x
+
 
 def addNode(node):
     monkey.get_node(game_state.Ids.game_node).add(node)

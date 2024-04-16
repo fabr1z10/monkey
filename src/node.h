@@ -69,6 +69,7 @@ public:
     float getX() const;
     float getY() const;
 	float getZ() const;
+	int getCollisionTag() const;
 	void setZ(float);
     template <typename T>
     T* getComponent() const {

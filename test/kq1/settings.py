@@ -27,3 +27,7 @@ class CollisionFlags:
     wall = 2
     foe = 4
     foe_hotspot = 8
+
+class CollisionTags:
+    player = 0
+    foe = 1

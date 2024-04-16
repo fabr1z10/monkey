@@ -376,7 +376,7 @@ void ICollisionEngine::add(Collider * c) {
 }
 
 ICollisionEngine::ICollisionEngine(float width, float height, float depth) : m_size(width, height, depth) {
-    m_responseManager = std::make_shared<CollisionResponseManager>();
+    //m_responseManager = std::make_shared<CollisionResponseManager>();
 
 }
 
@@ -426,13 +426,13 @@ void ICollisionEngine::remove(Collider * c) {
 		}
 		m_colliderLocations.erase(c);
 	}
-    for (auto it = m_previouslyCollidingPairs.begin(); it != m_previouslyCollidingPairs.end(); ) {
-        if (it->first.first == c || it->first.second == c) {
-            it = m_previouslyCollidingPairs.erase(it);
-        } else {
-            it++;
-        }
-    }
+//    for (auto it = m_previouslyCollidingPairs.begin(); it != m_previouslyCollidingPairs.end(); ) {
+//        if (it->first.first == c || it->first.second == c) {
+//            it = m_previouslyCollidingPairs.erase(it);
+//        } else {
+//            it++;
+//        }
+//    }
 }
 
 void ICollisionEngine::move(Collider * c) {
@@ -451,6 +451,7 @@ void ICollisionEngine::update(double) {
     std::unordered_set<glm::ivec3> cellsExamined;
 
     unsigned collisionChecks = 0;
+    int cc = 0;
     std::unordered_set<UPair<Collider*>, UPair<Collider*>::HashFunction> processed;
     for (auto& c : m_colliderLocations) {
         if (c.second.dirty) {
@@ -468,9 +469,6 @@ void ICollisionEngine::update(double) {
                             continue;
                         }
                         for (const auto &c2 : colliders) {
-                            if (m_removed.count(c2) > 0) {
-                                //std::cout << "HEY\n";
-                            }
                             // don't collide with itself
                             auto pair = UPair<Collider *>(c1, c2);
                             if (processed.find(pair) != processed.end()) continue;
@@ -481,29 +479,36 @@ void ICollisionEngine::update(double) {
                                 continue;
                             }
                             // if no response is provided for these tags, then skip it
-                            if (m_responseManager == nullptr || !m_responseManager->hasCollision(c1, c2)) {
+                            if (!c1->respondTo(c2) && !c2->respondTo(c1)) {
                                 continue;
                             }
                             // we have a collision response, so let's calculate collision
                             collisionChecks++;
                             auto b1 = c1->getStaticBounds();
                             auto b2 = c2->getStaticBounds();
-                            if (!aabbTest(b1, b2)) {
-                                continue;
-                            }
+                            CollisionReport report;
+                            if (aabbTest(b1, b2)) {
+	                            // get the shape in local coordinates
+    	                        const auto &t1 = c1->getNode()->getWorldMatrix();
+        	                    const auto &t2 = c2->getNode()->getWorldMatrix();
 
-                            // get the shape in local coordinates
-                            const auto &t1 = c1->getNode()->getWorldMatrix();
-                            const auto &t2 = c2->getNode()->getWorldMatrix();
+            	                report = m_intersector->intersect(c1->getShape().get(), c2->getShape().get(), t1, t2);
 
-                            auto report = m_intersector->intersect(c1->getShape().get(), c2->getShape().get(), t1, t2);
-                            if (report.collide) {
-                                CollisionInfo ci;
-                                ci.report = report;
-                                ci.pos = glm::vec3(i, j, k);
-                                currentlyCollidingPairs.insert(std::make_pair(std::make_pair(c1, c2), ci));
+                                //rrentlyCollidingPairs.insert(std::make_pair(std::make_pair(c1, c2), ci));
                             }
-                        }
+							if (report.collide) {
+								//CollisionInfo ci;
+								//ci.report = report;
+								//ci.pos = glm::vec3(i, j, k);
+								c1->startCollision(c2);
+								c2->startCollision(c1);
+
+							} else {
+								c1->endCollision(c2);
+								c2->endCollision(c1);
+							}
+
+						}
                     }
                 }
             }
@@ -512,31 +517,33 @@ void ICollisionEngine::update(double) {
         c.second.dirty = false;
 
     }
-    //std::cout << "collision checks: " << collisionChecks << std::endl;
+//    if (cc> 0) {
+//		std::cout << "---" << cc << "\n";
+//	}
 
     // remove pairs that were previously colliding but not now
-    for (auto iter = m_previouslyCollidingPairs.begin(); iter != m_previouslyCollidingPairs.end();) {
-        CollisionInfo& ci = iter->second;
-        // If i have examined the cell AND they are not colliding anymore ...
-        if (processed.count(UPair(iter->first.first, iter->first.second)) > 0 && currentlyCollidingPairs.count(iter->first) == 0) {
-            m_responseManager->onEnd (iter->first.first, iter->first.second);
-            m_previouslyCollidingPairs.erase(iter++);
-        }
-        else {
-            iter++;
-        }
-    }
-
-    for (auto& p : currentlyCollidingPairs) {
-        auto it = m_previouslyCollidingPairs.find(p.first);
-        if (it == m_previouslyCollidingPairs.end()) {
-            m_responseManager->onStart (p.first.first, p.first.second, p.second.report.direction * p.second.report.distance);
-            m_previouslyCollidingPairs.insert(std::make_pair(p.first, p.second));
-        } else {
-            m_responseManager->onStay(p.first.first, p.first.second);
-            it->second = p.second;
-        }
-    }
+//    for (auto iter = m_previouslyCollidingPairs.begin(); iter != m_previouslyCollidingPairs.end();) {
+//        CollisionInfo& ci = iter->second;
+//        // If i have examined the cell AND they are not colliding anymore ...
+//        if (processed.count(UPair(iter->first.first, iter->first.second)) > 0 && currentlyCollidingPairs.count(iter->first) == 0) {
+//            m_responseManager->onEnd (iter->first.first, iter->first.second);
+//            m_previouslyCollidingPairs.erase(iter++);
+//        }
+//        else {
+//            iter++;
+//        }
+//    }
+//
+//    for (auto& p : currentlyCollidingPairs) {
+//        auto it = m_previouslyCollidingPairs.find(p.first);
+//        if (it == m_previouslyCollidingPairs.end()) {
+//            m_responseManager->onStart (p.first.first, p.first.second, p.second.report.direction * p.second.report.distance);
+//            m_previouslyCollidingPairs.insert(std::make_pair(p.first, p.second));
+//        } else {
+//            m_responseManager->onStay(p.first.first, p.first.second);
+//            it->second = p.second;
+//        }
+//    }
 }
 
 void CollisionEngine2D::pushCollider(Collider* c, glm::ivec3 m, glm::ivec3 M) {
@@ -576,9 +583,9 @@ std::pair<glm::ivec3, glm::ivec3> ICollisionEngine::getLocation(const Bounds &b)
 
 
 
-void ICollisionEngine::addResponse(int i, int j, const pybind11::kwargs& args) {
-    m_responseManager->add(i, j, args);
-}
+//void ICollisionEngine::addResponse(int i, int j, const pybind11::kwargs& args) {
+//    m_responseManager->add(i, j, args);
+//}
 
 //RayCastHit CollisionEngine::rayCast(glm::vec3 rayOrigin, glm::vec3 rayDir, float length, int mask) {
 //    if (m_2d) {
