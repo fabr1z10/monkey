@@ -249,6 +249,17 @@ sprites:
             anchor: [11,0]
           - tex: [282,66,22,31]
             anchor: [11,0]
+      walk_n:
+        frames:
+          - tex: [261,33,20,31]
+            anchor: [10,0]
+          - tex: [282,33,22,31]
+            anchor: [8,0]
+          - tex: [261,33,20,31]
+            anchor: [10,0]
+          - tex: [305,33,22,31]
+            anchor: [14,0]
+
   sorcerer:
     animations:
       walk:

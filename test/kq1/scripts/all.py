@@ -69,7 +69,6 @@ def zfunc_default(x, y):
             if x >= bl[i] and x <= bl[i + 2]:
                 yl = bl[i + 1] + ((bl[i + 3] - bl[i + 1]) / (bl[i + 2] - bl[i])) * (x - bl[i])
                 if y < yl:
-                    print('FIGA',x,y)
                     if md < 0 or md > (yl - y):
                         md = yl - y
                         iwall = cwall
@@ -566,6 +565,9 @@ def drownxy(line):
 def gigio():
     return (random.randint(51, 100), random.randint(100, 114))
 
+def gigio_north():
+    return (random.randint(162, 262), random.randint(16, 42))
+
 
 def talk_man():
     msg(id=126)
@@ -613,6 +615,13 @@ def enter_troll_bridge_side(hotspot, player):
     s.add(monkey.actions.WalkDynamic(id, gigio), loop=True)
     monkey.play(s)
 
+def enter_troll_bridge_north(hotspot, player):
+    hotspot.remove()
+    id = _addTroll(212, 32, 'walk_n')
+    s = monkey.Script(id='troll')
+    message(s, 134)
+    s.add(monkey.actions.WalkDynamic(id, gigio_north), loop=True)
+    monkey.play(s)
 
 def enter_troll_bridge(hotspot, player):
     hotspot.remove()
