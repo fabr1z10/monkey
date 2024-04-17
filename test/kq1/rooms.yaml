@@ -38,7 +38,7 @@ bridge:
   walkarea:
     poly: [ 40, 0, 316, 0, 316, 25, 266,25,272,13,262,13,237,66,246,66,254,51,316,51,316, 160, 25, 160, 25,110, 90,110,75,104,56,104,51,95,40,64,40,51,172,51,183,66,191,66,163,16,151,16,157,25,40,25 ]
   north: lake2
-  east: stonebr
+  east: stonebri
   south: gnome
   items:
     - type: bg
@@ -1199,6 +1199,7 @@ stonebri:
   south: trollsid
   north: rivinlak
   east: lake
+  west: bridge
   walkarea:
     poly: [0, 0, 316, 0, 316, 160, 0, 160]
   items:
@@ -1210,26 +1211,28 @@ stonebri:
       batch: "stonebri"
       pos: [166,30,0]
       quad: [1, 167, 58, 56]
-      wall:
-        polyline: [0,32,22,32,30,23,42,0,56,0]
-        baseline: True
+      area:
+        access: none
+        poly: [0,32,22,32,30,23,42,0,56,0,51,10,41,25,30,33,15,37,0,37]
+      baseline: [0,32,22,32,30,23,42,0,58,0]
     - type: bg      # rail left
       batch: "stonebri"
       pos: [222,28,0]
       quad: [70, 167, 70, 62]
-      wall:
-        polyline: [0,50,12,49,30,37,39,7,44,0,70,0]
-        baseline: True
-    - type: bg      # tree 1
-      batch: "stonebri"
-      auto_depth: true
-      pos: [208,102,0]
-      quad: [2,233,50,64]
-    - type: bg      # tree 1
-      batch: "stonebri"
-      auto_depth: true
-      pos: [50,66,0]
-      quad: [181,167,134,100]
+      area:
+        access: none
+        poly: [0,50,12,49,30,37,39,7,44,0,70,0]
+      baseline: [0,50,12,49,30,37,39,7,44,0,70,0]
+#    - type: bg      # tree 1
+#      batch: "stonebri"
+#      auto_depth: true
+#      pos: [208,102,0]
+#      quad: [2,233,50,64]
+#    - type: bg      # tree 1
+#      batch: "stonebri"
+#      auto_depth: true
+#      pos: [50,66,0]
+#      quad: [181,167,134,100]
 stump:
   batches:
     - "stump"
