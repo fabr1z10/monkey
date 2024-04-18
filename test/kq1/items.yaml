@@ -326,7 +326,7 @@ items:
           args: 18
       climb:
         - func: change_room
-          args: ['treetop', [80, 3], 'n', 28]
+          args: ['treetop', [80, 6], 'n', 28]
   pebbles:
     name: 58
     room: pebbles

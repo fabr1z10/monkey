@@ -198,6 +198,7 @@ def show_item_detail(script, item_id):
 
 def goto_room(room, pos, dir, xb, yb):
     def f(hotspot, player):
+        print('sucamento',xb,yb,pos)
         settings.previous_room = settings.room
         settings.room = room
         player = monkey.get_node(game_state.Ids.player)
@@ -255,7 +256,7 @@ def create_foe_script(f):
 
 
 def create_wolf():
-    create_foe_script(create_foe('wolf', 'wolf/wolf', 101, 76, 60, 'caught_by_wolf', 37))
+    create_foe_script(create_foe('wolf', 'wolf/wolf', 101, 76, 60, 'caught_by_wolf', 37, collider=True))
 
 
 def create_sorcerer():
@@ -335,12 +336,14 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
         if collide:
             flag = kwargs.get('flag', settings.CollisionFlags.foe)
             mask = kwargs.get('mask', settings.CollisionFlags.player)
-            a.add_component(monkey.components.Collider(flag, mask, 0,
-                                                       monkey.shapes.AABB(-5, 5, -1, 1), batch='lines'))
-            if callback:
-                a.user_data = {
-                    'on_enter': [callback]
-                }
+            collider = monkey.components.Collider(flag, mask, 1, monkey.shapes.AABB(-5, 5, -1, 1), batch='lines')
+            collider.setResponse(0, on_enter=globals()[callback])
+            #if callback:
+            #    a.user_data = {
+            #        'on_enter': [callback]
+            #    }
+            a.add_component(collider)
+
         game_state.nodes[id] = a.id
         monkey.get_node(game_state.Ids.game_node).add(a)
         if msg != -1:
@@ -650,6 +653,14 @@ def _drown(player, x, y, line):
 def drown_bridge(hs, player):
     pos = (54, 12) if player.x < 90 else (125, 27)
     _drown(player,pos[0], pos[1], 150)
+
+def drown_stbrdg(hs, player):
+    x = [(0,31), (183,54), (316,60)]
+    i = next( (i for i in range(0, len(x)) if x[i][0] > player.x), -1)
+    if i >= 1:
+        y = x[i-1][1] + (player.x - x[i-1][0]) * (x[i][1]-x[i-1][1]) / (x[i][0]-x[i-1][0])
+    pos = (player.x, y)
+    _drown(player,pos[0], pos[1], 151)
 
 def bow():
     if settings.room != 'throne':

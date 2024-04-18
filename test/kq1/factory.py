@@ -239,7 +239,7 @@ def link(room, dir):
         x = room.get('x', None)
         y = room.get('y', None)
         x_bounds = room.get('x_bounds', None)
-        y_bounds = room.get('x_bounds', None)
+        y_bounds = room.get('y_bounds', None)
     if not x:
         x = link_width + 1 if dir == 'e' else (316 - link_width - 1 if dir == 'w' else None)
     if not y:
