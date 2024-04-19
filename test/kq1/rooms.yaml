@@ -290,6 +290,36 @@ fairy:
       batch: "fairy"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
+    - type: bg      # bush1
+      batch: "fairy"
+      auto_depth: True
+      pos: [190,95, 0]
+      quad: [182,200,126,71]
+    - type: bg      # bush1
+      batch: "fairy"
+      auto_depth: True
+      pos: [30,64, 0]
+      quad: [110,168,46,22]
+    - type: bg      # bush1
+      batch: "fairy"
+      auto_depth: True
+      pos: [90,65, 0]
+      quad: [170,179,24,10]
+    - type: bg      # bush1
+      batch: "fairy"
+      auto_depth: True
+      pos: [118,63, 0]
+      quad: [198,176,28,15]
+    - type: bg      # bush1
+      batch: "fairy"
+      auto_depth: True
+      pos: [54,87, 0]
+      quad: [110,193,56,31]
+    - type: bg      # bush1
+      batch: "fairy"
+      auto_depth: True
+      pos: [104,96, 0]
+      quad: [109,231,46,70]
   on_start: create_fairy
 flowrbed:
   batches:
@@ -458,22 +488,26 @@ goatpene:
       auto_depth: True
       quad: [1,167,204,65]
     - type: bg
-      wall:
+      area:
+        access: none
         polyline: [-1,12,33,12]
     - type: bg
-      wall:
+      area:
+        access: none
         polyline: [85,12,146,12,178,37,204,52]
-        baseline: True
+      baseline: [85,12,146,12,178,37,204,52]
     - type: bg
-      wall:
+      area:
+        access: none
         polyline: [200,77,204,52]
     - type: bg      # fence north
       batch: "goatpene"
       pos: [0,77,0]
       quad: [2, 293, 202, 37]
-      wall:
+      area:
+        access: none
         polyline: [-1,7,14,7,54,12,90,15,124,16,164,14,200,0]
-        baseline: True
+      baseline: [-1,7,14,7,54,12,90,15,124,16,164,14,200,0]
     - type: bg
       quad: [207,266,108,64]
       pos: [78,102,0]
@@ -597,8 +631,27 @@ goldegg:
       quad: [0, 0, 316, 166]
     - type: bg      # tree
       batch: "goldegg"
-      pos: [130,7, 0.9]
+      pos: [130,7, 0]
       quad: [128,168,186,159]
+      area:
+        poly: [27,9,32,8,80,7,80,0,92,0,112,6,180,10,27,10]
+        access: none
+      baseline: [27,9,32,8,80,7,80,0,92,0,112,6,180,10]
+    - type: bg      # bush1
+      batch: "goldegg"
+      auto_depth: True
+      pos: [142,47, 0]
+      quad: [2,167,76,46]
+    - type: bg      # tree2
+      batch: "goldegg"
+      auto_depth: True
+      pos: [62,86, 0]
+      quad: [3,216,80,80]
+    - type: bg      # bush2
+      batch: "goldegg"
+      auto_depth: True
+      pos: [134,87, 0]
+      quad: [3,297,48,26]
   scripts:
     look_tree: ['msg', 18]
     climb_tree: ['climb_tree']
@@ -1324,7 +1377,7 @@ stump:
   east: park
   south:
     room: lake
-    pos: [237,118]
+    x_bounds: [260,316]
   #scripts:
   #  look_stump: [ 'msg', 42 ]
   #  look_in_stump: [ 'msg', 43 ]

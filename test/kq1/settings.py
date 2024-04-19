@@ -3,7 +3,7 @@ import monkey
 
 
 device_size = (320, 200)
-room = 'wolf'
+room = 'goatpene'
 previous_room=''
 pos = [250, 50]
 dir = 's'

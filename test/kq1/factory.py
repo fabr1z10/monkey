@@ -193,17 +193,27 @@ def area(node, ciao):
     access = a['access']
     assert(access in ['player', 'all', 'none'])
     shape = None
+    pos = ciao.get('pos', [0,0,0])
+    dynamic = a.get('dynamic', False)
     if access == 'none':
         if 'poly' in a:
             poly = a['poly']
-            game_state.walkArea.addPolyWall(poly)
+            # valid for static stuff!
+            if not dynamic:
+                world_poly = [poly[i] + pos[i % 2] for i in range(0, len(poly))]
+                game_state.walkArea.addPolyWall(world_poly)
             shape = monkey.shapes.Polygon(poly)
         elif 'polyline' in a:
             polyline = a['polyline']
-            game_state.walkArea.addLinearWall(polyline)
+            if not dynamic:
+                world_polyline = [polyline[i] + pos[i % 2] for i in range(0, len(polyline))]
+                game_state.walkArea.addLinearWall(world_polyline)
             shape = monkey.shapes.PolyLine(points=polyline)
-        print('FIIIFIF')
         node.add_component(monkey.components.Collider(2, 0, 0, shape, batch='lines'))
+        if dynamic:
+            game_state.walkArea.addDynamic(node)
+
+        #game_state.walkArea.add
     else:
         bb = monkey.polyLineToPolygon(a['polyline'], 2) if 'polyline' in a else a['poly']
         shape = monkey.shapes.Polygon(bb)

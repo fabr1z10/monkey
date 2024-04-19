@@ -264,10 +264,12 @@ items:
     quad: [4,243,54,22]
     pos: [32, 12, 1.928]
     auto_depth: True
-    wall:
+    area:
+      access: none
       poly: [0,-1.5,54,-1.5,54,1.5,0,1.5]
-      zw: [0,0,54,0]
-      baseline: True
+      dynamic: True
+      #zw: [0,0,54,0]
+    baseline: [0,-1.5,54,-1.5]
     actions:
       open:
         - func: open_gate

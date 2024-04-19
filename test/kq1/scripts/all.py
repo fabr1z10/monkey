@@ -260,7 +260,7 @@ def create_wolf():
 
 
 def create_sorcerer():
-    create_foe_script(create_foe('sorcerer', 'sprites/sorcerer', 88, 40, 50, 'caught_by_sorcerer', 146, anim_dir=False))
+    create_foe_script(create_foe('sorcerer', 'sprites/sorcerer', 88, 40, 50, 'caught_by_sorcerer', 146, anim_dir=False, collider=True))
 
 
 def create_fairy():
@@ -273,7 +273,7 @@ def create_fairy():
     message(spell_script, 40)
     spell_script.add(removeNode('fairy'))
     create_foe_script(create_foe('fairy', 'fairy/fairy', 128, 86, 10, None, -1,
-                                 anim_dir=False, func_ai=func_random(108, 208, 50, 100), on_create=spell_script))
+        anim_dir=False, flip_horizontal=False, func_ai=func_random(108, 208, 50, 100), on_create=spell_script))
 
 
 def caught_by_wolf(a, b):
@@ -323,6 +323,7 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
     def f():
         # if anim_dir is True, the sprites need to h
         anim_dir = kwargs.get('anim_dir', True)
+        flip_horizontal = kwargs.get('flip_horizontal', True)
         func_ai = kwargs.get('func_ai', func_follow_player)
         call_every = kwargs.get('period', 1)
         on_create = kwargs.get('on_create', None)
@@ -331,13 +332,14 @@ def create_foe(id: str, sprite: str, x: float, y: float, speed: float, callback:
         walk_anim= kwargs.get('walk_anim', 'walk')
         idle_anim = kwargs.get('idle_anim', 'walk')
         a.add_component(monkey.components.NPCSierraFollow(func_ai, speed, call_every, z_func=settings.z_func,
-                                                          anim_dir=anim_dir, walk_anim=walk_anim, idle_anim=idle_anim))
+            anim_dir=anim_dir, walk_anim=walk_anim, idle_anim=idle_anim, flip_horizontal=flip_horizontal))
         collide = kwargs.get('collider', False)
         if collide:
             flag = kwargs.get('flag', settings.CollisionFlags.foe)
             mask = kwargs.get('mask', settings.CollisionFlags.player)
             collider = monkey.components.Collider(flag, mask, 1, monkey.shapes.AABB(-5, 5, -1, 1), batch='lines')
-            collider.setResponse(0, on_enter=globals()[callback])
+            if callback:
+                collider.setResponse(0, on_enter=globals()[callback])
             #if callback:
             #    a.user_data = {
             #        'on_enter': [callback]
