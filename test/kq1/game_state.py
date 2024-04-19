@@ -20,7 +20,7 @@ gate_open = 0
 parser_override = None
 guess_number = 0
 
-inventory = {'carrot'}#set()
+inventory = set()
 collected = set()
 
 

@@ -42,6 +42,7 @@ items:
       pickup:
         - func: pickup
           args: ['bowl', 52]
+          score: 3
       read:
         - func: msg
           args: ['@cond', "'bowl' in game_state.inventory", 120, 68]
@@ -69,8 +70,10 @@ items:
       pickup:
         - func: pickup
           args: ['carrot', 33]
+          score: 2
       show:
         - func: show_carrot
+          score: 5
   carrot_e:
     name: 35
     room: gardene
@@ -89,6 +92,7 @@ items:
       pickup:
         - func: pickup
           args: ['carrot', 33]
+          score: 2
   castle_east:
     room: start
     actions:
@@ -158,6 +162,7 @@ items:
       pickup:
         - func: pickup
           args: ['dagger', 25]
+          score: 5
     inventory:
       image: 'sprites/item_dagger'
       desc: 24
@@ -202,6 +207,7 @@ items:
       pickup:
         - func: pickup
           args: ['egg', 102]
+          score: 6
   fence_garden_e:
     room: goatpene
     actions:
@@ -329,6 +335,7 @@ items:
       climb:
         - func: change_room
           args: ['treetop', [80, 6], 'n', 28]
+          score: 2
   pebbles:
     name: 58
     room: pebbles
@@ -343,6 +350,7 @@ items:
       pickup:
         - func: pickup
           args: [ 'pebbles', 57 ]
+          score: 1
   pouch:
     name: 46
     room: stump
@@ -357,14 +365,15 @@ items:
       pickup:
         - func: pickup
           args: [ 'pouch', 44 ]
+          score: 3
   rock:
     name: 94
     room: rock
     type: sprite
     sprite: 'rock/rock'
     pos: [236, 33, 0]
-    bounds: [0,-10,34,-10,34,10,0,10]      # the player must be inside this rectangle to interact with object
-    bounds_relative: True
+    #bounds: [0,-10,34,-10,34,10,0,10]      # the player must be inside this rectangle to interact with object
+    #bounds_relative: True
     auto_depth: True
     can_pick_up: False
     actions:
@@ -373,6 +382,7 @@ items:
           args: 15
       push:
         - func: push_rock
+          score: 2
       pickup:
         - func: msg
           args: 91
@@ -394,6 +404,7 @@ items:
       lookin:
         - func: msg
           args: ['@cond', '"pouch" in game_state.collected', 110, 43]
+          score: 1
   throne:
     room: throne
     actions:
@@ -420,8 +431,10 @@ items:
       pickup:
         - func: pickup
           args: ['walnut', 62]
+          score: 3
       open:
         - func: open_walnut
+          score: 3
   well:
     room: well
     actions:

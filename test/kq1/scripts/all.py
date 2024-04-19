@@ -579,28 +579,30 @@ def talk_man():
     game_state.parser_override = 'guess_name'
 
 
-def goat_attack():
-    game_state.goat_follow = 0
-    game_state.troll_gone = 1
-    s = monkey.Script()
-    message(s, 121)
-    print(game_state.nodes)
-    print('figa')
-    s.add(removeNode('troll_block'))
-    s.add(monkey.actions.CallFunc(lambda: game_state.walkArea.recompute()))
-    s.add(
-        monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['goat']).sendMessage(id="setFunc", func=None)))
-    s.add(monkey.actions.Walk(game_state.nodes['goat'], (75, 106)))
-    message(s, 122)
-    s.add(monkey.actions.CallFunc(lambda: monkey.kill('troll')))
-    s.add(removeNode('troll'))
-    s.add(monkey.actions.Walk(game_state.nodes['goat'], (75, 0)))
-    s.add(removeNode('goat'))
+def goat_attack(attackx, attacky, outx, outy):
+    def f():
+        addScore(4)
+        game_state.goat_follow = 0
+        game_state.troll_gone = 1
+        s = monkey.Script()
+        message(s, 121)
+        print(game_state.nodes)
+        print('figa')
+        s.add(removeNode('troll_block'))
+        s.add(monkey.actions.CallFunc(lambda: game_state.walkArea.recompute()))
+        s.add(
+            monkey.actions.CallFunc(lambda: monkey.get_node(game_state.nodes['goat']).sendMessage(id="setFunc", func=None)))
+        s.add(monkey.actions.Walk(game_state.nodes['goat'], (attackx, attacky)))
+        message(s, 122)
+        s.add(monkey.actions.CallFunc(lambda: monkey.kill('troll')))
+        s.add(removeNode('troll'))
+        s.add(monkey.actions.Walk(game_state.nodes['goat'], (outx, outy)))
+        s.add(removeNode('goat'))
 
-    # kill troll script!
+        # kill troll script!
 
-    monkey.play(s)
-
+        monkey.play(s)
+    return f
 
 def _addTroll(x, y, anim):
     troll = monkey.get_sprite('sprites/troll')
@@ -617,6 +619,8 @@ def enter_troll_bridge_side(hotspot, player):
     id = _addTroll(50, 100, 'walk_e')
     s = monkey.Script(id='troll')
     message(s, 134)
+    if game_state.goat_follow == 1:
+        s.add(monkey.actions.CallFunc(goat_attack(67,100,316,100)))
     s.add(monkey.actions.WalkDynamic(id, gigio), loop=True)
     monkey.play(s)
 
@@ -625,17 +629,18 @@ def enter_troll_bridge_north(hotspot, player):
     id = _addTroll(212, 32, 'walk_n')
     s = monkey.Script(id='troll')
     message(s, 134)
+    if game_state.goat_follow == 1:
+        s.add(monkey.actions.CallFunc(goat_attack(214,32, 200,120)))
     s.add(monkey.actions.WalkDynamic(id, gigio_north), loop=True)
     monkey.play(s)
 
 def enter_troll_bridge(hotspot, player):
     hotspot.remove()
     id = _addTroll(75, 100, 'walk_s')
-
     s = monkey.Script(id='troll')
     message(s, 119)
     if game_state.goat_follow == 1:
-        s.add(monkey.actions.CallFunc(goat_attack))
+        s.add(monkey.actions.CallFunc(goat_attack(75,106,75,0)))
     s.add(monkey.actions.WalkDynamic(id, gigio), loop=True)
     monkey.play(s)
 

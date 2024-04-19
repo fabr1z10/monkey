@@ -30,6 +30,8 @@ Intersector2D::Intersector2D() {
     add<AABB, Rect>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return SATAABB(s1, s2, t1, t2); });
     add<AABB, Segment>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return SATAABB(s1, s2, t1, t2); });
     add<AABB, AABB>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return AABB2(s1, s2, t1, t2); });
+	add<AABB, Polygon>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return AABBvsPolygon(s1, s2, t1, t2); });
+
     //add<AABB, Triangles>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return SATTriAABB(s1, s2, t1, t2); });
     add<Point, AABB>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return PointVsShape(s1, s2, t1, t2); });
 	add<Point, Polygon>([&] (const Shape* s1, const Shape* s2, const glm::mat4& t1, const glm::mat4& t2) { return PointVsShape(s1, s2, t1, t2); });
@@ -99,10 +101,20 @@ CollisionReport Intersector2D::SATCircle(const Shape * s1, const Shape * s2, con
 
 }
 
+CollisionReport Intersector2D::AABBvsPolygon(const Shape * aabb, const Shape * shape, const glm::mat4 & t1, const glm::mat4& t2) {
+	auto center = glm::vec3(t1[3]) + aabb->getBounds().getCenter();
+	glm::vec3 pp = glm::inverse(t2) * glm::vec4(center, 1.f);
+	CollisionReport report;
+	report.collide = shape->isInside(pp);
+	return report;
+
+
+
+}
+
 CollisionReport Intersector2D::PointVsShape(const Shape * point, const Shape * shape, const glm::mat4 & pointTransform, const glm::mat4 & shapeTransform) {
 	// point pos is now in world coords. need to convert it to shape coords
 	glm::vec3 pointPos = pointTransform[3];
-
 	glm::vec3 pp = glm::inverse(shapeTransform) * glm::vec4(pointPos, 1.f);
 	CollisionReport report;
 	report.collide = shape->isInside(pp);

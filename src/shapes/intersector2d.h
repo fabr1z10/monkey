@@ -18,6 +18,7 @@ private:
     CollisionReport compound(const Shape *, const Shape*, const glm::mat4&, const glm::mat4& );
     CollisionReport AABB2(const Shape*, const Shape*, const glm::mat4&, const glm::mat4&);
     CollisionReport PointVsShape(const Shape*, const Shape*, const glm::mat4&, const glm::mat4&);
+    CollisionReport AABBvsPolygon(const Shape*, const Shape*, const glm::mat4&, const glm::mat4&);
 
 };
 

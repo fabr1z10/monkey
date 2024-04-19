@@ -72,6 +72,7 @@ bridge:
       area:
         access: none
         polyline: [174,42,251,42]
+        dynamic: True
       condition: 'game_state.troll_gone==0'
     - type: bg      # tree
       batch: "bridge"
@@ -535,13 +536,20 @@ goatpene:
       pos: [210,97,0]
       auto_depth: True
       batch: "goatpene"
-#      wall: [210,97,270,97,270,105,210,105,210,97]
-    - type: hotspot
-      aabb: [0,10,0,166]
-      mask: 4
-      flag: 8
-      tag: 0
-      on_enter: ['goat_west']
+    - type: bg
+      quad: [224,167,24,23]
+      pos: [206,34]
+      auto_depth: True
+      batch: "goatpene"
+    - type: bg
+      area:
+        access: all
+        poly: [0,0,10,0,10,166,0,166]
+        character: npc
+        collide:
+          1:
+            on_enter: goat_west
+
 
   west: goatpenw
   south: stump
@@ -583,16 +591,18 @@ goatpenw:
       batch: "goatpenw"
       pos: [78, 84, 0]
       quad: [1,293,238,37]
-      wall:
+      area:
+        access: none
         polyline: [0,0,36,7,72,15,122,15,171,14,222,4,239,4]
-        baseline: true
+      baseline: [0,0,36,7,72,15,122,15,171,14,222,4,239,4]
     - type: bg      # fence south
       batch: "goatpenw"
       pos: [78, 13, 0]
       quad: [2, 196, 238, 93]
-      wall:
+      area:
+        access: none
         polyline: [0,71,26,47,64,24,155,24,213,8,239,0]
-        baseline: true
+      baseline: [0,71,26,47,64,24,155,24,213,8,239,0]
     - type: bg
       quad: [156,172,36,20]
       pos: [154,96,0]
@@ -603,12 +613,20 @@ goatpenw:
       pos: [148,69,0]
       auto_depth: True
       batch: "goatpenw"
-    - type: hotspot
-      aabb: [306,316,0,166]
-      mask: 4
-      flag: 8
-      tag: 0
-      on_enter: ['goat_east']
+    - type: bg
+      area:
+        access: all
+        poly: [306,0,316,0,316,166,306,166]
+        character: npc
+        collide:
+          1:
+            on_enter: goat_east
+#    - type: hotspot
+#      aabb: [306,316,0,166]
+#      mask: 4
+#      flag: 8
+#      tag: 0
+#      on_enter: ['goat_east']
   west: fairy
   east: goatpene
   north: rushes
@@ -689,7 +707,8 @@ incastl1:
   north: incastl2
   south:
     room: castle
-    pos: [228, 43, 0]
+    x: 228
+    y: 43
   walkarea:
     poly: [38,0,38,16,57,40,78,40,78,50,67,50,86,78,99,78,99,85,95,85,120,122,192,122,216,90,216,79,228,79,248,51,237,51,241,40,257,40,278,15,278,0]
   items:
@@ -1002,32 +1021,39 @@ rivrbend:
       batch: "rivrbend"
       pos: [94,79,0]
       quad: [1,167,36,9]
-      wall:
+      area:
+        access: none
         poly: [ 0,2,18,0,26,0,35,2]
-        zw: [ 0,2,18,0,26,0,35,2]
-        baseline: True
+      baseline: [ 0,2,18,0,26,0,35,2]
     - type: bg     # rock
       batch: "rivrbend"
       pos: [134,31,0]
+      auto_depth: True
       quad: [1,177,76,98]
-      wall:
+      area:
+        access: none
         polyline: [0,0,76,0]
-        baseline: True
+    - type: bg     # rock
+      batch: "rivrbend"
+      pos: [230,108,0]
+      auto_depth: True
+      quad: [90,236,54,58]
     - type: bg     # rock
       batch: "rivrbend"
       pos: [184,15,0]
       quad: [1,277,68,30]
-      wall:
+      area:
+        access: none
         polyline: [0,0,68,0]
-        baseline: True
+      baseline: [0,0,68,0]
     - type: bg     # rock
       batch: "rivrbend"
       pos: [240,1,0]
       quad: [86,168,70,64]
-      wall:
+      area:
+        access: none
         poly: [0,17,32,14,39,8,46,7,52,0,56,0,56,15,86,17]
-        zw: [0,17,32,14,39,8,46,7,52,0,56,0,56,15,86,17]
-        baseline: True
+      baseline: [0,17,32,14,39,8,46,7,52,0,56,0,56,15,86,17]
 rivtrees:
   batches:
     - "rivtrees"
@@ -1569,14 +1595,24 @@ trollsid:
       auto_depth: true
       pos: [196,105,0]
       quad: [2,189,60,61]
-    - type: hotspot
-      poly: [108,88,151,88,138,110,108,110]
-      on_enter: ['enter_troll_bridge_side']
+#    - type: hotspot
+#      poly: [108,88,151,88,138,110,108,110]
+#      on_enter: ['enter_troll_bridge_side']
+#      condition: 'game_state.troll_gone==0'
+    - type: bg
+      area:
+        access: all
+        poly: [108,88,151,88,138,110,108,110]
+        collide:
+          0:
+            on_enter: 'enter_troll_bridge_side'
       condition: 'game_state.troll_gone==0'
     - type: bg
       tag: troll_block
-      wall:
+      area:
+        access: none
         polyline: [112,112,112,88]
+        dynamic: True
       condition: 'game_state.troll_gone==0'
 trunkbig:
   batches:
