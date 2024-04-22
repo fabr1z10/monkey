@@ -134,21 +134,21 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 
 }
 
-std::string SpriteSheet::toString() {
-//	std::stringstream str;
-//	str << "sheet: " << _id << ", fonts: " << _fonts.size() << ", sprites: " << _sprites.size() << ", multisprites: " << _multiSprites.size() << std::endl;
-//	return str.str();
-
-}
-
-std::shared_ptr<QuadBatch> SpriteSheet::getBatch() {
-//	if (_batch == nullptr) {
-//		_batch = std::make_shared<QuadBatch>(10000, this);
-//	}
+//std::string SpriteSheet::toString() {
+////	std::stringstream str;
+////	str << "sheet: " << _id << ", fonts: " << _fonts.size() << ", sprites: " << _sprites.size() << ", multisprites: " << _multiSprites.size() << std::endl;
+////	return str.str();
 //
-//	return _batch;
+//}
 
-}
+//std::shared_ptr<QuadBatch> SpriteSheet::getBatch() {
+////	if (_batch == nullptr) {
+////		_batch = std::make_shared<QuadBatch>(10000, this);
+////	}
+////
+////	return _batch;
+//
+//}
 
 std::shared_ptr<Sprite> SpriteSheet::getSprite(const std::string& id) {
 	auto iter = _sprites.find(id);

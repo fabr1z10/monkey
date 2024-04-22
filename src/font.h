@@ -25,7 +25,7 @@ public:
     Font(SpriteSheet* sheet, const YAML::Node& node);
     const CharInfo& getCharInfo(char32_t c);
     float getLineHeight() const;
-    QuadBatch* getBatch();
+    //QuadBatch* getBatch();
 private:
     QuadBatch* _batch;
     float _lineHeight;

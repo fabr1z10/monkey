@@ -66,7 +66,7 @@ public:
 	void unregisterToMouseEvent(MouseListener*);
 	//IBatch* getBatch(int);
 
-	pybind11::function getScript(const std::string& name) const;
+	//pybind11::function getScript(const std::string& name) const;
 private:
 
 

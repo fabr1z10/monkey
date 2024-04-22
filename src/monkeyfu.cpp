@@ -96,6 +96,7 @@ int playScript(const std::shared_ptr<Script> s) {
 
 int killScript(const std::string& id) {
     Engine::instance().getRoom()->getRunner<Scheduler>()->kill(id);
+    return 0;
 }
 //
 

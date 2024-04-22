@@ -36,10 +36,10 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 //
 //}
 
-pybind11::function Engine::getScript(const std::string &name) const {
-
-//	return py_get<pybind11::function>(m_scripts, name);
-}
+//pybind11::function Engine::getScript(const std::string &name) const {
+//
+////	return py_get<pybind11::function>(m_scripts, name);
+//}
 
 
 void Engine::start() {

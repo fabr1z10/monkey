@@ -8,9 +8,9 @@
 #include "yamlexp.h"
 #include "room.h"
 
-QuadBatch * Font::getBatch() {
-	return _sheet->getBatch().get();
-}
+//QuadBatch * Font::getBatch() {
+//	return _sheet->getBatch().get();
+//}
 
 Font::Font(SpriteSheet* s, const YAML::Node& node) : _sheet(s) {
 

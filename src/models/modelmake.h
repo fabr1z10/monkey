@@ -14,7 +14,7 @@ public:
         // Instantiated on first use.
         return instance;
     }
-	static std::shared_ptr<Model> pippo(const pybind11::kwargs& args);
+	//static std::shared_ptr<Model> pippo(const pybind11::kwargs& args);
     static std::shared_ptr<Model> makeModel(const std::string& batchId, const std::shared_ptr<Shape>&, glm::vec4 color, FillType);
     std::shared_ptr<Model> make(const std::string& batchId, const std::shared_ptr<Shape>&, glm::vec4 color, FillType ft);
 private:

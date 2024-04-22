@@ -12,12 +12,12 @@ class SpriteSheet {
 public:
 	explicit SpriteSheet(const std::string& id, const std::string& file);
 	Tex* getTex();
-	std::shared_ptr<QuadBatch> getBatch();
+	//std::shared_ptr<QuadBatch> getBatch();
 	std::shared_ptr<Sprite> getSprite(const std::string&);
 	//std::shared_ptr<MultiNode>  getMultiNode(const std::string&, const std::string& batch);
 	std::shared_ptr<Font> getFont(const std::string&);
 	std::string getTiled(const std::string&);//, const pybind11::kwargs&);
-	std::string toString();
+	//std::string toString();
 	std::string getId() const;
 	glm::ivec2 getTileSize() const;
 	std::shared_ptr<MultiSprite> getMulti(const std::string&);

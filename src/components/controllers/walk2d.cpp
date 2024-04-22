@@ -160,4 +160,5 @@ int PlayerWalk2D::keyCallback(GLFWwindow *, int key, int scancode, int action, i
 	}
     m_node->setFlipX((_flags& 1) > 0);
 	//std::cout << m_node->getFlipX() << "\n";
+	return 0;
 }
