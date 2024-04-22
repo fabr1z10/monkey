@@ -28,7 +28,46 @@ bowl:
       batch: "bowl"
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
-
+    - type: bg      # tree
+      batch: "bowl"
+      pos: [18, 31, 0]
+      quad: [26,167,150,135]
+      area:
+        access: none
+        poly: [16,0,144,0,130,7,27,7]
+      baseline: [12,0,150,0]
+    - type: bg      # tree
+      batch: "bowl"
+      pos: [244,55,0]
+      quad: [2,308,46,22]
+      area:
+        access: none
+        poly: [0,3,12,0,22,0,42,3,46,6,6,6]
+      baseline: [-2,3,12,0,22,0,42,3,49,6]
+    - type: bg      # tree
+      batch: "bowl"
+      auto_depth: True
+      pos: [ 194,72,0 ]
+      quad: [185,168,82,94]
+      area:
+        access: none
+        poly: [ 32,0,44,0]
+    - type: bg      # tree
+      batch: "bowl"
+      pos: [156,8,0]
+      auto_depth: True
+      quad: [199,294,112,35]
+      area:
+        access: none
+        poly: [0,0,112,0,109,5,6,5]
+    - type: bg      # tree
+      batch: "bowl"
+      pos: [282,7,0]
+      quad: [53,307,28,21]
+      area:
+        access: none
+        poly: [0,2,8,0,16,0,28,3,24,5,4,5]
+      baseline: [-2,2,8,0,16,0,30,3]
   scripts:
     look_bowl: ['look_inventory_item', 'bowl', 51, 0]
     get_bowl: ['pickup', 'bowl', 52, 26]
@@ -1191,45 +1230,51 @@ sorcerer:
     - type: bg     # tree 1
       batch: "sorcerer"
       pos: [ 16,19,0 ]
+      auto_depth: True
       quad: [ 1, 167, 104, 116 ]
-      wall:
-        polyline: [ 0,0,104,0]
-        baseline: True
+      area:
+        polyline: [ 18,0,82,0]
+        access: none
     - type: bg     # tree 2
       batch: "sorcerer"
       pos: [ 84,63,0 ]
       quad: [ 1,287,64,27 ]
-      wall:
+      auto_depth: True
+      area:
+        access: none
         polyline: [ 0,0,64,0]
-        baseline: True
     - type: bg     # tree 3
       batch: "sorcerer"
       pos: [ 0,71,0 ]
       quad: [ 109,168,38,87 ]
-      wall:
-        polyline: [ 0,0,38,0]
-        baseline: True
+      auto_depth: True
+      area:
+        polyline: [ 8,0,18,0]
+        access: none
     - type: bg     # tree 4
       batch: "sorcerer"
       pos: [ 122,80,0 ]
       quad: [ 152,168,48,67 ]
-      wall:
+      auto_depth: True
+      area:
         polyline: [ 0,0,48,0]
-        baseline: True
+        access: none
     - type: bg     # rock
       batch: "sorcerer"
       pos: [ 30,103,0 ]
       quad: [ 69,284,104,30 ]
-      wall:
+      auto_depth: True
+      area:
         polyline: [ 0,0,104,0]
-        baseline: True
+        access: none
     - type: bg     # tree 5
       batch: "sorcerer"
       pos: [ 186,79,0 ]
       quad: [ 202,168,76,87 ]
-      wall:
-        polyline: [ 0,0,76,0]
-        baseline: True
+      auto_depth: True
+      area:
+        polyline: [ 33,0,49,0]
+        access: none
 southcas:
   batches:
     - "southcas"
@@ -1676,30 +1721,43 @@ walnut:
       batch: "walnut"
       pos: [ 56,7,0 ]
       quad: [ 1,167,120,159 ]
-      wall:
-        polyline: [ 44,0,82,0]
-        baseline: True
+      area:
+        access: none
+        poly: [ 45,2,60,0,66,0,82,5,78,8,50,6]
+      baseline: [45,2,60,0,66,0,82,5]
     - type: bg     # rock
       batch: "walnut"
       pos: [ 188,39,0 ]
       quad: [ 253,295,60,19 ]
-      wall:
-        polyline: [ 0,7,8,3,28,3,36,0,44,0,59,5]
-        baseline: True
+      area:
+        access: none
+        polyline: [ 0,7,8,3,28,3,36,0,44,0,59,5,52,11,12,11]
+      baseline: [ 0,7,8,3,28,3,36,0,44,0,59,5]
     - type: bg     # tree 3
       batch: "walnut"
       pos: [246,55,0 ]
-      quad: [ 242,169,68,91]
-      wall:
-        polyline: [0,0,68,0]
-        baseline: True
+      auto_depth: True
+      quad: [ 247,169,68,91]
+      area:
+        access: none
+        polyline: [26,0,40,0]
+
     - type: bg     # tree 3
       batch: "walnut"
       pos: [210,71,0 ]
-      quad: [134,167,62,95]
-      wall:
-        polyline: [0,0,62,0]
-        baseline: True
+      quad: [122,167,62,95]
+      auto_depth: True
+      area:
+        polyline: [32,0,46,0]
+        access: none
+    - type: bg     # tree 3
+      batch: "walnut"
+      pos: [0,79,0 ]
+      quad: [187,174,58,87]
+      auto_depth: True
+      area:
+        polyline: [22,0,36,0]
+        access: none
   scripts:
       look_tree: [ 'msg', 60 ]
       look_walnut: ['look_inventory_item', 'walnut', 64, 0]
