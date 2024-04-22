@@ -99,7 +99,7 @@ private:
 	std::vector<float> _boxData;
 	std::vector<std::pair<unsigned, unsigned>> _boxOffset;
 
-	unsigned long _maxBoxes;
+	size_t _maxBoxes;
 	Bounds _staticBounds;
 };
 
