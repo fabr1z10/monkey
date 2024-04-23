@@ -12,7 +12,7 @@ In the next sections we provide installation tips specific for the different pla
 
 To clone the project in your system use the following command line (`--recurse-submodules` is required as it will bring in the required `Pybind11` project)
 ```bash
-git clone --recurse-submodules git@github.com:fabr1z10/monkey.git
+git clone --recurse-submodules https://github.com/fabr1z10/monkey.git
 ```
 
 # Ubuntu
