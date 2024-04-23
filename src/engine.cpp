@@ -222,6 +222,7 @@ void Engine::run() {
             /// every iter, it doesn't. Tried move the glfwSwapBuffers call (and successive) out of the loop
             /// and that seems to work.
             if (true || currentTime - _timeLastUpdate >= _frameTime) {
+                double dt = currentTime - _timeLastUpdate;
                 _timeLastUpdate = currentTime;
 
                 // remove all entities scheduled for removal
@@ -239,7 +240,7 @@ void Engine::run() {
                 //glBindFramebuffer(GL_FRAMEBUFFER, _fb);
                 //glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
-                _room->update(_frameTime);
+                _room->update(dt);
 
                 _engineDraw->draw(_room.get());
                 glfwSwapBuffers(window);

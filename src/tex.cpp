@@ -42,7 +42,7 @@ std::vector<unsigned char> Tex::getRaw(const std::string &file, int& width, int&
 void Tex::load_png(const std::string &file) {
     unsigned char sig[8];
     FILE* infile;
-    infile = fopen(file.c_str(), "r");
+    infile = fopen(file.c_str(), "rb");
 
     /* first do a quick check that the file really is a PNG image; could
      * have used slightly more general png_sig_cmp() function instead */
