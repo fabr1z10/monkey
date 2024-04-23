@@ -35,7 +35,7 @@ def on_leave_hotspot(a,b):
 
 def ciao(x, y):
     print('go to --> ',x, y)
-    monkey.get_node(settings.player_id).sendMessage(id="goto", pos=(x,y))
+    #monkey.get_node(settings.player_id).sendMessage(id="goto", pos=(x,y))
 
 
 def init():
@@ -70,45 +70,78 @@ def bg(ciao,wa):
 def create_room(room):
     root = room.root()
     ce = monkey.CollisionEngine2D(80, 80)
-    ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
+    #ce.add_response(0, 1, on_start=on_enter_hotspot, on_end=on_leave_hotspot)
     room.add_runner(ce)
     mm = monkey.MouseManager()
     mm.setFunc(0, ciao)
     room.add_runner(mm)
-    cam = monkey.CamOrtho(320, 200,
-                          viewport=(0,0,320,200),
-                          bounds_x=(160, 160), bounds_y=(100, 100))
-    room.add_camera(cam)
 
     room_info = settings.rooms[settings.room]
+    size = room_info['size']
 
-    room.add_batch('sprites', monkey.SpriteBatch(max_elements=10000, cam=0, sheet='kq1/sprites'))
+    room_width = size[0]
+    room_height = size[1]
+
+    width = settings.device_size[0]
+    height = 136
+
+
+
+    hw = width // 2
+    hh = height // 2
+    hdh = settings.device_size[1] // 2
+
+    #cam = monkey.CamOrtho(width, height,
+    #                      viewport=(0, 54, width, height),
+    #                      bounds_x=(hw, room_width - hw), bounds_y=(hh, room_height - hh))
+    cam2 = monkey.CamOrtho(width, settings.device_size[1],
+                           viewport=(0, 0, width, settings.device_size[1]),
+                           bounds_x=(hw, hw), bounds_y=(hdh, hdh))
+    mm.addCamera(0)
+    #mm.addCamera(1)
+
+    #room.add_camera(cam)
+    room.add_camera(cam2)
+
+    #room.add_batch('sprites', monkey.SpriteBatch(max_elements=10000, cam=0, sheet='mmansion/sprites'))
+    room.add_batch('petscii', monkey.SpriteBatch(max_elements=10000, cam=0, sheet='mmansion/petscii'))
     room.add_batch('lines', monkey.LineBatch(max_elements=200, cam=0))
 
     game_node = monkey.Node()
     text_node = monkey.Node()
+
+    verbs = [
+        ('Push',1,45), ('Pull',1,37), ('Give',1,29),
+        ('Open',65, 45), ('Close', 65,37), ('Read', 65, 29)]
+
+    for v in verbs:
+        t = monkey.Text('petscii', 'c64', v[0],pal=1)
+        t.set_position(v[1],v[2],0)
+        text_node.add(t)
+
     #inventory_node = monkey.Node()
     root.add(game_node)
+    root.add(text_node)
 
-    game_node.add(graham('graham', 10,10,1))
+    #game_node.add(graham('graham', 10,10,1))
     #game_node.add(dave(50,50))
-    wa = room_info['walkarea']
-    poly = wa['poly']
-    walkArea = monkey.WalkArea(poly, 2)
-    room.add_runner(walkArea)
-    game_node.add(create_poly(poly))
-    if 'holes' in wa:
-        for hole in wa['holes']:
-            if 'poly' in hole:
-                walkArea.addPolyWall(hole['poly'])
-                game_node.add(create_poly(hole['poly']))
-
-
-    for item in room_info.get('items', []):
-        f = globals().get(item['type'])
-        condition = item.get('condition', None)
-        if condition and not eval(condition):
-            continue
-        if f:
-            node = f(item,walkArea)
-            game_node.add(node)
+    # wa = room_info['walkarea']
+    # poly = wa['poly']
+    # walkArea = monkey.WalkArea(poly, 2)
+    # room.add_runner(walkArea)
+    # game_node.add(create_poly(poly))
+    # if 'holes' in wa:
+    #     for hole in wa['holes']:
+    #         if 'poly' in hole:
+    #             walkArea.addPolyWall(hole['poly'])
+    #             game_node.add(create_poly(hole['poly']))
+    #
+    #
+    # for item in room_info.get('items', []):
+    #     f = globals().get(item['type'])
+    #     condition = item.get('condition', None)
+    #     if condition and not eval(condition):
+    #         continue
+    #     if f:
+    #         node = f(item,walkArea)
+    #         game_node.add(node)

@@ -27,6 +27,7 @@ test_hole2:
       pos: [ 0, 0, -1 ]
       quad: [ 0, 0, 316, 166 ]
 test_hole_dynamic:
+  size: [320,136]
   walkarea:
     poly: [1,1,319,0,319,199,0,199]
   items:

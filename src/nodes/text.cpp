@@ -22,8 +22,8 @@ Text::Text(const std::string &batchId, const std::string& font, const std::strin
 	if (_width != std::numeric_limits<float>::infinity()) {
 		_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
 	}
-
-	_anchor = static_cast<Anchor>(py_get_dict<int>(args, "anchor", static_cast<int>(Anchor::TOPLEFT)));
+	auto aa = py_get_dict<int>(args, "anchor", 0);
+	_anchor = static_cast<Anchor>(aa);
 
 	updateText(text);
 

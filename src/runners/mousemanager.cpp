@@ -7,7 +7,7 @@ void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
     _selectedViewport = -1;
     if (_room == nullptr) return;
     glm::vec2 vp = Camera::getViewportCoordinates(x, y);
-    for (int i = 0; i < _room->getCameraCount(); ++i) {
+    for (int i : _cameras) {
         if (_room->getCamera(i)->isInViewport(vp.x, vp.y)) {
             _selectedViewport = i;
             break;
@@ -22,6 +22,10 @@ void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
 //            it->second(worldCoordinates.x, worldCoordinates.y);
 //        }
     }
+}
+
+void MouseManager::addCamera(int i) {
+	_cameras.push_back(i);
 }
 
 void MouseManager::setDefaultCallback(int i, pybind11::function f) {

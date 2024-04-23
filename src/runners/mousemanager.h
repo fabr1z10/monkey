@@ -16,9 +16,11 @@ public:
     void cursorPosCallback(GLFWwindow*, double, double) override;
     void mouseButtonCallback(GLFWwindow*, int, int, int) override;
     void setDefaultCallback(int, pybind11::function);
+    void addCamera(int);
 private:
     std::unordered_map<int, pybind11::function> _defaultFunc;
     int _selectedViewport;
     glm::vec2 _worldCoordinates;
     Room* _room;
+    std::vector<int> _cameras; // orderer by priority
 };
