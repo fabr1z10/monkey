@@ -20,7 +20,22 @@ Install all required dependencies:
 
 ```bash
 sudo apt-get update -y 
-sudo apt-get install -y libglew-dev libglfw libglfw-dev libpng-dev libyaml-cpp-dev
+sudo apt-get install -y libgl1-mesa-dev libglew-dev libglfw3 libglfw3-dev libpng-dev libyaml-cpp-dev
+```
+
+Then from the main project directory:
+```bash
+mkdir build
+cd build
+cmake ..
+make install
+```
+
+After installing the Python module, you can try running the demo provided in `test` to make sure everything runs correctly. For instance to run `hello_world`, from the main directory:
+
+```bash
+cd test/hello_world
+./main.py
 ```
 
 # Windows
@@ -44,4 +59,5 @@ cmake ..
 ```
 
 This will create the Visual Studio solution and project files. Open Visual Studio and build the projects (in build and release configurations). This operation will create the Debug/ and Release/ directories where the binary files will be added. To install, you need to run VS with administrator privileges as with Zlib.
+
 
