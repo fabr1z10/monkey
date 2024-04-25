@@ -27,7 +27,7 @@ public:
     //Engine();
     void initialize();
     long getNextId();
-    void start();
+    void start(py::module&);
     void run();
     void closeRoom();
     //void load(pybind11::object obj);
@@ -84,6 +84,7 @@ private:
     //pybind11::object m_game;
     pybind11::module _factory;
     pybind11::object m_settings;
+	pybind11::object _main;
     //pybind11::object m_scripts;
     std::string _title;
     std::string _roomId;

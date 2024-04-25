@@ -2,6 +2,7 @@
 #include <iostream>
 #include "pyhelper.h"
 #include "monkeyfu.h"
+#include <filesystem>
 //#include "shaders/lightshader.h"
 //#include "batch/quadbatch.h"
 #include "assetmanager.h"
@@ -13,18 +14,9 @@
 GLFWwindow* window;
 
 namespace py = pybind11;
-
+namespace fs = std::filesystem;
 
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
-//    m_shaderBuilders[0] = [&] () { return create_shader(ShaderType::SHADER_COLOR, color_vs, color_fs, "3f4f"); };
-//    m_shaderBuilders[1] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE, tex_vs, tex_fs, "3f2f4f"); };
-//    m_shaderBuilders[2] = [&] () { return create_shader(ShaderType::SHADER_TEXTURE_PALETTE, tex_vs, tex_pal_fs, "3f2f4f"); };
-//	// light shader
-//	m_shaderBuilders[3] = [&] () { return create_shader<LightShader>(
-//			ShaderType::SHADER_TEXTURE_LIGHT, tex_light_vs, tex_light_fs, "3f2f3f");};
-//	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return create_shader(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
-//	m_shaderBuilders[ShaderType::QUAD_SHADER] = [&] () { return create_shader(ShaderType::QUAD_SHADER, quad_vs, quad_fs, "2f1I"); };
-//    m_shaderBuilders[ShaderType::LINE_SHADER] = [&] () { return create_shader(ShaderType::LINE_SHADER, line_vs, line_fs, "1f1I"); };
 }
 
 
@@ -42,65 +34,43 @@ Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 //}
 
 
-void Engine::start() {
-    // read the settings PY file
+void Engine::start(py::module& mainModule) {
+
     try {
+		_main = mainModule;
 
+    	fs::path fl = mainModule.attr("__file__").cast<std::string>();
+		auto assetPath = fl.parent_path().parent_path();
+		assetPath /= "assets";
+		assert(fs::exists(assetPath) && fs::is_directory(assetPath));
+		AssetManager::instance().addDirectory(assetPath.string());
+		for (const auto & entry : fs::directory_iterator(assetPath))
+			std::cout << entry.path() << std::endl;
+		_deviceSize = py_get<glm::ivec2>(_main, "device_size");
+		_windowSize = py_get<glm::ivec2>(_main, "window_size", _deviceSize);
+		assert(_deviceSize[1] > 0);
+		std::cout << " -- Device size: (" << _deviceSize.x << ", " << _deviceSize.y << ")\n";
+		std::cout << " -- Window size: (" << _windowSize.x << ", " << _windowSize.y << ")\n";
 
-    	_factory = py::module::import("factory");
-        auto settings = py::module::import("settings");
-        _deviceSize = py_get<glm::ivec2>(settings, "device_size");
-        assert(_deviceSize[1] > 0);
-        _windowSize = py_get<glm::ivec2>(settings, "window_size", _deviceSize);
-        _deviceAspectRatio = static_cast<double>(_deviceSize[0]) / _deviceSize[1];
-        _roomId = py_get<std::string>(settings, "room");
-        _frameTime = 1.0 / 60.0;
-        _timeLastUpdate = 0.0;
-        _enableMouse = py_get<bool>(settings, "enable_mouse", false);
-        _title = py_get<std::string>(settings, "title", "Unknown");
-        m_settings = settings;
-		if (pybind11::hasattr(_factory, "init")) {
-			_factory.attr("init")();
-		}
-
-		auto assetDirs = py_get<std::vector<std::string>>(m_settings, "asset_directories", std::vector<std::string>());
-		for (const auto& dir : assetDirs) {
-			AssetManager::instance().addDirectory(dir);
-		}
-
-    } catch (std::runtime_error& err) {
+		_deviceAspectRatio = static_cast<double>(_deviceSize[0]) / _deviceSize[1];
+		_roomId = py_get<std::string>(_main, "room");
+		_frameTime = 1.0 / 60.0;
+		_timeLastUpdate = 0.0;
+		_enableMouse = py_get<bool>(_main, "enable_mouse", false);
+		_title = py_get<std::string>(_main, "title", "Unknown");
+//		if (pybind11::hasattr(_factory, "init")) {
+//			_factory.attr("init")();
+//		}
+//
+		//auto assetDirs = py_get<std::vector<std::string>>(_main, "asset_directories", std::vector<std::string>());
+//		for (const auto &dir : assetDirs) {
+//			AssetManager::instance().addDirectory(dir);
+//		}
+	} catch (std::runtime_error& err) {
         GLIB_FAIL(err.what());
+    } catch (py::cast_error& err) {
+    	GLIB_FAIL(err.what());
     }
-//		// check if spritesheet has been loaded
-////        if (m_spriteSheets.count(sheetName) == 0) {
-////        	// load spritesheet
-////        	m_spriteSheets.insert(std::make_pair(sheetName, std::make_shared<SpriteSheet>(f)));
-////        }
-////		auto sheet = m_spriteSheets.at(sheetName);
-//		//auto sheetFile = f["sheet"].as<std::string>();
-//		auto spritesNode = f["sprites"];
-//		auto sheet = f["sheet"].as<std::string>();
-//		auto * batch = Engine::instance().getRoom()->addSpriteBatch(sheet);
-
-
-
-
-
-//	m_scripts = py::module::import("scripts");
-
-
-    //auto useFrameBuffer = py_get<bool>(settings,"enable_framebuffer", false);
-
-
-
-
-
-
-//	auto dataFiles = py_get<pybind11::dict>(settings, "data", pybind11::dict());
-//	for (const auto& d : dataFiles) {
-//	    readDataFile(d.first.cast<std::string>(), d.second.cast<std::string>());
-//	}
-	
 
     // Initialise GLFW
     if( !glfwInit() )
@@ -154,18 +124,19 @@ void Engine::start() {
     glDisable(GL_POINT_SMOOTH);
     // setupFramebufferRendering();
 //    if (useFrameBuffer) {
-    _engineDraw = std::make_unique<FrameBufferEngineDraw>();
+	_engineDraw = std::make_unique<FrameBufferEngineDraw>();
 //    } else {
 //        _engineDraw = std::make_unique<BasicEngineDraw>();
 //    }
     // Dark blue background
     //loadShaders();
 
-    auto shaders = py_get<std::vector<int>>(m_settings, "shaders");
+    auto shaders = py_get<std::vector<int>>(_main, "shaders");
+
     for (const auto& shader : shaders) {
 		_engineDraw->addShader(shader);
+
     }
-//
     _engineDraw->initShaders();
 
 //    // load fonts
@@ -199,6 +170,7 @@ void Engine::initialize() {
 }
 
 void Engine::run() {
+	std::cout << " -- engine starts running..\n";
     m_shutdown = false;
 
 
@@ -207,9 +179,9 @@ void Engine::run() {
 
     // main loop
     while (!m_shutdown) {
-        _roomId = py_get<std::string>(m_settings, "room");
+        _roomId = py_get<std::string>(_main, "room");
 		m_scheduledForRemoval.clear();
-        std::cout << "Loading room: " << _roomId << std::endl;
+        std::cout << "-- loading room: " << _roomId << std::endl;
         loadRoom();
         // start up all nodes and components
 //        m_room->iterate_dfs([](Node *n) { n->start(); });
@@ -293,9 +265,9 @@ void Engine::loadRoom() {
 //    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
 //    //for (auto& batch : _batches) batch.clear();
     _room = std::make_shared<Room>();
-    auto roomBuilder = _factory.attr("create_room");
+    auto roomBuilder = _main.attr("create_room");
     if (!roomBuilder) {
-    	GLIB_FAIL("no function create_room found in factory module!");
+    	GLIB_FAIL("no function create_room found!");
     }
     roomBuilder(_room);
 //    m_game.attr(_roomId.c_str())(m_room);

@@ -1,6 +1,25 @@
 #include "mousemanager.h"
 #include "../engine.h"
+#include "../shape.h"
+#include "../pyhelper.h"
 #include <iostream>
+
+MouseArea::MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, const pybind11::kwargs &args)  :
+	Component(), _shape(shape), _priority(priority), _camera(camera) {
+	_onEnter = py_get_dict<pybind11::function>(args, "on_enter", pybind11::function());
+	_onLeave = py_get_dict<pybind11::function>(args, "on_leave", pybind11::function());
+	_onStay = py_get_dict<pybind11::function>(args, "on_stay", pybind11::function());
+}
+
+
+MouseArea::~MouseArea() {
+	Engine::instance().getRoom()->getRunner<MouseManager>()->rmArea(this);
+}
+
+void MouseArea::start() {
+	Engine::instance().getRoom()->getRunner<MouseManager>()->addArea(this);
+}
+
 
 void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
     // first, find which viewport the mouse is in (if any)
@@ -17,6 +36,40 @@ void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
     std::cout << x << ", " << y << ", " << _selectedViewport << "\n";
     if (_selectedViewport != -1) {
         _worldCoordinates = _room->getCamera(_selectedViewport)->getWorldCooridnates(vp.x, vp.y);
+        auto it = _mouseAreas.find(_selectedViewport);
+        MouseArea* _currentArea = nullptr;
+        if (it != _mouseAreas.end()) {
+        	for (const auto& area : it->second) {
+        		// transform point in local coordinates
+        		auto localPos = glm::vec2(area->getNode()->getWorldPosition()) + _worldCoordinates;
+        		if (area->getShape()->isInside(glm::vec3(localPos.x, localPos.y, 0.f))) {
+        			// found local area!!!
+        			if (_currentArea == nullptr || _currentArea->getPriority() > area->getPriority()) {
+        				_currentArea = area;
+        			}
+        		}
+        	}
+        }
+        if (_currentArea != nullptr) {
+        	if (_previousArea == nullptr) {
+        		_currentArea->enter();
+        	} else {
+        		if (_previousArea == _currentArea) {
+        			_currentArea->stay();
+        		} else {
+        			_previousArea->leave();
+        			_currentArea->enter();
+        		}
+        	}
+        } else {
+        	if (_previousArea != nullptr) {
+        		_previousArea->leave();
+        	}
+        }
+        _previousArea = _currentArea;
+
+
+
 //        auto it = _defaultFunc.find(_selectedViewport);
 //        if (it != _defaultFunc.end()) {
 //            it->second(worldCoordinates.x, worldCoordinates.y);
@@ -48,8 +101,17 @@ void MouseManager::mouseButtonCallback(GLFWwindow *, int button, int action, int
 
 void MouseManager::start() {
     _room = Engine::instance().getRoom().get();
+    _previousArea = nullptr;
 }
 
 void MouseManager::update(double) {
 
+}
+
+void MouseManager::addArea(MouseArea * area) {
+	_mouseAreas[area->getCamera()].insert(area);
+}
+
+void MouseManager::rmArea(MouseArea * area) {
+	_mouseAreas[area->getCamera()].erase(area);
 }
