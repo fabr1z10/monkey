@@ -36,6 +36,7 @@ public:
     std::shared_ptr<Font> getFont(const std::string&);
 //	std::shared_ptr<PolyMesh> getPolyMesh(const std::string&);
 //    std::shared_ptr<monkey::skeletal::SkeletalAnimation> getSkeletalAnimation(const std::string&);
+	std::string getDirectory() const;
 private:
     std::string fileExists(const std::string&) const;
 	AssetManager();
@@ -53,3 +54,8 @@ private:
 //	std::unordered_map<std::string, std::shared_ptr<PolyMesh>> m_polymesh;
 //    std::unordered_map<std::string, std::shared_ptr<monkey::skeletal::SkeletalAnimation>> m_skeletalAnimations;
 };
+
+
+inline std::string AssetManager::getDirectory() const {
+	return _assetDirectories[0];
+}

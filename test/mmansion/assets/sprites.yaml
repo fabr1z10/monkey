@@ -2,18 +2,9 @@ variables:
   ticks:    &ticks     10
 
 id: 'maniacmansion'
-sheet: 'sprites2.png'
+sheet: 'sprites.png'
 tile_size: [8, 8]
-multi_sprites:
-  dave:
-    nodes:
-      - sprite: dave_legs
-      - sprite: dave_body
-        parent: 0
-        link: 0
-      - sprite: dave_head
-        parent: 1
-        link: 0
+
 sprites:
   dave_head:
     ticks: *ticks

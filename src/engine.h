@@ -25,7 +25,6 @@ public:
         return instance;
     }
     //Engine();
-    void initialize();
     long getNextId();
     void start(py::module&);
     void run();
@@ -87,7 +86,7 @@ private:
 	pybind11::object _main;
     //pybind11::object m_scripts;
     std::string _title;
-    std::string _roomId;
+    //std::string _roomId;
     glm::ivec2 _windowSize;
     glm::ivec2 _deviceSize;
     glm::vec4 m_actualDeviceViewport;

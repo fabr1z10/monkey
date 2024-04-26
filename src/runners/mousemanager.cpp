@@ -2,13 +2,15 @@
 #include "../engine.h"
 #include "../shape.h"
 #include "../pyhelper.h"
+#include "../models/modelmake.h"
 #include <iostream>
 
 MouseArea::MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, const pybind11::kwargs &args)  :
-	Component(), _shape(shape), _priority(priority), _camera(camera) {
+	Component(), _shape(shape), _priority(priority), _camera(camera), _debugNode(nullptr) {
 	_onEnter = py_get_dict<pybind11::function>(args, "on_enter", pybind11::function());
 	_onLeave = py_get_dict<pybind11::function>(args, "on_leave", pybind11::function());
 	_onStay = py_get_dict<pybind11::function>(args, "on_stay", pybind11::function());
+	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
 
@@ -18,7 +20,34 @@ MouseArea::~MouseArea() {
 
 void MouseArea::start() {
 	Engine::instance().getRoom()->getRunner<MouseManager>()->addArea(this);
+
+	if (!_batchId.empty()) {
+		if (_debugNode != nullptr) {
+			_debugNode->remove();
+		}
+		auto &modelMaker = ModelMaker::instance();
+		auto model = modelMaker.make(_batchId, _shape, glm::vec4(1.f), FillType::OUTLINE);
+		auto node = std::make_shared<Node>();
+		node->setModel(model);//pybind11::dict("batch"_a = _batchId));
+		m_node->add(node);
+		_debugNode = node.get();
+	}
+
+
 }
+
+void MouseArea::enter() {
+	if (_onEnter) _onEnter(getNode());
+}
+
+inline void MouseArea::leave() {
+	if (_onLeave) _onLeave(getNode());
+}
+
+inline void MouseArea::stay() {
+	if (_onStay) _onStay(getNode());
+}
+
 
 
 void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
@@ -33,7 +62,7 @@ void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
         }
 
     }
-    std::cout << x << ", " << y << ", " << _selectedViewport << "\n";
+    //std::cout << x << ", " << y << ", " << _selectedViewport << "\n";
     if (_selectedViewport != -1) {
         _worldCoordinates = _room->getCamera(_selectedViewport)->getWorldCooridnates(vp.x, vp.y);
         auto it = _mouseAreas.find(_selectedViewport);
@@ -41,7 +70,7 @@ void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
         if (it != _mouseAreas.end()) {
         	for (const auto& area : it->second) {
         		// transform point in local coordinates
-        		auto localPos = glm::vec2(area->getNode()->getWorldPosition()) + _worldCoordinates;
+        		auto localPos = _worldCoordinates - glm::vec2(area->getNode()->getWorldPosition());
         		if (area->getShape()->isInside(glm::vec3(localPos.x, localPos.y, 0.f))) {
         			// found local area!!!
         			if (_currentArea == nullptr || _currentArea->getPriority() > area->getPriority()) {

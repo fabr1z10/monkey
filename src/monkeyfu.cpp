@@ -7,9 +7,10 @@
 
 
 py::dict readDataFile(const std::string& path) {
+	auto dir = AssetManager::instance().getDirectory();
     py::object os = py::module_::import("yaml");
     py::object open = py::module::import("builtins").attr("open");
-    py::object dict = os.attr("safe_load")(open(path, "r"));
+    py::object dict = os.attr("safe_load")(open(dir+path, "r"));
     return dict;
 }
 

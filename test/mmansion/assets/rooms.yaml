@@ -1,0 +1,18 @@
+start:
+  size: [320, 136]
+  batch: start
+  walkarea:
+    poly: [0,0,320,0,320,20,0,20]
+  items:
+    - model:
+        type: bg
+        batch: start
+        quad: [0, 0, 320, 136]
+    - model:
+        type: bg
+        batch: start
+        quad: [1,137,106,73]
+      area:
+        poly: [-1,-1,106,-1,106,1,-1,1]
+      pos: [0, 9,0]
+      auto_depth: True

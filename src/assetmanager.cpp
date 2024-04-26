@@ -50,12 +50,13 @@ std::shared_ptr<SpriteSheet> AssetManager::getSpritesheet(const std::string &id)
 		return it->second;
 	}
 	// find file
-	std::string fileName = fileExists(id + ".yaml");
-	M_Assert(!fileName.empty(), (" -- cannot find spritesheet: " + id).c_str());
-
+	//std::string fileName = fileExists(id + ".yaml");
+	std::string fileName = getDirectory() + id +".yaml";
 	auto sheet = std::make_shared<SpriteSheet>(id, fileName);
 	_spritesheets[id] = sheet;
 	return sheet;
+
+
 
 
 }

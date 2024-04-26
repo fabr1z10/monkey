@@ -29,6 +29,9 @@ private:
 	std::shared_ptr<Shape> _shape;
 	int _priority;
 	int _camera;
+	Node* _debugNode;
+	std::string _batchId;
+
 };
 
 inline int MouseArea::getPriority() const {
@@ -43,17 +46,6 @@ inline const std::shared_ptr<Shape> MouseArea:: getShape() const {
 	return _shape;
 }
 
-inline void MouseArea::enter() {
-	if (_onEnter) _onEnter();
-}
-
-inline void MouseArea::leave() {
-	if (_onLeave) _onLeave();
-}
-
-inline void MouseArea::stay() {
-	if (_onStay) _onStay();
-}
 
 class MouseManager : public Runner, public MouseListener{
 public:

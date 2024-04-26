@@ -5,7 +5,9 @@
 #include <cstdlib>
 #include <iostream>
 #include "yamlexp.h"
+#include <filesystem>
 
+namespace fs = std::filesystem;
 
 std::string SpriteSheet::getTiled(const std::string & a) { //}, const pybind11::kwargs &b ) {
     return _tiled.at(a);
@@ -18,19 +20,24 @@ std::string SpriteSheet::getTiled(const std::string & a) { //}, const pybind11::
 
 SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _id(id) {
 	std::string directory = fileName.substr(0, fileName.rfind('/'));
-	//std::string fileName = file + ".yaml";
-	//std::cout << fileName << "\n";
-
-
+	fs::path path = fileName;
+	// this is the default file, if not specified in the YAML
+	auto defaultPng = path.filename().replace_extension(".png");
+	// check if file exists
+	std::cout << " -- check if " << fileName << "exists.\n";
+	YAML::Node f;
 	try {
-		auto f = YAML::LoadFile(fileName);
-		if (f.IsDefined()) {
-			std::cout << "Ok\n";
-		} else {
-			std::cout << "mmm\n";
-		}
+		f = YAML::LoadFile(fileName);
+	} catch (YAML::BadFile& exc) {
+		f = YAML::Node();
+	}
+	try {
+		auto extIndex = fileName.find(".yaml");
+		auto slashIndex = fileName.find_last_of('/');
+		auto defaultSheetName = fileName.substr(slashIndex) + ".png";
+		std::cout << "default sheet: " << defaultSheetName;
+		auto sheet = f["sheet"].as<std::string>(defaultPng);
 
-		auto sheet = f["sheet"].as<std::string>();
 		_tileSize = f["tile_size"].as<glm::ivec2>(glm::ivec2(1, 1));
 		_texture = std::make_shared<Tex>(directory + "/" + sheet);
 
@@ -119,14 +126,12 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 
 
 
-	} catch (YAML::BadFile& exc) {
-		GLIB_FAIL("Error opening " << fileName << ": " << exc.what());
 	} catch (YAML::ParserException& exc) {
 		GLIB_FAIL("Malformed file " << fileName << ": " << exc.what());
 	}
-	for (const auto& ms : _sprites) {
-		std::cout << "sprite: " << ms.first << "\n";
-	}
+//	for (const auto& ms : _sprites) {
+//		std::cout << "sprite: " << ms.first << "\n";
+//	}
 //	for (const auto& ms : _multiSprites) {
 //		std::cout << "multisprite: " << ms.first << "\n";
 //	}

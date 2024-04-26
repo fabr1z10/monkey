@@ -1,0 +1,15 @@
+dave:
+  room: start
+  pos: [50, 20]
+  type: character
+  model:
+    type: multisprite
+    batch: sprites
+    nodes:
+      - sprite: dave_legs
+      - sprite: dave_body
+        parent: 0
+        link: 0
+      - sprite: dave_head
+        parent: 1
+        link: 0

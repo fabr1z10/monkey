@@ -1,13 +1,10 @@
 #include "engine.h"
 #include <iostream>
 #include "pyhelper.h"
-#include "monkeyfu.h"
 #include <filesystem>
-//#include "shaders/lightshader.h"
-//#include "batch/quadbatch.h"
 #include "assetmanager.h"
 #include "error.h"
-#include "batch/linebatch.h"
+
 
 
 
@@ -19,26 +16,10 @@ namespace fs = std::filesystem;
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 }
 
-
-
-
-//
-//void Engine::load(pybind11::object obj) {
-//
-//
-//}
-
-//pybind11::function Engine::getScript(const std::string &name) const {
-//
-////	return py_get<pybind11::function>(m_scripts, name);
-//}
-
-
 void Engine::start(py::module& mainModule) {
 
     try {
 		_main = mainModule;
-
     	fs::path fl = mainModule.attr("__file__").cast<std::string>();
 		auto assetPath = fl.parent_path().parent_path();
 		assetPath /= "assets";
@@ -53,14 +34,14 @@ void Engine::start(py::module& mainModule) {
 		std::cout << " -- Window size: (" << _windowSize.x << ", " << _windowSize.y << ")\n";
 
 		_deviceAspectRatio = static_cast<double>(_deviceSize[0]) / _deviceSize[1];
-		_roomId = py_get<std::string>(_main, "room");
+		//_roomId = py_get<std::string>(_main, "room");
 		_frameTime = 1.0 / 60.0;
 		_timeLastUpdate = 0.0;
 		_enableMouse = py_get<bool>(_main, "enable_mouse", false);
 		_title = py_get<std::string>(_main, "title", "Unknown");
-//		if (pybind11::hasattr(_factory, "init")) {
-//			_factory.attr("init")();
-//		}
+		if (pybind11::hasattr(_main, "init")) {
+			_main.attr("init")();
+		}
 //
 		//auto assetDirs = py_get<std::vector<std::string>>(_main, "asset_directories", std::vector<std::string>());
 //		for (const auto &dir : assetDirs) {
@@ -139,49 +120,15 @@ void Engine::start(py::module& mainModule) {
     }
     _engineDraw->initShaders();
 
-//    // load fonts
-//    auto fonts = py_get<py::dict>(m_settings, "fonts", py::dict());
-//    for (const auto& font : fonts) {
-//        auto name = font.first.cast<std::string>();
-//        auto file = font.second.cast<std::string>();
-//        std::cout << name << ", " << file << "\n";
-//        AssetManager::instance().getFont(name, file);
-//    }
 }
 
-void Engine::initialize() {
-	// WHY LOADING ALL SPRITESHEETS? no sense
-//	auto sheets = py_get<pybind11::dict>(m_settings, "spritesheets", pybind11::dict());
-//	for (const auto& sheet : sheets) {
-//
-//		auto id = sheet.first.cast<std::string>();
-//		auto file = sheet.second.cast<std::string>();
-//		std::cout << "READING SPRITESHEET " << id << " AT " << file << "\n";
-//		AssetManager::instance().readSpritesheet(id, file);
-//
-//	}
-	// check game initialization function
-//	auto onStartup = py_get<pybind11::function>(m_settings, "on_startup", pybind11::function());
-//	if (onStartup) {
-//		onStartup();
-//	}
-
-
-}
 
 void Engine::run() {
 	std::cout << " -- engine starts running..\n";
     m_shutdown = false;
-
-
-
-    initialize();
-
     // main loop
     while (!m_shutdown) {
-        _roomId = py_get<std::string>(_main, "room");
 		m_scheduledForRemoval.clear();
-        std::cout << "-- loading room: " << _roomId << std::endl;
         loadRoom();
         // start up all nodes and components
 //        m_room->iterate_dfs([](Node *n) { n->start(); });

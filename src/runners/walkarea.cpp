@@ -80,15 +80,27 @@ void WalkArea::processPolyline(const std::vector<Seg> &p, glm::vec2 origin) {
 }
 
 bool WalkArea::pointInWalkArea(glm::vec2 P) {
-    if (!pnpoly(_walkArea, P)) {
+    if (!pnpoly(_walkArea->vertices, P)) {
         return false;
     }
     for (const auto& hole : _holes) {
-        if (pnpoly(hole, P)) {
+        if (pnpoly(hole->vertices, P)) {
             return false;
         }
     }
     return true;
+}
+
+WalkArea::PolygonInfo::PolygonInfo(const std::vector<glm::vec2> &verts) : vertices(verts) {
+	for (size_t i = 0; i < verts.size(); ++i) {
+		glm::vec2 A = verts[i];
+		glm::vec2 B = verts[(i+1) % verts.size()];
+		lengths.push_back(glm::length(B-A));
+		auto unitEdge = glm::normalize(B-A);
+		unitEdges.push_back(unitEdge);
+		normals.push_back(rot90(unitEdge));
+	}
+
 }
 
 void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::vec2 origin) {
@@ -129,17 +141,19 @@ void WalkArea::processPoly(const std::vector<glm::vec2> &p, bool isHole, glm::ve
         _adjacentNodes.insert(std::make_pair(originNodeId, currentPointNodeId));
         _adjacentNodes.insert(std::make_pair(currentPointNodeId, originNodeId));
     }
+
+	auto info = std::make_unique<PolygonInfo>(p);
     if (isHole) {
-        _holes.push_back(p);
+        _holes.push_back(std::move(info));
     } else {
-        _walkArea = p;
+        _walkArea = std::move(info);
     }
     _currentPoly++;
 }
 void WalkArea::recompute() {
 
     _graph->clear();
-    _walkArea.clear();
+    _walkArea = nullptr;
     _holes.clear();
     _walls.clear();
     for (size_t i = 0; i < _geometry.size(); ++i) {
@@ -190,12 +204,12 @@ void WalkArea::recompute() {
             if (addEdge && _adjacentNodes.count(std::make_pair(i, j)) == 0) {
 
                 glm::vec2 midPoint = 0.5f * (ni.pos + nj.pos);
-                bool isInWalkArea = pnpoly(_walkArea, midPoint);
+                bool isInWalkArea = pnpoly(_walkArea->vertices, midPoint);
                 if (!isInWalkArea) {
                     addEdge = false;
                 } else {
                     for (const auto &h : _holes) {
-                        if (pnpoly(h, midPoint)) {
+                        if (pnpoly(h->vertices, midPoint)) {
                             addEdge = false;
                             break;
                         }
@@ -274,39 +288,46 @@ void WalkArea::addLineWall(std::vector<float> &p) {
 
 }
 
-void WalkArea::updateClosestPoint(std::vector<glm::vec2>& path, glm::vec2 P, float& bestSoFar, glm::vec2& incumbent, glm::vec2& normal) {
-    for (size_t i = 0; i < path.size(); ++i) {
-        glm::vec2 A(path[i]);
-        glm::vec2 B(path[(i + 1) % path.size()]);
-        glm::vec2 u = glm::normalize(B - A);
-        float l = glm::length(B - A);
+void WalkArea::updateClosestPoint(const PolygonInfo& p, glm::vec2 P, float& bestSoFar, glm::vec2& incumbent, glm::vec2& normal) {
+	int l = p.vertices.size();
+    for (size_t i = 0, inext = 1, iprev=l-1; i < p.vertices.size(); ++i) {
+        glm::vec2 A(p.vertices[i]);
+        inext = (i+1) % l;
+        glm::vec2 B(p.vertices[inext]);
+        glm::vec2 u = p.unitEdges[i];
+        float l = p.lengths[i];
         auto d = glm::dot(P - A, u);
         glm::vec2 closest;
+        glm::vec2 n;
         if (d < 0) {
             closest = A;
+            n = 0.5f * (p.normals[i] + p.normals[iprev]);
         } else if (d > l) {
             closest = B;
+			n = 0.5f * (p.normals[i] + p.normals[inext]);
         } else {
             closest = A + d * u;
+            n = p.normals[i];
         }
         float currentDistance = glm::distance(closest, P);
         if (currentDistance < bestSoFar) {
             bestSoFar = currentDistance;
             incumbent = closest;
-            normal = rot90(u);
+            normal = n;
         }
+        iprev = i;
     }
 }
 
 glm::vec2 WalkArea::getClosestPointInArea(glm::vec2 P) {
-    if (pnpoly(_walkArea, P)) {
+    if (pnpoly(_walkArea->vertices, P)) {
         // check is not inside holes
         for (auto& hole : _holes) {
-            if (pnpoly(hole, P)) {
+            if (pnpoly(hole->vertices, P)) {
                 glm::vec2 best;
                 float bestDistance = std::numeric_limits<float>::infinity();
                 glm::vec2 normal;
-                updateClosestPoint(hole, P, bestDistance, best, normal);
+                updateClosestPoint(*hole.get(), P, bestDistance, best, normal);
                 return best - normal * _adjust;
             }
         }
@@ -315,7 +336,7 @@ glm::vec2 WalkArea::getClosestPointInArea(glm::vec2 P) {
         glm::vec2 best;
         float bestDistance = std::numeric_limits<float>::infinity();
         glm::vec2 normal;
-        updateClosestPoint(_walkArea, P, bestDistance, best, normal);
+        updateClosestPoint(*_walkArea.get(), P, bestDistance, best, normal);
         return best + normal * _adjust;
 
 

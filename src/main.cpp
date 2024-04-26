@@ -564,6 +564,10 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("size", &Controller::getSize)
 		.def("set_size", &Controller::setSize);
 
+	py::class_<MouseArea, Component, std::shared_ptr<MouseArea>>(mc, "MouseArea")
+		.def(py::init<std::shared_ptr<Shape>, int, int, const pybind11::kwargs&>());
+
+
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>());
 //	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
