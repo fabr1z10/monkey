@@ -102,6 +102,7 @@ void Script::kill() {
 			}
 		}
 	}
+	if (_onKill) _onKill();
 }
 
 void Script::update(double dt) {
@@ -200,7 +201,6 @@ void Scheduler::update(double dt) {
 
 long Scheduler::add(std::shared_ptr<Script> s) {
 	//m_ids[_nextId] = s;
-	m_scripts.push_back(s);
 	auto sid = s->getId();
 	if (!sid.empty()) {
 		auto f = m_scriptMap.find(sid);
@@ -208,8 +208,10 @@ long Scheduler::add(std::shared_ptr<Script> s) {
 			f->second->get()->kill();
 			m_scripts.erase(f->second);
 		}
-		m_scriptMap[sid] = std::prev(m_scripts.end());
+
 	}
+	m_scripts.push_back(s);
+	m_scriptMap[sid] = std::prev(m_scripts.end());
 	return _nextId++;
 
 }

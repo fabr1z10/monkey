@@ -8,13 +8,17 @@ WalkableCharacter::WalkableCharacter(float speed, const pybind11::kwargs &args) 
     _walkAnim = py_get_dict<std::string>(args, "walk_anim", "walk");
     _useAnimDirection = py_get_dict<bool>(args, "anim_dir", true);
     _flipHorizontal = py_get_dict<bool>(args, "flip_horizontal", true);
+    _direction = py_get_dict<std::string>(args, "direction", "e");
 }
 
 void WalkableCharacter::sendMessage(const pybind11::kwargs &args) {
     auto id = py_get_dict<std::string>(args, "id");
     if (id == "goto") {
         goTo(py_get_dict<glm::vec2>(args, "pos"));
+    } else if (id == "animate") {
+    	_idleAnim = py_get_dict<std::string>(args, "anim");
     }
+
 }
 
 void NPCSierraFollow::sendMessage(const pybind11::kwargs &args) {
@@ -89,15 +93,21 @@ void NPCSierraFollow::recomputePath() {
 void WalkableCharacter::animate() {
     std::string anim = _moving ? _walkAnim : _idleAnim;
     if (_useAnimDirection) {
-        std::string dir{"_e"};
-        if (fabs(_delta.x) < fabs(_delta.y)) {
-            if (_delta.y > 0) {
-                dir = "_n";
-            } else {
-                dir = "_s";
-            }
-        }
-        anim += dir;
+    	if (_moving) {
+			if (fabs(_delta.x) < fabs(_delta.y)) {
+				if (_delta.y > 0) {
+					_direction = "n";
+				} else {
+					_direction = "s";
+				}
+			} else {
+				_direction = "e";
+			}
+		}
+    	if (_direction == "w") {
+    		_direction = "e";
+    	}
+		anim += "_" + _direction;
     }
     m_animatedRenderer->setAnimation(anim);
 }

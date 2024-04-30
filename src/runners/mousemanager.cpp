@@ -10,6 +10,7 @@ MouseArea::MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, con
 	_onEnter = py_get_dict<pybind11::function>(args, "on_enter", pybind11::function());
 	_onLeave = py_get_dict<pybind11::function>(args, "on_leave", pybind11::function());
 	_onStay = py_get_dict<pybind11::function>(args, "on_stay", pybind11::function());
+	_onClick = py_get_dict<pybind11::function>(args, "on_click", pybind11::function());
 	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
@@ -40,14 +41,17 @@ void MouseArea::enter() {
 	if (_onEnter) _onEnter(getNode());
 }
 
-inline void MouseArea::leave() {
+void MouseArea::leave() {
 	if (_onLeave) _onLeave(getNode());
 }
 
-inline void MouseArea::stay() {
+void MouseArea::stay() {
 	if (_onStay) _onStay(getNode());
 }
 
+void MouseArea::click() {
+	if (_onClick) _onClick(getNode());
+}
 
 
 void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
@@ -116,15 +120,19 @@ void MouseManager::setDefaultCallback(int i, pybind11::function f) {
 
 void MouseManager::mouseButtonCallback(GLFWwindow *, int button, int action, int mods) {
     // look if hotspot is selected, otherwise...
-    // fire
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (_selectedViewport != -1) {
-            auto it = _defaultFunc.find(_selectedViewport);
-            if (it != _defaultFunc.end()) {
-                it->second(_worldCoordinates.x, _worldCoordinates.y);
-            }
-        }
-    }
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		if (_previousArea != nullptr) {
+			_previousArea->click();
+		} else {
+			// fire
+			if (_selectedViewport != -1) {
+				auto it = _defaultFunc.find(_selectedViewport);
+				if (it != _defaultFunc.end()) {
+					it->second(_worldCoordinates.x, _worldCoordinates.y);
+				}
+			}
+		}
+	}
 
 }
 

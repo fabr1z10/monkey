@@ -60,6 +60,7 @@ public:
 	bool done() const;
 	void kill();
 	std::string getId() const;
+	void setOnKill(pybind11::function);
 private:
 	std::list<std::shared_ptr<Action>> m_current;
 	std::unordered_map<int, std::shared_ptr<Action>> m_actions;
@@ -70,8 +71,13 @@ private:
 	std::string m_scriptId;
 	bool m_done;
 	long _loopId;
+	pybind11::function _onKill;
 
 };
+
+inline void Script::setOnKill(pybind11::function f) {
+	_onKill = f;
+}
 
 inline std::string Script::getId() const {
 	return m_scriptId;

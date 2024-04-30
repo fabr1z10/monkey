@@ -2,14 +2,29 @@ dave:
   room: start
   pos: [50, 20]
   type: character
-  model:
-    type: multisprite
-    batch: sprites
-    nodes:
-      - sprite: dave_legs
-      - sprite: dave_body
-        parent: 0
-        link: 0
-      - sprite: dave_head
-        parent: 1
-        link: 0
+  sprite: 'sprites/dave'
+sign:
+  room: start
+  text: 17
+  pos: [10,33]
+  z: 5
+  walk_to: [30,3]
+  walk_dir: 'n'
+  mouse:
+    aabb: [0,30,0,20]
+  actions:
+    read: [say, 18, 19]
+path_start_porch:
+  room: start
+  text: 20
+  pos: [0,0]
+  z: 5
+  walk_to: [0,5]
+  walk_dir: 'w'
+  mouse:
+    aabb: [0,8,0,136]
+  actions:
+    walkto: [change_room, porch]
+
+
+

@@ -5,8 +5,11 @@ CallFunc::CallFunc(pybind11::function f) {
 }
 
 
+void CallFunc::start() {
+	m_func();
+
+}
 
 int CallFunc::process(double) {
-	m_func();
 	return 0;
 }

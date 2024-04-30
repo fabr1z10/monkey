@@ -41,9 +41,7 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 		_tileSize = f["tile_size"].as<glm::ivec2>(glm::ivec2(1, 1));
 		_texture = std::make_shared<Tex>(directory + "/" + sheet);
 
-		if (f["multi_sprites"]) {
-			_multiNodes = f["multi_sprites"];
-		}
+
 
 		if (_texture->hasPalette()) {
 			std::vector<unsigned char> colors;
@@ -113,6 +111,33 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 			}
 		}
 
+		if (f["multi_sprites"]) {
+			//_multiNodes = f["multi_sprites"];
+			for (const auto& ms : f["multi_sprites"]) {
+				auto msId = ms.first.as<std::string>();
+				std::cout << " -- reading multisprite: " << msId << std::endl;
+				auto multiSprite = std::make_shared<MultiSprite>();
+				for (const auto& node : ms.second["nodes"]) {
+					auto subSprite = _sprites.at(node["sprite"].as<std::string>());
+					int parent = node["parent"].as<int>(-1);
+					int link = node["link"].as<int>(0);
+					float z = node["z"].as<int>(0.f);
+					multiSprite->addSprite(subSprite, parent, link, z);
+				}
+				if (ms.second["animations"]) {
+					for (const auto &anim : ms.second["animations"]) {
+						auto animId = anim.first.as<std::string>();
+						auto subAnims = anim.second.as<std::vector<std::string>>();
+						multiSprite->addAnimation(animId);
+						for (size_t i = 0; i < subAnims.size(); ++i) {
+							multiSprite->setAnimationData(animId, i, subAnims[i], glm::vec3(0.f));
+						}
+					}
+				}
+				_multiSprites[msId] = multiSprite;
+			}
+		}
+
 		// now loop through multi-sprites
 //		if (f["multi_sprites"]) {
 //			for (const auto& ms : f["multi_sprites"]) {
@@ -164,6 +189,12 @@ std::shared_ptr<Sprite> SpriteSheet::getSprite(const std::string& id) {
 }
 
 std::shared_ptr<MultiSprite> SpriteSheet::getMulti(const std::string & id) {
+	auto iter = _multiSprites.find(id);
+	if (iter == _multiSprites.end()) {
+		return nullptr;
+	}
+	return iter->second;
+
     return nullptr;
 //	auto cino = _multiNodes[id];
 //	if (cino) {

@@ -5,6 +5,10 @@ palettes:
     ffffff: 79d570
   2:
     ffffff: f7ff6c
+  3:
+    ffffff: c161c9
+  4:
+    ffffff: a28fff
 fonts:
   c64:
     line_height: 8
@@ -65,3 +69,4 @@ fonts:
       ',': [224,0,8,8,8]
       '.': [216,0,8,8,8]
       "'": [208,0,8,8,8]
+      "!": [232,0,8,8,8]

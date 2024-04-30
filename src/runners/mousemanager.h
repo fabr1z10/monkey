@@ -22,10 +22,12 @@ public:
 	void enter();
 	void leave();
 	void stay();
+	void click();
 private:
 	pybind11::function _onEnter;
 	pybind11::function _onLeave;
 	pybind11::function _onStay;
+	pybind11::function _onClick;
 	std::shared_ptr<Shape> _shape;
 	int _priority;
 	int _camera;

@@ -15,7 +15,7 @@ public:
 
 
     MultiSprite() : Model() {}
-    void addSprite(std::shared_ptr<Sprite> sprite, const pybind11::kwargs& args);
+    void addSprite(std::shared_ptr<Sprite> sprite, int parent, int link, float z);
     std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
     std::vector<std::shared_ptr<Sprite>>& getSprites();
     void addAnimation(const std::string& animId);

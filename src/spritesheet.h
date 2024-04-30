@@ -25,7 +25,7 @@ private:
 	std::shared_ptr<Tex> _texture;
 	std::shared_ptr<Palette> _palette;
 	std::unordered_map<std::string, std::shared_ptr<Sprite>> _sprites;
-	//std::unordered_map<std::string, std::shared_ptr<MultiNode>> _multiSprites;
+	std::unordered_map<std::string, std::shared_ptr<MultiSprite>> _multiSprites;
 
 	std::unordered_map<std::string, std::shared_ptr<Font>> _fonts;
 	std::unordered_map<std::string, std::string> _tiled;

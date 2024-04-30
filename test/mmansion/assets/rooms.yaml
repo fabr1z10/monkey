@@ -4,12 +4,10 @@ start:
   walkarea:
     poly: [0,0,320,0,320,20,0,20]
   items:
-    - model:
-        type: bg
+    - bg:
         batch: start
         quad: [0, 0, 320, 136]
-    - model:
-        type: bg
+    - bg:
         batch: start
         quad: [1,137,106,73]
       area:

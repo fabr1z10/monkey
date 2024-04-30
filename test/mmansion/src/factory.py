@@ -7,26 +7,42 @@ from . import data
 
 def ciao(x, y):
     print('go to --> ',x, y)
-    id = data.tag_to_id.get(settings.player, None)
-    if id:
-        monkey.get_node(id).sendMessage(id="goto", pos=(x,y))
+    script = monkey.Script(id="__player")
+    script.add(monkey.actions.Walk(data.tag_to_id['player'], (x,y)))
+    monkey.play(script)
+    # if walkdir:
+    #     script.add(monkey.actions.Turn(data.tag_to_id['player'], walkdir))
+    # monkey.play(script)
+    # id = data.tag_to_id.get(settings.player, None)
+    # if id:
+    #     monkey.get_node(id).sendMessage(id="goto", pos=(x,y))
 
 
 def makeModel(info, item):
     a = None
-    batch = info['batch']
-    if info['type'] == 'multisprite':
-        a = monkey.models.MultiSprite()
-        for node in info['nodes']:
-            parent = node.get('parent', None)
-            link = node.get('link', None)
-            z = node.get('z', 0)
-            a.addSprite(monkey.models.getSprite(batch+'/'+node['sprite']), parent=parent, link=link, z=z)
-    elif info['type'] == 'bg':
+    print('pollo', info)
+    batch = None
+    if 'sprite' in info:
+        spriteId = info['sprite']
+        a = monkey.models.getSprite(spriteId)
+        batch = info.get('batch', spriteId[:spriteId.find('/')])
+    elif 'bg' in info:
+        batch = info['bg']['batch']
         a = monkey.models.Quad(batch)
-        a.add(info['quad'])
-
+        a.add(info['bg']['quad'])
     item.set_model(a, batch=batch)
+
+
+def addMouseArea(info, node, item):
+    im = info['mouse']
+    item = info.get('item', item)
+    camera = im.get('cam', 0)
+    priority = im.get('priority', 0)
+    if 'aabb' in im:
+        shape = monkey.shapes.AABB(*im['aabb'])
+    print('UDUDUDUDUD')
+    node.add_component(monkey.components.MouseArea(shape, priority, camera,
+        on_enter=ui.on_enter_item(item), on_leave=ui.on_leave_item, on_click=ui.execute_action, batch='line'))
 
 def area(info, node):
     if 'baseline' in info:
@@ -59,6 +75,7 @@ def area(info, node):
 def init():
     data.rooms = monkey.read_data_file('rooms.yaml')
     data.items = monkey.read_data_file('items.yaml')
+    data.strings = monkey.read_data_file('strings.yaml')
 
 def addWalkArea(room_info, room, game_node):
     wa = room_info['walkarea']
@@ -75,26 +92,32 @@ def z_func(x, y):
     z = 1.0 - y / 136.0
     return z
 
-def createItem(desc):
+def createItem(desc, item):
     node = monkey.Node()
     #data.tag_to_id[item] = node.id
     pos = desc.get('pos', [0, 0])
+    z = desc.get('z', 0)
     auto_depth = desc.get('auto_depth', False)
-    z = 1 - pos[1]/136.0 if auto_depth else 0
+    z = 1 - pos[1]/136.0 if auto_depth else z
     node.set_position(pos[0], pos[1], z)
 
-    if 'model' in desc:
-        makeModel(desc['model'], node)
+    #if 'model' in desc:
+    makeModel(desc, node)
     if 'area' in desc:
         area(desc, node)
+    if 'mouse' in desc:
+        addMouseArea(desc, node, item)
     if desc.get('type', '') == 'character':
         node.add_component(monkey.components.WalkableCharacter(200, z_func=z_func))
+    if item == settings.player:
+        data.tag_to_id['player'] = node.id
     return node
 
 
 
 def create_room(room):
     root = room.root()
+    data.tag_to_id = {}
 
     if settings.room not in data.rooms:
         print(' -- Error! Cannot find room: ',settings.room)
@@ -123,6 +146,8 @@ def create_room(room):
     mm.addCamera(0)
     mm.addCamera(1)
     room.add_runner(mm)
+    room.add_runner(monkey.Scheduler())
+
 
     game_node = monkey.Node()
     text_node = monkey.Node()
@@ -136,13 +161,23 @@ def create_room(room):
     room.add_batch('line_ui', monkey.LineBatch(max_elements=1000, cam=1))
 
     # adding verbs
-    for v in settings.verbs:
-        t = monkey.Text('text', 'c64', v[0], pal=1)
+    for key, value in settings.verbs.items():
+        t = monkey.Text('text', 'c64', data.strings[value['text']], pal=1)
         box_size = t.size
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
-            on_enter=ui.on_enter_verb, on_leave=ui.on_leave_verb, batch='line_ui'))
-        t.set_position(v[1], v[2], 0)
+            on_enter=ui.on_enter_verb, on_leave=ui.on_leave_verb, on_click=ui.on_click_verb(key), batch='line_ui'))
+        t.set_position(value['pos'][0], value['pos'][1], 0)
         text_node.add(t)
+
+    # adding label for current action
+    cact = monkey.Text('text', 'c64', data.strings[settings.verbs[settings.default_verb]['text']], pal=3)
+    cact.set_position(1, 53, 0)
+    data.tag_to_id['label_action'] = cact.id
+    text_node.add(cact)
+
+    settings.id_game = game_node.id
+    settings.id_text = text_node.id
+
 
     root.add(game_node)
     root.add(text_node)
@@ -155,15 +190,15 @@ def create_room(room):
         if condition and not eval(condition):
             continue
         print(item)
-        game_node.add(createItem(item))
+        game_node.add(createItem(item, None))
 
     # place dynamic items
-    data.tag_to_id= {}
+
     print (' -- adding dynamic items...')
     for item, desc in data.items.items():
         if desc['room'] == settings.room:
             print('adding', item)
-            node = createItem(desc)
+            node = createItem(desc, item)
             game_node.add(node)
             data.tag_to_id[item] = node.id
 

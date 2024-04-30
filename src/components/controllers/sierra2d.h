@@ -7,11 +7,14 @@
 class Sierra2DController : public Component {
 public:
     explicit Sierra2DController(const pybind11::kwargs& args);
+    void setDirection(const std::string& direction);
+	using Base = Sierra2DController;
+	//std::type_index getType() override;
+
 protected:
     void update(double) override;
     void updateZ(float, float);
-
-
+	std::string _direction;
 private:
     pybind11::function _zFunc;
     pybind11::function _scaleFunc;
@@ -23,6 +26,9 @@ private:
 
 };
 
+inline void Sierra2DController::setDirection(const std::string &direction) {
+	_direction = direction;
+}
 
 class PlayerSierra2DController : public Sierra2DController {
 public:

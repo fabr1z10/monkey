@@ -70,13 +70,13 @@ void MultiSpriteRenderer::update(double dt) {
 }
 
 
-void MultiSprite::addSprite(std::shared_ptr<Sprite> sprite, const pybind11::kwargs& args) {
+void MultiSprite::addSprite(std::shared_ptr<Sprite> sprite, int parent, int link, float z) { //const pybind11::kwargs& args) {
     _next.emplace_back();
-    int parent = py_get_dict<int>(args, "parent", -1);
+    //int parent = py_get_dict<int>(args, "parent", -1);
 
     if (parent != -1) {
-        int link = py_get_dict<int>(args, "link");
-        auto z = py_get_dict<float>(args, "z", 0.f);
+        //int link = py_get_dict<int>(args, "link");
+        //auto z = py_get_dict<float>(args, "z", 0.f);
         _next[parent].push_back(SubSpriteInfo(_sprites.size(), link, z));
     }
 

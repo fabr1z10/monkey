@@ -19,6 +19,11 @@ Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component
     //_b = (_yBack + _yFront) / (_yBack - _yFront);
 }
 
+//std::type_index Sierra2DController::getType() {
+//	return std::type_index(typeid(Sierra2DController));
+//}
+
+
 PlayerSierra2DController::PlayerSierra2DController(const pybind11::kwargs &args) : Sierra2DController(args), _enableControls(true) {
 	_halfWidth = py_get_dict<float>(args, "half_width");
 	_skinWidth = py_get_dict<float>(args, "skinWidth", .015f);
