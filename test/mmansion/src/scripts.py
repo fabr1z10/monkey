@@ -20,8 +20,15 @@ def message(script, x):
     script.add(monkey.actions.Delay(1))
     script.add(monkey.actions.CallFunc(lambda: msg.remove()))
 
-def restart():
-    print('SUCALOOOO')
+def goto_room(room, x, y, dir):
+    def f():
+        p = data.items[settings.player]
+        p['room'] = room
+        p['pos'] = (x, y)
+        p['direction'] = dir
+        settings.room = room
+        monkey.close_room()
+    return f
 
 
 
@@ -32,8 +39,9 @@ def say(script, *args):
         message(script, x)
     script.add(monkey.actions.CallFunc(lambda: monkey.get_node(id).sendMessage(id="animate", anim="idle")))
 
+
 def change_room(script, *args):
-    script.add(monkey.actions.CallFunc(lambda: restart()))
+    script.add(monkey.actions.CallFunc(goto_room(*args)))
 
 
 

@@ -41,7 +41,7 @@ void WalkableCharacter::start() {
     _walkArea = Engine::instance().getRoom()->getRunner<WalkArea>();
 
     m_animatedRenderer = m_node->getComponent<Renderer>();
-
+	m_node->setFlipX(_direction == "w");
 }
 
 void NPCSierraFollow::start() {

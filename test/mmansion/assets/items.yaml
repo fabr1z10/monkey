@@ -2,6 +2,7 @@ dave:
   room: start
   pos: [50, 20]
   type: character
+  direction: n
   sprite: 'sprites/dave'
 sign:
   room: start
@@ -24,7 +25,18 @@ path_start_porch:
   mouse:
     aabb: [0,8,0,136]
   actions:
-    walkto: [change_room, porch]
+    walkto: [change_room, housefront, 1270, 5, w]
+path_porch_start:
+  room: housefront
+  text: 20
+  pos: [1275,0]
+  z: 5
+  walk_to: [1280,5]
+  walk_dir: 'e'
+  mouse:
+    aabb: [0,8,0,136]
+  actions:
+    walkto: [change_room, start, 5, 5, e]
 
 
 

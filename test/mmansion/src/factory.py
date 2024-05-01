@@ -108,9 +108,11 @@ def createItem(desc, item):
     if 'mouse' in desc:
         addMouseArea(desc, node, item)
     if desc.get('type', '') == 'character':
-        node.add_component(monkey.components.WalkableCharacter(200, z_func=z_func))
+        dir = desc.get('direction')
+        node.add_component(monkey.components.WalkableCharacter(200, z_func=z_func, direction=dir))
     if item == settings.player:
         data.tag_to_id['player'] = node.id
+        node.add_component(monkey.components.Follow(0))
     return node
 
 
@@ -118,6 +120,10 @@ def createItem(desc, item):
 def create_room(room):
     root = room.root()
     data.tag_to_id = {}
+    settings.action = settings.default_verb
+    settings.item1 = None
+    settings.item2 = None
+
 
     if settings.room not in data.rooms:
         print(' -- Error! Cannot find room: ',settings.room)
