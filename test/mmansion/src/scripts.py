@@ -44,4 +44,26 @@ def change_room(script, *args):
     script.add(monkey.actions.CallFunc(goto_room(*args)))
 
 
+def pull_doormat(script, *args):
+    def f():
+        data.doormat = 'open'
+        doormat = monkey.get_node(data.tag_to_id['doormat'])
+        doormat.setAnimation('open')
+        doormat.getMouseArea().setShape(monkey.shapes.AABB(0,64,0,8))
+
+    if data.doormat == 'open':
+        say(script, 22)
+    else:
+        script.add(monkey.actions.CallFunc(f))
+
+def push_doormat(script, *args):
+    def f():
+        data.doormat = 'closed'
+        doormat = monkey.get_node(data.tag_to_id['doormat'])
+        doormat.setAnimation('closed')
+        doormat.getMouseArea().setShape(monkey.shapes.AABB(0,88,0,8))
+
+    if data.doormat == 'open':
+        script.add(monkey.actions.CallFunc(f))
+
 

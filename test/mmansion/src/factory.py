@@ -5,6 +5,11 @@ from . import settings
 from . import ui
 from . import data
 
+def evaluate(node):
+    if isinstance(node, str) and node[0] == '@':
+        return eval(node[1:])
+    return node
+
 def ciao(x, y):
     print('go to --> ',x, y)
     script = monkey.Script(id="__player")
@@ -22,6 +27,7 @@ def makeModel(info, item):
     a = None
     print('pollo', info)
     batch = None
+    anim = evaluate(info.get('anim'))
     if 'sprite' in info:
         spriteId = info['sprite']
         a = monkey.models.getSprite(spriteId)
@@ -31,6 +37,8 @@ def makeModel(info, item):
         a = monkey.models.Quad(batch)
         a.add(info['bg']['quad'])
     item.set_model(a, batch=batch)
+    if anim:
+        item.setAnimation(anim)
 
 
 def addMouseArea(info, node, item):
@@ -39,7 +47,7 @@ def addMouseArea(info, node, item):
     camera = im.get('cam', 0)
     priority = im.get('priority', 0)
     if 'aabb' in im:
-        shape = monkey.shapes.AABB(*im['aabb'])
+        shape = monkey.shapes.AABB(*evaluate(im['aabb']))
     print('UDUDUDUDUD')
     node.add_component(monkey.components.MouseArea(shape, priority, camera,
         on_enter=ui.on_enter_item(item), on_leave=ui.on_leave_item, on_click=ui.execute_action, batch='line'))

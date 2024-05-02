@@ -1,0 +1,14 @@
+sprites:
+  doormat:
+    animations:
+      closed:
+        frames:
+          - tex: [99,330,88,8]
+      open:
+        frames:
+          - tex: [99,321,88,8]
+  key:
+    animations:
+      default:
+        frames:
+          - tex: [190, 321, 12, 4]

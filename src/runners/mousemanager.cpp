@@ -14,6 +14,14 @@ MouseArea::MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, con
 	_batchId = py_get_dict<std::string>(args, "batch", "");
 }
 
+void MouseArea::setShape(std::shared_ptr<Shape> shape) {
+	_shape = shape;
+	start();
+}
+
+std::type_index MouseArea::getType() {
+	return std::type_index(typeid(MouseArea));
+}
 
 MouseArea::~MouseArea() {
 	Engine::instance().getRoom()->getRunner<MouseManager>()->rmArea(this);
@@ -30,6 +38,7 @@ void MouseArea::start() {
 		auto model = modelMaker.make(_batchId, _shape, glm::vec4(1.f), FillType::OUTLINE);
 		auto node = std::make_shared<Node>();
 		node->setModel(model);//pybind11::dict("batch"_a = _batchId));
+		node->setPosition(0.f, 0.f, 5.f);
 		m_node->add(node);
 		_debugNode = node.get();
 	}

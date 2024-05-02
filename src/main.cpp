@@ -223,6 +223,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("remove", &Node::remove)
         .def("clear", &Node::clearChildren)
         .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
+		.def("getMouseArea", &Node::getComponent<MouseArea>, py::return_value_policy::reference)
         .def("sendMessage", &Node::sendMessage)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
@@ -565,7 +566,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def("set_size", &Controller::setSize);
 
 	py::class_<MouseArea, Component, std::shared_ptr<MouseArea>>(mc, "MouseArea")
-		.def(py::init<std::shared_ptr<Shape>, int, int, const pybind11::kwargs&>());
+		.def(py::init<std::shared_ptr<Shape>, int, int, const pybind11::kwargs&>())
+		.def("setShape", &MouseArea::setShape);
 
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")

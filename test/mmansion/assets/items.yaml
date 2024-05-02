@@ -37,6 +37,29 @@ path_porch_start:
     aabb: [0,8,0,136]
   actions:
     walkto: [change_room, start, 5, 5, e]
-
-
+doormat:
+  room: housefront
+  text: 21
+  pos: [432, 40]
+  z: 0.2
+  walk_to: [460, 44]
+  walk_dir: 's'
+  sprite: 'housefront/doormat'
+  anim: '@data.doormat'
+  mouse:
+    aabb: '@data.getDoormatSize()'
+  actions:
+    pull: [pull_doormat]
+    push: [push_doormat]
+key:
+  room: housefront
+  text: 23
+  pos: [500, 42]
+  z: 0.1
+  walk_to: [510, 44]
+  walk_dir: 's'
+  sprite: 'housefront/key'
+  mouse:
+    aabb: [0, 8,0,4]
+    priority: 1
 

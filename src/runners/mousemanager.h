@@ -15,7 +15,9 @@ public:
 	MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, const pybind11::kwargs& args);
 	~MouseArea() override;
 	void start() override;
-
+	using Base = MouseArea;
+	std::type_index getType() final override;
+	void setShape(std::shared_ptr<Shape>);
 	[[nodiscard]] int getPriority() const;
 	[[nodiscard]] int getCamera() const;
 	[[nodiscard]] const std::shared_ptr<Shape> getShape() const;

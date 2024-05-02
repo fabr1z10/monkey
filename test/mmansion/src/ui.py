@@ -66,4 +66,8 @@ def execute_action(node):
             if f:
                 f(script, *scr[1:])
         monkey.play(script)
+        settings.action = settings.default_verb
+        settings.item1 = None
+        settings.item2 = None
+        refresh_action()
 

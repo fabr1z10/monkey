@@ -23,6 +23,7 @@ housefront:
     - bg:
         batch: housefront
         quad: [0,0,1280,136]
+        z: -1
     - bg:
         batch: housefront
         quad: [94,139,257,95]
