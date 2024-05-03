@@ -159,5 +159,8 @@ void MouseManager::addArea(MouseArea * area) {
 }
 
 void MouseManager::rmArea(MouseArea * area) {
+	if (_previousArea == area) {
+		_previousArea = nullptr;
+	}
 	_mouseAreas[area->getCamera()].erase(area);
 }

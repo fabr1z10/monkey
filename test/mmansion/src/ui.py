@@ -3,6 +3,26 @@ from . import settings
 from . import data
 from . import scripts
 
+def reset_action():
+    settings.action = settings.default_verb
+    settings.item1 = None
+    settings.item2 = None
+    settings.preposition = None
+
+
+def getItemScript(item, action, other=None):
+    itemInfo = data.items[item]
+    actions = itemInfo.get('actions', None)
+    scr = None
+    if actions:
+        script_id = action
+        if other:
+            script_id += '_' + other
+        scr = actions.get(script_id, None)
+    if scr:
+        return getattr(scripts, scr[0]), scr[1:]
+    return None
+
 
 def refresh_action():
     print(data.tag_to_id)
@@ -10,10 +30,31 @@ def refresh_action():
     text = [ data.strings[settings.verbs[settings.action]['text']] ]
     if settings.item1:
         text.append(data.strings[data.items[settings.item1]['text']])
+    if settings.preposition:
+        text.append(data.strings[settings.preposition])
     if settings.item2:
-        text.append(data.strings[settings.verbs[settings.action]['preposition']])
+        #text.append(data.strings[settings.verbs[settings.action]['preposition']])
         text.append(data.strings[data.items[settings.item2]['text']])
     node.updateText(" ".join(text))
+
+def refresh_inventory():
+    inv = monkey.get_node(settings.id_inv)
+    inv.clear()
+    current_player = settings.characters[settings.player]
+    inventory_items = data.inventory.get(current_player, [])
+    for i in range(0, settings.inventory_max_items):
+        if i >= len(inventory_items):
+            break
+        j = settings.inventory_start_index + i
+        x = settings.inv_x[i % 2]
+        y = settings.inv_y[i // 2]
+        print(inventory_items[j], x, y, '....')
+        t = monkey.Text('text', 'c64', data.strings[data.items[inventory_items[j]]['text']], pal=3)
+        box_size = t.size
+        t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
+            on_enter=on_enter_item(inventory_items[j]), on_leave=on_leave_item, on_click=execute_action, batch='line_ui'))
+        t.set_position(x, y, 0)
+        inv.add(t)
 
 
 def on_enter_verb(node):
@@ -28,6 +69,7 @@ def on_click_verb(id):
         settings.action = id
         settings.item1 = None
         settings.item2 = None
+        settings.preposition = None
         refresh_action()
     return f
 
@@ -44,30 +86,67 @@ def on_leave_item(node):
     if settings.item2:
         settings.item2 = None
     else:
-        settings.item1 = None
+        if not settings.preposition:
+            settings.item1 = None
     refresh_action()
 
 def execute_action(node):
     if not settings.item1:
         return
+    inventory = data.inventory[settings.characters[settings.player]]
+    script = monkey.Script(id="__player")
     if not settings.item2:
         # one item action
         item_info = data.items[settings.item1]
-        walkto = item_info['walk_to']
-        walkdir = item_info.get('walk_dir', None)
-        script = monkey.Script(id="__player")
-        script.add(monkey.actions.Walk(data.tag_to_id['player'], walkto))
-        if walkdir:
-            script.add(monkey.actions.Turn(data.tag_to_id['player'], walkdir))
+        if settings.item1 not in inventory:
+            scripts.walkToItem(script, settings.item1)
         actions = item_info.get('actions', None)
-        if actions and settings.action in actions:
-            scr = actions[settings.action]
-            f = getattr(scripts, scr[0])
-            if f:
-                f(script, *scr[1:])
+        scr = getItemScript(settings.item1, settings.action)
+        if scr:
+            scr[0](script, *scr[1])
+        else:
+            objs = settings.verbs[settings.action].get('objects', 1)
+            if objs == 1:
+                # try the default script
+                f = getattr(scripts, "_" + settings.action, None)
+                if f:
+                    f(script)
+            else:
+                print('FFFFF')
+                settings.preposition = settings.verbs[settings.action]['preposition']
+                refresh_action()
+                return
         monkey.play(script)
-        settings.action = settings.default_verb
-        settings.item1 = None
-        settings.item2 = None
+        reset_action()
         refresh_action()
+    else:
+        print('MMMMERDD')
+        scr = getItemScript(settings.item1, settings.action, settings.item2)
+        if not scr:
+            scr = getItemScript(settings.item2, settings.action, settings.item1)
+        print('MMMMERDD',scr)
+        if not scr:
+            # try the default script
+            f = getattr(scripts, "_" + settings.action, None)
+            if f:
+                f(script)
+        else:
+            i1_in_inv = settings.item1 in inventory
+            i2_in_inv = settings.item1 in inventory
+            if i1_in_inv and not i2_in_inv:
+                scripts.walkToItem(script, settings.item2)
+            elif i2_in_inv and not i1_in_inv:
+                scripts.walkToItem(script, settings.item1)
+            elif not i1_in_inv and not i2_in_inv:
+                if not scr:
+                    scripts.walkToItem(script, settings.item2)
+            if scr:
+                scr[0](script, *scr[1])
+        monkey.play(script)
+        reset_action()
+        refresh_action()
+
+
+
+
 

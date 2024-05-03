@@ -62,4 +62,20 @@ key:
   mouse:
     aabb: [0, 8,0,4]
     priority: 1
+  actions:
+    pickup: [pickup, key]
+    use_door_main: [unlock_main_door]
+door_main:
+  room: housefront
+  text: 28
+  pos: [476,51]
+  walk_to: [498,47]
+  walk_dir: n
+  sprite: 'housefront/door'
+  anim: '@data.maindoor'
+  mouse:
+    aabb: [0,44,0,77]
+  actions:
+    open: ['open_main_door']
+    close: [change_door_state, door_main, closed, maindoor]
 

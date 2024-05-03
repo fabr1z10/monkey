@@ -3,7 +3,15 @@ items = dict()
 strings = dict()
 tag_to_id = dict()
 
-doormat = 'open'
+inventory = {
+    'dave': []
+}
+
+
+doormat = 'closed'
+maindoor = 'closed'
+maindoor_unlocked = False
+
 
 def getDoormatSize():
     return [0, 64 if doormat =='open' else 88, 0, 8]

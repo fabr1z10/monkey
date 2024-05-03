@@ -118,7 +118,7 @@ def createItem(desc, item):
     if desc.get('type', '') == 'character':
         dir = desc.get('direction')
         node.add_component(monkey.components.WalkableCharacter(200, z_func=z_func, direction=dir))
-    if item == settings.player:
+    if item == settings.characters[settings.player]:
         data.tag_to_id['player'] = node.id
         node.add_component(monkey.components.Follow(0))
     return node
@@ -182,6 +182,15 @@ def create_room(room):
             on_enter=ui.on_enter_verb, on_leave=ui.on_leave_verb, on_click=ui.on_click_verb(key), batch='line_ui'))
         t.set_position(value['pos'][0], value['pos'][1], 0)
         text_node.add(t)
+    # first item in inventory is placed in (1, 21)
+
+    inventory = monkey.Node()
+    settings.id_inv = inventory.id
+    text_node.add(inventory)
+    ui.refresh_inventory()
+
+
+
 
     # adding label for current action
     cact = monkey.Text('text', 'c64', data.strings[settings.verbs[settings.default_verb]['text']], pal=3)

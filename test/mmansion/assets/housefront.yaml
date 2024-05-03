@@ -7,6 +7,14 @@ sprites:
       open:
         frames:
           - tex: [99,321,88,8]
+  door:
+    animations:
+      closed:
+        frames:
+          - tex: [401,139,44,77]
+      open:
+        frames:
+          - tex: [355,139,44,77]
   key:
     animations:
       default:

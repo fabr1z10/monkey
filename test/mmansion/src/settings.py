@@ -11,16 +11,28 @@ shaders = [
     monkey.SHADER_BATCH_LINES
 ]
 # identifies the item which is the current player
-player='dave'
+
+characters = ['dave', 'bernard', 'michael']
+
+inv_x = [1, 178]
+inv_y = [21, 13]
+inventory_start_index = 0
+inventory_max_items = 4
+
+player = 0
 
 id_game = None
 id_text = None
+id_inv = None
 
 
 default_verb = 'walkto'
 action = default_verb
 item1 = None
 item2 = None
+preposition = None
+
+
 verbs = {
     'push': {
         'text': 0,
@@ -70,7 +82,9 @@ verbs = {
     },
     'use': {
         'text': 11,
-        'pos': [193, 29]
+        'pos': [193, 29],
+        'objects': 2,
+        'preposition': 30
     },
     'turnon': {
         'text': 12,
