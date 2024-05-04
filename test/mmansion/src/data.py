@@ -9,7 +9,7 @@ inventory = {
 
 
 doormat = 'closed'
-maindoor = 'closed'
+door_main = 'closed'
 maindoor_unlocked = False
 
 

@@ -72,10 +72,10 @@ door_main:
   walk_to: [498,47]
   walk_dir: n
   sprite: 'housefront/door'
-  anim: '@data.maindoor'
+  anim: '@data.door_main'
   mouse:
     aabb: [0,44,0,77]
   actions:
     open: ['open_main_door']
-    close: [change_door_state, door_main, closed, maindoor]
-
+    close: [change_door_state, door_main, closed, door_main]
+    walkto: [walkto_door, door_main, start, 5, 5, e ]

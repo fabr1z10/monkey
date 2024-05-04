@@ -108,6 +108,12 @@ def change_door_state(script, *args):
     #node = monkey.get_node(data.tag_to_id[args[0]])
     script.add(monkey.actions.Animate(data.tag_to_id[args[0]], args[1]))
 
+def walkto_door(script, *args):
+    # pass tag, variable
+    if getattr(data, args[0]) == 'open':
+        change_room(script, *args[1:])
+
+
 
 def push_doormat(script, *args):
     def f():
