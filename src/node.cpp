@@ -4,6 +4,7 @@
 #include "components/renderer.h"
 #include "util.h"
 #include "components/collider.h"
+#include "pyhelper.h"
 //#include "components/statemachine.h"
 //#include "models/text.h"
 
@@ -55,6 +56,15 @@ Node::~Node() {
     Engine::instance().rmNode(this);
 }
 
+void Node::setPalette(int palette, const pybind11::kwargs &args) {
+	auto renderer = getComponent<Renderer>();
+	int quad = py_get_dict<int>(args, "quad", -1);
+	if (quad == -1) {
+		renderer->setPalette(palette);
+	} else {
+		renderer->setPalette(quad, palette);
+	}
+}
 
 //std::string Node::getAnimation() const {
 //	return getComponent<Renderer>()->getAnimation();

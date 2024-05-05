@@ -28,7 +28,7 @@ public:
     void removeChild(long);
     // remove this node
     void remove();
-
+	void setPalette(int palette, const pybind11::kwargs& args);
     // node lifetime
     virtual void start();
     void startRecursive();

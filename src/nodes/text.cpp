@@ -34,7 +34,7 @@ Text::Text(const std::string &batchId, const std::string& font, const std::strin
 
 
 void Text::updateText(const std::string & text) {
-
+	_text = text;
 	auto s32 = getString32(text);
 
 	float crl = 0.f;		// current row length

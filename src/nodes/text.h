@@ -27,6 +27,7 @@ class Text : public Node {
 public:
 	Text(const std::string& batchId, const std::string& font, const std::string& text, const pybind11::kwargs& args);
 	void updateText(const std::string&);
+	std::string getText() const;
 	glm::vec2 getSize() const;
 private:
 	struct TextRow {
@@ -46,10 +47,15 @@ private:
 	Anchor _anchor;
 	//std::string _sheetId;
 	std::string _batchId;
+	std::string _text;
     //void setPosition(float, float, float) override;
 
 
 };
+
+inline std::string Text::getText() const {
+	return _text;
+}
 
 inline glm::vec2 Text::getSize() const {
 	return _size;

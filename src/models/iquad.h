@@ -68,6 +68,10 @@ protected:
 	float _texHeight;
 };
 
+inline const QuadInfo & IQuads::getQuadInfo(int i) const {
+	return _quads[i];
+}
+
 inline const std::vector<QuadInfo> & IQuads::getQuads() const {
 	return _quads;
 }
@@ -87,7 +91,8 @@ public:
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	//void start() override;
-
+	void setPalette(int, int) override;
+	void setPalette(unsigned) override;
 	// nothing to do in update! (no animation)
 	void update(double) override ;
 private:
@@ -100,6 +105,11 @@ private:
 inline std::type_index IQuadsRenderer::getType() {
 	return std::type_index(typeid(Renderer));
 }
+
+inline void IQuadsRenderer::setPalette(int quadId, int pal) {
+	_palettes[quadId] = pal;
+}
+
 
 //class StaticQuad : public Model {
 //public:

@@ -45,6 +45,7 @@ public:
 //
 protected:
 	std::vector<int> _primitiveIds{};
+	std::vector<int> _palettes{};
 	BATCH* _batch;
 	std::string _batchId;
 //    std::shared_ptr<M> _m;

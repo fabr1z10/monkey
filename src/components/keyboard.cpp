@@ -15,7 +15,7 @@ int Keyboard::keyCallback(GLFWwindow * w, int key, int scancode, int action, int
 
 	}
 	if (action == GLFW_PRESS && mods == 0 && _fallbackFunction) {
-	    _fallbackFunction();
+	    _fallbackFunction(key);
 	    return 1;
 	}
 	return 0;

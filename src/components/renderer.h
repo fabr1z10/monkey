@@ -24,7 +24,8 @@ public:
     void setTransform(const glm::mat4& m);
     void setCount(int);
     void setOffset(int);
-    void setPalette(unsigned paletteId);
+    virtual void setPalette(unsigned paletteId);
+    virtual void setPalette(int quad, int pal) {}
 	using Base = Renderer;
 	std::string getAnimation() const;
     virtual void setAnimation(const std::string&) {}

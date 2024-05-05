@@ -58,11 +58,11 @@ def refresh_inventory():
 
 
 def on_enter_verb(node):
-    node.get_model().set_palette(2)
+    node.setPalette(2)
 
 
 def on_leave_verb(node):
-    node.get_model().set_palette(1)
+    node.setPalette(1)
 
 def on_click_verb(id):
     def f(node):
