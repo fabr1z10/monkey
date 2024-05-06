@@ -241,7 +241,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Text, Node, std::shared_ptr<Text>>(m, "Text")
     	.def(py::init<const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
     	        "batch"_a, "font"_a, "text"_a)
-        .def("updateText", &Text::updfateText)
+        .def("updateText", &Text::updateText)
         .def("getText", &Text::getText)
 		.def_property_readonly("size", &Text::getSize);
 	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")

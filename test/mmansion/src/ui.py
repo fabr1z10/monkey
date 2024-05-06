@@ -48,18 +48,50 @@ def refresh_inventory():
         j = settings.inventory_start_index + i
         x = settings.inv_x[i % 2]
         y = settings.inv_y[i // 2]
+        print('SUCCCA',settings.inventory_start_index,j)
         print(inventory_items[j], x, y, '....')
         t = monkey.Text('text', 'c64', data.strings[data.items[inventory_items[j]]['text']], pal=3)
         box_size = t.size
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
-            on_enter=on_enter_item(inventory_items[j]), on_leave=on_leave_item, on_click=execute_action, batch='line_ui'))
+            on_enter=on_enter_inventory_item(inventory_items[j]), on_leave=on_leave_inventory_item, on_click=execute_action, batch='line_ui'))
         t.set_position(x, y, 0)
         inv.add(t)
+    show_down_arrow = settings.inventory_start_index + settings.inventory_max_items < len(inventory_items)
+    show_up_arrow = settings.inventory_start_index > 0
+    if show_down_arrow:
+        down_arrow = monkey.Node()
+        a = monkey.models.Quad('text')
+        a.add([2,17,12,7])
+        down_arrow.set_model(a)
+        down_arrow.set_position(155,5,0)
+        down_arrow.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0,12,0,7), 0, 1,
+            on_enter=on_enter_arrow, on_leave=on_leave_arrow, on_click=move_inv(2),batch='line_ui'))
+        inv.add(down_arrow)
+    if show_up_arrow:
+        up_arrow = monkey.Node()
+        a = monkey.models.Quad('text')
+        a.add([2,17,12,7])
+        up_arrow.set_model(a)
+        up_arrow.set_position(155,13,0)
+        up_arrow.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0,12,0,7), 0, 1,
+            on_enter=on_enter_arrow, on_leave=on_leave_arrow, on_click=move_inv(-2),batch='line_ui'))
+        inv.add(up_arrow)
 
 
 def on_enter_verb(node):
     node.setPalette(2)
 
+def on_enter_arrow(node):
+    node.setPalette(5)
+
+def on_leave_arrow(node):
+    node.setPalette(0)
+
+def move_inv(pos):
+    def f(node):
+        settings.inventory_start_index += pos
+        refresh_inventory()
+    return f
 
 def on_leave_verb(node):
     node.setPalette(1)
@@ -82,7 +114,27 @@ def on_enter_item(item):
         refresh_action()
     return f
 
+def on_enter_inventory_item(item):
+    def f(node):
+        node.setPalette(2)
+        if settings.item1 is None:
+            settings.item1 = item
+        else:
+            settings.item2 = item
+        refresh_action()
+    return f
+
+
 def on_leave_item(node):
+    if settings.item2:
+        settings.item2 = None
+    else:
+        if not settings.preposition:
+            settings.item1 = None
+    refresh_action()
+
+def on_leave_inventory_item(node):
+    node.setPalette(3)
     if settings.item2:
         settings.item2 = None
     else:

@@ -176,6 +176,7 @@ void IQuadsRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwar
 		_primitiveIds.push_back(_batch->getPrimitiveId());
 		_palettes.push_back(_model->getQuadInfo(i).palette);
 	}
+
 }
 
 void IQuadsRenderer::setPalette(unsigned int j) {

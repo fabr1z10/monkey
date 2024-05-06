@@ -36,3 +36,38 @@ housefront:
         poly: [0,-1,249,-1,249,1,0,1]
       pos: [1032,10,0]
       auto_depth: True
+entrance_hall:
+  size: [ 640, 136 ]
+  batch: entrancehall
+  walkarea:
+    poly: [0,0,640,0,640,2,553,31,400,31,389,25,324,25,324,27,359,52,374,78,370,110,346,136,298,136,322,110,322,78,274,36,274,25,219,25,215,31,142,31,134,25,103,25,101,31,88,31,0,2]
+  items:
+    - bg:
+        batch: entrancehall
+        quad: [0,0,640,136]
+        z: -1
+    - bg:   # handrail right
+        batch: entrancehall
+        quad: [5,138,56,77]
+      pos: [ 328,26,0 ]
+      auto_depth: True
+    - bg:   # vase right
+        batch: entrancehall
+        quad: [68,138,30,44]
+      pos: [368,25.9,0]
+      auto_depth: True
+    - bg:   # handrail left
+        batch: entrancehall
+        quad: [102,138,58,57]
+      pos: [ 262,79,0 ]
+      auto_depth: True
+kitchen:
+  size: [ 640, 136 ]
+  batch: kitchen
+  walkarea:
+    poly: [0,0,640,0,640,3,574,24,178,24,173,32,87,32,0,3]
+  items:
+    - bg:
+        batch: kitchen
+        quad: [0,0,640,136]
+        z: -1

@@ -1,0 +1,39 @@
+sprites:
+  door_hall:
+    animations:
+      closed:
+        frames:
+          - tex: [41,137,26,112]
+      open:
+        frames:
+          - tex: [14,137,26,112]
+  door_dining:
+    animations:
+      closed:
+        frames:
+          - tex: [113,137,26,112]
+      open:
+        frames:
+          - tex: [86,137,26,112]
+  fridge:
+    animations:
+      closed:
+        frames:
+          - tex: [141,137,40,58]
+      open:
+        frames:
+          - tex: [183,137,14,58]
+            anchor: [-38,0]
+  flashlight:
+    animations:
+      default:
+        frames:
+          - tex: [68,137,16,6]
+  faucet:
+    animations:
+      closed:
+        frames:
+          - tex: [2,149,10,11]
+      open:
+        frames:
+          - tex: [2,137,10,11]

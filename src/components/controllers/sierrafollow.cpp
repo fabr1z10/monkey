@@ -105,6 +105,7 @@ void WalkableCharacter::animate() {
 			}
 		}
     	if (_direction == "w") {
+			m_node->setFlipX(true);
     		_direction = "e";
     	}
 		anim += "_" + _direction;

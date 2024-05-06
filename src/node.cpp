@@ -89,8 +89,9 @@ void Node::add(std::shared_ptr<Node> node) {
     if (engine.isRunning()) {
         node->startRecursive();
     }
-	//if (!m_active) {
-	node->setState(_state);
+	if (_state != NodeState::ACTIVE) {
+		node->setState(_state);
+	}
 
 
 }

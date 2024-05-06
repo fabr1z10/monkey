@@ -74,6 +74,9 @@ def _close(script):
 
 
 def pickup(script, item):
+    data.items[item]['active'] = False
+    print('FIIFIFIFI')
+    print(data.items[item])
     script.add(monkey.actions.CallFunc(addToInventory(item)))
 
 
@@ -111,8 +114,13 @@ def change_door_state(script, *args):
 def walkto_door(script, *args):
     # pass tag, variable
     if getattr(data, args[0]) == 'open':
+        print('DOOR OPEN')
         change_room(script, *args[1:])
+    else:
+        print('DOOR CLOSED')
 
+def rm(script, *args):
+    script.add(monkey.actions.CallFunc(lambda: monkey.get_node(data.tag_to_id[args[0]]).remove()))
 
 
 def push_doormat(script, *args):
@@ -129,8 +137,24 @@ def open_main_door(script, *args):
     if not data.maindoor_unlocked:
         say(script, 29)
     else:
-        change_door_state(script, 'door_main', 'open', 'maindoor')
+        change_door_state(script, 'door_main', 'open', 'door_main')
 
 def unlock_main_door(script, *args):
     data.maindoor_unlocked = True
-    change_door_state(script, 'door_main', 'open', 'maindoor')
+    change_door_state(script, 'door_main', 'open', 'door_main')
+
+def updateNodeState(id, state):
+    if id in data.tag_to_id:
+        node = monkey.get_node(data.tag_to_id[id])
+        if node:
+            node.state = state#monkey.NodeState.ACTIVE
+
+def open_fridge(script, *args):
+    change_door_state(script,'refrigerator', 'open', 'fridge')
+    for a in ['cheese', 'batteries', 'lettuce', 'pepsi', 'ketchup']:
+        updateNodeState(a, monkey.NodeState.ACTIVE)
+
+def close_fridge(script, *args):
+    change_door_state(script,'refrigerator', 'closed', 'fridge')
+    for a in ['cheese', 'batteries', 'lettuce', 'pepsi', 'ketchup']:
+        updateNodeState(a, monkey.NodeState.INACTIVE)

@@ -1,5 +1,5 @@
 dave:
-  room: start
+  room: kitchen
   pos: [50, 20]
   type: character
   direction: n
@@ -37,6 +37,31 @@ path_porch_start:
     aabb: [0,8,0,136]
   actions:
     walkto: [change_room, start, 5, 5, e]
+bushes:
+  room: housefront
+  text: 31
+  pos: [350,16]
+  z: 0.2
+  walk_to: [366, 12]
+  walk_dir: n
+  bg:
+    batch: housefront
+    quad: [447,139,54,21]
+  mouse:
+    aabb: [0,54,0,21]
+  actions:
+    open: [rm, bushes]
+grating:
+  room: housefront
+  text: 33
+  pos: [356,16]
+  walk_to: [366, 12]
+  walk_dir: n
+  mouse:
+    aabb: [0,44,0,18]
+    priority: 1
+  actions:
+    open: [say, 32]
 doormat:
   room: housefront
   text: 21
@@ -59,6 +84,7 @@ key:
   walk_to: [510, 44]
   walk_dir: 's'
   sprite: 'housefront/key'
+  active: True
   mouse:
     aabb: [0, 8,0,4]
     priority: 1
@@ -78,4 +104,204 @@ door_main:
   actions:
     open: ['open_main_door']
     close: [change_door_state, door_main, closed, door_main]
-    walkto: [walkto_door, door_main, start, 5, 5, e ]
+    walkto: [walkto_door, door_main, entrance_hall, 72, 17, e ]
+grandfather_clock:
+  room: entrance_hall
+  text: 34
+  pos: [106,26]
+  walk_to: [120,23]
+  walk_dir: n
+  mouse:
+    aabb: [0,35,0,86]
+  actions:
+    read: [say, 35]
+door_entrance_out:
+  room: entrance_hall
+  text: 28
+  pos: [18,9]
+  walk_to: [72, 17]
+  walk_dir: w
+  sprite: 'entrancehall/door_out'
+  anim: '@data.door_main'
+  mouse:
+    aabb: [0,58,0,115]
+  actions:
+    open: [change_door_state, door_entrance_out, open, door_main]
+    close: [change_door_state, door_entrance_out, closed, door_main]
+    walkto: [walkto_door, door_main, housefront, 498, 47, s ]
+door_kitchen:
+  room: entrance_hall
+  text: 28
+  pos: [152,32]
+  walk_to: [180, 30]
+  walk_dir: n
+  sprite: 'entrancehall/door_kitchen'
+  anim: '@data.door_kitchen'
+  mouse:
+    aabb: [0,56,0,93]
+  actions:
+    open: [change_door_state, door_kitchen, open, door_kitchen]
+    close: [change_door_state, door_kitchen, closed, door_kitchen]
+    walkto: [walkto_door, door_kitchen, kitchen, 55, 14, e ]
+door_kitchen_hall:
+  room: kitchen
+  text: 28
+  pos: [26,12]
+  walk_to: [55, 14]
+  walk_dir: w
+  sprite: 'kitchen/door_hall'
+  anim: '@data.door_kitchen'
+  mouse:
+    aabb: [0,26,0,112]
+  actions:
+    open: [change_door_state, door_kitchen_hall, open, door_kitchen]
+    close: [change_door_state, door_kitchen_hall, closed, door_kitchen]
+    walkto: [walkto_door, door_kitchen, entrance_hall, 180, 30, s ]
+door_dining:
+  room: kitchen
+  text: 28
+  pos: [588,12]
+  walk_to: [587, 14]
+  walk_dir: e
+  sprite: 'kitchen/door_dining'
+  anim: '@data.door_dining'
+  mouse:
+    aabb: [0,26,0,112]
+  actions:
+    open: [change_door_state, door_dining, open, door_dining]
+    close: [change_door_state, door_dining, closed, door_dining]
+    walkto: [walkto_door, door_dining, dining, 180, 30, s ]
+refrigerator:
+  room: kitchen
+  text: 36
+  pos: [496,40]
+  walk_to: [513,20]
+  z: 0.2
+  walk_dir: n
+  sprite: 'kitchen/fridge'
+  anim: '@data.fridge'
+  auto_depth: True
+  mouse:
+    aabb: [-10,48,-14,65]
+    priority: 1
+  actions:
+    open: [open_fridge]
+    close: [close_fridge]
+cheese:
+  room: kitchen
+  text: 40
+  pos: [506, 85]
+  z: 0.1
+  walk_to: [ 513,20 ]
+  walk_dir: 'n'
+  bg:
+    batch: kitchen
+    quad: [73,146,8,8]
+  create: True
+  active: '@data.fridge=="open"'
+  mouse:
+    aabb: [ 0,8,0,8 ]
+  actions:
+    pickup: [ pickup, cheese]
+batteries:
+  room: kitchen
+  text: 41
+  pos: [520, 84]
+  z: 0.1
+  walk_to: [ 513,20 ]
+  walk_dir: 'n'
+  bg:
+    batch: kitchen
+    quad: [73,155,8,8]
+  create: True
+  active: '@data.fridge=="open"'
+  mouse:
+    aabb: [ 0,8,0,8 ]
+  actions:
+    pickup: [ pickup, batteries]
+lettuce:
+  room: kitchen
+  text: 42
+  pos: [506, 69]
+  z: 0.1
+  walk_to: [ 513,20 ]
+  walk_dir: 'n'
+  bg:
+    batch: kitchen
+    quad: [71,165,12,8]
+  create: True
+  active: '@data.fridge=="open"'
+  mouse:
+    aabb: [ 0,12,0,8 ]
+  actions:
+    pickup: [ pickup, lettuce]
+pepsi:
+  room: kitchen
+  text: 43
+  pos: [520, 69]
+  z: 0.1
+  walk_to: [ 513,20 ]
+  walk_dir: 'n'
+  bg:
+    batch: kitchen
+    quad: [74,174,6,9]
+  create: True
+  active: False #'@data.fridge=="open"'
+  mouse:
+    aabb: [ 0,6,0,9 ]
+  actions:
+    pickup: [ pickup, pepsi]
+    read: [say, 45]
+ketchup:
+  room: kitchen
+  text: 44
+  pos: [506, 49]
+  z: 0.1
+  walk_to: [ 513,20 ]
+  walk_dir: 'n'
+  bg:
+    batch: kitchen
+    quad: [141,220,22,14]
+  create: True
+  active: '@data.fridge=="open"'
+  mouse:
+    aabb: [ 0,22,0,14 ]
+  actions:
+    pickup: [ pickup, ketchup]
+
+kitchen_window:
+  room: kitchen
+  text: 37
+  pos: [368,77]
+  walk_to: [413,20]
+  walk_dir: n
+  mouse:
+    aabb: [0,88,0,42]
+flashlight:
+  room: kitchen
+  text: 38
+  pos: [192, 62]
+  z: 0.1
+  walk_to: [215,23]
+  walk_dir: 'n'
+  sprite: 'kitchen/flashlight'
+  active: True
+  mouse:
+    aabb: [0,16,0,6]
+  actions:
+    pickup: [pickup, flashlight]
+faucet:
+  room: kitchen
+  text: 39
+  pos: [402,64]
+  z: 0.1
+  walk_to: [402,22]
+  walk_dir: n
+  sprite: 'kitchen/faucet'
+  anim: '@data.faucet'
+  #auto_depth: True
+  mouse:
+    aabb: [-10,20,0,11]
+  actions:
+    turnon: [change_door_state, faucet, open, faucet]
+    turnoff: [change_door_state, faucet, closed, faucet]

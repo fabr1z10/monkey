@@ -98,6 +98,27 @@ def addWalkArea(room_info, room, game_node):
 
 def z_func(x, y):
     z = 1.0 - y / 136.0
+    md = -1
+    iwall = -1
+    wall_id = -1
+    for wall in data.baselines:
+        wall_id += 1
+        node = monkey.get_node(wall['id'])
+        ba = wall['baseline']
+        pos = (node.x, node.y)
+        bl = [ba[i] + pos[i%2] for i in range(0, len(ba))]
+        if x < bl[0] or x > bl[-2]:
+            continue
+        for i in range(0, len(bl) - 2, 2):
+            if x >= bl[i] and x <= bl[i + 2]:
+                yl = bl[i + 1] + ((bl[i + 3] - bl[i + 1]) / (bl[i + 2] - bl[i])) * (x - bl[i])
+                if y < yl:
+                    if md < 0 or md > (yl - y):
+                        md = yl - y
+                        iwall = wall_id
+    if iwall != -1:
+        zwall = monkey.get_node(data.baselines[iwall]['id']).z
+        z += zwall + 1.0
     return z
 
 def createItem(desc, item):
@@ -210,19 +231,34 @@ def create_room(room):
     # place static items
     for item in room_info.get('items', []):
         condition = item.get('condition', None)
+        active = evaluate(item.get('active', True))
+
+        if not active:
+            continue
+
         if condition and not eval(condition):
             continue
-        print(item)
+
+        #print(item)
         game_node.add(createItem(item, None))
 
     # place dynamic items
 
     print (' -- adding dynamic items...')
     for item, desc in data.items.items():
+        create = evaluate(desc.get('create', True))
+        if not create:
+            continue
+        active = evaluate(desc.get('active', True))
+
         if desc['room'] == settings.room:
-            print('adding', item)
             node = createItem(desc, item)
+            if not active:
+                node.state = monkey.NodeState.ACTIVE if active else monkey.NodeState.INACTIVE
+            print('adding', item, active)
             game_node.add(node)
+
+
             data.tag_to_id[item] = node.id
 
             #item_type = desc.get('type')

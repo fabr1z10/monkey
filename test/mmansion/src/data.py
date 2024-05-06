@@ -10,8 +10,13 @@ inventory = {
 
 doormat = 'closed'
 door_main = 'closed'
-maindoor_unlocked = False
+door_kitchen = 'closed'
+door_dining = 'closed'
+fridge = 'closed'
+faucet = 'closed'
+maindoor_unlocked = True
 
+baselines = []
 
 def getDoormatSize():
     return [0, 64 if doormat =='open' else 88, 0, 8]

@@ -9,6 +9,8 @@ palettes:
     ffffff: c161c9
   4:
     ffffff: a28fff
+  5:
+    6953f5: f7ff6c
 fonts:
   c64:
     line_height: 8

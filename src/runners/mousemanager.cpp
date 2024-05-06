@@ -83,13 +83,15 @@ void MouseManager::cursorPosCallback(GLFWwindow *, double x, double y) {
         if (it != _mouseAreas.end()) {
         	for (const auto& area : it->second) {
         		// transform point in local coordinates
-        		auto localPos = _worldCoordinates - glm::vec2(area->getNode()->getWorldPosition());
-        		if (area->getShape()->isInside(glm::vec3(localPos.x, localPos.y, 0.f))) {
-        			// found local area!!!
-        			if (_currentArea == nullptr || _currentArea->getPriority() > area->getPriority()) {
-        				_currentArea = area;
-        			}
-        		}
+        		if (area->getState() == NodeState::ACTIVE) {
+					auto localPos = _worldCoordinates - glm::vec2(area->getNode()->getWorldPosition());
+					if (area->getShape()->isInside(glm::vec3(localPos.x, localPos.y, 0.f))) {
+						// found local area!!!
+						if (_currentArea == nullptr || _currentArea->getPriority() > area->getPriority()) {
+							_currentArea = area;
+						}
+					}
+				}
         	}
         }
         if (_currentArea != nullptr) {
