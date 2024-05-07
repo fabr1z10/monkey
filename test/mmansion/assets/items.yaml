@@ -1,5 +1,5 @@
 dave:
-  room: kitchen
+  room: dining
   pos: [50, 20]
   type: character
   direction: n
@@ -170,7 +170,7 @@ door_dining:
   actions:
     open: [change_door_state, door_dining, open, door_dining]
     close: [change_door_state, door_dining, closed, door_dining]
-    walkto: [walkto_door, door_dining, dining, 180, 30, s ]
+    walkto: [walkto_door, door_dining, dining, 60, 26, e ]
 refrigerator:
   room: kitchen
   text: 36
@@ -305,3 +305,57 @@ faucet:
   actions:
     turnon: [change_door_state, faucet, open, faucet]
     turnoff: [change_door_state, faucet, closed, faucet]
+turkey:
+  room: dining
+  text: 46
+  pos: [365, 42]
+  z: 0.9448529411764706
+  walk_to: [375,2]
+  walk_dir: 'n'
+  bg:
+    batch: dining
+    quad: [ 841,139,38,13]
+  active: True
+  mouse:
+    aabb: [0,38,0,13]
+  actions:
+    pickup: [pickup, turkey]
+roast:
+  room: dining
+  text: 47
+  pos: [444, 42]
+  z: 0.9448529411764706
+  walk_to: [454,2]
+  walk_dir: 'n'
+  bg:
+    batch: dining
+    quad: [ 841,154,32,14]
+  active: True
+  mouse:
+    aabb: [0,32,0,14]
+  actions:
+    pickup: [pickup, roast]
+stain:
+  room: dining
+  text: 48
+  pos: [616,40]
+  walk_to: [621,2]
+  walk_dir: n
+  mouse:
+    aabb: [0,22,0,4]
+  actions:
+    pickup: [say, 49]
+door_dining_kitchen:
+  room: dining
+  text: 28
+  pos: [18, 26]
+  walk_to: [60, 26]
+  walk_dir: w
+  sprite: 'dining/door_kitchen'
+  anim: '@data.door_dining'
+  mouse:
+    aabb: [0,28,0,98]
+  actions:
+    open: [change_door_state, door_dining_kitchen, open, door_dining]
+    close: [change_door_state, door_dining_kitchen, closed, door_dining]
+    walkto: [walkto_door, door_dining, kitchen, 587, 14, w ]

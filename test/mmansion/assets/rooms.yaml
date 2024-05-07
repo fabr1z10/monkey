@@ -71,3 +71,20 @@ kitchen:
         batch: kitchen
         quad: [0,0,640,136]
         z: -1
+dining:
+  size: [1032,136]
+  batch: dining
+  walkarea:
+    poly: [0,0,1032, 0,1032,18,968,40,62,40,0,18]
+    holes:
+      - poly: [93,7,923,7,907,24,109,24]
+  items:
+    - bg:
+        batch: dining
+        quad: [0,0,1032,136]
+        z: -1
+    - bg:   # table & chairs
+        batch: dining
+        quad: [2,138,824,74]
+      pos: [96,8]
+      auto_depth: True

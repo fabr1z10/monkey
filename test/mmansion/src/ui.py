@@ -43,14 +43,14 @@ def refresh_inventory():
     current_player = settings.characters[settings.player]
     inventory_items = data.inventory.get(current_player, [])
     for i in range(0, settings.inventory_max_items):
-        if i >= len(inventory_items):
-            break
         j = settings.inventory_start_index + i
+        if j >= len(inventory_items):
+            break
         x = settings.inv_x[i % 2]
         y = settings.inv_y[i // 2]
         print('SUCCCA',settings.inventory_start_index,j)
         print(inventory_items[j], x, y, '....')
-        t = monkey.Text('text', 'c64', data.strings[data.items[inventory_items[j]]['text']], pal=3)
+        t = monkey.Text('text', 'c64', data.strings[data.items[inventory_items[j]]['text']][:18], pal=3)
         box_size = t.size
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
             on_enter=on_enter_inventory_item(inventory_items[j]), on_leave=on_leave_inventory_item, on_click=execute_action, batch='line_ui'))
@@ -70,7 +70,7 @@ def refresh_inventory():
     if show_up_arrow:
         up_arrow = monkey.Node()
         a = monkey.models.Quad('text')
-        a.add([2,17,12,7])
+        a.add([2,17,12,7], flipv=True)
         up_arrow.set_model(a)
         up_arrow.set_position(155,13,0)
         up_arrow.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0,12,0,7), 0, 1,

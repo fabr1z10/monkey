@@ -1,0 +1,9 @@
+sprites:
+  door_kitchen:
+    animations:
+      closed:
+        frames:
+          - tex: [887,137,26,98]
+      open:
+        frames:
+          - tex: [915,137,26,98]

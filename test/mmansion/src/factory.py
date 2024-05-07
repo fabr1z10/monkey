@@ -85,14 +85,22 @@ def init():
     data.items = monkey.read_data_file('items.yaml')
     data.strings = monkey.read_data_file('strings.yaml')
 
+def makeDebugPath(poly):
+    a = monkey.Node()
+    a.set_model(monkey.models.from_shape('line', monkey.shapes.Polygon(poly), (1,1,1,1), monkey.FillType.Outline))
+    a.set_position(0,0,5)
+    return a
+
+
 def addWalkArea(room_info, room, game_node):
     wa = room_info['walkarea']
     poly = wa['poly']
     walkArea = monkey.WalkArea(poly, 2)
-    a = monkey.Node()
-    a.set_model(monkey.models.from_shape('line', monkey.shapes.Polygon(poly), (1,1,1,1), monkey.FillType.Outline))
-    a.set_position(0,0,5)
-    game_node.add(a)
+    game_node.add(makeDebugPath(poly))
+    for hole in wa.get('holes', []):
+        hp = hole['poly']
+        game_node.add(makeDebugPath(hp))
+        walkArea.addPolyWall(hp)
     room.add_runner(walkArea)
     data.wa = walkArea
 
