@@ -6,6 +6,82 @@ sheet: 'sprites.png'
 tile_size: [8, 8]
 
 sprites:
+  bernard_head:
+    ticks: *ticks
+    animations:
+      idle_e:
+        frames:
+          - tex: [1,108,24,25]
+            anchor: [13,0]
+      idle_s:
+        frames:
+          - tex: [27,108,22,29]
+            anchor: [11,0]
+      idle_n:
+        frames:
+          - tex: [51,108,22,26]
+            anchor: [11,0]
+  bernard_body:
+    ticks: *ticks
+    animations:
+      idle_e:
+        frames:
+          - tex: [115,110,12,24]
+            anchor: [6,8]
+      idle_n:
+        frames:
+          - tex: [75,109,18,24]
+            anchor: [9,9]
+      idle_s:
+        frames:
+          - tex: [94,111,18,22]
+            anchor: [9,9]
+      walk_e:
+        frames:
+          - tex: [2, 140, 16, 21]
+            anchor: [12,5]
+          - tex: [21,139,22, 23]
+            anchor: [16,7]
+      walk_s:
+        frames:
+          - tex: [94, 140,22,18]
+            anchor: [11,5]
+          - tex: [118,140,20, 22]
+            anchor: [11,9]
+          - tex: [118,140,20, 22]
+            fliph: true
+            anchor: [11,9]
+      walk_n:
+        frames:
+          - tex: [46, 140,22,20]
+            anchor: [11,5]
+          - tex: [71,139,20,24]
+            anchor: [9,9]
+          - tex: [71,139,20,24]
+            fliph: true
+            anchor: [9,9]
+  bernard_legs:
+    ticks: *ticks
+    animations:
+      idle_e:
+        frames:
+          - tex: [97,166,8,31]
+            anchor: [4,0]
+            links:
+              - [2,31]
+      idle_s:
+        frames:
+          - tex: [109,166,18,32]
+            anchor: [9,0]
+            links:
+              - [9,32]
+      idle_n:
+        frames:
+          - tex: [109,166,18,32]
+            anchor: [9,0]
+            links:
+              - [9,32]
+
   dave_head:
     ticks: *ticks
     animations:
