@@ -1,5 +1,5 @@
 dave:
-  room: dining
+  room: entrance_hall
   pos: [50, 20]
   type: character
   direction: n
@@ -143,6 +143,18 @@ door_kitchen:
     open: [change_door_state, door_kitchen, open, door_kitchen]
     close: [change_door_state, door_kitchen, closed, door_kitchen]
     walkto: [walkto_door, door_kitchen, kitchen, 55, 14, e ]
+door_entrance_reactor:
+  room: entrance_hall
+  text: 28
+  pos: [432,32]
+  walk_to: [460,30]
+  walk_dir: n
+  sprite: 'entrancehall/door_reactor'
+  anim: '@data.door_reactor'
+  mouse:
+    aabb: [0,56,0,93]
+  actions:
+    walkto: [walkto_door, door_reactor, reactor, 55, 14, s]
 door_kitchen_hall:
   room: kitchen
   text: 28
@@ -359,3 +371,57 @@ door_dining_kitchen:
     open: [change_door_state, door_dining_kitchen, open, door_dining]
     close: [change_door_state, door_dining_kitchen, closed, door_dining]
     walkto: [walkto_door, door_dining, kitchen, 587, 14, w ]
+door_dining_pantry:
+  room: dining
+  text: 28
+  pos: [986, 25]
+  walk_to: [977, 25]
+  walk_dir: e
+  sprite: 'dining/door_pantry'
+  anim: '@data.door_pantry'
+  mouse:
+    aabb: [0,28,0,99]
+  actions:
+    open: [change_door_state, door_dining_pantry, open, door_pantry]
+    close: [change_door_state, door_dining_pantry, closed, door_pantry]
+    walkto: [walkto_door, door_pantry, pantry, 20, 20, e]
+fruit_drinks:
+  room: pantry
+  text: 52
+  z: 0.1
+  pos: [176, 53]
+  walk_to: [187, 27]
+  walk_dir: 'n'
+  active: True
+  bg:
+    batch: pantry
+    quad: [ 1,137,24,12]
+  mouse:
+    aabb: [0,24,0,12]
+  actions:
+    pickup: [pickup, fruit_drinks]
+glass_jar:
+  room: pantry
+  text: 53
+  z: 0.1
+  pos: [204, 53]
+  walk_to: [210, 27]
+  walk_dir: 'n'
+  active: True
+  bg:
+    batch: pantry
+    quad: [ 27,137,10,11]
+  mouse:
+    aabb: [0,10,0,11]
+  actions:
+    pickup: [pickup, glass_jar]
+gargoyle_r:
+  room: entrance_hall
+  text: 54
+  pos: [328,54]
+  walk_to: [341,24]
+  walk_dir: n
+  mouse:
+    aabb: [0,26,0,18]
+  actions:
+    push: [push_gargoyle]

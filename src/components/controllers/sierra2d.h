@@ -10,11 +10,11 @@ public:
     void setDirection(const std::string& direction);
 	using Base = Sierra2DController;
 	//std::type_index getType() override;
-
 protected:
     void update(double) override;
     void updateZ(float, float);
-	std::string _direction;
+
+    std::string _direction;
 private:
     pybind11::function _zFunc;
     pybind11::function _scaleFunc;

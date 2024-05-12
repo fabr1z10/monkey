@@ -162,7 +162,7 @@ sprites:
           - tex: [107,55,18,25]
             anchor: [9,0]
             links:
-              - [9,24]
+              - [9,25]
       walk_n:
         frames:
           - tex: [80,85,18,22]

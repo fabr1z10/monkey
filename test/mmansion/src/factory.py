@@ -12,6 +12,7 @@ def evaluate(node):
 
 def ciao(x, y):
     print('go to --> ',x, y)
+    ui.check_delayed_func()
     script = monkey.Script(id="__player")
     script.add(monkey.actions.Walk(data.tag_to_id['player'], (x,y)))
     monkey.play(script)

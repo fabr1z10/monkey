@@ -7,11 +7,17 @@ inventory = {
     'dave': []
 }
 
+delayed_funcs = {
+    'dave': None
+}
+
 
 doormat = 'closed'
 door_main = 'closed'
 door_kitchen = 'closed'
 door_dining = 'closed'
+door_pantry = 'closed'
+door_reactor='closed'
 fridge = 'closed'
 faucet = 'closed'
 maindoor_unlocked = True

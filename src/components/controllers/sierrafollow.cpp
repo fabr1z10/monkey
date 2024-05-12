@@ -101,14 +101,16 @@ void WalkableCharacter::animate() {
 					_direction = "s";
 				}
 			} else {
-				_direction = "e";
+			    _direction = (_delta.x > 0.f) ? "e" : "w";
 			}
 		}
-    	if (_direction == "w") {
-			m_node->setFlipX(true);
-    		_direction = "e";
-    	}
-		anim += "_" + _direction;
+    	m_node->setFlipX(_direction == "w");
+    	auto dir = (_direction == "w" ? "e" : _direction);
+    	//if (_direction == "w") {
+		//	m_node->setFlipX(true);
+    	//	_direction = "e";
+    	//}
+		anim += "_" + dir;
     }
     m_animatedRenderer->setAnimation(anim);
 }

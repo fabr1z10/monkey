@@ -142,11 +142,21 @@ def on_leave_inventory_item(node):
             settings.item1 = None
     refresh_action()
 
+def check_delayed_func():
+    player_name = settings.characters[settings.player]
+    df = data.delayed_funcs[player_name]
+    if df:
+        df()
+        data.delayed_funcs[player_name] = None
+
+
 def execute_action(node):
     if not settings.item1:
         return
     inventory = data.inventory[settings.characters[settings.player]]
+    check_delayed_func()
     script = monkey.Script(id="__player")
+
     if not settings.item2:
         # one item action
         item_info = data.items[settings.item1]

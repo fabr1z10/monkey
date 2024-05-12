@@ -7,3 +7,11 @@ sprites:
       open:
         frames:
           - tex: [915,137,26,98]
+  door_pantry:
+    animations:
+      closed:
+        frames:
+          - tex: [942,137,26,99]
+      open:
+        frames:
+          - tex: [970,137,26,99]

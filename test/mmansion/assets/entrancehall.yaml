@@ -15,3 +15,11 @@ sprites:
       open:
         frames:
           - tex: [297,138,56,93]
+  door_reactor:
+    animations:
+      closed:
+        frames:
+          - tex: [355,138,56,93]
+      open:
+        frames:
+          - tex: [413,138,56,93]
