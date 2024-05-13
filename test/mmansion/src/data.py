@@ -4,11 +4,13 @@ strings = dict()
 tag_to_id = dict()
 
 inventory = {
-    'dave': []
+    'dave': [],
+    'bernard': []
 }
 
 delayed_funcs = {
-    'dave': None
+    'dave': None,
+    'bernard': None
 }
 
 

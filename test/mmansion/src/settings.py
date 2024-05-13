@@ -12,18 +12,19 @@ shaders = [
 ]
 # identifies the item which is the current player
 
-characters = ['dave', 'bernard', 'michael']
+characters = ['dave', 'bernard']#, 'michael']
 
 inv_x = [1, 178]
 inv_y = [21, 13]
 inventory_start_index = 0
 inventory_max_items = 4
 
-player = 0
+player = 1
 
 id_game = None
 id_text = None
 id_inv = None
+id_newkid = None
 
 
 default_verb = 'walkto'
@@ -74,7 +75,8 @@ verbs = {
     },
     'newkid': {
         'text': 9,
-        'pos': [193, 45]
+        'pos': [193, 45],
+        'on_click': 'newkid'
     },
     'unlock': {
         'text': 10,

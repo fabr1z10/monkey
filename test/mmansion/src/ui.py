@@ -25,8 +25,12 @@ def getItemScript(item, action, other=None):
 
 
 def refresh_action():
-    print(data.tag_to_id)
     node = monkey.get_node(data.tag_to_id['label_action'])
+
+    if settings.action is None:
+        node.updateText("")
+        return
+    #print(data.tag_to_id)
     text = [ data.strings[settings.verbs[settings.action]['text']] ]
     if settings.item1:
         text.append(data.strings[data.items[settings.item1]['text']])
@@ -96,8 +100,29 @@ def move_inv(pos):
 def on_leave_verb(node):
     node.setPalette(1)
 
+def newkid(node):
+    settings.action = None
+    settings.item1 = None
+    settings.item2 = None
+    settings.preposition = None
+    refresh_action()
+    textNode = monkey.get_node(settings.id_newkid)
+    xc = [1, 40, 100]
+    i=0
+    for c in settings.characters:
+        name = data.strings[data.items[c]['text']]
+        t = monkey.Text('text', 'c64', name, pal=3)
+        box_size = t.size
+        t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8 + box_size[1]), 0, 1,
+            on_enter=on_enter_newkid, on_leave=on_leave_newkid,batch='line_ui'))
+        t.set_position(xc[i],53,0)
+        textNode.add(t)
+        i +=1
+
+
 def on_click_verb(id):
     def f(node):
+        monkey.get_node(settings.id_newkid).clear()
         settings.action = id
         settings.item1 = None
         settings.item2 = None
@@ -123,6 +148,12 @@ def on_enter_inventory_item(item):
             settings.item2 = item
         refresh_action()
     return f
+
+def on_enter_newkid(node):
+    node.setPalette(2)
+
+def on_leave_newkid(node):
+    node.setPalette(3)
 
 
 def on_leave_item(node):

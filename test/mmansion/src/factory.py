@@ -208,8 +208,9 @@ def create_room(room):
     for key, value in settings.verbs.items():
         t = monkey.Text('text', 'c64', data.strings[value['text']], pal=1)
         box_size = t.size
+        on_click = getattr(ui, value['on_click']) if 'on_click' in value else ui.on_click_verb(key)
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
-            on_enter=ui.on_enter_verb, on_leave=ui.on_leave_verb, on_click=ui.on_click_verb(key), batch='line_ui'))
+            on_enter=ui.on_enter_verb, on_leave=ui.on_leave_verb, on_click=on_click, batch='line_ui'))
         t.set_position(value['pos'][0], value['pos'][1], 0)
         text_node.add(t)
     # first item in inventory is placed in (1, 21)
@@ -217,6 +218,8 @@ def create_room(room):
     inventory = monkey.Node()
     settings.id_inv = inventory.id
     text_node.add(inventory)
+    new_kid_selector = monkey.Node()
+    text_node.add(new_kid_selector)
     ui.refresh_inventory()
 
 
@@ -230,6 +233,7 @@ def create_room(room):
 
     settings.id_game = game_node.id
     settings.id_text = text_node.id
+    settings.id_newkid = new_kid_selector.id
 
 
     root.add(game_node)

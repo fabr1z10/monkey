@@ -4,6 +4,14 @@ dave:
   type: character
   direction: n
   sprite: 'sprites/dave'
+  text: 55
+bernard:
+  room: entrance_hall
+  pos: [60, 20]
+  type: character
+  direction: e
+  sprite: 'sprites/bernard'
+  text: 56
 sign:
   room: start
   text: 17
