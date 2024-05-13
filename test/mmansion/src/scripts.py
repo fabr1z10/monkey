@@ -160,9 +160,9 @@ def close_fridge(script, *args):
         updateNodeState(a, monkey.NodeState.INACTIVE)
 
 def push_gargoyle(script, *args):
-    change_door_state(script, 'door_entrance_reactor', 'open', 'reactor')
+    change_door_state(script, 'door_entrance_reactor', 'open', 'door_reactor')
     def f():
         s = monkey.Script()
-        change_door_state(s, 'door_entrance_reactor', 'closed', 'reactor')
+        change_door_state(s, 'door_entrance_reactor', 'closed', 'door_reactor')
         monkey.play(s)
     data.delayed_funcs[settings.characters[settings.player]] = f

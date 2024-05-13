@@ -100,6 +100,18 @@ def move_inv(pos):
 def on_leave_verb(node):
     node.setPalette(1)
 
+def select_kid(i):
+    def f(node):
+        curr = data.items[settings.characters[settings.player]]
+        id = data.tag_to_id['player']
+        player = monkey.get_node(id)
+        curr['direction'] = player.getController().direction
+        curr['pos'] = [player.x, player.y]
+        settings.player = i
+        settings.room = data.items[settings.characters[i]]['room']
+        monkey.close_room()
+    return f
+
 def newkid(node):
     settings.action = None
     settings.item1 = None
@@ -114,7 +126,7 @@ def newkid(node):
         t = monkey.Text('text', 'c64', name, pal=3)
         box_size = t.size
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8 + box_size[1]), 0, 1,
-            on_enter=on_enter_newkid, on_leave=on_leave_newkid,batch='line_ui'))
+            on_enter=on_enter_newkid, on_leave=on_leave_newkid, on_click=select_kid(i), batch='line_ui'))
         t.set_position(xc[i],53,0)
         textNode.add(t)
         i +=1
@@ -177,6 +189,7 @@ def check_delayed_func():
     player_name = settings.characters[settings.player]
     df = data.delayed_funcs[player_name]
     if df:
+        exit(1)
         df()
         data.delayed_funcs[player_name] = None
 

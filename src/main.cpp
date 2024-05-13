@@ -224,6 +224,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("clear", &Node::clearChildren)
         .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
 		.def("getMouseArea", &Node::getComponent<MouseArea>, py::return_value_policy::reference)
+		.def("getController", &Node::getComponent<WalkableCharacter>, py::return_value_policy::reference)
 		.def("setPalette", &Node::setPalette)
         .def("sendMessage", &Node::sendMessage)
         .def_property_readonly("id", &Node::getId)
@@ -577,6 +578,7 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
     py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
+        .def_property_readonly("direction", &Sierra2DController::getDirection)
         .def(py::init<py::kwargs&>());
 	py::class_<PlayerSierra2DController, Sierra2DController, std::shared_ptr<PlayerSierra2DController>>(mc, "PlayerSierraController")
 		.def(py::init<py::kwargs&>());

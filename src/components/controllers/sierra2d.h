@@ -8,6 +8,7 @@ class Sierra2DController : public Component {
 public:
     explicit Sierra2DController(const pybind11::kwargs& args);
     void setDirection(const std::string& direction);
+    std::string getDirection() const;
 	using Base = Sierra2DController;
 	//std::type_index getType() override;
 protected:
@@ -22,9 +23,11 @@ private:
     //float _yBack;
     //float _a, _b;
     glm::vec3 _previousPosition;
-
-
 };
+
+inline std::string Sierra2DController::getDirection() const {
+    return _direction;
+}
 
 inline void Sierra2DController::setDirection(const std::string &direction) {
 	_direction = direction;
