@@ -48,6 +48,7 @@ public:
     void start() override;
     void update(double) override;
     std::type_index getType() override;
+    void setPalette(const std::string& palId) override;
 
 private:
     struct SpriteInfo {

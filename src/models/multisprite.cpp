@@ -115,3 +115,7 @@ std::type_index MultiSpriteRenderer::getType() {
     return std::type_index(typeid(Renderer));
 }
 
+
+void MultiSpriteRenderer::setPalette(const std::string& palId) {
+    for (auto& r : _renderers) r->setPalette(palId);
+}

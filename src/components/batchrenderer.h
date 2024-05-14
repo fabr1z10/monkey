@@ -28,9 +28,16 @@ public:
 			_batch->setVisible(quad, value != NodeState::INACTIVE);
 		}
 	}
-//    explicit BatchRenderer(B* b) : Renderer(0, 0), _batch(b) {
-//
-//    }
+
+    void setPalette(const std::string& palId) override {
+        _paletteId =  _batch->getPalette(palId);
+	}
+
+
+
+    //    explicit BatchRenderer(B* b) : Renderer(0, 0), _batch(b) {
+    //
+    //    }
 //
 //    void setNodeModel(std::shared_ptr<Model> model) override {
 //        _m = std::dynamic_pointer_cast<M>(model);
@@ -45,7 +52,8 @@ public:
 //
 protected:
 	std::vector<int> _primitiveIds{};
-	std::vector<int> _palettes{};
+
+	//std::vector<int> _palettes{};
 	BATCH* _batch;
 	std::string _batchId;
 //    std::shared_ptr<M> _m;

@@ -21,6 +21,7 @@ public:
 	std::string getId() const;
 	glm::ivec2 getTileSize() const;
 	std::shared_ptr<MultiSprite> getMulti(const std::string&);
+	int getPaletteId(const std::string& id);
 private:
 	std::shared_ptr<Tex> _texture;
 	std::shared_ptr<Palette> _palette;
@@ -33,6 +34,7 @@ private:
 	std::string _id;
     glm::ivec2 _tileSize;
     YAML::Node _multiNodes;
+    std::unordered_map<std::string, int> _paletteIds;
 };
 
 inline glm::ivec2 SpriteSheet::getTileSize() const {
@@ -46,4 +48,8 @@ inline std::string SpriteSheet::getId() const {
 inline Tex* SpriteSheet::getTex() {
 	return _texture.get();
 
+}
+
+inline int SpriteSheet::getPaletteId(const std::string &id) {
+    return _paletteIds.at(id);
 }

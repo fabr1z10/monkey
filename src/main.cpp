@@ -225,6 +225,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
 		.def("getMouseArea", &Node::getComponent<MouseArea>, py::return_value_policy::reference)
 		.def("getController", &Node::getComponent<WalkableCharacter>, py::return_value_policy::reference)
+		.def("getNodes", &Node::getNodes, py::return_value_policy::reference)
 		.def("setPalette", &Node::setPalette)
         .def("sendMessage", &Node::sendMessage)
         .def_property_readonly("id", &Node::getId)

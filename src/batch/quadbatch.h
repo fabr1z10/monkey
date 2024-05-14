@@ -29,6 +29,7 @@ public:
 
 	void innerConfigure() override;
 
+    int getPalette(const std::string&) override;
 
 	void setQuad (
 	        int index,

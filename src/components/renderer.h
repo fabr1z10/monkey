@@ -24,8 +24,8 @@ public:
     void setTransform(const glm::mat4& m);
     void setCount(int);
     void setOffset(int);
-    virtual void setPalette(unsigned paletteId);
-    virtual void setPalette(int quad, int pal) {}
+    virtual void setPalette(const std::string& palId) = 0;
+    //virtual void setPalette(int quad, int pal) {}
 	using Base = Renderer;
 	std::string getAnimation() const;
     virtual void setAnimation(const std::string&) {}
@@ -42,7 +42,7 @@ protected:
     glm::mat4 m_rendererTransform;
     int m_offset;
     int m_count;
-    unsigned _paletteId;
+    int _paletteId;
 	float _zLayer;
     glm::vec3 m_shift;
 	//GLuint m_texId;

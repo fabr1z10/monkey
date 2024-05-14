@@ -123,6 +123,7 @@ public:
 	virtual void innerConfigure() = 0;
     //virtual void computeOffsets(GLuint) = 0;
 
+    virtual int getPalette(const std::string&) { return 0; }
 
 
 protected:

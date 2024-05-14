@@ -162,7 +162,7 @@ door_entrance_reactor:
   mouse:
     aabb: [0,56,0,93]
   actions:
-    walkto: [walkto_door, door_reactor, reactor, 55, 14, s]
+    walkto: [walkto_door, door_reactor, reactor, 574, 120, s]
 door_kitchen_hall:
   room: kitchen
   text: 28
@@ -433,3 +433,24 @@ gargoyle_r:
     aabb: [0,26,0,18]
   actions:
     push: [push_gargoyle]
+exit_reactor:
+  room: reactor
+  text: 28
+  pos: [559,130]
+  walk_to: [575,132]
+  walk_dir: n
+  mouse:
+    aabb: [0,48,0,8]
+  actions:
+    walkto: [change_room, entrance_hall, 460, 32, s]
+light_switch_reactor:
+  room: reactor
+  text: 57
+  pos: [544, 64]
+  walk_to: [548, 30]
+  walk_dir: n
+  mouse:
+    aabb: [0,8,0,8]
+  actions:
+    turnon: [switch_light, reactor, True]
+    turnoff: [switch_light, reactor, False]

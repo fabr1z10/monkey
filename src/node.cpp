@@ -56,13 +56,10 @@ Node::~Node() {
     Engine::instance().rmNode(this);
 }
 
-void Node::setPalette(int palette, const pybind11::kwargs &args) {
+void Node::setPalette(const std::string& id) const {
 	auto renderer = getComponent<Renderer>();
-	int quad = py_get_dict<int>(args, "quad", -1);
-	if (quad == -1) {
-		renderer->setPalette(palette);
-	} else {
-		renderer->setPalette(quad, palette);
+	if (renderer != nullptr) {
+	    renderer->setPalette(id);
 	}
 }
 
@@ -149,6 +146,22 @@ void Node::update(double dt) {
     if (m_parent != nullptr) {
         m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
     }
+}
+
+std::vector<Node *> Node::getNodes(bool recursive) {
+    std::vector<Node*> result;
+    std::list<Node*> l{this};
+    while (!l.empty()) {
+        auto current = l.front();
+        l.pop_front();
+        for (const auto& child : current->m_children) {
+            result.push_back(child.second.get());
+            if (recursive) {
+                l.push_back(child.second.get());
+            }
+        }
+    }
+    return result;
 }
 
 void Node::setState(NodeState state) {

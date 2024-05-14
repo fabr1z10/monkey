@@ -151,6 +151,10 @@ def createItem(desc, item):
     if item == settings.characters[settings.player]:
         data.tag_to_id['player'] = node.id
         node.add_component(monkey.components.Follow(0))
+    hasLight = getattr(data, "light_" + settings.room, True)
+    if not hasLight:
+        node.setPalette('dark')
+
     return node
 
 
@@ -206,7 +210,7 @@ def create_room(room):
 
     # adding verbs
     for key, value in settings.verbs.items():
-        t = monkey.Text('text', 'c64', data.strings[value['text']], pal=1)
+        t = monkey.Text('text', 'c64', data.strings[value['text']], pal='green')
         box_size = t.size
         on_click = getattr(ui, value['on_click']) if 'on_click' in value else ui.on_click_verb(key)
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
@@ -226,7 +230,7 @@ def create_room(room):
 
 
     # adding label for current action
-    cact = monkey.Text('text', 'c64', data.strings[settings.verbs[settings.default_verb]['text']], pal=3)
+    cact = monkey.Text('text', 'c64', data.strings[settings.verbs[settings.default_verb]['text']], pal='purple')
     cact.set_position(1, 53, 0)
     data.tag_to_id['label_action'] = cact.id
     text_node.add(cact)

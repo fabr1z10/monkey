@@ -109,12 +109,13 @@ void SpriteRenderer::updateBatch() {
 //			std::cout << bottomLeft.x << ", " << bottomLeft.y << " -- " << ciao.x << ", " << ciao.y <<  " ... \n";
 //		}
         auto size = quad.size * scale;
+
         _batch->setQuad(_primitiveIds[qid++],
                               bottomLeft,
                               size,
                               quad.textureCoordinates,
                               quad.repeat,
-                              quad.palette,
+                              _paletteId,
                               flipx,
                               quad.flipv,
                               _zLayer);

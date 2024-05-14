@@ -28,13 +28,15 @@ public:
     void removeChild(long);
     // remove this node
     void remove();
-	void setPalette(int palette, const pybind11::kwargs& args);
+	void setPalette(const std::string& id) const;
     // node lifetime
     virtual void start();
     void startRecursive();
     virtual void update(double) ;
     virtual void postProcess() {}
     const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
+
+    std::vector<Node*> getNodes(bool recursive);
 
     void clearChildren();
 

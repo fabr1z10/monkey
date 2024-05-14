@@ -97,3 +97,22 @@ pantry:
     - bg:
         batch: pantry
         quad: [0, 0, 320, 136]
+reactor:
+  size: [656, 136]
+  batch: reactor
+  walkarea:
+    poly: [0,0,656,0,656,19,626,29,606,29,586,136,562,136,562,29,522,29,516,16,108,16,108,24,336,24,336,32,55,32,0,14]
+  items:
+    - bg:
+        batch: reactor
+        quad: [0, 0, 656, 136]
+    - bg:
+        batch: reactor
+        quad: [1,137,72,104]
+      pos: [544,32]
+      auto_depth: True
+    - bg:
+        batch: reactor
+        quad: [79,137,376,120]
+      pos: [112, 16]
+      auto_depth: True

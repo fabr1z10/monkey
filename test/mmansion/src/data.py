@@ -24,6 +24,8 @@ fridge = 'closed'
 faucet = 'closed'
 maindoor_unlocked = True
 
+light_reactor = False
+
 baselines = []
 
 def getDoormatSize():

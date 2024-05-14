@@ -39,7 +39,7 @@ private:
 	float _width;
 	float _lineHeight;
 	Font* _font;
-	int _pal;
+	std::string _palId;
 	glm::vec2 _size;
 	glm::vec3 _offset;
 	int _lines;

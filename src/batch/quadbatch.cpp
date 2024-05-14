@@ -303,3 +303,7 @@ void QuadBatch::initDraw(Shader* s) {
 //    pPalette[index] = _invPaletteCount * (0.5f + paletteIndex);
 //
 //}
+
+int QuadBatch::getPalette(const std::string & id) {
+    return _sheet->getPaletteId(id);
+}

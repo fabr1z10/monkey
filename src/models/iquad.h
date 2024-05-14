@@ -91,8 +91,7 @@ public:
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 	std::type_index getType() override;
 	//void start() override;
-	void setPalette(int, int) override;
-	void setPalette(unsigned) override;
+
 	// nothing to do in update! (no animation)
 	void update(double) override ;
 private:
@@ -106,9 +105,7 @@ inline std::type_index IQuadsRenderer::getType() {
 	return std::type_index(typeid(Renderer));
 }
 
-inline void IQuadsRenderer::setPalette(int quadId, int pal) {
-	_palettes[quadId] = pal;
-}
+
 
 
 //class StaticQuad : public Model {

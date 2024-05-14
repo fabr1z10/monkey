@@ -45,6 +45,7 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 
 		if (_texture->hasPalette()) {
 			std::vector<unsigned char> colors;
+			_paletteIds["default"] = 0;
 			if (f["palettes"]) {
 				std::cout << "texture is indexed. Loading additional palette ...\n";
 				int numberOfExtraPals = f["palettes"].size();
@@ -53,8 +54,10 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 				memcpy(&colors[0], _texture->getPal(), PALETTE_SIZE);
 
 				size_t palOffset{0};
+				int pid{1};
 				for (const auto& pal : f["palettes"]) {
 					auto palId = pal.first.as<std::string>();
+					_paletteIds[palId] = pid++;
 					//std::cout << palId << "\n";
 					palOffset += PALETTE_SIZE;
 					for (const auto& color : pal.second) {

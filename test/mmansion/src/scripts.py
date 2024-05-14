@@ -4,7 +4,7 @@ from . import settings
 from . import ui
 
 def makeText(id):
-    msg = monkey.Text('text', 'c64', data.strings[id], pal=4)
+    msg = monkey.Text('text', 'c64', data.strings[id], pal='light_blue')
     msg.set_position(0, 200, 0)
     return msg
 
@@ -166,3 +166,14 @@ def push_gargoyle(script, *args):
         change_door_state(s, 'door_entrance_reactor', 'closed', 'door_reactor')
         monkey.play(s)
     data.delayed_funcs[settings.characters[settings.player]] = f
+
+
+def switch_light(script, room, value):
+    def g():
+        setattr(data, "light_" + room, value)
+        nodes = monkey.get_node(settings.id_game).getNodes(True)
+        for n in nodes:
+            print('=== AA ===',n.id)
+            n.setPalette('default' if value else 'dark')
+    print('FIGAMERDA!!!!XX')
+    script.add(monkey.actions.CallFunc(g))

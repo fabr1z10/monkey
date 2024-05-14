@@ -13,12 +13,6 @@ const glm::mat4 & Renderer::getRendererTransform() const {
 }
 
 
-void Renderer::setPalette(unsigned palId) {
-    _paletteId = palId;
-//    auto& am = AssetManager::instance();
-//    auto pal = am.getPalette(id);
-//    m_paletteId = pal->getTexId();
-}
 
 
 

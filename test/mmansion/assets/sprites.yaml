@@ -4,7 +4,12 @@ variables:
 id: 'maniacmansion'
 sheet: 'sprites.png'
 tile_size: [8, 8]
-
+palettes:
+  dark:
+    f5ab96: 000000
+    000000: 818181
+    6953f5: 818181
+    ffffff: 818181
 sprites:
   bernard_head:
     ticks: *ticks

@@ -1,13 +1,13 @@
 sheet: 'petscii.png'
 tile_size: [8, 8]
 palettes:
-  1:
+  green:
     ffffff: 79d570
-  2:
+  yellow:
     ffffff: f7ff6c
-  3:
+  purple:
     ffffff: c161c9
-  4:
+  light_blue:
     ffffff: a28fff
   5:
     6953f5: f7ff6c

@@ -26,7 +26,6 @@ def getItemScript(item, action, other=None):
 
 def refresh_action():
     node = monkey.get_node(data.tag_to_id['label_action'])
-
     if settings.action is None:
         node.updateText("")
         return
@@ -52,9 +51,8 @@ def refresh_inventory():
             break
         x = settings.inv_x[i % 2]
         y = settings.inv_y[i // 2]
-        print('SUCCCA',settings.inventory_start_index,j)
-        print(inventory_items[j], x, y, '....')
-        t = monkey.Text('text', 'c64', data.strings[data.items[inventory_items[j]]['text']][:18], pal=3)
+        #print(inventory_items[j], x, y, '....')
+        t = monkey.Text('text', 'c64', data.strings[data.items[inventory_items[j]]['text']][:18], pal='purple')
         box_size = t.size
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8+box_size[1]), 0, 1,
             on_enter=on_enter_inventory_item(inventory_items[j]), on_leave=on_leave_inventory_item, on_click=execute_action, batch='line_ui'))
@@ -83,7 +81,10 @@ def refresh_inventory():
 
 
 def on_enter_verb(node):
-    node.setPalette(2)
+    node.setPalette('yellow')
+
+def on_leave_verb(node):
+    node.setPalette('green')
 
 def on_enter_arrow(node):
     node.setPalette(5)
@@ -97,8 +98,7 @@ def move_inv(pos):
         refresh_inventory()
     return f
 
-def on_leave_verb(node):
-    node.setPalette(1)
+
 
 def select_kid(i):
     def f(node):
@@ -123,7 +123,7 @@ def newkid(node):
     i=0
     for c in settings.characters:
         name = data.strings[data.items[c]['text']]
-        t = monkey.Text('text', 'c64', name, pal=3)
+        t = monkey.Text('text', 'c64', name, pal='purple')
         box_size = t.size
         t.add_component(monkey.components.MouseArea(monkey.shapes.AABB(0, box_size[0], -8, -8 + box_size[1]), 0, 1,
             on_enter=on_enter_newkid, on_leave=on_leave_newkid, on_click=select_kid(i), batch='line_ui'))
@@ -153,7 +153,7 @@ def on_enter_item(item):
 
 def on_enter_inventory_item(item):
     def f(node):
-        node.setPalette(2)
+        node.setPalette('yellow')
         if settings.item1 is None:
             settings.item1 = item
         else:
@@ -162,10 +162,10 @@ def on_enter_inventory_item(item):
     return f
 
 def on_enter_newkid(node):
-    node.setPalette(2)
+    node.setPalette('yellow')
 
 def on_leave_newkid(node):
-    node.setPalette(3)
+    node.setPalette('purple')
 
 
 def on_leave_item(node):
@@ -177,7 +177,7 @@ def on_leave_item(node):
     refresh_action()
 
 def on_leave_inventory_item(node):
-    node.setPalette(3)
+    node.setPalette('purple')
     if settings.item2:
         settings.item2 = None
     else:
@@ -251,6 +251,8 @@ def execute_action(node):
         monkey.play(script)
         reset_action()
         refresh_action()
+
+
 
 
 
