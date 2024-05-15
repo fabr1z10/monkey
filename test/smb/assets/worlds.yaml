@@ -1,14 +1,32 @@
-define: &block [224, 8, 16, 16]
+define:
+  - &block [224, 8, 16, 16]
+  - &block2 [288,8,16,16]
 1-1:
   bg_color: [0, 0, 64]
   size: [3584, 240]
   name: '1-1'
   items:
-    - quad: *block
+    - type: platform
+      quad: *block
       solid: True
-      loc: [0, 0, 69, 2]
-    - tiled: 'tiles/pipe'
-      solid: [2,2]
-      args:
-        height: 1
-      loc: [0, 2, 3, 2, 6, 2, 9, 2]
+      loc: [0, 0, 69, 2, 71, 0, 15, 2, 89, 0, 64, 2, 155, 0, 69, 2]
+    - type: platform
+      quad: *block2
+      solid: True
+      loc: [134,2,4,1,135,3,3,1,136,4,2,1,137,5,1,1,140,2,4,1,140,3,3,1,140,4,2,1,140,5,1,1,148,2,5,1,149,3,4,1,
+        150,4,3,1,151,5,2,1,155,2,4,1,155,3,3,1,155,4,2,1,155,5,1,1,181,2,9,1,182,3,8,1,183,4,7,1,184,5,6,1,
+        185,6,5,1,186,7,4,1,187,8,3,1,188,9,2,1,198,2,1,1]
+    - type: platform
+      solid: True
+      loc: [-1, 0, 1, 16, 224,0,1,16]
+    - type: brick_coin
+      sprite: 'tiles/brick_bonus'
+      hits: 5
+      loc: [16,5]
+#    - type: tiled
+#      tiled: 'tiles/pipe'
+#      solid: [2, 2]
+#      args:
+#        height: 1
+#      loc: [0, 2, 3, 2, 6, 2, 9, 2]
+

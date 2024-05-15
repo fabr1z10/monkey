@@ -9,3 +9,6 @@ shaders = [
     monkey.SHADER_BATCH_LINES
 ]
 restart_key = 299
+speed = 200
+start_pos = (3, 5)
+main_node = None

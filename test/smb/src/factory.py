@@ -2,6 +2,7 @@ import monkey
 
 from . import data
 from . import settings
+from . import scripts
 
 def init():
   data.worlds = monkey.read_data_file('worlds.yaml')
@@ -21,6 +22,52 @@ def player(x, y, speed, acceleration, jh, tja):
                                                       acceleration=acceleration, jump_height=jh, time_to_jump_apex=tja))
   node.add_component(monkey.components.Follow(0))
   return node
+
+def base(item, x, y):
+  z = item.get('z', 0)
+  node = monkey.Node()
+  node.set_position(x * settings.tile_size, y * settings.tile_size, z)
+  return node
+# solid = item.get('solid', None)
+# if 'quad' in item:
+
+#   for i in range(0, len(loc), 4):
+
+
+
+def platform(item, parent):
+  loc = item['loc']
+  for i in range(0, len(loc), 4):
+    node = base(item, loc[i], loc[i+1])
+    repx = loc[i+2]
+    repy = loc[i+3]
+    quad = item.get('quad', None)
+    solid = item.get('solid', True)
+    if quad:
+      model = monkey.models.Quad('tiles')
+      model.add(item['quad'], size=(quad[2] * repx, quad[3] * repy), repeat=(repx, repy))
+      node.set_model(model)
+    if solid:
+      node.add_component(monkey.components.Collider(
+        shape=monkey.shapes.AABB(0, repx*16, 0, repy*16), flag=2, mask=0, tag=0, batch='lines'))
+    parent.add(node)
+
+def brick_coin(item, parent):
+  loc = item['loc']
+  sprite = item['sprite']
+  hits= item.get('hits', 1)
+  for i in range(0, len(loc), 2):
+    b = monkey.get_sprite(sprite)
+    z = item.get('z', 0)
+    x = loc[i] * settings.tile_size
+    y = loc[i+1] * settings.tile_size
+    b.set_position(x, y, z)
+    hit = item.get('hit', hits)
+    b.add_component(monkey.components.Collider(
+      shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_platform))
+    b.user_data = {'y': y, 'hit': hit}
+    parent.add(b)
 
 
 def create_room(room):
@@ -49,6 +96,7 @@ def create_room(room):
   kb = monkey.components.Keyboard()
   kb.add(settings.restart_key, 1, 0, lambda: monkey.close_room())
   root.add_component(kb)
+  settings.main_node = root.id
 
 
 
@@ -62,33 +110,36 @@ def create_room(room):
   root.add(text('*' + str(data.coins).zfill(2), 96, 224))
   root.add(text(name, 152, 224))
   items = world.get('items', [])
-  root.add(player(3, 5, 100, 0.1, 64, 0.5))
+  root.add(player(settings.start_pos[0], settings.start_pos[1], settings.speed, 0.1, 64, 0.5))
   for item in items:
-    z = item.get('z', 0)
-    solid = item.get('solid', None)
-    if 'quad' in item:
-      loc = item['loc']
-      for i in range(0, len(loc), 4):
-        node = monkey.Node()
-        model = monkey.models.Quad('tiles')
-        node.set_position(loc[i] * 16, loc[i+1] * 16, z)
-        repx = loc[i+2]
-        repy = loc[i+3]
-        quad = item['quad']
-        model.add(item['quad'], size=(quad[2] * repx, quad[3] * repy), repeat=(repx, repy))
-        node.set_model(model)
-        if solid:
-          node.add_component(monkey.components.Collider(
-            shape=monkey.shapes.AABB(0, repx*16, 0, repy*16), flag=2, mask=0, tag=0, batch='lines'))
-        root.add(node)
-    elif 'tiled' in item:
-      model = monkey.get_tiled(item['tiled'], **item['args'])
-      loc = item['loc']
-      for i in range(0, len(loc), 2):
-        node = monkey.Node()
-        node.set_position(loc[i] * 16, loc[i + 1] * 16, z)
-        node.set_model(model)
-        if solid:
-          node.add_component(monkey.components.Collider(
-            shape=monkey.shapes.AABB(0, solid[0]*16, 0, solid[1]*16), flag=2, mask=0, tag=0, batch='lines'))
-        root.add(node)
+    type = item['type']
+    globals()[type](item, root)
+    # z = item.get('z', 0)
+    # solid = item.get('solid', None)
+    # if 'quad' in item:
+    #   loc = item['loc']
+    #   for i in range(0, len(loc), 4):
+    #     node = monkey.Node()
+    #     node.set_position(loc[i] * 16, loc[i+1] * 16, z)
+    #     repx = loc[i+2]
+    #     repy = loc[i+3]
+    #     quad = item.get('quad', [])
+    #     if quad:
+    #       model = monkey.models.Quad('tiles')
+    #       model.add(item['quad'], size=(quad[2] * repx, quad[3] * repy), repeat=(repx, repy))
+    #       node.set_model(model)
+    #     if solid:
+    #       node.add_component(monkey.components.Collider(
+    #         shape=monkey.shapes.AABB(0, repx*16, 0, repy*16), flag=2, mask=0, tag=0, batch='lines'))
+    #     root.add(node)
+    # elif 'tiled' in item:
+    #   model = monkey.get_tiled(item['tiled'], **item['args'])
+    #   loc = item['loc']
+    #   for i in range(0, len(loc), 2):
+    #     node = monkey.Node()
+    #     node.set_position(loc[i] * 16, loc[i + 1] * 16, z)
+    #     node.set_model(model)
+    #     if solid:
+    #       node.add_component(monkey.components.Collider(
+    #         shape=monkey.shapes.AABB(0, solid[0]*16, 0, solid[1]*16), flag=2, mask=0, tag=0, batch='lines'))
+    #     root.add(node)

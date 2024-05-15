@@ -115,7 +115,7 @@ void SpriteRenderer::updateBatch() {
                               size,
                               quad.textureCoordinates,
                               quad.repeat,
-                              _paletteId,
+                              _paletteId == 0 ? quad.palette : _paletteId,
                               flipx,
                               quad.flipv,
                               _zLayer);
