@@ -204,6 +204,7 @@ RayCastHit ICollisionEngine::rayCastX(glm::vec3 origin, float length, int mask, 
                                     dist = x0 - shapeBounds.min.x;
                                 }
                             }
+                            if (dist > fabs(length)) return out;
                             out.update(dist, c, glm::vec3(-inc, 0.f, 0.f), 0);
                         } else {
                             // otherwise do a proper check
@@ -274,6 +275,7 @@ RayCastHit ICollisionEngine::rayCastY(glm::vec3 origin, float length, int mask, 
                                     dist = y0 - shapeBounds.min.y;
                                 }
                             }
+                            if (dist > fabs(length)) return out;
                             out.update(dist, c, glm::vec3(0.0f, -inc, 0.f), 0);
                         } else {
                             // otherwise do a proper check

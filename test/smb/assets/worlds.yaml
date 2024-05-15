@@ -1,0 +1,14 @@
+define: &block [224, 8, 16, 16]
+1-1:
+  bg_color: [0, 0, 64]
+  size: [3584, 240]
+  name: '1-1'
+  items:
+    - quad: *block
+      solid: True
+      loc: [0, 0, 69, 2]
+    - tiled: 'tiles/pipe'
+      solid: [2,2]
+      args:
+        height: 1
+      loc: [0, 2, 3, 2, 6, 2, 9, 2]

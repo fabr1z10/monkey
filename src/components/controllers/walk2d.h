@@ -32,7 +32,8 @@ protected:
 	float _maxSpeedGround;
 	float _maxSpeedAir;
 	float _accelerationTime;
-	int _flags;
+	//int _flags;
+	int _direction;
     //bool _jumping;
 	bool _active;
 	// bits

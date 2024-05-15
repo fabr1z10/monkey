@@ -10,7 +10,7 @@ extern GLFWwindow * window;
 
 Walk2D::Walk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
 			   const pybind11::kwargs& args) : Component(), _jumpHeight(jumpHeight), _timeToJumpApex(timeToJumpApex),
-			   _maxSpeedGround(maxSpeedGround), _accelerationTime(accelerationTime), _a(glm::vec3(0.f)), _v(glm::vec3(0.f)), _flags(0), _dir(1.f)
+			   _maxSpeedGround(maxSpeedGround), _accelerationTime(accelerationTime), _a(glm::vec3(0.f)), _v(glm::vec3(0.f)), _direction(0), _dir(1.f)
 {
 	_gravity = py_get_dict<float>(args, "gravity", 0.f);
 	if (_jumpHeight > 0.f) {
@@ -37,10 +37,7 @@ FoeWalk2D::FoeWalk2D(float maxSpeedGround, float accelerationTime, float jumpHei
     const pybind11::kwargs &args) : Walk2D(maxSpeedGround, accelerationTime, jumpHeight, timeToJumpApex, args) {
     _flipPlatformEdge = py_get_dict<bool>(args, "flip_platform_edge", true);
     _flipH = py_get_dict<bool>(args, "flip_h", true);
-    auto initialDirection = py_get_dict<int>(args, "dir", -1);
-    if (initialDirection < 0) {
-        _flags |= 1;
-    }
+    _direction = py_get_dict<int>(args, "dir", -1);
 
 }
 
@@ -71,13 +68,12 @@ void Walk2D::update(double dt) {
 
 	_a = glm::vec3(0.f, -_gravity, 0.f);
 
-	if (_flags & 2) {
-	    // is moving
-		_a.x = (_flags & 4 ? 1.f : -1.f) * _acceleration * _dir;
+	if (_direction != 0) {
+		_a.x = _acceleration;
 	} else {
 		// apply deceleration only if velocity above threshold
-		if (fabs(_v.x) > 0.1f) {
-			_a.x = -signf(_v.x) * _acceleration;
+		if (fabs(_v.x) > (_acceleration * dtf) + 0.1f) {
+			_a.x = -_acceleration;
 		} else {
 			_a.x = 0.0f;
 			_v.x = 0.0f;
@@ -85,14 +81,13 @@ void Walk2D::update(double dt) {
 	}
 
 	_v += _a * dtf;
-	auto delta = _v * dtf;
-
 	// limit horizontal vel to max speed
-	if (_flags & 2) {
-		if (fabs(_v.x) > maxSpeed) {
-			_v.x = signf(_v.x) * maxSpeed;
-		}
+    if (fabs(_v.x) > maxSpeed) {
+		_v.x = signf(_v.x) * maxSpeed;
 	}
+    
+    auto delta = _v * dtf;
+
 
 	_controller->move(delta, false);
 
@@ -113,14 +108,18 @@ void Walk2D::update(double dt) {
 }
 
 void PlayerWalk2D::control() {
-
-	//_flags = 0;
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS ||
-        glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-	    _flags |= 6;
-	} else {
-	    _flags &= 0xFD;
-	}
+    bool left = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
+    bool right = glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS;
+    if (!left && !right) {
+        _direction = 0;
+    } else if (left && !right) {
+        _direction = -1;
+    } else {
+        _direction = 1;
+    }
+    if (_direction != 0) {
+        m_node->setFlipX(_direction == -1);
+    }
 
     if (glfwGetKey(window, _jmpKey) == GLFW_PRESS && _controller->grounded()) {
         _v.y = _jumpVelocity;
@@ -129,36 +128,36 @@ void PlayerWalk2D::control() {
 }
 
 void FoeWalk2D::control() {
-    _flags |= 6;     // foe always moves
-    bool faceLeft = _flags & 1;
-    if (_flipH) {
-        m_node->setFlipX(faceLeft);
-    } else {
-        _dir = (faceLeft) ? -1.f : 1.f;
-    }
-    if (_controller->grounded()) {
-        if (_flipPlatformEdge && _controller->isFalling(_dir)) {
-            _flags ^= 0x01;
-        } else if ((faceLeft && _controller->left()) || (!faceLeft && _controller->right())) {
-            _flags ^= 0x01;
-        }
-
-    }
+//    _flags |= 6;     // foe always moves
+//    bool faceLeft = _flags & 1;
+//    if (_flipH) {
+//        m_node->setFlipX(faceLeft);
+//    } else {
+//        _dir = (faceLeft) ? -1.f : 1.f;
+//    }
+//    if (_controller->grounded()) {
+//        if (_flipPlatformEdge && _controller->isFalling(_dir)) {
+//            _flags ^= 0x01;
+//        } else if ((faceLeft && _controller->left()) || (!faceLeft && _controller->right())) {
+//            _flags ^= 0x01;
+//        }
+//
+//    }
 
 }
 
 int PlayerWalk2D::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
-	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_LEFT) {
-			//m_node->setFlipX(true);
-			_flags |= 1; // set LSB
-		} else if (key == GLFW_KEY_RIGHT) {
-			_flags &= 0xFE; // reset LSB
-		}
+//	if (action == GLFW_PRESS) {
+//		if (key == GLFW_KEY_LEFT) {
+//			//m_node->setFlipX(true);
+//			_flags |= 1; // set LSB
+//		} else if (key == GLFW_KEY_RIGHT) {
+//			_flags &= 0xFE; // reset LSB
+//		}
+//
+//
+//	}
 
-
-	}
-    m_node->setFlipX((_flags& 1) > 0);
 	//std::cout << m_node->getFlipX() << "\n";
 	return 0;
 }

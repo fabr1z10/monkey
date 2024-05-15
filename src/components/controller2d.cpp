@@ -180,8 +180,9 @@ void Controller2D::verticalCollisions(glm::vec3& velocity, bool forced) {
 		RayCastHit hit = m_collisionEngine->rayCastY(rayOrigin, directionY * rayLength, collMask, m_node);
 		bool ciao = grounded();
 		if (hit.collide) {
-			if (!m_wasGnd) {
-			}
+			//if (!m_wasGnd) {
+			//}
+			//std::cout << "raylen = " << rayLength << "; dist = " << hit.length << "\n";
 			atleast = true;
 			velocity.y = (hit.length - m_skinWidth) * directionY;
 			rayLength = hit.length;

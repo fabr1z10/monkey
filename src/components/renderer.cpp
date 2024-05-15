@@ -4,7 +4,7 @@
 #include "../assetmanager.h"
 
 Renderer::Renderer() : Component(), m_rendererTransform(1.f),
-    m_offset(0), m_count(0), m_shift(glm::vec3(0.f)), _zLayer(0.f) {
+    m_offset(0), m_count(0), m_shift(glm::vec3(0.f)), _zLayer(0.f), _paletteId(0) {
 
 }
 
