@@ -8,7 +8,7 @@
 
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr),
+Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : Component(args), m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr),
     m_flag(flag), m_mask(mask), m_tag(tag) {
 //	m_flag = py_get_dict<int>(args, "flag");
 //	m_mask = py_get_dict<int>(args, "mask");

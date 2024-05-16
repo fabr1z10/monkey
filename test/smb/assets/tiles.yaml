@@ -107,9 +107,14 @@ sprites:
         frames:
           - tex: [384,0,16,16]
             anchor: [8,0]
+  brick:
+    animations:
+      idle:
+        frames:
+          - tex: [368,16,16,16]
   brick_bonus:
     animations:
-      cazzo:
+      idle:
         frames:
           - tex: [240,0,16,16]
             pal: 0

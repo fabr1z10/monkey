@@ -35,10 +35,10 @@ TrianglesModel::TrianglesModel(const pybind11::kwargs & args) : Model() {
 
 }
 std::shared_ptr<Renderer> TrianglesModel::getRenderer(const pybind11::kwargs& args) {
-	return std::make_shared<TrianglesModelRenderer>(_batchId);
+	return std::make_shared<TrianglesModelRenderer>(_batchId, args);
 }
 
-TrianglesModelRenderer::TrianglesModelRenderer(const std::string& batchId) : BatchRenderer<TriangleBatch>(batchId) {
+TrianglesModelRenderer::TrianglesModelRenderer(const std::string& batchId, const pybind11::kwargs& args) : BatchRenderer<TriangleBatch>(batchId, args) {
 	//assert(_lineBatch);
 
 }

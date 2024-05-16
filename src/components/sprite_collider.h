@@ -27,7 +27,7 @@ private:
 
 class SpriteColliderRenderer : public BatchRenderer<LineBatch> {
 public:
-    SpriteColliderRenderer(const std::string& batchId);
+    SpriteColliderRenderer(const std::string& batchId, const pybind11::kwargs& args = pybind11::kwargs());
     //void draw(Shader * s) override;
     void start() override;
     std::type_index getType() override;

@@ -4,7 +4,7 @@
 #include "../engine.h"
 #include "../pyhelper.h"
 
-Follow::Follow (int camId, const pybind11::kwargs& args) : Component(), _camId(camId) {
+Follow::Follow (int camId, const pybind11::kwargs& args) : Component(args), _camId(camId) {
 	m_relativePos = py_get_dict<glm::vec3>(args, "pos", glm::vec3(0.f, 0.f, 5.0f));
 	m_up = py_get_dict<glm::vec3>(args, "up", glm::vec3(0,1,0));
 	m_previous = glm::vec3(0.0f);

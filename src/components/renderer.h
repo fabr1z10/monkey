@@ -8,7 +8,7 @@
 
 class Renderer : public Component {
 public:
-    Renderer();
+    Renderer(const pybind11::kwargs& args);
     //virtual int setup(Shader*);
     virtual void draw(Shader*) {}
 
@@ -67,7 +67,7 @@ inline std::string Renderer::getAnimation() const {
 
 class BasicRenderer : public Renderer {
 public:
-	BasicRenderer(ShaderType type);
+	BasicRenderer(ShaderType type, const pybind11::kwargs& args);
 	void draw(Shader*) override;
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
 

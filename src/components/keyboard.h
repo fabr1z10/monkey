@@ -6,6 +6,7 @@
 
 class Keyboard : public Component, public KeyboardListener {
 public:
+    Keyboard(const pybind11::kwargs& args) : Component(args), KeyboardListener() {}
 	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	void addFunction(int, int, int, pybind11::function f);
 	void addFallbackFunction(pybind11::function f);

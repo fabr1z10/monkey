@@ -37,7 +37,7 @@ inline const TrianglesModel::Tri & TrianglesModel::getTriangle(int i) const {
 
 class TrianglesModelRenderer : public BatchRenderer<TriangleBatch> {
 public:
-	explicit TrianglesModelRenderer(const std::string&);
+	explicit TrianglesModelRenderer(const std::string&, const pybind11::kwargs& args);
 	void setModel(std::shared_ptr<Model>, const pybind11::kwargs&) override;
 	std::type_index getType() override;
 	void update(double) override;

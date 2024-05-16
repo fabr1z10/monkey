@@ -222,7 +222,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("get_children", &Node::getChildren)
         .def("remove", &Node::remove)
         .def("clear", &Node::clearChildren)
-        .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
+//        .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
 		.def("getMouseArea", &Node::getComponent<MouseArea>, py::return_value_policy::reference)
 		.def("getController", &Node::getComponent<WalkableCharacter>, py::return_value_policy::reference)
 		.def("getNodes", &Node::getNodes, py::return_value_policy::reference)
@@ -556,10 +556,10 @@ PYBIND11_MODULE(monkey, m) {
             //.def("set_override", &SpriteCollider::setCollisionOverride)
 		.def(py::init<int, int, int, const pybind11::kwargs&>(), py::arg("flag"), py::arg("mask"), py::arg("tag"), py::kw_only());
 
-	py::class_<Switch, Component, std::shared_ptr<Switch>>(mc, "Switch")
-	    .def(py::init<>())
-	    .def("add", &Switch::add)
-	    .def("enable", &Switch::enable);
+//	py::class_<Switch, Component, std::shared_ptr<Switch>>(mc, "Switch")
+//	    .def(py::init<>())
+//	    .def("add", &Switch::add)
+//	    .def("enable", &Switch::enable);
 	//
 //    py::class_<monkey::skeletal::SkeletalCollider, Collider, std::shared_ptr<monkey::skeletal::SkeletalCollider>>(m, "SkeletalCollider")
 //        .def(py::init<const pybind11::kwargs&>());
@@ -627,7 +627,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Keyboard, Component, std::shared_ptr<Keyboard>>(mc, "Keyboard")
 		.def("add", &Keyboard::addFunction)
 		.def("add_fallback", &Keyboard::addFallbackFunction)
-		.def(py::init<>());
+		.def(py::init<const pybind11::kwargs&>());
 //
 //	py::class_<ScriptPlayer, Component, std::shared_ptr<ScriptPlayer>>(m, "script_player")
 //		.def("play", &ScriptPlayer::play)

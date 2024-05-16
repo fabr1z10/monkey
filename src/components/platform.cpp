@@ -6,7 +6,7 @@
 #include "../util.h"
 #include "../pyhelper.h"
 
-Platform::Platform(const pybind11::kwargs &args) : Component() {
+Platform::Platform(const pybind11::kwargs &args) : Component(args) {
     _onLand = py_get_dict<pybind11::function>(args, "on_land", pybind11::function());
     _onBump = py_get_dict<pybind11::function>(args, "on_bump", pybind11::function());
 }

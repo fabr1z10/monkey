@@ -3,7 +3,7 @@
 #include "../node.h"
 #include "../assetmanager.h"
 
-Renderer::Renderer() : Component(), m_rendererTransform(1.f),
+Renderer::Renderer(const pybind11::kwargs& args) : Component(args), m_rendererTransform(1.f),
     m_offset(0), m_count(0), m_shift(glm::vec3(0.f)), _zLayer(0.f), _paletteId(0) {
 
 }
@@ -63,7 +63,7 @@ void Renderer::setShift(glm::vec3 shift) {
 	m_shift = shift;
 }
 
-BasicRenderer::BasicRenderer(ShaderType type) : Renderer() {
+BasicRenderer::BasicRenderer(ShaderType type, const pybind11::kwargs& args) : Renderer(args) {
 	_shaderType = type;
 }
 

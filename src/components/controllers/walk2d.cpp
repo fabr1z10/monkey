@@ -9,7 +9,7 @@ extern GLFWwindow * window;
 
 
 Walk2D::Walk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
-			   const pybind11::kwargs& args) : Component(), _jumpHeight(jumpHeight), _timeToJumpApex(timeToJumpApex),
+			   const pybind11::kwargs& args) : Component(args), _jumpHeight(jumpHeight), _timeToJumpApex(timeToJumpApex),
 			   _maxSpeedGround(maxSpeedGround), _accelerationTime(accelerationTime), _a(glm::vec3(0.f)), _v(glm::vec3(0.f)), _direction(0), _dir(1.f)
 {
 	_gravity = py_get_dict<float>(args, "gravity", 0.f);

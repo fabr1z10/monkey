@@ -6,7 +6,7 @@
 #include <iostream>
 
 MouseArea::MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, const pybind11::kwargs &args)  :
-	Component(), _shape(shape), _priority(priority), _camera(camera), _debugNode(nullptr) {
+	Component(args), _shape(shape), _priority(priority), _camera(camera), _debugNode(nullptr) {
 	_onEnter = py_get_dict<pybind11::function>(args, "on_enter", pybind11::function());
 	_onLeave = py_get_dict<pybind11::function>(args, "on_leave", pybind11::function());
 	_onStay = py_get_dict<pybind11::function>(args, "on_stay", pybind11::function());

@@ -10,7 +10,7 @@
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 
-Controller::Controller(const pybind11::kwargs& args) : m_debugShape(nullptr), m_collisionStatus(0) {
+Controller::Controller(const pybind11::kwargs& args) : Component(args), m_debugShape(nullptr), m_collisionStatus(0) {
 	m_size = py_get_dict<glm::vec3>(args, "size", glm::vec3(0.f));
 	m_center = py_get_dict<glm::vec3>(args, "center", glm::vec3(m_size.x * 0.5f, 0.f, 0.f));
     _batchId = py_get_dict<std::string>(args, "batch", "");

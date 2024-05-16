@@ -143,7 +143,7 @@ void SpriteCollider::setCollisionOverride(const std::string & id , int flag, int
 
 
 
-SpriteColliderRenderer::SpriteColliderRenderer(const std::string& batchId) : BatchRenderer<LineBatch>(batchId) {
+SpriteColliderRenderer::SpriteColliderRenderer(const std::string& batchId, const pybind11::kwargs& args) : BatchRenderer<LineBatch>(batchId, args) {
 }
 
 std::type_index SpriteColliderRenderer::getType() {

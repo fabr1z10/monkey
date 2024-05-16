@@ -7,7 +7,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 std::shared_ptr<Renderer> MultiSprite::getRenderer(const pybind11::kwargs& args) {
 
     auto batchId = py_get_dict<std::string>(args, "batch");
-    return std::make_shared<MultiSpriteRenderer>(batchId);
+    return std::make_shared<MultiSpriteRenderer>(batchId, pybind11::kwargs());
 
 }
 

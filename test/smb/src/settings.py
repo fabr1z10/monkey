@@ -10,5 +10,7 @@ shaders = [
 ]
 restart_key = 299
 speed = 200
+jump_height = 96 #64
+time_to_jump_apex = 0.5
 start_pos = (3, 5)
 main_node = None

@@ -80,7 +80,7 @@ void PolyChain::initChain(const glm::vec4 &color, const std::vector<float> &data
 //
 //}
 
-LinesRenderer::LinesRenderer(const std::string& batchId) : BatchRenderer<LineBatch>(batchId) {
+LinesRenderer::LinesRenderer(const std::string& batchId) : BatchRenderer<LineBatch>(batchId, pybind11::kwargs()) {
     //assert(_lineBatch);
 
 }

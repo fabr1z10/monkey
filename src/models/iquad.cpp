@@ -163,7 +163,7 @@ void IQuads::addQuad(glm::vec4 texCoords, const pybind11::kwargs &kwargs) {
 }
 
 
-IQuadsRenderer::IQuadsRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId) {
+IQuadsRenderer::IQuadsRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId, pybind11::kwargs()) {
 	auto tex = _batch->getSheet()->getTex();
 
 }

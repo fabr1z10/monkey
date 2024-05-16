@@ -42,7 +42,7 @@ inline const std::vector<MultiSprite::SubSpriteInfo> & MultiSprite::getNext(int 
 
 class MultiSpriteRenderer : public BatchRenderer<QuadBatch> {
 public:
-    MultiSpriteRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId), _multi(nullptr) {}
+    MultiSpriteRenderer(const std::string& batchId, const pybind11::kwargs& args) : BatchRenderer<QuadBatch>(batchId, args), _multi(nullptr) {}
     void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) override;
     void setAnimation(const std::string&) override;
     void start() override;

@@ -9,7 +9,7 @@
 
 extern GLFWwindow* window;
 
-Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component() {
+Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component(args) {
     //_yFront = py_get_dict<float>(args, "y_front");
     //_yBack = py_get_dict<float>(args, "y_back");
     _zFunc = py_get_dict<pybind11::function>(args, "z_func", pybind11::function());

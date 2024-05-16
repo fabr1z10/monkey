@@ -9,7 +9,7 @@
 template<typename BATCH>
 class BatchRenderer : public Renderer {
 public:
-	BatchRenderer(const std::string& batchId) : Renderer(), _batchId(batchId) {
+	BatchRenderer(const std::string& batchId, const pybind11::kwargs& args) : Renderer(args), _batchId(batchId) {
 		//assert(args["batch"]);
 
 		_batch = dynamic_cast<BATCH*>(Engine::instance().getRoom()->getBatch(_batchId));

@@ -52,22 +52,45 @@ def platform(item, parent):
         shape=monkey.shapes.AABB(0, repx*16, 0, repy*16), flag=2, mask=0, tag=0, batch='lines'))
     parent.add(node)
 
-def brick_coin(item, parent):
+
+def brick_common(item, parent, f):
   loc = item['loc']
   sprite = item['sprite']
-  hits= item.get('hits', 1)
+  #hits = item.get('hits', 1)
   for i in range(0, len(loc), 2):
     b = monkey.get_sprite(sprite)
     z = item.get('z', 0)
     x = loc[i] * settings.tile_size
     y = loc[i+1] * settings.tile_size
     b.set_position(x, y, z)
-    hit = item.get('hit', hits)
     b.add_component(monkey.components.Collider(
       shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
-    b.add_component(monkey.components.Platform(on_bump=scripts.bump_platform))
-    b.user_data = {'y': y, 'hit': hit}
+    b.user_data['y'] = y
+    f(item, b)
     parent.add(b)
+
+
+
+def brick(item, parent):
+  def f(item, b):
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_brick))
+  brick_common(item, parent, f)
+
+def brick_bonus(item, parent):
+  def f(item, b):
+    bonus = item.get('bonus')
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_platform_bonus))
+    b.user_data['bonus'] = bonus
+    b.user_data['hit'] = 1
+  brick_common(item, parent, f)
+
+
+def brick_coin(item, parent):
+  def f(item, b):
+    hits = item.get('hits', 1)
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_platform))
+    b.user_data['hit'] = hits
+  brick_common(item, parent, f)
 
 
 def create_room(room):
@@ -110,7 +133,8 @@ def create_room(room):
   root.add(text('*' + str(data.coins).zfill(2), 96, 224))
   root.add(text(name, 152, 224))
   items = world.get('items', [])
-  root.add(player(settings.start_pos[0], settings.start_pos[1], settings.speed, 0.1, 64, 0.5))
+  root.add(player(settings.start_pos[0], settings.start_pos[1], settings.speed, 0.1,
+    settings.jump_height, settings.time_to_jump_apex))
   for item in items:
     type = item['type']
     globals()[type](item, root)

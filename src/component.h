@@ -14,7 +14,7 @@ enum NodeState {
 
 class Component {
 public:
-    Component();
+    Component(const pybind11::kwargs& args);
     virtual ~Component() = default;
     virtual std::type_index getType();
     virtual void start() {}
@@ -29,6 +29,7 @@ protected:
     // the node this component belongs to
     Node* m_node;
     NodeState _state;
+    std::string _tag;
 
 };
 
