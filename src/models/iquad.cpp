@@ -200,7 +200,7 @@ void IQuadsRenderer::update(double) {
 						q[i].size,
 						q[i].textureCoordinates,
 						q[i].repeat,
-						_paletteId,
+                        _paletteId == 0 ? q[i].palette : _paletteId,
 						q[i].fliph,
 						q[i].flipv,
 						0.f,worldTransform);

@@ -107,3 +107,30 @@ def mushroom_flower():
 def playerVsFoeCallback(a,b,c):
     print('QUI')
     exit(1)
+
+def on_enter_warp(g):
+    def f(warp, player):
+        settings.warp_id = g
+        print('entering warp')
+    return f
+
+
+def on_leave_warp(warp, player):
+    settings.warp_id = None
+    print('leaving warp')
+
+def goto_room(room, x, y):
+    def f():
+        settings.room = room
+        settings.start_pos = (x, y)
+        monkey.close_room()
+    return f
+
+def enter_warp():
+    if settings.warp_id:
+        print('--',settings.warp_id)
+        monkey.get_node(settings.player_id).setBehavior('warp')
+        s = monkey.Script()
+        s.add(monkey.actions.MoveBy(settings.player_id, (0, -64), 2, 0))
+        s.add(monkey.actions.CallFunc(goto_room(*settings.warp_id)))
+        monkey.play(s)

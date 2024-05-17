@@ -15,6 +15,9 @@ palettes:
     fcfcfc: 80d010
     3cbcfc: 00a800
     000000: 000000
+  5: # cave
+    c84c0c: 008088
+    fcbcb0: 9cfcf0
 fonts:
   mario:
     line_height: 8

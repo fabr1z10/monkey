@@ -20,9 +20,15 @@ def player(x, y, speed, acceleration, jh, tja):
   node.add_component(monkey.components.Controller2D(size=ms['size'], batch='lines', label='controller2d', mask_up=2|16))
   node.add_component(monkey.components.SpriteCollider(settings.Flags.PLAYER, settings.Flags.FOE,
     settings.Tags.PLAYER, batch='lines'))
-  node.add_component(monkey.components.PlayerWalk2D(max_speed=speed,
-    acceleration=acceleration, jump_height=jh, time_to_jump_apex=tja))
+  cl = monkey.components.PlayerWalk2D(max_speed=speed,
+    acceleration=acceleration, jump_height=jh, time_to_jump_apex=tja)
+  node.add_component(cl)
   node.add_component(monkey.components.Follow(0))
+
+  def f():
+    cl.setState(monkey.NodeState.INACTIVE)
+  node.addBehavior('warp', f)
+  settings.player_id = node.id
   return node
 
 def base(item, x, y):
@@ -39,6 +45,7 @@ def base(item, x, y):
 
 def platform(item, parent):
   loc = item['loc']
+  pal = item.get('pal', 0)
   for i in range(0, len(loc), 4):
     node = base(item, loc[i], loc[i+1])
     repx = loc[i+2]
@@ -47,7 +54,7 @@ def platform(item, parent):
     solid = item.get('solid', True)
     if quad:
       model = monkey.models.Quad('tiles')
-      model.add(item['quad'], size=(quad[2] * repx, quad[3] * repy), repeat=(repx, repy))
+      model.add(item['quad'], size=(quad[2] * repx, quad[3] * repy), repeat=(repx, repy), pal=pal)
       node.set_model(model)
     if solid:
       node.add_component(monkey.components.Collider(
@@ -114,6 +121,17 @@ def tiled(item, parent):
          shape=monkey.shapes.AABB(0, solid[0]*16, 0, solid[1]*16), flag=2, mask=0, tag=0, batch='lines'))
      parent.add(node)
 
+def warp(item, parent):
+  loc =item['loc']
+  for i in range(0, len(loc), 3):
+    node = monkey.Node()
+    node.set_position(loc[i] * 16, loc[i + 1] * 16, 0)
+    collider = monkey.components.Collider(
+      shape=monkey.shapes.AABB(0, 16, 0, 2), flag=settings.Flags.FOE, mask=settings.Flags.PLAYER, tag=0, batch='lines')
+    collider.setResponse(settings.Tags.PLAYER, on_enter=scripts.on_enter_warp(loc[i+2]), on_exit=scripts.on_leave_warp)
+    node.add_component(collider)
+    parent.add(node)
+
 
 def create_room(room):
   world = data.worlds[settings.room]
@@ -140,6 +158,7 @@ def create_room(room):
   root = room.root()
   kb = monkey.components.Keyboard()
   kb.add(settings.restart_key, 1, 0, lambda: monkey.close_room())
+  kb.add(264, 1, 0, scripts.enter_warp)
   root.add_component(kb)
   settings.main_node = root.id
 
