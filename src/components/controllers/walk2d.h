@@ -36,6 +36,7 @@ protected:
 	int _direction;
     //bool _jumping;
 	bool _active;
+    bool _flipH;
 	// bits
 	// 0 - face (0=right, 1=left)
 	// 1 - moving (0=false, 1=true)
@@ -63,7 +64,7 @@ public:
 
 private:
     bool _flipPlatformEdge;
-    bool _flipH;
+
     int _status;
 
 };

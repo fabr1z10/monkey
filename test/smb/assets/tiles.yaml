@@ -101,9 +101,12 @@ sprites:
       idle:
         frames:
           - tex: [336,0,16,16]
-  mushroom:
+  mushroom:           # magic mushroom
+    boxes:
+      - [ -6,0,6,16 ]
     animations:
       idle:
+        box: 0
         frames:
           - tex: [384,0,16,16]
             anchor: [8,0]
@@ -112,6 +115,15 @@ sprites:
       idle:
         frames:
           - tex: [368,16,16,16]
+  invisible_brick:
+    animations:
+      idle:
+        frames:
+          - tex: [464,0,16,16]
+      taken:
+        frames:
+          - tex: [240,16,16,16]
+
   brick_bonus:
     animations:
       idle:
@@ -151,4 +163,35 @@ sprites:
             anchor: [8, 0]
           - tex: [46,496,11,16]
             anchor: [5, 0]
+  supermario:
+    boxes:
+      - [-4,0,4,24]
+    animations:
+      idle:
+        box: 0
+        frames:
+          - tex: [0,464,16,32]
+            anchor: [8,0]
+  brick_piece:
+    animations:
+      idle:
+        frames:
+          - tex: [384,16,16,16]
+            anchor: [8, 8]
+  flower:             # fire flower
+    boxes:
+      - [ -6,0,6,16 ]
+    animations:
+      idle:
+        box: 0
+        frames:
+          - tex: [400,0,16,16]
+            anchor: [8, 0]
+          - tex: [416,0,16,16]
+            anchor: [8, 0]
+          - tex: [432,0,16,16]
+            anchor: [8, 0]
+          - tex: [448,0,16,16]
+            anchor: [8, 0]
+
 

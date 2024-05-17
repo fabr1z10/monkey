@@ -24,6 +24,9 @@ Walk2D::Walk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, f
 	else
 		_acceleration = _maxSpeedGround / _accelerationTime;
 	_maxSpeedAir = py_get_dict<float>(args, "max_speed_air", _maxSpeedGround);
+
+	// flip horizontally when moving left
+	_flipH = py_get_dict<bool>(args, "flip_h", true);
 }
 
 PlayerWalk2D::PlayerWalk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
@@ -36,7 +39,7 @@ PlayerWalk2D::PlayerWalk2D(float maxSpeedGround, float accelerationTime, float j
 FoeWalk2D::FoeWalk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
     const pybind11::kwargs &args) : Walk2D(maxSpeedGround, accelerationTime, jumpHeight, timeToJumpApex, args) {
     _flipPlatformEdge = py_get_dict<bool>(args, "flip_platform_edge", true);
-    _flipH = py_get_dict<bool>(args, "flip_h", true);
+    //_flipH = py_get_dict<bool>(args, "flip_h", true);
     _direction = py_get_dict<int>(args, "dir", -1);
 
 }
@@ -54,6 +57,10 @@ void Walk2D::update(double dt) {
 
 	control();
 
+	if (_flipH && _direction != 0) {
+        m_node->setFlipX(_direction == -1);
+    }
+
 	float maxSpeed {0.f};
 	if (_controller->grounded()) {
 		maxSpeed = _maxSpeedGround;
@@ -69,11 +76,13 @@ void Walk2D::update(double dt) {
 	_a = glm::vec3(0.f, -_gravity, 0.f);
 
 	if (_direction != 0) {
-		_a.x = _acceleration;
+	    // x-acceleration should be always positive unless when !fliph && dir==-1
+		_a.x = (!_flipH && _direction == -1) ? -_acceleration : _acceleration;
 	} else {
 		// apply deceleration only if velocity above threshold
 		if (fabs(_v.x) > (_acceleration * dtf) + 0.1f) {
-			_a.x = -_acceleration;
+		    // decel, acceleration should be opposite velocity
+			_a.x = -signf(_v.x) * _acceleration;
 		} else {
 			_a.x = 0.0f;
 			_v.x = 0.0f;
@@ -87,8 +96,6 @@ void Walk2D::update(double dt) {
 	}
     
     auto delta = _v * dtf;
-
-
 	_controller->move(delta, false);
 
 	// update animation, if we have a sprite renderer
@@ -117,9 +124,7 @@ void PlayerWalk2D::control() {
     } else {
         _direction = 1;
     }
-    if (_direction != 0) {
-        m_node->setFlipX(_direction == -1);
-    }
+
 
     if (glfwGetKey(window, _jmpKey) == GLFW_PRESS && _controller->grounded()) {
         _v.y = _jumpVelocity;
@@ -128,6 +133,7 @@ void PlayerWalk2D::control() {
 }
 
 void FoeWalk2D::control() {
+
 //    _flags |= 6;     // foe always moves
 //    bool faceLeft = _flags & 1;
 //    if (_flipH) {
@@ -135,6 +141,13 @@ void FoeWalk2D::control() {
 //    } else {
 //        _dir = (faceLeft) ? -1.f : 1.f;
 //    }
+
+    if (_direction == -1 && _controller->left()) {
+        _direction = 1;
+    } else if (_direction == 1 && _controller->right()) {
+        _direction = -1;
+    }
+
 //    if (_controller->grounded()) {
 //        if (_flipPlatformEdge && _controller->isFalling(_dir)) {
 //            _flags ^= 0x01;

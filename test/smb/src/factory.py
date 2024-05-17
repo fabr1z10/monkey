@@ -14,12 +14,14 @@ def text(text, x, y):
   return t
 
 def player(x, y, speed, acceleration, jh, tja):
-  node = monkey.get_sprite('tiles/mario')
+  ms = settings.mario_states[settings.state]
+  node = monkey.get_sprite(ms['model'])
   node.set_position(x * settings.tile_size, y * settings.tile_size, 0)
-  node.add_component(monkey.components.Controller2D(size=[10, 10, 0], batch='lines'))
-  node.add_component(monkey.components.SpriteCollider(0,1,0,batch='lines'))
+  node.add_component(monkey.components.Controller2D(size=ms['size'], batch='lines', label='controller2d', mask_up=2|16))
+  node.add_component(monkey.components.SpriteCollider(settings.Flags.PLAYER, settings.Flags.FOE,
+    settings.Tags.PLAYER, batch='lines'))
   node.add_component(monkey.components.PlayerWalk2D(max_speed=speed,
-                                                      acceleration=acceleration, jump_height=jh, time_to_jump_apex=tja))
+    acceleration=acceleration, jump_height=jh, time_to_jump_apex=tja))
   node.add_component(monkey.components.Follow(0))
   return node
 
@@ -53,7 +55,8 @@ def platform(item, parent):
     parent.add(node)
 
 
-def brick_common(item, parent, f):
+def brick_common(item, parent, f, **kwargs):
+  flag = kwargs.get('flag', 2)
   loc = item['loc']
   sprite = item['sprite']
   #hits = item.get('hits', 1)
@@ -64,10 +67,15 @@ def brick_common(item, parent, f):
     y = loc[i+1] * settings.tile_size
     b.set_position(x, y, z)
     b.add_component(monkey.components.Collider(
-      shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=2, mask=0, tag=0, batch='lines'))
+      shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=flag, mask=0, tag=0, batch='lines', label='collider'))
     b.user_data['y'] = y
     f(item, b)
     parent.add(b)
+
+def invisible_brick(item, parent):
+  def f(item, b):
+    b.add_component(monkey.components.Platform(on_bump=scripts.bump_invisible_brick))
+  brick_common(item, parent, f, flag=16)
 
 
 
@@ -92,6 +100,20 @@ def brick_coin(item, parent):
     b.user_data['hit'] = hits
   brick_common(item, parent, f)
 
+def tiled(item, parent):
+   model = monkey.get_tiled(item['tiled'], **item['args'])
+   solid = item.get('solid', None)
+   z = item.get('z',0)
+   loc = item['loc']
+   for i in range(0, len(loc), 2):
+     node = monkey.Node()
+     node.set_position(loc[i] * 16, loc[i + 1] * 16, z)
+     node.set_model(model)
+     if solid:
+       node.add_component(monkey.components.Collider(
+         shape=monkey.shapes.AABB(0, solid[0]*16, 0, solid[1]*16), flag=2, mask=0, tag=0, batch='lines'))
+     parent.add(node)
+
 
 def create_room(room):
   world = data.worlds[settings.room]
@@ -112,7 +134,7 @@ def create_room(room):
   room.add_camera(cam)
   room.add_camera(cam_ui)
   ce = monkey.CollisionEngine2D(80, 80)
-  #e.add_response(settings.CollisionTags.player, settings.CollisionTags.spawn, on_start=scripts.touch_spawn)
+  #ce.add_response(settings.Tags.PLAYER, settings.Tags.FOE, scripts.playerVsFoeCallback)
   room.add_runner(ce)
   room.add_runner(monkey.Scheduler())
   root = room.root()
@@ -155,15 +177,4 @@ def create_room(room):
     #     if solid:
     #       node.add_component(monkey.components.Collider(
     #         shape=monkey.shapes.AABB(0, repx*16, 0, repy*16), flag=2, mask=0, tag=0, batch='lines'))
-    #     root.add(node)
-    # elif 'tiled' in item:
-    #   model = monkey.get_tiled(item['tiled'], **item['args'])
-    #   loc = item['loc']
-    #   for i in range(0, len(loc), 2):
-    #     node = monkey.Node()
-    #     node.set_position(loc[i] * 16, loc[i + 1] * 16, z)
-    #     node.set_model(model)
-    #     if solid:
-    #       node.add_component(monkey.components.Collider(
-    #         shape=monkey.shapes.AABB(0, solid[0]*16, 0, solid[1]*16), flag=2, mask=0, tag=0, batch='lines'))
     #     root.add(node)

@@ -228,6 +228,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def("getNodes", &Node::getNodes, py::return_value_policy::reference)
 		.def("setPalette", &Node::setPalette)
         .def("sendMessage", &Node::sendMessage)
+        .def("setBehavior", &Node::setBehavior)
+        .def("addBehavior", &Node::addBehavior)
+        .def("getLabelledComponent", &Node::getTaggedComponent, py::return_value_policy::reference)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
 		.def_property_readonly("y", &Node::getY)
@@ -426,7 +429,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
 	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
 		.def(py::init<float, float>(), "width"_a, "height"_a);
-		//.def("add_response", &CollisionEngine2D::addResponse);
+                //.def("add_response", &CollisionEngine2D::addResponse);
 //    py::class_<CollisionEngine3D, ICollisionEngine, std::shared_ptr<CollisionEngine3D>>(m, "CollisionEngine3D")
 //        .def(py::init<float, float, float>(), "width"_a, "height"_a, "depth"_a);
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
@@ -528,7 +531,8 @@ PYBIND11_MODULE(monkey, m) {
 //	/// --- components ---
     py::module_ mc = m.def_submodule("components");
 
-	py::class_<Component, std::shared_ptr<Component>>(m, "component");
+	py::class_<Component, std::shared_ptr<Component>>(m, "component")
+	    .def("setState", &Component::setState);
 
 //
 //	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");
@@ -545,6 +549,8 @@ PYBIND11_MODULE(monkey, m) {
 //
 	py::class_<Collider, Component, std::shared_ptr<Collider>>(mc, "icollider")
 		.def_property_readonly("bounds", &Collider::bounds)
+		.def("setMask", &Collider::setCollisionMask)
+		.def_property("flag", &Collider::getCollisionFlag, &Collider::setCollisionFlag)
 		.def("setResponse", &Collider::setResponse)
 		.def("set_collision_flag", &Collider::setCollisionFlag);
 

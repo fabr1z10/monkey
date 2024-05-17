@@ -25,13 +25,18 @@ public:
     virtual void setState(NodeState state);
     NodeState getState() const;
 	//using Base = Component;
+	std::string getLabel() const;
 protected:
     // the node this component belongs to
     Node* m_node;
     NodeState _state;
-    std::string _tag;
+    std::string _label;
 
 };
+
+inline std::string Component::getLabel() const {
+    return _label;
+}
 
 inline Node* Component::getNode() {
     return m_node;

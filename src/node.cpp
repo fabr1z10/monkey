@@ -201,6 +201,14 @@ void Node::setZ(float z) {
 	notifyMove();
 }
 
+Component * Node::getTaggedComponent(const std::string &tag) {
+    for (const auto& i : m_components) {
+        if (i.second->getLabel() == tag) {
+            return i.second.get();
+        }
+    }
+    return nullptr;
+}
 void Node::setPosition(float x, float y, float z) {
     m_modelMatrix[3][0] = x;
     m_modelMatrix[3][1] = y;
@@ -367,4 +375,13 @@ void Node::sendMessage(const pybind11::kwargs & args) {
     for (const auto& component : m_components) {
         component.second->sendMessage(args);
     }
+}
+
+void Node::setBehavior(const std::string& id) {
+    _behaviors[id]();
+}
+
+void Node::addBehavior(const std::string& id, pybind11::function f) {
+    _behaviors[id] = f;
+
 }

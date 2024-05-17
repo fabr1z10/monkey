@@ -3,7 +3,7 @@
 
 Component::Component(const pybind11::kwargs& args) : m_node(nullptr) {
     _state = py_get_dict<NodeState>(args, "state", NodeState::ACTIVE);
-    _tag = py_get_dict<std::string>(args, "tag", "");
+    _label = py_get_dict<std::string>(args, "label", "");
 
 }
 

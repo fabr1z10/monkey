@@ -91,6 +91,9 @@ public:
 	//void setText(const std::string&);
 	void setScale(float);
 	float getScale() const;
+	void setBehavior(const std::string& id);
+	void addBehavior(const std::string& id, pybind11::function f);
+	Component* getTaggedComponent(const std::string& id);
 protected:
 	void notifyMove();
     long _id;
@@ -106,6 +109,7 @@ protected:
     pybind11::object m_userData;
     //std::shared_ptr<Camera> m_camera;
 	std::shared_ptr<Model> m_model;
+	std::unordered_map<std::string, pybind11::function> _behaviors;
 protected:
 	std::string _tag;
 
