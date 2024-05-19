@@ -42,6 +42,19 @@ def base(item, x, y):
 #   for i in range(0, len(loc), 4):
 
 
+def coin(item, parent):
+  loc = item['loc']
+  z = item.get('z', 0)
+  def on_get_coin(coin, player):
+    coin.remove()
+  for i in range(0, len(loc), 2):
+    node = monkey.get_sprite('tiles/coin_collect')
+    node.set_position(loc[i] * settings.tile_size, loc[i+1] * settings.tile_size, z)
+    collider = monkey.components.SpriteCollider(settings.Flags.FOE, settings.Flags.PLAYER,
+                                                settings.Tags.FOE, batch='lines')
+    collider.setResponse(settings.Tags.PLAYER, on_enter=on_get_coin)
+    node.add_component(collider)
+    parent.add(node)
 
 def platform(item, parent):
   loc = item['loc']
@@ -81,7 +94,9 @@ def brick_common(item, parent, f, **kwargs):
 
 def invisible_brick(item, parent):
   def f(item, b):
+    bonus = item.get('bonus')
     b.add_component(monkey.components.Platform(on_bump=scripts.bump_invisible_brick))
+    b.user_data['bonus'] = bonus
   brick_common(item, parent, f, flag=16)
 
 
@@ -108,7 +123,7 @@ def brick_coin(item, parent):
   brick_common(item, parent, f)
 
 def tiled(item, parent):
-   model = monkey.get_tiled(item['tiled'], **item['args'])
+   model = monkey.get_tiled(item['tiled'], **item.get('args', {}))
    solid = item.get('solid', None)
    z = item.get('z',0)
    loc = item['loc']

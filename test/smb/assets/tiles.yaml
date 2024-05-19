@@ -18,6 +18,10 @@ palettes:
   5: # cave
     c84c0c: 008088
     fcbcb0: 9cfcf0
+  6: # mushroom1up
+    fc9838: fc9838
+    d82800: 00a800
+    fcfcfc: fcfcfc
 fonts:
   mario:
     line_height: 8
@@ -67,6 +71,13 @@ art:
   pipe: 'rep,[2*height],38,0,39,0,6,2,40,0,b,loop,38,2,39,2,40,2,41,2,b,38,1,39,1,40,1,41,1'
   bush: 'pal,4,32,1,rep,[2*x0],33,1,loop,34,1,b,-1,rep,[x0],33,0,34,0,loop,-1'
   cloud: '32,2,rep,[x0],33,2,34,2,loop,35,2,b,32,1,rep,[2*x0],33,1,loop,34,1,b,-1,rep,[x0],33,0,34,0,loop,-1'
+  pipeh: >
+    40,7,41,7,rep,[2*width],42,7,loop,43,7,44,4,b,
+    40,6,41,6,rep,[2*width],42,6,loop,43,6,44,4,b,
+    40,5,41,5,rep,[2*width],42,5,loop,43,5,44,4,b,
+    40,4,41,4,rep,[2*width],42,4,loop,43,4,44,4
+  pipeh2: 'rep,[2*height],45,4,44,4,b,loop'
+  #40,9,41,9,rep,[2*width],42,9,loop,43,9,40,10,41,10,rep,[2*width],42,10,loop,43,10
   #pipe: '38,0,39,0,6,2,40,0,b,38,0,39,0,6,2,40,0'
 
 
@@ -196,5 +207,15 @@ sprites:
             anchor: [8, 0]
           - tex: [448,0,16,16]
             anchor: [8, 0]
-
+  coin_collect:             # fire flower
+    boxes:
+      - [ 3,0,13,16 ]
+    animations:
+      idle:
+        box: 0
+        frames:
+          - tex: [400,16,16,16]
+          - tex: [416,16,16,16]
+          - tex: [432,16,16,16]
+          - tex: [416,16,16,16]
 

@@ -32,6 +32,7 @@ define:
       loc: [21, 5, 78, 5, 101, 5, 109, 9]
     - type: invisible_brick
       sprite: 'tiles/invisible_brick'
+      bonus: mushroom_1up
       loc: [64,6]
     - type: tiled
       tiled: 'tiles/pipe'
@@ -48,6 +49,7 @@ define:
     - type: tiled
       tiled: 'tiles/pipe'
       solid: [2, 4]
+      z: 1
       args:
         height: 3
       loc: [46,2,57,2]
@@ -68,3 +70,19 @@ define:
       solid: True
       pal: 5
       loc: [0, 0, 16, 2]
+    - type: coin
+      loc: [4, 5, 5, 5, 6, 5, 7, 5, 8, 5, 9, 5, 10, 5,
+            4, 7, 5, 7, 6, 7, 7, 7, 8, 7, 9, 7, 10, 7,
+            5, 9, 6, 9, 7, 9, 8, 9, 9, 9]
+    - type: tiled
+      tiled: 'tiles/pipeh'
+      solid: [4,2]
+      args:
+        width: 1
+      loc: [13,2]
+    - type: tiled
+      tiled: 'tiles/pipeh2'
+      solid: [1,9]
+      args:
+        height: 9
+      loc: [15,4]
