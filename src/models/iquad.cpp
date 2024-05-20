@@ -168,6 +168,7 @@ IQuadsRenderer::IQuadsRenderer(const std::string& batchId) : BatchRenderer<QuadB
 
 }
 
+
 void IQuadsRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) {
 	Renderer::setModel(model, args);
 	_model = std::dynamic_pointer_cast<IQuads>(model).get();
@@ -176,6 +177,7 @@ void IQuadsRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwar
 		_primitiveIds.push_back(_batch->getPrimitiveId());
 		//_palettes.push_back(_model->getQuadInfo(i).palette);
 	}
+	_palettes.resize(qc, 0);
 
 }
 
@@ -200,7 +202,7 @@ void IQuadsRenderer::update(double) {
 						q[i].size,
 						q[i].textureCoordinates,
 						q[i].repeat,
-                        _paletteId == 0 ? q[i].palette : _paletteId,
+                        _palettes[i] == 0 ? q[i].palette : _paletteId,
 						q[i].fliph,
 						q[i].flipv,
 						0.f,worldTransform);

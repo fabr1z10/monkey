@@ -43,6 +43,7 @@ private:
 	glm::vec2 _size;
 	glm::vec3 _offset;
 	int _lines;
+	int _paletteIndex;
 	HAlign _hAlign;
 	Anchor _anchor;
 	//std::string _sheetId;

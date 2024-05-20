@@ -18,7 +18,7 @@ Text::Text(const std::string &batchId, const std::string& font, const std::strin
 	_lineHeight = _font->getLineHeight();
 	_width = py_get_dict<float>(args, "width", std::numeric_limits<float>::infinity());
 	_palId = py_get_dict<std::string>(args, "pal", "default");
-
+    _paletteIndex = batch->getPalette(_palId);
 	//buildQuads();
 	if (_width != std::numeric_limits<float>::infinity()) {
 		_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
@@ -99,13 +99,13 @@ void Text::updateText(const std::string & text) {
 		} else if (_hAlign == HAlign::RIGHT) {
 			x = (_width - row.length);
 		}
-		int ec = row.indexEnd == -1 ? text.length() : row.indexEnd;
+		int ec = row.indexEnd == -1 ? s32.length() : row.indexEnd;
 		int len = ec - row.indexStart;
 		if (len > 0) {
 			for (int i = row.indexStart; i < ec; ++i) {
 				const auto &c = _font->getCharInfo(s32[i]);
 				glm::vec3 p(x,y,0.f);
-				auto kwargs = pybind11::dict("pos"_a=glm::vec3(x,y,0.f),  "size"_a=glm::vec2(c.w,c.h), "normalized"_a=true);
+				auto kwargs = pybind11::dict("pos"_a=glm::vec3(x,y,0.f),  "size"_a=glm::vec2(c.w,c.h), "normalized"_a=true, "pal"_a=_paletteIndex);
 				model->addQuad(glm::vec4(c.tx, c.ty, c.tw, c.th), kwargs);
 
 				x += c.advance;
@@ -149,7 +149,7 @@ void Text::updateText(const std::string & text) {
 	}
 
 	getComponent<Renderer>()->setTransform(glm::translate(_offset));
-    getComponent<Renderer>()->setPalette(_palId);
+    //getComponent<Renderer>()->setPalette(_palId);
 
     //Node::move(glm::vec3(_offset.x, _offset.y, _offset.z));
 

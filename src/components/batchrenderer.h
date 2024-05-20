@@ -31,6 +31,20 @@ public:
 
     void setPalette(const std::string& palId) override {
         _paletteId =  _batch->getPalette(palId);
+        std::fill(_palettes.begin(), _palettes.end(), _paletteId);
+	}
+
+	void setPrimitivePalette(int id, const std::string& palId) {
+        _paletteId =  _batch->getPalette(palId);
+        _palettes[id] = _paletteId;
+	}
+
+    void setPrimitivePalette(int id, int palId) {
+        _palettes[id] = palId;
+    }
+
+    int getPrimitivePalette(int id) {
+	    return _palettes[id];
 	}
 
 
@@ -52,8 +66,8 @@ public:
 //
 protected:
 	std::vector<int> _primitiveIds{};
+	std::vector<int> _palettes{};
 
-	//std::vector<int> _palettes{};
 	BATCH* _batch;
 	std::string _batchId;
 //    std::shared_ptr<M> _m;

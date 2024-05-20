@@ -3,6 +3,8 @@ import monkey
 from . import data
 from . import settings
 from . import scripts
+from . import builders
+
 
 def init():
   data.worlds = monkey.read_data_file('worlds.yaml')
@@ -56,41 +58,10 @@ def coin(item, parent):
     node.add_component(collider)
     parent.add(node)
 
-def platform(item, parent):
-  loc = item['loc']
-  pal = item.get('pal', 0)
-  for i in range(0, len(loc), 4):
-    node = base(item, loc[i], loc[i+1])
-    repx = loc[i+2]
-    repy = loc[i+3]
-    quad = item.get('quad', None)
-    solid = item.get('solid', True)
-    if quad:
-      model = monkey.models.Quad('tiles')
-      model.add(item['quad'], size=(quad[2] * repx, quad[3] * repy), repeat=(repx, repy), pal=pal)
-      node.set_model(model)
-    if solid:
-      node.add_component(monkey.components.Collider(
-        shape=monkey.shapes.AABB(0, repx*16, 0, repy*16), flag=2, mask=0, tag=0, batch='lines'))
-    parent.add(node)
 
 
-def brick_common(item, parent, f, **kwargs):
-  flag = kwargs.get('flag', 2)
-  loc = item['loc']
-  sprite = item['sprite']
-  #hits = item.get('hits', 1)
-  for i in range(0, len(loc), 2):
-    b = monkey.get_sprite(sprite)
-    z = item.get('z', 0)
-    x = loc[i] * settings.tile_size
-    y = loc[i+1] * settings.tile_size
-    b.set_position(x, y, z)
-    b.add_component(monkey.components.Collider(
-      shape=monkey.shapes.AABB(0, settings.tile_size, 0, settings.tile_size), flag=flag, mask=0, tag=0, batch='lines', label='collider'))
-    b.user_data['y'] = y
-    f(item, b)
-    parent.add(b)
+
+
 
 def invisible_brick(item, parent):
   def f(item, b):
@@ -101,10 +72,7 @@ def invisible_brick(item, parent):
 
 
 
-def brick(item, parent):
-  def f(item, b):
-    b.add_component(monkey.components.Platform(on_bump=scripts.bump_brick))
-  brick_common(item, parent, f)
+
 
 def brick_bonus(item, parent):
   def f(item, b):
@@ -192,8 +160,27 @@ def create_room(room):
   root.add(player(settings.start_pos[0], settings.start_pos[1], settings.speed, 0.1,
     settings.jump_height, settings.time_to_jump_apex))
   for item in items:
-    type = item['type']
-    globals()[type](item, root)
+    tipo = item['type']
+    loc = item['loc']
+
+    i = 0
+    while i < len(loc):
+      x = loc[i]
+      y = loc[i+1]
+      l = dict()
+      if i+2 < len(loc) and isinstance(loc[i+2], dict):
+        l = loc[i+2]
+        i += 3
+      else:
+        i += 2
+      a = {**item, **l}
+      del a['loc']
+      node = getattr(builders, tipo)(x, y, **(a))
+      root.add(node)
+
+
+
+
     # z = item.get('z', 0)
     # solid = item.get('solid', None)
     # if 'quad' in item:

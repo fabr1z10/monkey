@@ -7,54 +7,61 @@ define:
   size: [3584, 240]
   name: '1-1'
   items:
+    #- type: mushroom
+    #  loc: [10, 3, 11, 3, 12, 3, 13, 3, 14, 3]
     - type: platform
       quad: *block
       solid: True
-      loc: [0, 0, 69, 2, 71, 0, 15, 2, 89, 0, 64, 2, 155, 0, 69, 2]
+      loc: [0, 0, {'size': [69, 2]}, 71, 0, {'size': [15, 2]}, 89, 0, {'size': [64, 2]}, 155, 0, {'size': [69, 2]}]
     - type: platform
       quad: *block2
       solid: True
-      loc: [134,2,4,1,135,3,3,1,136,4,2,1,137,5,1,1,140,2,4,1,140,3,3,1,140,4,2,1,140,5,1,1,148,2,5,1,149,3,4,1,
-        150,4,3,1,151,5,2,1,155,2,4,1,155,3,3,1,155,4,2,1,155,5,1,1,181,2,9,1,182,3,8,1,183,4,7,1,184,5,6,1,
-        185,6,5,1,186,7,4,1,187,8,3,1,188,9,2,1,198,2,1,1]
+      loc: [134, 2, {'size': [4, 1]}, 135, 3, {'size': [3, 1]}, 136, 4, {'size': [2, 1]}, 137, 5, {'size': [1, 1]},
+            140, 2, {'size': [4, 1]}, 140, 3, {'size': [3, 1]}, 140, 4, {'size': [2, 1]}, 140, 5, {'size': [1, 1]},
+            148, 2, {'size': [5, 1]}, 149, 3, {'size': [4, 1]}, 150, 4, {'size': [3, 1]}, 151, 5, {'size': [2, 1]},
+            155, 2, {'size': [4, 1]}, 155, 3, {'size': [3, 1]}, 155, 4, {'size': [2, 1]}, 155, 5, {'size': [1, 1]},
+            181, 2, {'size': [9, 1]}, 182, 3, {'size': [8, 1]}, 183, 4, {'size': [7, 1]}, 184, 5, {'size': [6, 1]},
+            185, 6, {'size': [5, 1]}, 186, 7, {'size': [4, 1]}, 187, 8, {'size': [3, 1]}, 188, 9, {'size': [2, 1]},
+            198, 2, {'size': [1, 1]} ]
     - type: platform
       solid: True
-      loc: [-1, 0, 1, 16, 224,0,1,16]
-    - type: brick_coin
-      sprite: 'tiles/brick_bonus'
-      loc: [16,5,23,5,22,9,94,9,106,5,109,5,112,5,170,5,129,9,130,9]
+      loc: [-1, 0, {'size': [1, 16]}, 224, 0, {'size': [1,16]} ]
+#    - type: brick_coin
+#      sprite: 'tiles/brick_bonus'
+#      loc: [16,5,23,5,22,9,94,9,106,5,109,5,112,5,170,5,129,9,130,9]
     - type: brick
       sprite: 'tiles/brick'
-      loc: [20,5,22,5,24,5,77,5,79,5,80,9,81,9,82,9,83,9,84,9,85,9,86,9,87,9,91,9,92,9,93,9,94,5,100,5,118,5,121,9,122,9,123,9,128,9,129,5,130,5,131,9,168,5,169,5,171,5]
-    - type: brick_bonus
-      bonus: mushroom_flower
-      sprite: 'tiles/brick_bonus'
-      loc: [21, 5, 78, 5, 101, 5, 109, 9]
-    - type: invisible_brick
-      sprite: 'tiles/invisible_brick'
-      bonus: mushroom_1up
-      loc: [64,6]
-    - type: tiled
-      tiled: 'tiles/pipe'
-      solid: [2, 2]
-      args:
-        height: 1
-      loc: [28,2,163,2]
-    - type: tiled
-      tiled: 'tiles/pipe'
-      solid: [2, 3]
-      args:
-        height: 2
-      loc: [38,2]
-    - type: tiled
-      tiled: 'tiles/pipe'
-      solid: [2, 4]
-      z: 1
-      args:
-        height: 3
-      loc: [46,2,57,2]
-    - type: warp
-      loc: [46.5,6,['1-1b',2,16]]
+      loc: [20, 5, 22, 5, 24, 5, 77, 5, 79, 5, 80, 9, 81, 9, 82, 9, 83, 9, 84, 9, 85, 9, 86, 9, 87, 9, 91, 9, 92, 9,
+            93, 9, 94, 5, 100, 5, 118, 5, 121, 9, 122, 9, 123, 9, 128, 9, 129, 5, 130, 5, 131, 9, 168, 5, 169, 5, 171, 5]
+#    - type: brick_bonus
+#      bonus: mushroom_flower
+#      sprite: 'tiles/brick_bonus'
+#      loc: [21, 5, 78, 5, 101, 5, 109, 9]
+#    - type: invisible_brick
+#      sprite: 'tiles/invisible_brick'
+#      bonus: mushroom_1up
+#      loc: [64,6]
+#    - type: tiled
+#      tiled: 'tiles/pipe'
+#      solid: [2, 2]
+#      args:
+#        height: 1
+#      loc: [28,2,163,2]
+#    - type: tiled
+#      tiled: 'tiles/pipe'
+#      solid: [2, 3]
+#      args:
+#        height: 2
+#      loc: [38,2]
+#    - type: tiled
+#      tiled: 'tiles/pipe'
+#      solid: [2, 4]
+#      z: 1
+#      args:
+#        height: 3
+#      loc: [46,2,57,2]
+#    - type: warp
+#      loc: [46.5,6,['1-1b',2,16]]
 1-1b:
   bg_color: [0, 0, 0]
   size: [256, 240]

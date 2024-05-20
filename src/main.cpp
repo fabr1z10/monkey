@@ -225,6 +225,7 @@ PYBIND11_MODULE(monkey, m) {
 //        .def("get_switch", &Node::getComponent<Switch>, py::return_value_policy::reference)
 		.def("getMouseArea", &Node::getComponent<MouseArea>, py::return_value_policy::reference)
 		.def("getController", &Node::getComponent<WalkableCharacter>, py::return_value_policy::reference)
+		.def("getRenderer", &Node::getComponent<Renderer>, py::return_value_policy::reference)
 		.def("getNodes", &Node::getNodes, py::return_value_policy::reference)
 		.def("setPalette", &Node::setPalette)
         .def("sendMessage", &Node::sendMessage)
@@ -533,6 +534,13 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Component, std::shared_ptr<Component>>(m, "component")
 	    .def("setState", &Component::setState);
+
+	py::class_<Renderer, Component, std::shared_ptr<Renderer>>(m, "renderer");
+	py::class_<BatchRenderer<QuadBatch>, Renderer, std::shared_ptr<BatchRenderer<QuadBatch>>>(m, "batchRendererQuad")
+	    .def("setQuadPalette", py::overload_cast<int, const std::string&>(&BatchRenderer<QuadBatch>::setPrimitivePalette))
+        .def("setQuadPalette", py::overload_cast<int, int>(&BatchRenderer<QuadBatch>::setPrimitivePalette))
+        .def("getQuadPalette", &BatchRenderer<QuadBatch>::getPrimitivePalette);
+	py::class_<IQuadsRenderer, BatchRenderer<QuadBatch>, std::shared_ptr<IQuadsRenderer>>(m, "iquadsrenderer");
 
 //
 //	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");

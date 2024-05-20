@@ -14,8 +14,8 @@ int Keyboard::keyCallback(GLFWwindow * w, int key, int scancode, int action, int
 		//Engine::instance().getRoom()->addCallback(it->second);
 
 	}
-	if (action == GLFW_PRESS && mods == 0 && _fallbackFunction) {
-	    _fallbackFunction(key);
+	if (_fallbackFunction) {
+	    _fallbackFunction(key, action, mods);
 	    return 1;
 	}
 	return 0;
