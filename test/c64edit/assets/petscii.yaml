@@ -1,16 +1,19 @@
 sheet: 'petscii.png'
 tile_size: [8, 8]
 palettes:
-  green:
-    ffffff: 79d570
-  yellow:
-    ffffff: f7ff6c
-  purple:
-    ffffff: c161c9
-  light_blue:
-    ffffff: a28fff
-  5:
-    6953f5: f7ff6c
+  # zero palette is white
+  bw:
+    6953f5: 6953f5
+    ffffff: ffffff
+  inverse:
+    6953f5: ffffff
+    ffffff: 6953f5
+  menu:
+    6953f5: 777777
+    ffffff: 000000
+
+
+
 fonts:
   c64:
     line_height: 8
@@ -111,3 +114,6 @@ fonts:
       '♦': [448,0,8,8,8]        # diamonds sign
       '_': [456,0,8,8,8]        # underscore
       'π': [464,0,8,8,8]        # pi sign
+      '|': [8,16,8,8,8]         # vertical sign
+      '♡': [304, 8, 8, 8,8]       # {CLR} reversed heart - SHIFT + HOME
+      'ⓢ': [296,8,8,8,8]        # {home} rev S - HOME
