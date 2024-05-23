@@ -11,6 +11,7 @@ keymap = dict()
 keymap[0] = {
   32: ' ',
   44: ',',
+  45: '\'',
   46: '.',
   65: 'A',
   66: 'B',
@@ -62,8 +63,31 @@ keymap[1] = {
   32: ' ',
   44: ';',
   46: ':',
-  65: '♠',
-  66: '|',
+  65: '⒜',
+  66: '⒝',
+  67: '⒞',
+  68: '⒟',
+  69: '⒠',
+  70: '⒡',
+  71: '⒢',
+  72: '⒣',
+  73: '⒤',
+  74: '⒥',
+  75: '⒦',
+  76: '⒧',
+  77: '⒨',
+  78: '⒩',
+  79: '⒪',
+  80: '⒫',
+  81: '⒬',
+  82: '⒭',
+  83: '⒮',
+  84: '⒯',
+  85: '⒰',
+  86: '⒱',
+  87: '⒲',
+  88: '♣',
+  89: '⒴',
   48: '=',
   49: '!',
   50: '"',
@@ -76,7 +100,23 @@ keymap[1] = {
   57: ')',
   93: '*',
   161: '>',
-  268: '♡'
+  268: '♡',
+  262: '⇨',
+  263: '⇦',
+  264: '⇩',
+  265: '⇧'
+}
+keymap[2] = {     # ctrl
+  48: '⓪',
+  49: '①',
+  50: '②',
+  51: '③',
+  52: '④',
+  53: '⑤',
+  54: '⑥',
+  55: '⑦',
+  56: '⑧',
+  57: '⑨'
 }
 
 def addLine(i, text=''):
@@ -119,6 +159,7 @@ def f(pal):
   return g
 
 def go_right():
+  print('called goright')
   cl = settings.lines[settings.cy + settings.doc_top]
   if settings.cx < len(cl.text):
     line = monkey.get_node(cl.id)
@@ -126,10 +167,12 @@ def go_right():
     settings.cx += 1
     if settings.cx >= settings.COL_COUNT:
       settings.cx = 0
-      #if settings.cy + 1 + settings.doc_top >= len(settings.lines):
-      cl.breaks = True
       addLine(settings.doc_top + settings.cy + 1)
       settings.cy += 1
+      if settings.cy >= settings.LINE_COUNT:
+        settings.cy -= 1
+        settings.doc_top+=1
+        scripts.reposition()
 
 
 def go_left():
@@ -144,8 +187,8 @@ def go_left():
       settings.cx = 0
 
 def go_up():
+  monkey.get_node(settings.lines[settings.cy].id).getRenderer().setQuadPalette(settings.cx, 'default')
   if active_line() > 0:
-    monkey.get_node(settings.lines[settings.cy].id).getRenderer().setQuadPalette(settings.cx, 'default')
     if settings.cy > 0:
       settings.cy -= 1
       settings.cx = min(settings.cx, len(settings.lines[settings.cy].text))
@@ -153,8 +196,8 @@ def go_up():
       settings.doc_top -= 1
       scripts.reposition()
 def go_down():
+  monkey.get_node(settings.lines[settings.cy].id).getRenderer().setQuadPalette(settings.cx, 'default')
   if active_line() < len(settings.lines)-1:
-    monkey.get_node(settings.lines[settings.cy].id).getRenderer().setQuadPalette(settings.cx, 'default')
     if settings.cy < settings.LINE_COUNT-1:
       settings.cy += 1
       settings.cx = min(settings.cx, len(settings.lines[settings.cy].text))
@@ -164,6 +207,13 @@ def go_down():
 def cico(key,action,mods):
   if action == 0:
     return
+  print('CALLBACK!')
+  # shortcut
+  if key == 79 and mods == 4:       # alt + o
+    openfile(None)
+  if key == 83 and mods == 4:       # alt + s
+    saveas(None)
+
 
   if settings.question_id:
     qid = monkey.get_node(settings.question_id)
@@ -195,23 +245,26 @@ def cico(key,action,mods):
         settings.qcx = min(settings.qcx + 1, 11)
     return
 
-  if key == 262:
+  if key == 262 and mods==0:
     if settings.in_string:
       pass
     else:
       go_right()
-  elif key == 263:
+  elif key == 263 and mods==0:
     if settings.in_string:
       pass
     else:
       go_left()
-  elif key == 265:
+  elif key == 265 and mods==0:
     go_up()
-  elif key == 264:
+  elif key == 264 and mods==0:
     go_down()
   elif key == 269: # end
+    monkey.get_node(settings.lines[settings.cy].id).getRenderer().setQuadPalette(settings.cx, 'default')
     settings.cy = min(len(settings.lines)-1, settings.LINE_COUNT-1)
     settings.cx = len(settings.lines[-1].text)
+    settings.doc_top = max(0,len(settings.lines)-settings.LINE_COUNT)
+    print('NOW',settings.cx,settings.cy,settings.doc_top)
     scripts.reposition()
 
   elif key == 259: # backspace
@@ -246,15 +299,15 @@ def cico(key,action,mods):
       settings.doc_top += 1
     settings.cx = 0
     scripts.reposition()
-
+  print('FUCK')
   if mods in keymap:
     ch = keymap[mods].get(key, None)
     if ch:
       cl = settings.lines[settings.cy + settings.doc_top]
-      updateLine(settings.cy + settings.doc_top, cl.text[:settings.cx] + ch + cl.text[settings.cx + 1:])
+      cl.update(cl.text[:settings.cx] + ch + cl.text[settings.cx + 1:])
       go_right()
 
-  print(key,action,mods)
+
 
 def ciao(x,y):
   if settings.menu_id:
@@ -266,20 +319,27 @@ def close_menu():
     monkey.get_node(settings.menu_id).remove()
     settings.menu_id = None
 
-def openfile(a):
-  close_menu()
-  b = monkey.Text('text', 'c64', 'FILENAME: ', pal='menu')
+def make_question(text, length, func):
+  b = monkey.Text('text', 'c64', text, pal='menu')
   b.set_position(0,8,1)
   settings.input_string = ''
-  question = monkey.Text('text', 'c64', settings.input_string.ljust(12, ' '), pal='menu')
-  question.set_position(80, 8, 1)
+  question = monkey.Text('text', 'c64', settings.input_string.ljust(length, ' '), pal='menu')
+  question.set_position(8*(len(text)), 8, 1)
   settings.qcx = 0
   settings.question_label_id = b.id
   settings.question_id = question.id
-  settings.question_func='openf'
+  settings.question_func=func
   monkey.get_node(settings.id_main).add(b)
   monkey.get_node(settings.id_main).add(question)
 
+
+def openfile(a):
+  close_menu()
+  make_question('OPEN FILENAME: ', 12, 'openf')
+
+def saveas(a):
+  close_menu()
+  make_question('SAVE FILENAME: ', 12, 'save')
 
 def save(a):
   if settings.working_file:
@@ -288,19 +348,7 @@ def save(a):
   else:
     saveas(a)
 
-def saveas(a):
-  close_menu()
-  b = monkey.Text('text', 'c64', 'FILENAME: ', pal='menu')
-  b.set_position(0,8,1)
-  settings.input_string = ''
-  question = monkey.Text('text', 'c64', settings.input_string.ljust(12, ' '), pal='menu')
-  question.set_position(80, 8, 1)
-  settings.qcx = 0
-  settings.question_label_id = b.id
-  settings.question_id = question.id
-  settings.question_func='save'
-  monkey.get_node(settings.id_main).add(b)
-  monkey.get_node(settings.id_main).add(question)
+
 
 
 
@@ -338,11 +386,12 @@ def init():
   # root
   settings.tokenRoot = scripts.TokenNode()
   settings.tokens = monkey.read_data_file('token.yaml')
-  settings.invtoken = dict()
+  settings.invtokens = dict()
+  settings.invord = dict()
   for token, value in settings.tokens['tokens'].items():
-    settings.invtoken[value] = token
+    settings.invtokens[value] = token
   for token, value in settings.tokens['ord'].items():
-    settings.invtoken[value] = token
+    settings.invord[value] = token
 
   for token, value in settings.tokens['tokens'].items():
     print(token, value)

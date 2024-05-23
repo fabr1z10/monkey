@@ -30,4 +30,6 @@ shaders = [
     monkey.SHADER_BATCH_LINES
 ]
 tokens = None
+invtokens = None
+invord = None
 tokenRoot = None
