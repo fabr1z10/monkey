@@ -41,7 +41,7 @@ tokens: # these are the BASIC v2.0 76 tokens
   THEN: 167
   NOT: 168
   STEP: 169
-  +: 170
+  '+': 170
   '-': 171
   '*': 172
   '/': 173

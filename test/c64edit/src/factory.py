@@ -1,6 +1,7 @@
 import monkey
 from . import settings
 from . import scripts
+from .tokenizer import Tokenizer
 
 
 
@@ -383,31 +384,32 @@ def figa(a):
 
 
 def init():
+  settings.tokenizer = Tokenizer('assets/token.yaml')
   # root
-  settings.tokenRoot = scripts.TokenNode()
-  settings.tokens = monkey.read_data_file('token.yaml')
-  settings.invtokens = dict()
-  settings.invord = dict()
-  for token, value in settings.tokens['tokens'].items():
-    settings.invtokens[value] = token
-  for token, value in settings.tokens['ord'].items():
-    settings.invord[value] = token
-
-  for token, value in settings.tokens['tokens'].items():
-    print(token, value)
-    node = settings.tokenRoot
-    i = 0
-    while i < len(token):
-      if token[i] not in node.children:
-        node.children[token[i]] = scripts.TokenNode()
-      node = node.children[token[i]]
-      if i == len(token) - 1:
-        node.token = value
-      i += 1
-
-  inst = scripts.tokenize('FORI=54272TO54296:POKEI,0:NEXT:POKE54296,15:POKE54277,17:POKE54278,136')
-  print(' # bytes:' ,len(inst))
-  print(' '.join(f'{x:02x}' for x in inst))
+  # settings.tokenRoot = scripts.TokenNode()
+  # settings.tokens = monkey.read_data_file('token.yaml')
+  # settings.invtokens = dict()
+  # settings.invord = dict()
+  # for token, value in settings.tokens['tokens'].items():
+  #   settings.invtokens[value] = token
+  # for token, value in settings.tokens['ord'].items():
+  #   settings.invord[value] = token
+  #
+  # for token, value in settings.tokens['tokens'].items():
+  #   print(token, value)
+  #   node = settings.tokenRoot
+  #   i = 0
+  #   while i < len(token):
+  #     if token[i] not in node.children:
+  #       node.children[token[i]] = scripts.TokenNode()
+  #     node = node.children[token[i]]
+  #     if i == len(token) - 1:
+  #       node.token = value
+  #     i += 1
+  #
+  # inst = scripts.tokenize('FORI=54272TO54296:POKEI,0:NEXT:POKE54296,15:POKE54277,17:POKE54278,136')
+  # print(' # bytes:' ,len(inst))
+  # print(' '.join(f'{x:02x}' for x in inst))
   #exit(0)
 
 

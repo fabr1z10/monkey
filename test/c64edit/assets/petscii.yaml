@@ -108,7 +108,6 @@ fonts:
       ']': [400,0,8,8,8]        # closing bracket
       '↑': [408,0,8,8,8]        # up arrow
       '←': [416,0,8,8,8]        # left arrow
-
       '♦': [448,0,8,8,8]        # diamonds sign
       '_': [456,0,8,8,8]        # underscore
       'π': [464,0,8,8,8]        # pi sign

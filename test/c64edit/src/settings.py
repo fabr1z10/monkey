@@ -33,3 +33,5 @@ tokens = None
 invtokens = None
 invord = None
 tokenRoot = None
+
+tokenizer = None
