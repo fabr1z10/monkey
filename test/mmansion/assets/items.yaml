@@ -5,6 +5,9 @@ dave:
   direction: n
   sprite: 'sprites/dave'
   text: 55
+  mouse:
+    priority: 0
+    aabb: [ -5,5,0,70 ]
 bernard:
   room: entrance_hall
   pos: [60, 20]
@@ -12,6 +15,9 @@ bernard:
   direction: e
   sprite: 'sprites/bernard'
   text: 56
+  mouse:
+    priority: 0
+    aabb: [ -5,5,0,70 ]
 sign:
   room: start
   text: 17
@@ -454,3 +460,16 @@ light_switch_reactor:
   actions:
     turnon: [switch_light, reactor, True]
     turnoff: [switch_light, reactor, False]
+silver_key:
+  room: reactor
+  text: 58
+  pos: [98, 70]
+  z: 0.1
+  walk_to: [103, 30]
+  walk_dir: 'n'
+  sprite: 'reactor/silver_key'
+  active: True
+  mouse:
+    aabb: [0,6,0,10]
+  actions:
+    pickup: [pickup, silver_key]

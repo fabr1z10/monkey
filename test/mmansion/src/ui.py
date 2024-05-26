@@ -3,6 +3,11 @@ from . import settings
 from . import data
 from . import scripts
 
+
+# returns whether current player has provided item
+def player_has_item(item):
+    return item in data.inventory[settings.characters[settings.player]]
+
 def reset_action():
     settings.action = settings.default_verb
     settings.item1 = None
@@ -107,6 +112,7 @@ def select_kid(i):
         player = monkey.get_node(id)
         curr['direction'] = player.getController().direction
         curr['pos'] = [player.x, player.y]
+        print('saved ',settings.player, ' position to',curr['pos'])
         settings.player = i
         settings.room = data.items[settings.characters[i]]['room']
         monkey.close_room()
@@ -189,7 +195,6 @@ def check_delayed_func():
     player_name = settings.characters[settings.player]
     df = data.delayed_funcs[player_name]
     if df:
-        exit(1)
         df()
         data.delayed_funcs[player_name] = None
 
@@ -226,28 +231,32 @@ def execute_action(node):
         reset_action()
         refresh_action()
     else:
-        print('MMMMERDD')
-        scr = getItemScript(settings.item1, settings.action, settings.item2)
-        if not scr:
-            scr = getItemScript(settings.item2, settings.action, settings.item1)
-        print('MMMMERDD',scr)
-        if not scr:
-            # try the default script
-            f = getattr(scripts, "_" + settings.action, None)
-            if f:
-                f(script)
+        if settings.action == 'give':
+            scripts.walkToItem(script, settings.item2)
+            if player_has_item(settings.item1):
+                script.add(monkey.actions.CallFunc(scripts.move_item(settings.item1, settings.characters[settings.player], settings.item2)))
+                script.add(monkey.actions.CallFunc(refresh_inventory))
         else:
-            i1_in_inv = settings.item1 in inventory
-            i2_in_inv = settings.item1 in inventory
-            if i1_in_inv and not i2_in_inv:
-                scripts.walkToItem(script, settings.item2)
-            elif i2_in_inv and not i1_in_inv:
-                scripts.walkToItem(script, settings.item1)
-            elif not i1_in_inv and not i2_in_inv:
-                if not scr:
+            scr = getItemScript(settings.item1, settings.action, settings.item2)
+            if not scr:
+                scr = getItemScript(settings.item2, settings.action, settings.item1)
+            if not scr:
+                # try the default script
+                f = getattr(scripts, "_" + settings.action, None)
+                if f:
+                    f(script)
+            else:
+                i1_in_inv = settings.item1 in inventory
+                i2_in_inv = settings.item1 in inventory
+                if i1_in_inv and not i2_in_inv:
                     scripts.walkToItem(script, settings.item2)
-            if scr:
-                scr[0](script, *scr[1])
+                elif i2_in_inv and not i1_in_inv:
+                    scripts.walkToItem(script, settings.item1)
+                elif not i1_in_inv and not i2_in_inv:
+                    if not scr:
+                        scripts.walkToItem(script, settings.item2)
+                if scr:
+                    scr[0](script, *scr[1])
         monkey.play(script)
         reset_action()
         refresh_action()

@@ -26,7 +26,7 @@ def ciao(x, y):
 
 def makeModel(info, item):
     a = None
-    print('pollo', info)
+    #print('pollo', info)
     batch = None
     anim = evaluate(info.get('anim'))
     if 'sprite' in info:
@@ -46,10 +46,9 @@ def addMouseArea(info, node, item):
     im = info['mouse']
     item = info.get('item', item)
     camera = im.get('cam', 0)
-    priority = im.get('priority', 0)
+    priority = im.get('priority', 1)
     if 'aabb' in im:
         shape = monkey.shapes.AABB(*evaluate(im['aabb']))
-    print('UDUDUDUDUD')
     node.add_component(monkey.components.MouseArea(shape, priority, camera,
         on_enter=ui.on_enter_item(item), on_leave=ui.on_leave_item, on_click=ui.execute_action, batch='line'))
 
@@ -143,7 +142,7 @@ def createItem(desc, item):
     makeModel(desc, node)
     if 'area' in desc:
         area(desc, node)
-    if 'mouse' in desc:
+    if 'mouse' in desc and item != settings.characters[settings.player]:
         addMouseArea(desc, node, item)
     if desc.get('type', '') == 'character':
         dir = desc.get('direction')
@@ -272,7 +271,7 @@ def create_room(room):
             node = createItem(desc, item)
             if not active:
                 node.state = monkey.NodeState.ACTIVE if active else monkey.NodeState.INACTIVE
-            print('adding', item, active)
+            #print('adding', item, active)
             game_node.add(node)
 
 

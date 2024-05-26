@@ -10,7 +10,10 @@ def makeText(id):
 
 def walkToItem(script, *args):
     item_info = data.items[args[0]]
-    walkto = item_info['walk_to']
+    walkto = item_info.get('walk_to', None)
+    if not walkto:
+        node = monkey.get_node(data.tag_to_id[args[0]])
+        walkto = (node.x, node.y)
     walkdir = item_info.get('walk_dir', None)
     script.add(monkey.actions.Walk(data.tag_to_id['player'], walkto))
     if walkdir:
@@ -177,3 +180,9 @@ def switch_light(script, room, value):
             n.setPalette('default' if value else 'dark')
     print('FIGAMERDA!!!!XX')
     script.add(monkey.actions.CallFunc(g))
+
+def move_item(item, charFrom, charTo):
+    def f():
+        data.inventory[charFrom].remove(item)
+        data.inventory[charTo].append(item)
+    return f
