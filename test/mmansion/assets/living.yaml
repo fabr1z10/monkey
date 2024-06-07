@@ -1,0 +1,33 @@
+sprites:
+  door_out:
+    animations:
+      closed:
+        frames:
+          - tex: [205,138,32,115]
+      open:
+        frames:
+          - tex: [171,138,32,115]
+  door_kitchen:
+    animations:
+      closed:
+        frames:
+          - tex: [239,138,56,93]
+      open:
+        frames:
+          - tex: [297,138,56,93]
+  door_reactor:
+    animations:
+      closed:
+        frames:
+          - tex: [355,138,56,93]
+      open:
+        frames:
+          - tex: [413,138,56,93]
+  door_living:
+    animations:
+      open:
+        frames:
+          - tex: [471,138,26,112]
+      closed:
+        frames:
+          - tex: [498,138,26,112]

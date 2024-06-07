@@ -1,0 +1,15 @@
+sheet: 'reactor.png'
+palettes:
+  dark:
+    000000: 000000
+    bb6a51: 000000
+    818181: 000000
+    b6b6b6: 000000
+    a9f3ff: 000000
+    ffff7b: 000000
+sprites:
+  silver_key:
+    animations:
+      default:
+        frames:
+          - tex: [461,137,6,10]

@@ -27,7 +27,7 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 	std::cout << " -- check if " << fileName << "exists.\n";
 	YAML::Node f;
 	try {
-		f = YAML::LoadFile(fileName);
+		f = YAML::LoadFile(fileName.c_str());
 	} catch (YAML::BadFile& exc) {
 		f = YAML::Node();
 	}
