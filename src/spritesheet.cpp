@@ -36,7 +36,7 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 		auto slashIndex = fileName.find_last_of('/');
 		auto defaultSheetName = fileName.substr(slashIndex) + ".png";
 		std::cout << "default sheet: " << defaultSheetName;
-		auto sheet = f["sheet"].as<std::string>(defaultPng);
+		auto sheet = f["sheet"].as<std::string>(defaultPng.generic_string());
 
 		_tileSize = f["tile_size"].as<glm::ivec2>(glm::ivec2(1, 1));
 		_texture = std::make_shared<Tex>(directory + "/" + sheet);
