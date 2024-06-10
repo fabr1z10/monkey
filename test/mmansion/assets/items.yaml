@@ -9,7 +9,7 @@ dave:
     priority: 0
     aabb: [ -5,5,0,70 ]
 bernard:
-  room: entrance_hall
+  room: library
   pos: [60, 20]
   type: character
   direction: e
@@ -169,6 +169,49 @@ door_entrance_reactor:
     aabb: [0,56,0,93]
   actions:
     walkto: [walkto_door, door_reactor, reactor, 574, 120, s]
+door_hall_living:
+  room: entrance_hall
+  text: 28
+  pos: [ 588,12 ]
+  walk_to: [ 578, 16 ]
+  walk_dir: e
+  sprite: 'entrancehall/door_living'
+  anim: '@data.door_living'
+  mouse:
+    aabb: [ 0,26,0,112 ]
+  actions:
+    open: [ change_door_state, door_hall_living, open, door_living ]
+    close: [ change_door_state, door_hall_living, closed, door_living ]
+    walkto: [ walkto_door, door_living, living, 55, 14, e ]
+door_living_hall:
+  room: living
+  text: 28
+  pos: [ 26,12 ]
+  walk_to: [ 55, 14 ]
+  walk_dir: w
+  sprite: 'living/door_hall'
+  anim: '@data.door_living'
+  mouse:
+    aabb: [ 0,26,0,104 ]
+  actions:
+    open: [ change_door_state, door_living_hall, open, door_living ]
+    close: [ change_door_state, door_living_hall, closed, door_living ]
+    walkto: [ walkto_door, door_living, entrance_hall, 588, 12, w ]
+door_living_library:
+  room: living
+  text: 28
+  pos: [ 570,13]
+  walk_to: [ 570, 14 ]
+  walk_dir: e
+  sprite: 'living/door_library'
+  anim: '@data.door_library'
+  mouse:
+    aabb: [ 0,42,0,111 ]
+  actions:
+    open: [ change_door_state, door_living_library, open, door_library ]
+    close: [ change_door_state, door_living_library, closed, door_library ]
+    walkto: [ walkto_door, door_library, library, 55, 12, e ]
+
 door_kitchen_hall:
   room: kitchen
   text: 28
@@ -473,3 +516,95 @@ silver_key:
     aabb: [0,6,0,10]
   actions:
     pickup: [pickup, silver_key]
+lamp_library_left:
+  room: library
+  text: 59
+  pos: [100,32]
+  walk_to: [107,30]
+  walk_dir: n
+  sprite: 'library/lamp1'
+  auto_depth: True
+  mouse:
+    aabb: [0,16,0,75]
+  actions:
+    turnon: [switch_light, library, True]
+    turnoff: [switch_light, library, False]
+lamp_library_right:
+  room: library
+  text: 59
+  pos: [564,42]
+  walk_to: [551,24]
+  walk_dir: e
+  mouse:
+    aabb: [0,16,0,60]
+  actions:
+    turnon: [switch_light, library, True]
+    turnoff: [switch_light, library, False]
+chair:
+  room: library
+  text: 60
+  pos: [546,0]
+  walk_to: [562,18]
+  walk_dir: e
+  sprite: 'library/chair'
+  auto_depth: True
+  baseline: [0,10,36,0,82,0]
+phone:
+  room: library
+  text: 61
+  pos: [518,12]
+  sprite: 'library/phone'
+  walk_to: [531,10]
+  walk_dir: n
+  mouse:
+    aabb: [6,26,19,25]
+  auto_depth: True
+  actions:
+    pickup: [say, 62]
+staircase_sign:
+  room: library
+  text: 17
+  pos: [308,43]
+  walk_to: [314,14]
+  walk_dir: n
+  mouse:
+    aabb: [0,16,0,8]
+  actions:
+    read: [say, 63]
+chuck:
+  room: library
+  text: 64
+  pos: [506,96]
+  walk_to: [520,38]
+  walk_dir: n
+  mouse:
+    aabb: [0,32,0,16]
+loose_panel:
+  room: library
+  text: 65
+  pos: [512,48]
+  walk_to: [524,38]
+  walk_dir: n
+  z: 0.2
+  sprite: 'library/panel'
+  anim: '@data.loose_panel'
+  mouse:
+    aabb: [0,24,0,16]
+  actions:
+    open: [open_panel]
+    close: [close_panel]
+cassette_tape:
+  room: library
+  text: 66
+  pos: [522,50]
+  walk_to: [ 524,38 ]
+  z: 0.1
+  walk_dir: 'n'
+  sprite: 'library/tape'
+  create: True
+  active: '@data.loose_panel=="open"'
+  mouse:
+    aabb: [ 0,10,0,6 ]
+  actions:
+    pickup: [ pickup, cassette_tape]
+

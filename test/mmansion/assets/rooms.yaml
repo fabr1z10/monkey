@@ -116,3 +116,21 @@ reactor:
         quad: [79,137,376,120]
       pos: [112, 16]
       auto_depth: True
+living:
+  size: [640, 136]
+  batch: living
+  walkarea:
+    poly: [0,0,640,0,640,2,553,31,384,31,384,22,244,22,244,31,156,31,156,21,98,21,98,31,87,31,0,3]
+  items:
+    - bg:
+        batch: living
+        quad: [0,0,640,136]
+library:
+  size: [640, 136]
+  batch: library
+  walkarea:
+    poly: [0,0,570,0,547,11,514,11,514,18,566,18,549,40,384,40,380,14,266,14,253,40,87,40,0,10]
+  items:
+    - bg:
+        batch: library
+        quad: [0,0,640,136]

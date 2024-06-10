@@ -1,33 +1,17 @@
 sprites:
-  door_out:
+  door_hall:
     animations:
       closed:
         frames:
-          - tex: [205,138,32,115]
+          - tex: [3,138,26,104]
       open:
         frames:
-          - tex: [171,138,32,115]
-  door_kitchen:
+          - tex: [73,138,26,104]
+  door_library:
     animations:
       closed:
         frames:
-          - tex: [239,138,56,93]
+          - tex: [30,138,42,111]
       open:
         frames:
-          - tex: [297,138,56,93]
-  door_reactor:
-    animations:
-      closed:
-        frames:
-          - tex: [355,138,56,93]
-      open:
-        frames:
-          - tex: [413,138,56,93]
-  door_living:
-    animations:
-      open:
-        frames:
-          - tex: [471,138,26,112]
-      closed:
-        frames:
-          - tex: [498,138,26,112]
+          - tex: [100,138,42,111]

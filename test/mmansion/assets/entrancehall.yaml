@@ -23,3 +23,11 @@ sprites:
       open:
         frames:
           - tex: [413,138,56,93]
+  door_living:
+    animations:
+      open:
+        frames:
+          - tex: [471,138,26,112]
+      closed:
+        frames:
+          - tex: [498,138,26,112]

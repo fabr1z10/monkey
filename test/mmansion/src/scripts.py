@@ -162,6 +162,18 @@ def close_fridge(script, *args):
     for a in ['cheese', 'batteries', 'lettuce', 'pepsi', 'ketchup']:
         updateNodeState(a, monkey.NodeState.INACTIVE)
 
+def open_panel(script, *args):
+    change_door_state(script,'loose_panel', 'open', 'loose_panel')
+    for a in ['cassette_tape']:
+        updateNodeState(a, monkey.NodeState.ACTIVE)
+
+def close_panel(script, *args):
+    change_door_state(script,'loose_panel', 'closed', 'loose_panel')
+    for a in ['cassette_tape']:
+        updateNodeState(a, monkey.NodeState.INACTIVE)
+
+
+
 def push_gargoyle(script, *args):
     change_door_state(script, 'door_entrance_reactor', 'open', 'door_reactor')
     def f():

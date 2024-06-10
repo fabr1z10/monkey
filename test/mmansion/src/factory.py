@@ -53,9 +53,7 @@ def addMouseArea(info, node, item):
         on_enter=ui.on_enter_item(item), on_leave=ui.on_leave_item, on_click=ui.execute_action, batch='line'))
 
 def area(info, node):
-    if 'baseline' in info:
-        baseline = ciao['baseline']
-        data.wallz.append({'baseline': baseline, 'id': node.id})
+
     a = info['area']
     shape = None
     pos = info['pos']
@@ -140,6 +138,9 @@ def createItem(desc, item):
 
     #if 'model' in desc:
     makeModel(desc, node)
+    if 'baseline' in desc:
+        baseline = desc['baseline']
+        data.baselines.append({'baseline': baseline, 'id': node.id})
     if 'area' in desc:
         area(desc, node)
     if 'mouse' in desc and item != settings.characters[settings.player]:
@@ -159,6 +160,7 @@ def createItem(desc, item):
 
 
 def create_room(room):
+    data.baselines = []
     root = room.root()
     data.tag_to_id = {}
     settings.action = settings.default_verb
