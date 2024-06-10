@@ -188,8 +188,9 @@ void Engine::run() {
     //_batches.clear();
     //_engineDraw->shutdown();
 	//m_game.release();
-	m_settings.release();
-    _factory.release();
+	//m_settings.release();
+    //_factory.release();
+    _main.release();
     glfwTerminate();
 }
 

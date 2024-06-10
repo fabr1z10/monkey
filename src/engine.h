@@ -54,7 +54,7 @@ public:
     void addNode(Node*);
     void rmNode(Node*);
     void scheduleForRemoval(Node*);
-    pybind11::object getConfig();
+    //pybind11::object getConfig();
     bool isRunning() const;
 
     int getPixelScale() const;
@@ -81,8 +81,8 @@ private:
     void loadRoom();
     void loadShaders();
     //pybind11::object m_game;
-    pybind11::module _factory;
-    pybind11::object m_settings;
+    //pybind11::module _factory;
+    //pybind11::object m_settings;
 	pybind11::object _main;
     //pybind11::object m_scripts;
     std::string _title;
@@ -137,9 +137,9 @@ inline bool Engine::isRunning() const {
     return m_run;
 }
 
-inline pybind11::object Engine::getConfig() {
-    return m_settings;
-}
+//inline pybind11::object Engine::getConfig() {
+//    return m_settings;
+//}
 
 inline long Engine::getNextId() {
     return m_nextId++;

@@ -9,7 +9,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 
 AssetManager::AssetManager() {
 
-	auto settings = Engine::instance().getConfig();
+	//auto settings = Engine::instance().getConfig();
 	//_assetDirectory = py_get<std::string>(settings, "asset_directory");
 }
 
