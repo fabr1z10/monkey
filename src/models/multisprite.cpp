@@ -24,15 +24,14 @@ std::vector<AnimationData> * MultiSprite::getAnimationData(const std::string &id
 }
 
 void MultiSprite::addAnimation(const std::string &animId) {
-    _animations[animId] = std::vector<AnimationData>(_sprites.size(), AnimationData(animId));
+    _animations[animId] = std::vector<AnimationData>();
 
 }
 
 void MultiSprite::setAnimationData(const std::string &animId, int spriteId, const std::string &subAnim,
                                    glm::vec3 offset) {
-    auto& a = _animations[animId][spriteId];
-    a.animation = subAnim;
-    a.offset = offset;
+    auto& a = _animations[animId];
+    a.emplace_back(spriteId, subAnim);
 }
 
 void MultiSpriteRenderer::start() {
@@ -96,19 +95,28 @@ void MultiSpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11:
 }
 
 void MultiSpriteRenderer::setAnimation(const std::string & anim) {
-    auto* data = _multi->getAnimationData(anim);
+    const auto* data = _multi->getAnimationData(anim);
     if (data == nullptr) {
         for (auto &r : _renderers) {
             r->setAnimation(anim);
         }
     } else {
-        for (size_t i =0; i< _renderers.size(); ++i) {
-            _renderers[i]->setAnimation((*data)[i].animation);
-            _renderers[i]->setTransform(glm::translate((*data)[i].offset));
+        for (const auto& a : *data) {
+            _renderers[a.spriteId]->setAnimation(a.animation);
         }
+//        for (size_t i =0; i< _renderers.size(); ++i) {
+//            _renderers[i]->setAnimation((*data)[i].animation);
+//            _renderers[i]->setTransform(glm::translate((*data)[i].offset));
+//        }
 
     }
 
+}
+
+void MultiSpriteRenderer::setVersion(const std::string &id) {
+    for (auto& r : _renderers) {
+        r->setVersion(id);
+    }
 }
 
 std::type_index MultiSpriteRenderer::getType() {

@@ -34,7 +34,7 @@ protected:
     bool _useAnimDirection;
     glm::vec2 _delta;
     bool _flipHorizontal;
-
+    pybind11::function _customCallback;
 };
 inline bool WalkableCharacter::moving() const {
     return !_toGoPoints.empty();

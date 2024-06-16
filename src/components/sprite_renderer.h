@@ -38,9 +38,7 @@ public:
     inline int getTickCount() const;
 	const Sprite* getSprite() const;
 	void setDirection(int);
-	const Frame& getFrameInfo() const {
-	    return m_sprite->getFrameInfo(m_animation, m_frame);
-	}
+	const Frame& getFrameInfo() const;
 private:
 	//QuadBatch* _spriteBatch;
 
@@ -55,6 +53,10 @@ private:
 	int _direction;
 
 };
+
+inline const Frame & SpriteRenderer::getFrameInfo() const {
+    return m_sprite->getFrameInfo(_fullAnimationId, m_frame);
+}
 
 inline const Sprite * SpriteRenderer::getSprite() const {
 	return m_sprite.get();

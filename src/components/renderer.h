@@ -28,14 +28,17 @@ public:
     //virtual void setPalette(int quad, int pal) {}
 	using Base = Renderer;
 	std::string getAnimation() const;
+	std::string getVersion() const;
     virtual void setAnimation(const std::string&) {}
+    virtual void setVersion(const std::string& id);
     //virtual bool isComplete() const;
     void setShift(glm::vec3);
     void setZLayer(float);
 protected:
 	ShaderType _shaderType;
 	std::string m_animation;
-
+	std::string _version;
+    std::string _fullAnimationId;
     //std::shared_ptr<Model> m_model;
     //glm::vec4 m_multColor;
     //glm::vec4 m_addColor;
@@ -64,6 +67,11 @@ inline void Renderer::setZLayer(float z) {
 inline std::string Renderer::getAnimation() const {
 	return m_animation;
 }
+
+inline std::string Renderer::getVersion() const {
+    return _version;
+}
+
 
 class BasicRenderer : public Renderer {
 public:

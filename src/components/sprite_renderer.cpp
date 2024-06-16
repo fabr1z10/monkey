@@ -7,8 +7,8 @@
 
 
 
-SpriteRenderer::SpriteRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId,pybind11::kwargs()), m_frame(0), m_ticks(0), _currentFrameTicks(0),
-_direction(1) {
+SpriteRenderer::SpriteRenderer(const std::string& batchId) : BatchRenderer<QuadBatch>(batchId,pybind11::kwargs()),
+        m_frame(0), m_ticks(0), _currentFrameTicks(0), _direction(1), m_animInfo(nullptr) {
     //_batch = dynamic_cast<QuadBatch*>(batch);
     //assert(_batch != nullptr);
     //_paletteId = py_get_dict<unsigned>(args, "pal", 0);
@@ -30,6 +30,12 @@ void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwar
         _primitiveIds.push_back(_batch->getPrimitiveId());
     }
 	m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
+    auto vpos = m_animation.find('_');
+    if (vpos != std::string::npos) {
+        _version = m_animation.substr(vpos+1);
+        m_animation = m_animation.substr(0, vpos);
+    }
+
 	_paletteId = py_get_dict<int>(args, "pal", 0);
 }
 
@@ -42,7 +48,6 @@ const std::string & SpriteRenderer::getAnimation() const {
 }
 
 void SpriteRenderer::setAnimationForce(const std::string & anim) {
-    m_animation.clear();
     setAnimation(anim);
 }
 void SpriteRenderer::setDirection(int dir ) {
@@ -58,17 +63,23 @@ void SpriteRenderer::setDirection(int dir ) {
 }
 
 void SpriteRenderer::setAnimation(const std::string& anim) {
-	if (anim == m_animation) {
+	if (m_animInfo != nullptr && anim == m_animation) {
 		return;
 	}
+	auto animId = anim;
+	if (!_version.empty()) {
+	    animId += "_" + _version;
+	}
+    //auto animId = anim  "_" + _version;
 	m_complete = false;
-	m_animInfo = m_sprite->getAnimationInfo(anim);
+	m_animInfo = m_sprite->getAnimationInfo(animId);
 	if (m_animInfo == nullptr) {
-		GLIB_FAIL("mmh don't know animation: " + anim);
+		GLIB_FAIL("mmh don't know animation: " + animId);
 	}
 	m_frame = 0;
 	m_ticks = 0;
 	m_animation = anim;
+    _fullAnimationId = animId;
 }
 
 
@@ -77,13 +88,14 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 
 void SpriteRenderer::start() {
 	m_frame = 0;
-	m_animInfo = m_sprite->getAnimationInfo(m_animation);
-	_currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
+	setAnimation(m_animation);
+	//m_animInfo = m_sprite->getAnimationInfo(m_animation);
+	_currentFrameTicks = m_sprite->getFrameInfo(_fullAnimationId, m_frame).getTicks();
 
 }
 
 void SpriteRenderer::updateBatch() {
-    const auto& a = m_sprite->getFrameInfo(m_animation, m_frame);
+    const auto& a = m_sprite->getFrameInfo(_fullAnimationId, m_frame);
     // get world pos
 
 
@@ -136,7 +148,7 @@ bool SpriteRenderer::updateTick(int tick) {
         } else if (_direction == -1 && m_frame < 0) {
             m_frame = m_animInfo->loop == -1 ? 0 : m_animInfo->loop;
         }
-        _currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
+        _currentFrameTicks = m_sprite->getFrameInfo(_fullAnimationId, m_frame).getTicks();
 
     }
     return false;
@@ -177,7 +189,7 @@ void SpriteRenderer::update(double dt) {
             }
         }
         m_ticks = 0;
-		_currentFrameTicks = m_sprite->getFrameInfo(m_animation, m_frame).getTicks();
+		_currentFrameTicks = m_sprite->getFrameInfo(_fullAnimationId, m_frame).getTicks();
 
 	} else {
         // if it's not time to update frame, increment current frame length

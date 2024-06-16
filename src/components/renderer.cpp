@@ -8,11 +8,19 @@ Renderer::Renderer(const pybind11::kwargs& args) : Component(args), m_rendererTr
 
 }
 
+void Renderer::setVersion(const std::string& id) {
+    // don't do a thing if version stays the same
+    if (_version == id) return;
+
+    _version = id;
+    std::string anim = m_animation;
+    m_animation.clear();
+    setAnimation(anim);
+
+}
 const glm::mat4 & Renderer::getRendererTransform() const {
     return m_rendererTransform;
 }
-
-
 
 
 

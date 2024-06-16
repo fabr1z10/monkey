@@ -130,10 +130,10 @@ SpriteSheet::SpriteSheet(const std::string& id, const std::string& fileName) : _
 				if (ms.second["animations"]) {
 					for (const auto &anim : ms.second["animations"]) {
 						auto animId = anim.first.as<std::string>();
-						auto subAnims = anim.second.as<std::vector<std::string>>();
+						//auto subAnims = anim.second.as<std::vector<std::string>>();
 						multiSprite->addAnimation(animId);
-						for (size_t i = 0; i < subAnims.size(); ++i) {
-							multiSprite->setAnimationData(animId, i, subAnims[i], glm::vec3(0.f));
+						for (const auto& c : anim.second) {
+							multiSprite->setAnimationData(animId, c.first.as<int>(), c.second.as<std::string>(), glm::vec3(0.f));
 						}
 					}
 				}

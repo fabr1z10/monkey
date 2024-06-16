@@ -9,6 +9,7 @@ WalkableCharacter::WalkableCharacter(float speed, const pybind11::kwargs &args) 
     _useAnimDirection = py_get_dict<bool>(args, "anim_dir", true);
     _flipHorizontal = py_get_dict<bool>(args, "flip_horizontal", true);
     _direction = py_get_dict<std::string>(args, "direction", "e");
+    _customCallback = py_get_dict<pybind11::function>(args, "callback", pybind11::function());
 }
 
 void WalkableCharacter::sendMessage(const pybind11::kwargs &args) {
@@ -16,7 +17,8 @@ void WalkableCharacter::sendMessage(const pybind11::kwargs &args) {
     if (id == "goto") {
         goTo(py_get_dict<glm::vec2>(args, "pos"));
     } else if (id == "animate") {
-    	_idleAnim = py_get_dict<std::string>(args, "anim");
+    	auto anim = py_get_dict<std::string>(args, "anim");
+        m_animatedRenderer->setAnimation(anim);
     }
 
 }
@@ -106,11 +108,10 @@ void WalkableCharacter::animate() {
 		}
     	m_node->setFlipX(_direction == "w");
     	auto dir = (_direction == "w" ? "e" : _direction);
-    	//if (_direction == "w") {
-		//	m_node->setFlipX(true);
-    	//	_direction = "e";
-    	//}
-		anim += "_" + dir;
+		//anim += "_" + dir;
+		m_animatedRenderer->setVersion(dir);
+    } else {
+        std::cout << "succaz " << anim << "\n";
     }
     m_animatedRenderer->setAnimation(anim);
 }
@@ -148,6 +149,11 @@ void WalkableCharacter::update(double dt) {
     animate();
 
     Sierra2DController::update(dt);
+
+    if (_customCallback) {
+
+        _customCallback(this);
+    }
 }
 
 void NPCSierraFollow::update(double dt) {

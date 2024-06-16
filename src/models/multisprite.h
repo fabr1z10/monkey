@@ -5,7 +5,8 @@
 #include "../components/sprite_renderer.h"
 
 struct AnimationData {
-    explicit AnimationData(const std::string& anim) : animation(anim), offset(glm::vec3(0.f)) {}
+    explicit AnimationData(int spriteId, const std::string& anim) : spriteId(spriteId), animation(anim), offset(glm::vec3(0.f)) {}
+    int spriteId;
     std::string animation;
     glm::vec3 offset;
 };
@@ -49,7 +50,7 @@ public:
     void update(double) override;
     std::type_index getType() override;
     void setPalette(const std::string& palId) override;
-
+    void setVersion(const std::string& id) override;
 private:
     struct SpriteInfo {
         glm::vec2 offset;

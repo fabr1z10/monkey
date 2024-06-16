@@ -177,6 +177,7 @@ Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
 
 
 const Frame & Sprite::getFrameInfo(const std::string &anim, int frame) const {
+    //std::cout << "req: " << anim << ", " << frame << "\n";
     return _animations.at(anim).frames[frame];
 }
 

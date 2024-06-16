@@ -533,6 +533,7 @@ PYBIND11_MODULE(monkey, m) {
     py::module_ mc = m.def_submodule("components");
 
 	py::class_<Component, std::shared_ptr<Component>>(m, "component")
+	    .def_property_readonly("node", &Component::getNode, py::return_value_policy::reference)
 	    .def("setState", &Component::setState);
 
 	py::class_<Renderer, Component, std::shared_ptr<Renderer>>(m, "renderer");
@@ -601,7 +602,8 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<NPCSierraController, Sierra2DController, std::shared_ptr<NPCSierraController>>(mc, "NPCSierraController")
         .def(py::init<int, float, float, float, py::kwargs&>());
     py::class_<WalkableCharacter, Sierra2DController, std::shared_ptr<WalkableCharacter>>(mc, "WalkableCharacter")
-        .def(py::init<float, py::kwargs&>());
+        .def(py::init<float, py::kwargs&>())
+        .def("goto", &WalkableCharacter::goTo);
     py::class_<NPCSierraFollow, WalkableCharacter, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
         .def(py::init<pybind11::function, float, float, py::kwargs&>());
 
