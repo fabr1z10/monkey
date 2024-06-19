@@ -60,6 +60,7 @@ public:
 	bool done() const;
 	void kill();
 	std::string getId() const;
+	int getLastId() const;
 	void setOnKill(pybind11::function);
 private:
 	std::list<std::shared_ptr<Action>> m_current;
@@ -83,6 +84,9 @@ inline std::string Script::getId() const {
 	return m_scriptId;
 }
 
+inline int Script::getLastId() const {
+    return _lastAddedId;
+}
 
 inline bool Script::done() const {
 	return m_done;

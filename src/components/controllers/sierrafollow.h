@@ -14,6 +14,7 @@ public:
 
     using Base = WalkableCharacter;
     bool moving() const;
+    void setCallback(pybind11::function);
 
 protected:
     void animate();
@@ -36,8 +37,13 @@ protected:
     bool _flipHorizontal;
     pybind11::function _customCallback;
 };
+
 inline bool WalkableCharacter::moving() const {
     return !_toGoPoints.empty();
+}
+
+inline void  WalkableCharacter::setCallback(pybind11::function f) {
+    _customCallback = f;
 }
 
 class NPCSierraFollow : public WalkableCharacter {

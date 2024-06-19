@@ -465,6 +465,7 @@ PYBIND11_MODULE(monkey, m) {
 //	/// --- scripts & actions
     py::class_<Script, std::shared_ptr<Script>>(m, "Script")
         .def("add", &Script::add)
+        .def("getLastId", &Script::getLastId)
         .def(py::init<const pybind11::kwargs&>());
 //
 //
@@ -603,6 +604,7 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<int, float, float, float, py::kwargs&>());
     py::class_<WalkableCharacter, Sierra2DController, std::shared_ptr<WalkableCharacter>>(mc, "WalkableCharacter")
         .def(py::init<float, py::kwargs&>())
+        .def("setCallback", &WalkableCharacter::setCallback)
         .def("goto", &WalkableCharacter::goTo);
     py::class_<NPCSierraFollow, WalkableCharacter, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
         .def(py::init<pybind11::function, float, float, py::kwargs&>());
