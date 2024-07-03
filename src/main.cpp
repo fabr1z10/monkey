@@ -444,7 +444,8 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<std::vector<float>&, int>());
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
         .def(py::init<>())
-        .def("addEvent", &Clock::addEvent);
+        .def("addEvent", &Clock::addEvent)
+        .def("removeEvent", &Clock::removeEvent);
     py::class_<MouseManager, Runner, std::shared_ptr<MouseManager>>(m, "MouseManager")
         .def("setFunc", &MouseManager::setDefaultCallback)
         .def("addCamera", &MouseManager::addCamera)

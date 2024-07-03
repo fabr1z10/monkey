@@ -8,14 +8,17 @@ public:
     Clock();
     void update(double dt);
     // add event to schedule
-    void addEvent (bool global, bool relative, long, pybind11::function f);
+    int addEvent (bool global, bool relative, long, pybind11::function f);
+    void removeEvent(int id);
 private:
+	void execute(int);
+	int _counter;
     static double _globalTime;
     double _roomTime;
     static long _globalSeconds;
     long _roomSeconds;
 
-    static std::unordered_map<long, std::vector<pybind11::function>> _globalSchedule;
-    std::unordered_map<long, std::vector<pybind11::function>> _roomSchedule;
-
+    static std::unordered_map<long, std::vector<int>> _globalSchedule;
+    std::unordered_map<long, std::vector<int>> _roomSchedule;
+	std::unordered_map<int, pybind11::function> _callbacks;
 };
