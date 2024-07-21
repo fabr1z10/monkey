@@ -284,8 +284,9 @@ void WalkArea::recomputeBaselines() {
 		}
 		// reset all z
 		for (auto& i : _baselines) {
-			i->setZ(1.0f - i->getNode()->getY() / 166.0f);
+			i->setZ(0.0f); //1.0f - i->getNode()->getY() / 166.0f);
 		}
+
 		while (!l.empty()) {
 			auto current = l.front();
 			l.pop_front();
@@ -299,7 +300,9 @@ void WalkArea::recomputeBaselines() {
 		}
 		// update actual z
 		for (const auto& b : _baselines) {
-			b->getNode()->setZ(2.0f * b->getZ() + 1.f);
+		    auto node = b->getNode();
+		    auto baseZ = 1.0f - node->getY() / 166.0f;
+			b->getNode()->setZ(baseZ +  b->getZ());
 		}
 	}
 }
