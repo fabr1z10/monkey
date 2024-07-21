@@ -43,11 +43,19 @@ void PlayerSierra2DController::enable(bool value) {
 	_enableControls = value;
 }
 
+void Sierra2DController::start() {
+	auto& engine = Engine::instance();
+	auto room = engine.getRoom();
+	_walkArea = room->getRunner<WalkArea>();
+
+}
+
 void PlayerSierra2DController::start() {
 	//_dir = 'e';
 	_lookingLeft = false;
 	m_animatedRenderer = m_node->getComponent<Renderer>();
 
+	Sierra2DController::start();
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
 	m_collisionEngine = room->getRunner<ICollisionEngine>();
@@ -58,7 +66,9 @@ void Sierra2DController::update(double) {
 
     auto currentPos = m_node->getWorldPosition();
     //if (currentPos != _previousPosition) {
+
         updateZ(currentPos.x, currentPos.y);
+
         _previousPosition = currentPos;
     //}
 
@@ -67,16 +77,21 @@ void Sierra2DController::update(double) {
 
 
 void Sierra2DController::updateZ(float x, float y) {
-    if (_zFunc) {
-        auto z = _zFunc(x, y).cast<float>();
-        m_node->setZ(z);
-    }
-    if (_scaleFunc) {
-        auto scale = _zFunc(x, y).cast<float>();
-        m_node->setScale(scale);
-    }
-
-
+	if (_walkArea != nullptr) {
+		auto z = _walkArea->getZ(x, y);
+		std::cout << "z: " << z << "\n";
+		m_node->setZ(z);
+	}
+//    if (_zFunc) {
+//        auto z = _zFunc(x, y).cast<float>();
+//        m_node->setZ(z);
+//    }
+//    if (_scaleFunc) {
+//        auto scale = _zFunc(x, y).cast<float>();
+//        m_node->setScale(scale);
+//    }
+//
+//
 }
 
 void CustomSierra2DController::update(double dt) {
@@ -153,10 +168,11 @@ void PlayerSierra2DController::update(double dt) {
     if (dir == "w") {
         dir = "e";
     }
+    m_animatedRenderer->setVersion(dir);
 	if (anyPressed) {
-		m_animatedRenderer->setAnimation(_walkAnimation + "_" + dir);
+		m_animatedRenderer->setAnimation(_walkAnimation);
 	} else {
-		m_animatedRenderer->setAnimation(_idleAnimation + "_" + dir);
+		m_animatedRenderer->setAnimation(_idleAnimation);
 	}
 
 

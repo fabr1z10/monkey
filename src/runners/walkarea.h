@@ -4,9 +4,12 @@
 #include "collision_engine.h"
 #include "../math/graph.h"
 
+class Baseline;
+
+
 class WalkArea : public Runner {
 public:
-    WalkArea(std::vector<float> &p, float wallThickness);
+    WalkArea(std::vector<float> &p, float wallThickness, glm::vec2 yBounds);
 
     // polygon needs to be supplied in CCW!!!
     void addPolyWall(std::vector<float>& points);
@@ -17,6 +20,11 @@ public:
     void update(double) override {}
     glm::vec2 getClosestPointInArea(glm::vec2);
     void recompute();
+    void recomputeBaselines();
+    float getZ(float x, float y) const;
+    float getScale(float x, float y) const;
+    void addBaseLine(Baseline*);
+    void rmBaseline(Baseline*);
 private:
 	struct PolygonInfo {
 		PolygonInfo(const std::vector<glm::vec2>& verts);
@@ -56,4 +64,6 @@ private:
     float _adjust;
     std::vector<std::vector<glm::vec2>> _geometry;
     bool pointInWalkArea(glm::vec2);
+    float _za, _zb;
+    std::unordered_set<Baseline*> _baselines;
 };

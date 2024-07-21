@@ -89,6 +89,7 @@
 #include "nodes/textedit.h"
 #include "components/controllers/walk2d.h"
 #include "components/follow.h"
+#include "components/baseline.h"
 #include "actions/remove.h"
 #include "components/sprite_collider.h"
 #include "components/switch.h"
@@ -198,6 +199,7 @@ PYBIND11_MODULE(monkey, m) {
         //.def(py::init<>())
         .def("start", &Engine::start)
         .def("run", &Engine::run)
+        .def("getRoom", &Engine::getRoom)
         .def("shutdown", &Engine::shutdown);
 
 	py::class_<Room, std::shared_ptr<Room>>(m, "Room")
@@ -206,6 +208,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_runner", &Room::addRunner)
 		.def("add_camera", &Room::addCamera)
 		.def("add_batch", &Room::addBatch)
+		.def("hasBatch", &Room::hasBatch)
 		.def("addOnStart", &Room::addOnStart)
 //        //.def("add_line_batch", &Room::addLinesBatch)
 		.def("set_clear_color", &Room::setClearColor)
@@ -441,7 +444,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("addLinearWall", &WalkArea::addLineWall)
         .def("addDynamic", &WalkArea::addDynamic)
         .def("recompute", &WalkArea::recompute)
-        .def(py::init<std::vector<float>&, int>());
+        .def(py::init<std::vector<float>&, int, glm::vec2>());
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
         .def(py::init<>())
         .def("addEvent", &Clock::addEvent)
@@ -565,6 +568,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("setResponse", &Collider::setResponse)
 		.def("set_collision_flag", &Collider::setCollisionFlag);
 
+
 	py::class_<SimpleCollider, Collider, std::shared_ptr<SimpleCollider>>(mc, "Collider")
 		.def(py::init<int, int, int, std::shared_ptr<Shape>, const pybind11::kwargs&>(), py::arg("flag"),
         py::arg("mask"), py::arg("tag"),  py::arg("shape"),py::kw_only());
@@ -618,6 +622,8 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
         "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
 
+	py::class_<Baseline, Component, std::shared_ptr<Baseline>>(mc, "Baseline")
+		.def(py::init<std::shared_ptr<PolyLine>, const pybind11::kwargs&>());
 
 	//    py::class_<Walk3DController, Component, std::shared_ptr<Walk3DController>>(m, "Walk3DController")
 //        .def(py::init<float, float, float, const pybind11::kwargs&>(), "size"_a, "speed"_a, "gravity"_a);

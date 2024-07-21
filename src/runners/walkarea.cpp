@@ -5,12 +5,14 @@
 #include "../util.h"
 #include "../shapes/polygon.h"
 #include "../shapes/polyline.h"
-
+#include "../components/baseline.h"
 // define a walkarea with a polygon
-WalkArea::WalkArea(std::vector<float> &p, float wallThickness) : Runner(), _wallThickness(wallThickness), _currentPoly(0) {
+WalkArea::WalkArea(std::vector<float> &p, float wallThickness, glm::vec2 yBounds) : Runner(), _wallThickness(wallThickness), _currentPoly(0) {
     _graph = std::make_unique<Graph>();
     _adjust = 1.f;
 
+	_za = 1.f / (yBounds[0] - yBounds[1]);
+	_zb = yBounds[1] / (yBounds[1] - yBounds[0]);
     //addPolygon(p, false);
     _geometry.push_back(vecCvt(p));
 }
@@ -224,6 +226,82 @@ void WalkArea::recompute() {
 
         }
     }
+	recomputeBaselines();
+
+
+}
+
+void WalkArea::recomputeBaselines() {
+	// sort baselines
+	if (!_baselines.empty()) {
+		std::unordered_map<Baseline *, std::vector<Baseline *>> _inEdges;
+		std::unordered_map<Baseline *, std::vector<Baseline *>> _outEdges;
+		for (const auto &i : _baselines) {
+			_inEdges[i] = {};
+			_outEdges[i] = {};
+		}
+
+		for (auto ai = _baselines.begin(); ai != _baselines.end(); ++ai) {
+			auto apos = (*ai)->getNode()->getWorldPosition();
+			auto& apts = (*ai)->getPolyline()->getPoints();
+			for (auto bi = std::next(ai); bi != _baselines.end(); ++bi) {
+				auto bpos = (*ai)->getNode()->getWorldPosition();
+				auto &bpts = (*ai)->getPolyline()->getPoints();
+				// quick check if baselines do not overlap
+				float ax0 = apos.x + apts.front().x;
+				float ax1 = apos.x + apts.back().x;
+				float bx0 = bpos.x + bpts.front().x;
+				float bx1 = bpos.x + bpts.back().x;
+				if (ax0 > bx1 || bx0 > ax1) {
+					continue;
+				}
+				// in this case check midpoint
+				float by = 0.f, ay = 0.f;
+				if (ax0 < bx0) {
+					// test point is bx0
+					by = bpts.front().y + bpos.y;
+					ay = apos.y + (*ai)->getPolyline()->getY(bx0 - ax0);
+				} else {
+					// test point is ax0
+					ay = apts.front().y + apos.y;
+					by = bpos.y + (*bi)->getPolyline()->getY(ax0 - bx0);
+				}
+				if (ay < by) {
+					// a below b
+					_inEdges[*ai].push_back(*bi);
+					_outEdges[*bi].push_back(*ai);
+				} else {
+					_inEdges[*bi].push_back(*ai);
+					_outEdges[*ai].push_back(*bi);
+				}
+				// *ai, *bi
+			}
+		}
+		// find items with 0 incoming edges
+		std::list<Baseline*> l;
+		for (const auto& i : _inEdges) {
+			if (i.second.empty()) l.push_back(i.first);
+		}
+		// reset all z
+		for (auto& i : _baselines) {
+			i->setZ(1.0f - i->getNode()->getY() / 166.0f);
+		}
+		while (!l.empty()) {
+			auto current = l.front();
+			l.pop_front();
+			for (const auto& o : _outEdges[current]) {
+				// update baseline z if necessary
+				if (o->getZ() < current->getZ()+1.0f) {
+					o->setZ(current->getZ()+1.0f);
+				}
+				l.push_back(o);
+			}
+		}
+		// update actual z
+		for (const auto& b : _baselines) {
+			b->getNode()->setZ(2.0f * b->getZ() + 1.f);
+		}
+	}
 }
 
 void WalkArea::start() {
@@ -360,4 +438,45 @@ std::vector<glm::vec2> WalkArea::findPath(glm::vec2 source, glm::vec2 target) {
     _graph->rmNode(sourceId);
 
     return path;
+}
+
+float WalkArea::getZ(float x, float y) const {
+	auto z = _za * y + _zb;
+	int cwall = -1;
+	Baseline* referenceBaseline = nullptr;
+	float md = -1;
+	for (const auto& bl : _baselines) {
+		cwall += 1;
+		auto pos = bl->getNode()->getWorldPosition();
+		const auto& points = bl->getPolyline()->getPoints();
+		float x0 = pos.x + points.front().x;
+		float x1 = pos.x + points.back().x;
+		if (x < x0 || x > x1) {
+			std::cout << "OUTSIDE\n";
+			continue;
+		}
+		float yb = bl->getPolyline()->getY(x - x0) + pos.y;
+		if (y < yb) {
+			std::cout << "below " << "(" << x << ", " << x0 << "), " << y << " " << yb << "\n";
+			if (md < 0 || md > (yb-y)) {
+				md = yb- y;
+				referenceBaseline = bl;
+			}
+		} else {
+			std::cout << "above " << "(" << x << ", " << x0 << "), " << y << " " << yb << "\n";
+		}
+	}
+	if (referenceBaseline != nullptr) {
+		z += referenceBaseline->getZ()+1;
+	}
+	return z;
+}
+
+
+void WalkArea::addBaseLine(Baseline * b) {
+	_baselines.insert(b);
+}
+
+void WalkArea::rmBaseline(Baseline * b) {
+	_baselines.erase(b);
 }

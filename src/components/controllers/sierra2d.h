@@ -2,7 +2,7 @@
 
 #include "../renderer.h"
 #include "../../runners/collision_engine.h"
-
+#include "../../runners/walkarea.h"
 
 class Sierra2DController : public Component {
 public:
@@ -10,12 +10,15 @@ public:
     void setDirection(const std::string& direction);
     std::string getDirection() const;
 	using Base = Sierra2DController;
+	void start() override;
 	//std::type_index getType() override;
 protected:
     void update(double) override;
     void updateZ(float, float);
 
     std::string _direction;
+	WalkArea* _walkArea;
+
 private:
     pybind11::function _zFunc;
     pybind11::function _scaleFunc;

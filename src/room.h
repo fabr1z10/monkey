@@ -28,6 +28,7 @@ public:
     //QuadBatch* addSpriteBatch(const std::string& spriteSheet, int maxElements = 1000);
     //void addLinesBatch(int maxElements = 1000);
     void addBatch(const std::string& batchId, std::shared_ptr<IBatch>);
+    bool hasBatch(const std::string& batchId);
     IBatch* getBatch(const std::string&);
     int getBatchCount() const;
 //	LineBatch* getLineBatch() {

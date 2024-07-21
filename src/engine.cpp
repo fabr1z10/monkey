@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
 }
 
-void Engine::start(py::module& mainModule) {
+void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
 
     try {
 		_main = mainModule;
@@ -42,6 +42,11 @@ void Engine::start(py::module& mainModule) {
 		if (pybind11::hasattr(_main, "init")) {
 			_main.attr("init")();
 		}
+		auto onStart = py_get_dict<std::string>(args, "on_start", "");
+		if (!onStart.empty()) {
+			_main.attr(onStart.c_str())();
+		}
+
 //
 		//auto assetDirs = py_get<std::vector<std::string>>(_main, "asset_directories", std::vector<std::string>());
 //		for (const auto &dir : assetDirs) {

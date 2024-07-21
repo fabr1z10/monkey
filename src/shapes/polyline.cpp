@@ -23,3 +23,17 @@ PolyLine::PolyLine(const pybind11::kwargs &args) {
 
 }
 
+float PolyLine::getY(float x) const {
+	int i = 0;
+	// find 1st item strictly greater than x
+	while (i < _points.size() && _points[i].x <= x) i++;
+	if (i == 0) {
+		return _points[0].y;
+	} else if (i == _points.size()) {
+		return _points.back().y;
+	}
+	return _points[i-1].y + (_points[i].y - _points[i-1].y) * (x - _points[i-1].x) / (_points[i].x - _points[i-1].x);
+
+
+
+}

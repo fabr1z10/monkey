@@ -26,7 +26,7 @@ public:
     }
     //Engine();
     long getNextId();
-    void start(py::module&);
+    void start(py::module&, const pybind11::kwargs& args);
     void run();
     void closeRoom();
     //void load(pybind11::object obj);

@@ -22,6 +22,10 @@ Room::Room() : m_mainCamera(nullptr), m_clearColor(0.f, 0.f, 0.f, 255.f) {
 //    _batches.emplace_back();
 }
 
+bool Room::hasBatch(const std::string& id) {
+	return _batchMap.count(id) > 0;
+}
+
 void Room::addBatch(const std::string &batchId, std::shared_ptr<IBatch> batch) {
 	_batches.push_back(batch);
 	_batchMap[batchId] = batch.get();
