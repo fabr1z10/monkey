@@ -16,7 +16,7 @@ public:
 	float getZ() const;
 	void setZ(float);
 private:
-	WalkArea* _walkArea;
+	WalkManager* _walkArea;
 	std::shared_ptr<PolyLine> _poly;
 	float _z;
 };

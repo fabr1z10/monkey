@@ -9,16 +9,16 @@ Baseline::Baseline(std::shared_ptr<PolyLine> polyline, const pybind11::kwargs& a
 void Baseline::start() {
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
-	_walkArea = room->getRunner<WalkArea>();
+	_walkArea = room->getRunner<WalkManager>();
 	_walkArea->addBaseLine(this);
-	_walkArea->recomputeBaselines();
+	//_walkArea->reco//mputeBaselines();
 	//walkArea->addDynamic()
 	//m_engine = Engine::get().GetRunner<ICollisionEngine>();
 }
 
 Baseline::~Baseline() noexcept {
 	_walkArea->rmBaseline(this);
-	_walkArea->recomputeBaselines();
+	//_walkArea->recomputeBaselines();
 }
 
 PolyLine * Baseline::getPolyline() {

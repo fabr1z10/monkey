@@ -17,7 +17,7 @@ protected:
     void updateZ(float, float);
 
     std::string _direction;
-	WalkArea* _walkArea;
+	WalkManager* _walkManager;
 
 private:
     pybind11::function _zFunc;

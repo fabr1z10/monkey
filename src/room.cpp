@@ -100,8 +100,6 @@ void Room::addCamera(std::shared_ptr<Camera> cam) {
 //}
 
 
-
-
 void Room::update(double dt) {
 
     //auto* cam = Engine::instance().getBatch(0)->getCamera();

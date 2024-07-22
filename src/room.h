@@ -46,6 +46,8 @@ public:
     void addRunner(std::shared_ptr<Runner> c);
     void cleanUp();
 
+
+
     template <typename T>
     T* getRunner() {
         auto it = m_runners.find(std::type_index(typeid(T)));

@@ -6,13 +6,14 @@
 #include "../shapes/polygon.h"
 #include "../shapes/polyline.h"
 #include "../components/baseline.h"
+
+using namespace pybind11::literals; // to bring in the `_a` literal
+
 // define a walkarea with a polygon
-WalkArea::WalkArea(std::vector<float> &p, float wallThickness, glm::vec2 yBounds) : Runner(), _wallThickness(wallThickness), _currentPoly(0) {
+WalkArea::WalkArea(std::vector<float> &p, float wallThickness) : _wallThickness(wallThickness), _currentPoly(0) {
     _graph = std::make_unique<Graph>();
     _adjust = 1.f;
 
-	_za = 1.f / (yBounds[0] - yBounds[1]);
-	_zb = yBounds[1] / (yBounds[1] - yBounds[0]);
     //addPolygon(p, false);
     _geometry.push_back(vecCvt(p));
 }
@@ -226,12 +227,12 @@ void WalkArea::recompute() {
 
         }
     }
-	recomputeBaselines();
+	//recomputeBaselines();
 
 
 }
 
-void WalkArea::recomputeBaselines() {
+void WalkManager::recomputeBaselines() {
 	// sort baselines
 	if (!_baselines.empty()) {
 		std::unordered_map<Baseline *, std::vector<Baseline *>> _inEdges;
@@ -307,10 +308,15 @@ void WalkArea::recomputeBaselines() {
 	}
 }
 
-void WalkArea::start() {
+void WalkManager::start() {
     // we need all colliders with
     _collisionEngine = Engine::instance().getRoom()->getRunner<ICollisionEngine>();
-    recompute();
+    for (auto& area : _walkAreas) {
+        area->recompute();
+//        auto n = area->getColliderNode();
+//
+//        Engine::instance().getRoom()->getRoot()->add(n);
+    }
 
 
 
@@ -331,6 +337,16 @@ void WalkArea::addDynamic(Node * n) {
 void WalkArea::addPolyWall(std::vector<float> &points) {
     addPolygon(points, true);
 }
+
+std::shared_ptr<Node> WalkArea::getColliderNode() {
+    auto node = std::make_shared<Node>();
+//    auto shape = std::make_shared<PolyLine>(_geometry[0]);
+//    auto kwargs = pybind11::dict("batch"_a="lines");
+//    auto coll = std::make_shared<SimpleCollider>(2, 0, 0, shape, kwargs);
+//    node->addComponent(coll);
+    return node;
+}
+
 
 void WalkArea::addLineWall(std::vector<float> &p) {
     // we need first to create a polygon out of the contour
@@ -443,7 +459,13 @@ std::vector<glm::vec2> WalkArea::findPath(glm::vec2 source, glm::vec2 target) {
     return path;
 }
 
-float WalkArea::getZ(float x, float y) const {
+WalkManager::WalkManager(glm::vec2 yBounds) : Runner() {
+    _za = 1.f / (yBounds[0] - yBounds[1]);
+    _zb = yBounds[1] / (yBounds[1] - yBounds[0]);
+
+}
+
+float WalkManager::getZ(float x, float y) const {
 	auto z = _za * y + _zb;
 	int cwall = -1;
 	Baseline* referenceBaseline = nullptr;
@@ -455,7 +477,7 @@ float WalkArea::getZ(float x, float y) const {
 		float x0 = pos.x + points.front().x;
 		float x1 = pos.x + points.back().x;
 		if (x < x0 || x > x1) {
-			std::cout << "OUTSIDE\n";
+			//std::cout << "OUTSIDE\n";
 			continue;
 		}
 		float yb = bl->getPolyline()->getY(x - x0) + pos.y;
@@ -476,10 +498,12 @@ float WalkArea::getZ(float x, float y) const {
 }
 
 
-void WalkArea::addBaseLine(Baseline * b) {
+void WalkManager::addBaseLine(Baseline * b) {
 	_baselines.insert(b);
+	recomputeBaselines();
 }
 
-void WalkArea::rmBaseline(Baseline * b) {
+void WalkManager::rmBaseline(Baseline * b) {
 	_baselines.erase(b);
+	recomputeBaselines();
 }

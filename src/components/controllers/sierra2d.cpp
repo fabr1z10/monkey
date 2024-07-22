@@ -46,7 +46,7 @@ void PlayerSierra2DController::enable(bool value) {
 void Sierra2DController::start() {
 	auto& engine = Engine::instance();
 	auto room = engine.getRoom();
-	_walkArea = room->getRunner<WalkArea>();
+	_walkManager = room->getRunner<WalkManager>();
 
 }
 
@@ -77,9 +77,8 @@ void Sierra2DController::update(double) {
 
 
 void Sierra2DController::updateZ(float x, float y) {
-	if (_walkArea != nullptr) {
-		auto z = _walkArea->getZ(x, y);
-		std::cout << "z: " << z << "\n";
+	if (_walkManager != nullptr) {
+		auto z = _walkManager->getZ(x, y);
 		m_node->setZ(z);
 	}
 //    if (_zFunc) {
@@ -168,11 +167,11 @@ void PlayerSierra2DController::update(double dt) {
     if (dir == "w") {
         dir = "e";
     }
-    m_animatedRenderer->setVersion(dir);
+    //m_animatedRenderer->setVersion(dir);
 	if (anyPressed) {
-		m_animatedRenderer->setAnimation(_walkAnimation);
+		m_animatedRenderer->setAnimation(_walkAnimation + "_" + dir);
 	} else {
-		m_animatedRenderer->setAnimation(_idleAnimation);
+		m_animatedRenderer->setAnimation(_idleAnimation + "_" + dir);
 	}
 
 

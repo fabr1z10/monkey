@@ -355,7 +355,7 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(ms, "ConvexPoly")
         .def(py::init<const py::array_t<float>&>());
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
-		.def(py::init<const py::kwargs&>());
+		.def(py::init<const std::vector<float>&>());
     py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(ms, "Polygon")
         .def(py::init<const std::vector<float>&>());
 //
@@ -439,12 +439,16 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Scheduler, Runner, std::shared_ptr<Scheduler>>(m, "Scheduler")
 		.def("add", &Scheduler::add)
 		.def(py::init<>());
-    py::class_<WalkArea, Runner, std::shared_ptr<WalkArea>>(m, "WalkArea")
+    py::class_<WalkArea, std::shared_ptr<WalkArea>>(m, "WalkArea")
         .def("addPolyWall", &WalkArea::addPolyWall)
         .def("addLinearWall", &WalkArea::addLineWall)
         .def("addDynamic", &WalkArea::addDynamic)
         .def("recompute", &WalkArea::recompute)
-        .def(py::init<std::vector<float>&, int, glm::vec2>());
+        .def(py::init<std::vector<float>&, int>());
+    py::class_<WalkManager, Runner, std::shared_ptr<WalkManager>>(m, "WalkManager")
+        .def(py::init<glm::vec2>())
+        .def("addWalkArea", &WalkManager::addWalkArea);
+
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
         .def(py::init<>())
         .def("addEvent", &Clock::addEvent)

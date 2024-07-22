@@ -30,11 +30,11 @@ void SpriteRenderer::setModel(std::shared_ptr<Model> model, const pybind11::kwar
         _primitiveIds.push_back(_batch->getPrimitiveId());
     }
 	m_animation = py_get_dict<std::string>(args, "animation", m_sprite->getDefaultAnimation());
-    auto vpos = m_animation.find('_');
-    if (vpos != std::string::npos) {
-        _version = m_animation.substr(vpos+1);
-        m_animation = m_animation.substr(0, vpos);
-    }
+//    auto vpos = m_animation.find('_');
+//    if (vpos != std::string::npos) {
+//        _version = m_animation.substr(vpos+1);
+//        m_animation = m_animation.substr(0, vpos);
+//    }
 
 	_paletteId = py_get_dict<int>(args, "pal", 0);
 }
@@ -67,9 +67,9 @@ void SpriteRenderer::setAnimation(const std::string& anim) {
 		return;
 	}
 	auto animId = anim;
-	if (!_version.empty()) {
-	    animId += "_" + _version;
-	}
+	//if (!_version.empty()) {
+	//    animId += "_" + _version;
+	//}
     //auto animId = anim  "_" + _version;
 	m_complete = false;
 	m_animInfo = m_sprite->getAnimationInfo(animId);

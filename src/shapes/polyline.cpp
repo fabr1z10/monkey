@@ -1,9 +1,9 @@
 #include "polyline.h"
 #include "../pyhelper.h"
 
-PolyLine::PolyLine(const pybind11::kwargs &args) {
+PolyLine::PolyLine(const std::vector<float>& pts) {
 
-	auto pts = py_get_dict<std::vector<float>>(args, "points");
+	//auto pts = py_get_dict<std::vector<float>>(args, "points");
 	assert(pts.size() >= 4);
 	glm::vec2 previous(pts[0], pts[1]);
 	_points.push_back(previous);
@@ -22,6 +22,24 @@ PolyLine::PolyLine(const pybind11::kwargs &args) {
 	m_type = ShapeType::POLYLINE;
 
 }
+
+void PolyLine::addSeg(glm::vec2 A, glm::vec2 B) {
+    Seg s;
+    s.P0 = A;
+    s.P1 = B;
+    m_bounds.addPoint(B);
+    glm::vec2 v = s.P1 - s.P0;
+    s.n = glm::normalize(glm::vec2(-v.y, v.x));
+    _segs.push_back(s);
+}
+//
+//PolyLine::PolyLine(const std::vector<glm::vec2> &pts) : _points(pts) {
+//    for (size_t i = 0; i < _points.size(); ++i) {
+//        addSeg(_points[i], _points[(i+1) % _points.size()]);
+//    }
+//    m_type = ShapeType::POLYLINE;
+//
+//}
 
 float PolyLine::getY(float x) const {
 	int i = 0;

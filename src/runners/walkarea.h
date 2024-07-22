@@ -6,34 +6,28 @@
 
 class Baseline;
 
-
-class WalkArea : public Runner {
+class WalkArea {
 public:
-    WalkArea(std::vector<float> &p, float wallThickness, glm::vec2 yBounds);
+    WalkArea(std::vector<float> &p, float wallThickness);
 
     // polygon needs to be supplied in CCW!!!
     void addPolyWall(std::vector<float>& points);
     void addLineWall(std::vector<float>& points);
     void addDynamic(Node*);
     std::vector<glm::vec2> findPath(glm::vec2 source, glm::vec2 target);
-    void start() override;
-    void update(double) override {}
     glm::vec2 getClosestPointInArea(glm::vec2);
     void recompute();
-    void recomputeBaselines();
-    float getZ(float x, float y) const;
     float getScale(float x, float y) const;
-    void addBaseLine(Baseline*);
-    void rmBaseline(Baseline*);
+    std::shared_ptr<Node> getColliderNode();
 private:
-	struct PolygonInfo {
-		PolygonInfo(const std::vector<glm::vec2>& verts);
-		std::vector<glm::vec2> vertices;
-		std::vector<glm::vec2> unitEdges;
-		std::vector<float> lengths;
-		std::vector<glm::vec2> normals;
+    struct PolygonInfo {
+        PolygonInfo(const std::vector<glm::vec2>& verts);
+        std::vector<glm::vec2> vertices;
+        std::vector<glm::vec2> unitEdges;
+        std::vector<float> lengths;
+        std::vector<glm::vec2> normals;
 
-	};
+    };
 
     static std::vector<glm::vec2> vecCvt(const std::vector<float>& p) ;
     void processPoly(const std::vector<glm::vec2>& p, bool isHole, glm::vec2 origin= glm::vec2(0.f, 0.f));
@@ -51,7 +45,6 @@ private:
     void addPolygon(std::vector<float>& points, bool isHole);
 
     void pippo(Node*);
-    ICollisionEngine* _collisionEngine;
     //int _flag;
     float _wallThickness;
     std::unique_ptr<Graph> _graph;
@@ -64,6 +57,35 @@ private:
     float _adjust;
     std::vector<std::vector<glm::vec2>> _geometry;
     bool pointInWalkArea(glm::vec2);
-    float _za, _zb;
-    std::unordered_set<Baseline*> _baselines;
 };
+
+
+class WalkManager : public Runner {
+public:
+    WalkManager(glm::vec2 yBounds);
+    void start() override;
+    void update(double) override {}
+    WalkArea* getArea (int id);
+    void addWalkArea(std::shared_ptr<WalkArea> area);
+    void addBaseLine(Baseline*);
+    void rmBaseline(Baseline*);
+    void recomputeBaselines();
+    float getZ(float x, float y) const;
+
+private:
+    ICollisionEngine* _collisionEngine;
+    std::vector<std::shared_ptr<WalkArea>> _walkAreas;
+    std::unordered_set<Baseline*> _baselines;
+    float _za, _zb;
+
+};
+
+inline WalkArea * WalkManager::getArea(int id) {
+    return _walkAreas[id].get();
+}
+
+inline void WalkManager::addWalkArea(std::shared_ptr<WalkArea> area) {
+    _walkAreas.push_back(area);
+
+}
+

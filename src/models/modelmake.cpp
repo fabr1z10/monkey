@@ -26,7 +26,9 @@ ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
     _dss[std::type_index(typeid(ConvexPoly))] = &ModelMaker::makeConvexPoly;
     _dss[std::type_index(typeid(CompoundShape))] = &ModelMaker::makeCompoundShape;
     _dss[std::type_index(typeid(AABB))] = &ModelMaker::makeAABB;
-	_dss[std::type_index(typeid(AABB3D))] = &ModelMaker::makeAABB3D;
+    _dss[std::type_index(typeid(Point))] = &ModelMaker::makePoint;
+
+    _dss[std::type_index(typeid(AABB3D))] = &ModelMaker::makeAABB3D;
 	_dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
 	_dss[std::type_index(typeid(PolyLine))] = &ModelMaker::makePolyLine;
 
@@ -139,6 +141,20 @@ std::shared_ptr<Model> ModelMaker::makePoly(const std::shared_ptr<Shape> &s, glm
 
 	}
 	return lines;
+}
+
+std::shared_ptr<Model> ModelMaker::makePoint(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft) {
+
+    std::vector<float> data = {
+            -1.f,-1.f, 0.f,
+            1.f, -1.f, 0.f,
+            1.f, 1.f, 0.f,
+            -1.f, 1.f, 0.f
+    };
+    auto lines = std::make_shared<PolyChain>(_batchId);
+    lines->initChain(color, data, true);//1, pts, glm::vec4(1.f));
+
+    return lines;
 }
 
 std::shared_ptr<Model> ModelMaker::makeAABB(const std::shared_ptr<Shape>& s, glm::vec4 color, FillType ft) {
