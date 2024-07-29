@@ -58,7 +58,7 @@ std::vector<glm::vec2> Graph::findPath(int source, int target) const {
 
     // now check if target is reachable
     if (reachableNodes.count(target) > 0) {
-        std::cout << "target is reachable\n";
+
         std::vector<glm::vec2> path;
         int curr = target;
         while (curr != -1) {

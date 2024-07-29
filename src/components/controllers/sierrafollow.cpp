@@ -10,6 +10,7 @@ WalkableCharacter::WalkableCharacter(float speed, const pybind11::kwargs &args) 
     _flipHorizontal = py_get_dict<bool>(args, "flip_horizontal", true);
     _direction = py_get_dict<std::string>(args, "direction", "e");
     _customCallback = py_get_dict<pybind11::function>(args, "callback", pybind11::function());
+    _walkAreaId = py_get_dict<int>(args, "walk_area");
 }
 
 void WalkableCharacter::sendMessage(const pybind11::kwargs &args) {
@@ -40,7 +41,8 @@ NPCSierraFollow::NPCSierraFollow(pybind11::function f, float speed, float recomp
 }
 
 void WalkableCharacter::start() {
-    _walkArea = Engine::instance().getRoom()->getRunner<WalkArea>();
+	Sierra2DController::start();
+    _walkArea = _walkManager->getArea(_walkAreaId);
 
     m_animatedRenderer = m_node->getComponent<Renderer>();
 	m_node->setFlipX(_direction == "w");

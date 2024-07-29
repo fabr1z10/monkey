@@ -20,8 +20,8 @@ protected:
 	WalkManager* _walkManager;
 
 private:
-    pybind11::function _zFunc;
-    pybind11::function _scaleFunc;
+    //pybind11::function _zFunc;
+    //pybind11::function _scaleFunc;
     //float _yFront;
     //float _yBack;
     //float _a, _b;
@@ -53,7 +53,7 @@ private:
 	Renderer* m_animatedRenderer;
 	ICollisionEngine* m_collisionEngine;
 
-	std::string _dir;
+
 	bool _lookingLeft;
 	float _halfWidth;
 	float _skinWidth;

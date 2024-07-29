@@ -24,6 +24,11 @@ void TextEdit::sendMessage(const std::string & text) {
 
 }
 
+void TextEdit::setText(const std::string & text) {
+	_listener->setText(text);
+	updateText(_prompt + text + _cursor);
+}
+
 int TextEdit::TextEditListener::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
 
     if (_node->getState() != NodeState::ACTIVE) {

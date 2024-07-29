@@ -482,13 +482,13 @@ float WalkManager::getZ(float x, float y) const {
 		}
 		float yb = bl->getPolyline()->getY(x - x0) + pos.y;
 		if (y < yb) {
-			std::cout << "below " << "(" << x << ", " << x0 << "), " << y << " " << yb << "\n";
+			//std::cout << "below " << "(" << x << ", " << x0 << "), " << y << " " << yb << "\n";
 			if (md < 0 || md > (yb-y)) {
 				md = yb- y;
 				referenceBaseline = bl;
 			}
 		} else {
-			std::cout << "above " << "(" << x << ", " << x0 << "), " << y << " " << yb << "\n";
+			//std::cout << "above " << "(" << x << ", " << x0 << "), " << y << " " << yb << "\n";
 		}
 	}
 	if (referenceBaseline != nullptr) {

@@ -30,6 +30,7 @@ protected:
     double _distanceCovered;
     Renderer* m_animatedRenderer;
     WalkArea * _walkArea;
+	int _walkAreaId;
     std::string _idleAnim;
     std::string _walkAnim;
     bool _useAnimDirection;

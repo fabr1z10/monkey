@@ -94,7 +94,7 @@ void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
     }
 
     // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    //glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     Engine::WindowResizeCallback(window, _windowSize[0], _windowSize[1]);
     glfwSetKeyCallback(window, key_callback );
     if (_enableMouse) {

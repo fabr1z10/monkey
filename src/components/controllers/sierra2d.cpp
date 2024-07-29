@@ -10,10 +10,12 @@
 extern GLFWwindow* window;
 
 Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component(args) {
+	_direction = py_get_dict<std::string>(args, "dir", "e");
+
     //_yFront = py_get_dict<float>(args, "y_front");
     //_yBack = py_get_dict<float>(args, "y_back");
-    _zFunc = py_get_dict<pybind11::function>(args, "z_func", pybind11::function());
-    _scaleFunc = py_get_dict<pybind11::function>(args, "scale_func", pybind11::function());
+    //_zFunc = py_get_dict<pybind11::function>(args, "z_func", pybind11::function());
+    //_scaleFunc = py_get_dict<pybind11::function>(args, "scale_func", pybind11::function());
 
     //_a = 2.f / (_yFront - _yBack);
     //_b = (_yBack + _yFront) / (_yBack - _yFront);
@@ -29,7 +31,6 @@ PlayerSierra2DController::PlayerSierra2DController(const pybind11::kwargs &args)
 	_skinWidth = py_get_dict<float>(args, "skinWidth", .015f);
 	_idleAnimation = py_get_dict<std::string>(args, "idle", "idle");
 	_walkAnimation = py_get_dict<std::string>(args, "walk", "walk");
-	_dir = py_get_dict<std::string>(args, "dir", "e");
 	_speed = py_get_dict<float>(args, "speed");
 }
 
@@ -60,6 +61,10 @@ void PlayerSierra2DController::start() {
 	auto room = engine.getRoom();
 	m_collisionEngine = room->getRunner<ICollisionEngine>();
 	M_Assert(m_collisionEngine != nullptr, "The component PlayerSierra2DController requires a collision engine.");
+	auto dir = _direction == "w" ? "e" : _direction;
+	m_animatedRenderer->setAnimation(_idleAnimation + "_" +dir);
+	m_node->setFlipX(_direction == "w");
+	std::cout << "position = " << m_node->getX() << ", " << m_node->getY() << ", " << _direction << "\n";
 }
 
 void Sierra2DController::update(double) {
@@ -114,12 +119,12 @@ void PlayerSierra2DController::update(double dt) {
 		_lookingLeft = false;
 
 	if (leftPressed || rightPressed) {
-		_dir = "e";
+		_direction = leftPressed ? "e" : "w";
 	} else {
 		if (upPressed)
-			_dir = "n";
+			_direction = "n";
 		else if (downPressed)
-			_dir = "s";
+			_direction = "s";
 	}
 
 
@@ -128,7 +133,9 @@ void PlayerSierra2DController::update(double dt) {
 	float dx = (leftPressed || rightPressed ? 1.f : 0.f) * _speed * dt;
 	float dy = (upPressed ? 1.f : (downPressed ? -1.f : 0.f)) * _speed * dt;
 
-	m_node->setFlipX(_lookingLeft);
+	if (anyPressed) {
+		m_node->setFlipX(_lookingLeft);
+	}
 	float dir_x = _lookingLeft ? -1.f : 1.f;
 	float dir_y = (dy > 0) ? 1.f : -1.f;
 	auto pos = m_node->getWorldPosition();
@@ -163,7 +170,7 @@ void PlayerSierra2DController::update(double dt) {
     // update z
     Sierra2DController::update(dt);
 
-    std::string dir(_dir);
+    std::string dir(_direction);
     if (dir == "w") {
         dir = "e";
     }

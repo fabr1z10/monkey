@@ -253,10 +253,10 @@ PYBIND11_MODULE(monkey, m) {
         .def("updateText", &Text::updateText)
         .def("getText", &Text::getText)
 		.def_property_readonly("size", &Text::getSize);
-	py::class_<TextEdit, Node, std::shared_ptr<TextEdit>>(m, "TextEdit")
+	py::class_<TextEdit, Text, std::shared_ptr<TextEdit>>(m, "TextEdit")
 		.def(py::init<const std::string&, const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
-			 "batch"_a, "font"_a, "prompt"_a, "cursor"_a);
-
+			 "batch"_a, "font"_a, "prompt"_a, "cursor"_a)
+		.def("setText", &TextEdit::setText);
 
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
