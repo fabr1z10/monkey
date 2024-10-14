@@ -168,10 +168,11 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::ve
                         glm::vec2 textureRepeat, int palette, bool fliph, bool flipv, float zLayer,
                         const glm::mat4 &transform, glm::vec2 texOffset)
 {
-    float dx = fliph ? -size.x : size.x;
+    float dx = size.x; // fliph ? -size.x : size.x;
 
     float txl = texOffset.x; //fliph ? textureRepeat.x : 0.f;
     float txr = texOffset.x + textureRepeat.x; //fliph ? 0.f : textureRepeat.x;
+    if (fliph) std::swap(txl, txr);
     float tyb = texOffset.y + (flipv ? 0.f : textureRepeat.y);
     float tyt = texOffset.y + (flipv ? textureRepeat.y : 0.f);
     float palY = _invPaletteCount * (0.5f + palette);

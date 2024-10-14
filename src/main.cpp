@@ -103,6 +103,8 @@
 #include "runners/mousemanager.h"
 #include "actions/walk.h"
 #include "actions/turn.h"
+#include "nodes/tileworld.h"
+#include "components/controllers/tilecontroller.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -257,7 +259,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const std::string&, const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
 			 "batch"_a, "font"_a, "prompt"_a, "cursor"_a)
 		.def("setText", &TextEdit::setText);
-
+	py::class_<TileWorld, Node, std::shared_ptr<TileWorld>>(m, "TileWorld")
+		.def(py::init<int, int, int, const std::string&, const std::string&, const pybind11::kwargs&>(), "width"_a, "height"_a, "size"_a, "file"_a, "batch"_a);
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
 
@@ -533,7 +536,8 @@ PYBIND11_MODULE(monkey, m) {
 //			 "halign"_a, "valign"_a, py::kw_only());
 	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "SierraEnable")
 		.def(py::init<int, bool>(), "id"_a, "value"_a);
-//	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "SierraChangeAnim")
+
+	//	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "SierraChangeAnim")
 //		.def(py::init<int, const std::string&, const std::string&>(), "id"_a, "idle"_a, "walk"_a);
 //
 //
@@ -601,7 +605,11 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>());
-//	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
+
+	py::class_<TileController, Component, std::shared_ptr<TileController>>(mc, "TileController")
+		.def(py::init<float, float, float, py::kwargs&>());
+
+	//	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
     py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
         .def_property_readonly("direction", &Sierra2DController::getDirection)
