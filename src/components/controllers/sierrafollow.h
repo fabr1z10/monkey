@@ -52,7 +52,8 @@ public:
     NPCSierraFollow(pybind11::function f, float speed, float recomputePeriod, const pybind11::kwargs& args);
     void start() override;
     void update(double) override;
-    void sendMessage(const pybind11::kwargs& args) override;
+    void setFunction(const pybind11::kwargs& kwargs);
+    //void sendMessage(const pybind11::kwargs& args) override;
     std::type_index getType() {
         return std::type_index(typeid(WalkableCharacter));
     }

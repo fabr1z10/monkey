@@ -84,20 +84,33 @@ void Controller2D::resetCollisions() {
 	m_slopeAngle = 0.0f;
 }
 
+// in general v.x > 0 means foing forward, v.x < 0 going back
+// then we have the following table:
+//  v.x > 0   flip        going
+// -----------------------------------
+//    T       F           right
+//    T       T			  left
+//    F       F           left
+//    F       T			  right
+// so we can say that we go right if v.x > 0 != flip and viceversa.
 void Controller2D::descendSlope(glm::vec3& velocity) {
+	//std::cout << "calling descendslope with " << velocity.x << "\n";
 	if (velocity.x == 0.0f) return;
 	bool goingForward = velocity.x > 0.0f;
-	auto directionX = signf(velocity.x);
-	auto r0 = directionX > 0.f ? m_raycastOrigins.bottomFwd : m_raycastOrigins.bottomBack;
-	RayCastHit hit = m_collisionEngine->rayCastY(r0, 100.0f, m_maskDown, m_node);
+	//auto directionX = signf(velocity.x);
+	float dir_x = (goingForward == m_node->getFlipX()) ? -1.f : 1.f;
+
+	auto r0 = dir_x > 0.f ? m_raycastOrigins.bottomFwd : m_raycastOrigins.bottomBack;
+	RayCastHit hit = m_collisionEngine->rayCastY(r0, -100.0f, m_maskDown, m_node);
+	//std::cout << "hit = " << hit.collide<<"\n";
 	if (hit.collide) {
 		float slopeAngle = angle(hit.normal, glm::vec3(0.f, 1.f, 0.f));
 		if (slopeAngle != 0 && slopeAngle <= m_maxDescendAngle) {
-			if (signf(hit.normal.x) == directionX) {
+			if (signf(hit.normal.x) == dir_x) {
 				if (hit.length - m_skinWidth <= tan(slopeAngle) * fabs(velocity.x)) {
 					float moveDistance = fabs(velocity.x);
 					float descendVelocityY = sin(slopeAngle) * moveDistance;
-					velocity.x = directionX *cos(slopeAngle) * moveDistance;// * sign(velocity.x);
+					velocity.x = signf(velocity.x) *cos(slopeAngle) * moveDistance;// * sign(velocity.x);
 					velocity.y -= descendVelocityY;
 					m_slopeAngle = slopeAngle;
 					m_descendingSlope = true;

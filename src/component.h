@@ -21,7 +21,7 @@ public:
     virtual void update(double) {}
     virtual void setNode(Node*);
     Node* getNode();
-    virtual void sendMessage(const pybind11::kwargs& args) {}
+    //virtual void sendMessage(const pybind11::kwargs& args) {}
     virtual void setState(NodeState state);
     NodeState getState() const;
 	//using Base = Component;

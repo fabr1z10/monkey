@@ -281,6 +281,7 @@ void Room::start() {
 
 }
 void Room::end() {
+	if (m_onEnd) m_onEnd();
 }
 
 //void Room::addLight(std::shared_ptr<Light> light) {

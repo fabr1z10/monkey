@@ -20,5 +20,5 @@ private:
 
     static std::unordered_map<long, std::vector<int>> _globalSchedule;
     std::unordered_map<long, std::vector<int>> _roomSchedule;
-	std::unordered_map<int, pybind11::function> _callbacks;
+	static std::unordered_map<int, pybind11::function> _callbacks;
 };

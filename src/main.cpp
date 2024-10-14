@@ -103,6 +103,8 @@
 #include "runners/mousemanager.h"
 #include "actions/walk.h"
 #include "actions/turn.h"
+#include "components/parallax.h"
+#include "components/nodeevent.h"
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
@@ -210,6 +212,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("add_batch", &Room::addBatch)
 		.def("hasBatch", &Room::hasBatch)
 		.def("addOnStart", &Room::addOnStart)
+		.def("setOnEnd", &Room::setOnEnd)
 //        //.def("add_line_batch", &Room::addLinesBatch)
 		.def("set_clear_color", &Room::setClearColor)
 //		.def("set_main_cam", &Room::setMainCam)
@@ -232,8 +235,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def("getNodes", &Node::getNodes, py::return_value_policy::reference)
 		.def("setPalette", &Node::setPalette)
         .def("sendMessage", &Node::sendMessage)
-        .def("setBehavior", &Node::setBehavior)
-        .def("addBehavior", &Node::addBehavior)
+        .def("addMessage", &Node::addMessage)
+        //.def("setBehavior", &Node::setBehavior)
+        //.def("addBehavior", &Node::addBehavior)
         .def("getLabelledComponent", &Node::getTaggedComponent, py::return_value_policy::reference)
         .def_property_readonly("id", &Node::getId)
         .def_property_readonly("x", &Node::getX)
@@ -241,6 +245,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("z", &Node::getZ)
 		.def_property_readonly("collisionTag", &Node::getCollisionTag)
         .def("setAnimation", &Node::setAnimation)
+        .def_property_readonly("flip_x", &Node::getFlipX)
         .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("state", &Node::getState, &Node::setState)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData)
@@ -442,11 +447,13 @@ PYBIND11_MODULE(monkey, m) {
     py::class_<WalkArea, std::shared_ptr<WalkArea>>(m, "WalkArea")
         .def("addPolyWall", &WalkArea::addPolyWall)
         .def("addLinearWall", &WalkArea::addLineWall)
-        .def("addDynamic", &WalkArea::addDynamic)
+        //.def("addDynamic", &WalkArea::addDynamic)
         .def("recompute", &WalkArea::recompute)
         .def(py::init<std::vector<float>&, int>());
     py::class_<WalkManager, Runner, std::shared_ptr<WalkManager>>(m, "WalkManager")
         .def(py::init<glm::vec2>())
+		.def("recompute", &WalkManager::recomputeWalkareas)
+        .def("recomputeBaselines", &WalkManager::recomputeBaselines)
         .def("addWalkArea", &WalkManager::addWalkArea);
 
     py::class_<Clock, Runner, std::shared_ptr<Clock>>(m, "Clock")
@@ -552,6 +559,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("getQuadPalette", &BatchRenderer<QuadBatch>::getPrimitivePalette);
 	py::class_<IQuadsRenderer, BatchRenderer<QuadBatch>, std::shared_ptr<IQuadsRenderer>>(m, "iquadsrenderer");
 
+
 //
 //	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");
 //
@@ -616,12 +624,23 @@ PYBIND11_MODULE(monkey, m) {
         .def("setCallback", &WalkableCharacter::setCallback)
         .def("goto", &WalkableCharacter::goTo);
     py::class_<NPCSierraFollow, WalkableCharacter, std::shared_ptr<NPCSierraFollow>>(mc, "NPCSierraFollow")
-        .def(py::init<pybind11::function, float, float, py::kwargs&>());
+        .def(py::init<pybind11::function, float, float, py::kwargs&>())
+        .def("setFunc", &NPCSierraFollow::setFunction);
 
-	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D");
+	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D")
+        .def_property("direction", &Walk2D::getDirection, &Walk2D::setDirection)
+        .def_property_readonly("grounded", &Walk2D::grounded)
+        .def_property("speed", &Walk2D::getSpeed, &Walk2D::setSpeed)
+
+        .def("jump", &Walk2D::jump);
 	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
 		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
         "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
+    py::class_<CustomWalk2D, Walk2D, std::shared_ptr<CustomWalk2D>>(mc, "CustomWalk2D")
+        .def(py::init<float, float, float, float, const pybind11::object, const pybind11::kwargs&>(), "max_speed"_a,
+             "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, "internal"_a,py::kw_only())
+        .def("isPressed", &CustomWalk2D::isPressed);
+
     py::class_<FoeWalk2D, Walk2D, std::shared_ptr<FoeWalk2D>>(mc, "FoeWalk2D")
         .def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
         "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
@@ -641,7 +660,16 @@ PYBIND11_MODULE(monkey, m) {
 //
 	py::class_<Follow, Component, std::shared_ptr<Follow>>(mc, "Follow")
 		.def(py::init<int, const pybind11::kwargs&>(), py::arg("camId"), py::kw_only());
-//
+
+	py::class_<Parallax, Component, std::shared_ptr<Parallax>>(mc, "Parallax")
+		.def(py::init<int, float, glm::vec2, glm::vec2, const pybind11::kwargs&>(),
+		        py::arg("camId"), py::arg("z"), py::arg("base"), py::arg("factor"),py::kw_only());
+	py::class_<NodeEvent, Component, std::shared_ptr<NodeEvent>>(mc, "NodeEvent")
+		.def(py::init<float, float, const pybind11::kwargs&>(), py::arg("width"), py::arg("height"), py::kw_only())
+		.def("addEventX", &NodeEvent::addEventX)
+		.def("addEventY", &NodeEvent::addEventY);
+
+	//
 	py::class_<Platform, Component, std::shared_ptr<Platform>>(mc, "Platform")
 		.def(py::init<const pybind11::kwargs&>());
 //

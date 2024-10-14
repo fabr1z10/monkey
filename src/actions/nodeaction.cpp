@@ -21,6 +21,10 @@ void NodeAction::start() {
 	if (m_node == nullptr) {
 		//if (_tag.empty()) {
 		m_node = Engine::instance().getNode(m_nodeId);
+		m_node->onRemove.reg([&] (Node* node) {
+			m_node = nullptr;
+			_status = 2;
+		});
 		//} else {
 		//		m_node = (*Engine::instance().getNodes(_tag).begin());
 		//}

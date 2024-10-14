@@ -24,12 +24,21 @@ void WalkableCharacter::sendMessage(const pybind11::kwargs &args) {
 
 }
 
-void NPCSierraFollow::sendMessage(const pybind11::kwargs &args) {
-    auto id = py_get_dict<std::string>(args, "id");
-    if (id == "setFunc") {
-        _func = py_get_dict<pybind11::function>(args, "func", pybind11::function());
-    }
+void NPCSierraFollow::setFunction(const pybind11::kwargs& args) {
+	_func = py_get_dict<pybind11::function>(args, "func", pybind11::function());
+	if (_func) {
+		_toGoPoints.clear();
+	}
 }
+//void NPCSierraFollow::sendMessage(const pybind11::kwargs &args) {
+//    auto id = py_get_dict<std::string>(args, "id");
+//    if (id == "setFunc") {
+//        _func = py_get_dict<pybind11::function>(args, "func", pybind11::function());
+//        if (!_func) {
+//        	_toGoPoints.clear();
+//        }
+//    }
+//}
 
 
 NPCSierraFollow::NPCSierraFollow(pybind11::function f, float speed, float recomputePeriod,
@@ -45,7 +54,9 @@ void WalkableCharacter::start() {
     _walkArea = _walkManager->getArea(_walkAreaId);
 
     m_animatedRenderer = m_node->getComponent<Renderer>();
-	m_node->setFlipX(_direction == "w");
+    if (_flipHorizontal) {
+		m_node->setFlipX(_direction == "w");
+	}
 }
 
 void NPCSierraFollow::start() {
@@ -108,12 +119,12 @@ void WalkableCharacter::animate() {
 			    _direction = (_delta.x > 0.f) ? "e" : "w";
 			}
 		}
-    	m_node->setFlipX(_direction == "w");
+    	if (_flipHorizontal) {
+			m_node->setFlipX(_direction == "w");
+		}
     	auto dir = (_direction == "w" ? "e" : _direction);
-		//anim += "_" + dir;
-		m_animatedRenderer->setVersion(dir);
-    } else {
-        std::cout << "succaz " << anim << "\n";
+		anim += "_" + dir;
+		//m_animatedRenderer->setVersion(dir);
     }
     m_animatedRenderer->setAnimation(anim);
 }
@@ -159,7 +170,7 @@ void WalkableCharacter::update(double dt) {
 }
 
 void NPCSierraFollow::update(double dt) {
-
+	if (!_func) return;
     _time += dt;
     if (_time > _recomputeEvery || _toGoPoints.empty()) {
         _time = 0.0;

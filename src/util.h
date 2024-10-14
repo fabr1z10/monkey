@@ -74,4 +74,5 @@ glm::vec2 rot90(glm::vec2 in, bool clockwise = false);
 
 std::vector<glm::vec2> DouglasPeucker(std::vector<glm::vec2>& pointList, float epsilon, int i0, int i1) ;
 
-
+// test whether point B lies left of OA
+int leftOf(glm::vec2 O, glm::vec2 A, glm::vec2 B) ;

@@ -1,9 +1,27 @@
 #include <list>
 #include "graph.h"
+#include "../util.h"
+
+bool GraphNode::test(glm::vec2 P) const {
+    if (polygonIndex == -1) {
+        return true;
+    }
+    bool inside = true;
+    if (convex && !hole) {
+        inside &= leftOf(pos, previous, P) < 0 && leftOf(pos, next, P) > 0;
+    } else if (convex && hole) {
+        inside &= !(leftOf(pos, previous, P) <= 0 && leftOf(pos, next, P) >= 0);
+    } else if (!convex && !hole) {
+        inside &= !(leftOf(pos, previous, P) >= 0 && leftOf(pos, next, P) <= 0);
+    } else if (!convex && hole) {
+        inside &= leftOf(pos, previous, P) > 0 && leftOf(pos, next, P) < 0;
+    }
+    return inside;
+}
 
 int Graph::addNode(GraphNode node) {
     int index = _nextNodeId++;
-    _nodes[index] = node;
+    _nodes.insert({index, node});
     return index;
 }
 

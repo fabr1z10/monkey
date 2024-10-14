@@ -7,7 +7,19 @@
 #include <unordered_set>
 
 struct GraphNode {
+    GraphNode(glm::vec2 position, int polyIndex, int vertexIndex, bool convex, bool hole, glm::vec2 prev, glm::vec2 next)
+        : pos(position), polygonIndex(polyIndex), vertexIndex(vertexIndex), convex(convex), hole(hole), previous(prev), next(next) {}
+
+    GraphNode(glm::vec2 position) : pos(position), polygonIndex(-1), vertexIndex(-1), convex(false), hole(false) {}
+
     glm::vec2 pos;
+    int polygonIndex;
+    int vertexIndex;
+    bool convex;
+    bool hole;
+    glm::vec2 previous;
+    glm::vec2 next;
+    bool test(glm::vec2 P) const;
 };
 
 class Graph {

@@ -1,12 +1,16 @@
 #include "clock.h"
+#include <iostream>
+
 
 std::unordered_map<long, std::vector<int>> Clock::_globalSchedule;
+std::unordered_map<int, pybind11::function> Clock::_callbacks;
+
 double Clock::_globalTime = 0.0;
 long Clock::_globalSeconds = 0;
 
 
 Clock::Clock() : Runner(), _roomTime(0.0), _roomSeconds(0), _counter(0) {
-
+	std::cout << "global time: " << _globalTime << "\n";
 }
 
 
@@ -14,6 +18,7 @@ void Clock::execute(int id) {
 	auto it = _callbacks.find(id);
 	if (it != _callbacks.end()) {
 		it->second();
+		_callbacks.erase(it);
 	}
 }
 void Clock::update(double dt) {

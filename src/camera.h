@@ -24,6 +24,7 @@ public:
     virtual Bounds getViewingBounds() const = 0;
     //std::string getCameraName() const;
     glm::vec4 getViewport() const;
+    glm::vec2 getPosition() const;
 protected:
     glm::vec3 _fwd;
     glm::vec3 _up;
@@ -39,6 +40,10 @@ protected:
     //std::string _id;
 };
 
+inline glm::vec2 Camera::getPosition() const {
+	return _eye;
+}
+
 inline const glm::mat4 & Camera::getViewMatrix() const {
     return _viewMatrix;
 }
@@ -53,12 +58,17 @@ public:
     OrthoCamera(float width, float height, const py::kwargs& kwargs);
     glm::vec2 getWorldCooridnates(float x, float y) override;
 	Bounds getViewingBounds() const override;
+	glm::vec2 getSize() const;
 private:
     float _orthoWidth;
     float _orthoHeight;
     glm::vec3 _halfSize;
 
 };
+
+inline glm::vec2 OrthoCamera::getSize() const {
+	return glm::vec2(_orthoWidth, _orthoHeight);
+}
 
 
 //class PerspectiveCamera : public Camera {

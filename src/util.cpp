@@ -160,3 +160,9 @@ std::vector<glm::vec2> DouglasPeucker(std::vector<glm::vec2>& pointList, float e
     // Ritorna il risultato
     return resultList;
 }
+
+
+int leftOf(glm::vec2 O, glm::vec2 A, glm::vec2 B) {
+    float cross = (A.x - O.x) * (B.y - O.y) - (A.y - O.y) * (B.x - O.x);
+    return (cross > 0 ? 1 : (cross < 0 ? -1 : 0));
+}

@@ -371,17 +371,17 @@ void Node::rotate(float angle, glm::vec3 axis) {
 
 }
 
-void Node::sendMessage(const pybind11::kwargs & args) {
-    for (const auto& component : m_components) {
-        component.second->sendMessage(args);
-    }
+//void Node::sendMessage(const pybind11::kwargs & args) {
+//    for (const auto& component : m_components) {
+//        component.second->sendMessage(args);
+//    }
+//}
+
+void Node::sendMessage(const std::string& id, const pybind11::kwargs& args) {
+    _messages.at(id)(**args);
 }
 
-void Node::setBehavior(const std::string& id) {
-    _behaviors[id]();
-}
-
-void Node::addBehavior(const std::string& id, pybind11::function f) {
-    _behaviors[id] = f;
+void Node::addMessage(const std::string& id, pybind11::function f) {
+    _messages[id] = f;
 
 }

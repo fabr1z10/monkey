@@ -11,15 +11,23 @@ public:
     WalkArea(std::vector<float> &p, float wallThickness);
 
     // polygon needs to be supplied in CCW!!!
-    void addPolyWall(std::vector<float>& points);
-    void addLineWall(std::vector<float>& points);
-    void addDynamic(Node*);
+    void addPolyWall(std::vector<float>& points, Node*);
+    void addLineWall(std::vector<float>& points, Node*);
+    //void addDynamic(Node*);
     std::vector<glm::vec2> findPath(glm::vec2 source, glm::vec2 target);
     glm::vec2 getClosestPointInArea(glm::vec2);
     void recompute();
     float getScale(float x, float y) const;
     std::shared_ptr<Node> getColliderNode();
 private:
+	struct Geometry {
+		Node* node;
+		bool hole;
+		std::vector<glm::vec2> points;
+		int size() const {
+			return points.size();
+		}
+	};
     struct PolygonInfo {
         PolygonInfo(const std::vector<glm::vec2>& verts);
         std::vector<glm::vec2> vertices;
@@ -30,19 +38,21 @@ private:
     };
 
     static std::vector<glm::vec2> vecCvt(const std::vector<float>& p) ;
-    void processPoly(const std::vector<glm::vec2>& p, bool isHole, glm::vec2 origin= glm::vec2(0.f, 0.f));
+    void processPoly(const int);
     void processPolyline(const std::vector<Seg>& p, glm::vec2 origin);
     int addNode(glm::vec2 P);
     bool intersectsGeometry(glm::vec2 A, glm::vec2 B);
     void updateClosestPoint(const PolygonInfo& poly, glm::vec2 P, float& bestSoFar, glm::vec2& closest, glm::vec2& normal);
     struct WallInfo {
-        WallInfo(glm::vec2 p0, glm::vec2 p1, int node1, int node2) : p0(p0), p1(p1), node1(node1), node2(node2) {}
+        WallInfo(glm::vec2 p0, glm::vec2 p1, int polyIndex, int node1, int node2) : p0(p0), p1(p1),
+        polyIndex(polyIndex), node1(node1), node2(node2) {}
         glm::vec2 p0;
         glm::vec2 p1;
+        int polyIndex;
         int node1;
         int node2;
     };
-    void addPolygon(std::vector<float>& points, bool isHole);
+    //void addPolygon(std::vector<float>& points, bool isHole);
 
     void pippo(Node*);
     //int _flag;
@@ -52,11 +62,11 @@ private:
     std::unique_ptr<PolygonInfo> _walkArea;
     std::vector<std::unique_ptr<PolygonInfo>> _holes;
     std::vector<Node*> _dynamicHoles;
-    std::unordered_set<std::pair<int, int>> _adjacentNodes;
+    //std::unordered_set<std::pair<int, int>> _adjacentNodes;
     int _currentPoly;
     float _adjust;
-    std::vector<std::vector<glm::vec2>> _geometry;
-    bool pointInWalkArea(glm::vec2);
+    std::vector<Geometry> _geometry;
+    bool pointInWalkArea(glm::vec2, int);
 };
 
 
@@ -70,6 +80,7 @@ public:
     void addBaseLine(Baseline*);
     void rmBaseline(Baseline*);
     void recomputeBaselines();
+    void recomputeWalkareas();
     float getZ(float x, float y) const;
 
 private:

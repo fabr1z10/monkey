@@ -23,11 +23,20 @@ Walk2D::Walk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, f
 		_acceleration = 0.f;
 	else
 		_acceleration = _maxSpeedGround / _accelerationTime;
-	_maxSpeedAir = py_get_dict<float>(args, "max_speed_air", _maxSpeedGround);
+	//_maxSpeedAir = py_get_dict<float>(args, "max_speed_air", _maxSpeedGround);
 
 	// flip horizontally when moving left
 	_flipH = py_get_dict<bool>(args, "flip_h", true);
 }
+
+// you can allow for double jump here
+void Walk2D::jump() {
+    if (_controller->grounded()) {
+        _v.y = _jumpVelocity;
+    }
+
+}
+
 
 PlayerWalk2D::PlayerWalk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
 	const pybind11::kwargs &args) : Walk2D(maxSpeedGround, accelerationTime, jumpHeight,
@@ -35,13 +44,28 @@ PlayerWalk2D::PlayerWalk2D(float maxSpeedGround, float accelerationTime, float j
     _jmpKey = py_get_dict<int>(args, "jmp_key", GLFW_KEY_UP);
 }
 
+CustomWalk2D::CustomWalk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
+    const pybind11::object internal, const pybind11::kwargs &args) : Walk2D(maxSpeedGround, accelerationTime, jumpHeight, timeToJumpApex, args), _internal(internal) {
+    _internalControl = _internal.attr("update").cast<pybind11::function>();
+
+}
+
+void CustomWalk2D::control() {
+    _internalControl(this);
+}
+
+int CustomWalk2D::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        _internal.attr("onKeyPress")(key);
+    }
+
+}
 
 FoeWalk2D::FoeWalk2D(float maxSpeedGround, float accelerationTime, float jumpHeight, float timeToJumpApex,
     const pybind11::kwargs &args) : Walk2D(maxSpeedGround, accelerationTime, jumpHeight, timeToJumpApex, args) {
     _flipPlatformEdge = py_get_dict<bool>(args, "flip_platform_edge", true);
     //_flipH = py_get_dict<bool>(args, "flip_h", true);
     _direction = py_get_dict<int>(args, "dir", -1);
-
 }
 
 
@@ -50,7 +74,10 @@ void Walk2D::start() {
 	assert(_controller != nullptr);
 }
 
-
+void CustomWalk2D::start() {
+    Walk2D::start();
+    _internal.attr("start")(this);
+}
 void Walk2D::update(double dt) {
 
 	auto dtf = static_cast<float>(dt);
@@ -67,7 +94,7 @@ void Walk2D::update(double dt) {
 		_v.y = std::max(0.f, _v.y);
 	} else {
 		// bump head
-		maxSpeed = _maxSpeedAir;
+		maxSpeed = _maxSpeedGround;
 		if (_controller->ceiling()) {
 			_v.y = 0;
 		}
@@ -114,6 +141,7 @@ void Walk2D::update(double dt) {
 
 }
 
+
 void PlayerWalk2D::control() {
     bool left = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
     bool right = glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS;
@@ -130,6 +158,10 @@ void PlayerWalk2D::control() {
         _v.y = _jumpVelocity;
     }
 
+}
+
+bool CustomWalk2D::isPressed(int key) {
+    return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
 void FoeWalk2D::control() {

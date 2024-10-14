@@ -85,6 +85,7 @@ void Sierra2DController::updateZ(float x, float y) {
 	if (_walkManager != nullptr) {
 		auto z = _walkManager->getZ(x, y);
 		m_node->setZ(z);
+		//std::cout << " z = " << z << "\n";
 	}
 //    if (_zFunc) {
 //        auto z = _zFunc(x, y).cast<float>();

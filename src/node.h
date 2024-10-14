@@ -62,7 +62,7 @@ public:
 	void movea(glm::vec3 delta);
 	std::shared_ptr<Model> getModel();
 	virtual void setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args = pybind11::kwargs());
-    virtual void sendMessage(const pybind11::kwargs&);
+    //virtual void sendMessage(const pybind11::kwargs&);
 
 	Bounds getBounds();
 //	std::string getState() const;
@@ -91,8 +91,8 @@ public:
 	//void setText(const std::string&);
 	void setScale(float);
 	float getScale() const;
-	void setBehavior(const std::string& id);
-	void addBehavior(const std::string& id, pybind11::function f);
+	void sendMessage(const std::string& id, const pybind11::kwargs& args);
+	void addMessage(const std::string& id, pybind11::function f);
 	Component* getTaggedComponent(const std::string& id);
 protected:
 	void notifyMove();
@@ -109,7 +109,8 @@ protected:
     pybind11::object m_userData;
     //std::shared_ptr<Camera> m_camera;
 	std::shared_ptr<Model> m_model;
-	std::unordered_map<std::string, pybind11::function> _behaviors;
+	std::unordered_map<std::string, pybind11::function> _messages;
+
 protected:
 	std::string _tag;
 

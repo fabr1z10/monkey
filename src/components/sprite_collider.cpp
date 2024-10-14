@@ -57,6 +57,7 @@ void SpriteCollider::generateDebugMesh() {
     if (!_batchId.empty()) {
         if (m_debugNode != nullptr) {
             m_debugNode->remove();
+            m_node->removeChild(m_debugNode->getId());
         }
 //	auto model = m_sprite->generateDebugModel();
 //
