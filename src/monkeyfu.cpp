@@ -55,10 +55,10 @@ std::shared_ptr<Model> getSpriteModel(const std::string& id) {
 }
 
 bool checkLOS(glm::vec2 P0, glm::vec2 P1, int mask) {
-    auto collisionEngine = Engine::instance().getRoom()->getRunner<ICollisionEngine>();
-    auto result = collisionEngine->rayCast(glm::vec3(P0.x, P0.y, 0.f), glm::vec3(P1.x, P1.y, 0.f), mask);
-    return !result.collide;
-
+//    auto collisionEngine = Engine::instance().getRoom()->getRunner<ICollisionEngine>();
+//    auto result = collisionEngine->rayCast(glm::vec3(P0.x, P0.y, 0.f), glm::vec3(P1.x, P1.y, 0.f), mask);
+//    return !result.collide;
+    return false;
 }
 //std::shared_ptr<PolyMesh> getPolyMesh(const std::string& id) {
 //	auto& am = AssetManager::instance();

@@ -12,6 +12,10 @@ const int key_up =  0x4;
 const int key_down = 0x8;
 const int key_jmp = 0x10;
 
+namespace colors {
+    const glm::vec4 WHITE = glm::vec4(1.f);
+}
+
 
 const float epsilon = 0.0001f;
 
@@ -47,7 +51,7 @@ std::vector<T> strToVec(const std::string& s, char delim=',') {
 std::u32string getString32(const std::string&);
 
 // returns the angle (in radians) between two vectors
-float angle(glm::vec3 v1, glm::vec3 v2) ;
+float angle(glm::vec2 v1, glm::vec2 v2) ;
 
 // returns 1 if f >= 0, -1 otherwise
 inline int sign (float f) {

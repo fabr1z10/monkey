@@ -55,9 +55,13 @@ public:
     //void setCamera(std::shared_ptr<Camera>);
     pybind11::object getUserData();
     void setUserData(pybind11::object);
+
+    void setPosition(float x, float y);
     virtual void setPosition(float, float, float);
+    void setAngle(float angle);
 	void move(glm::mat4 m);
 	void move(glm::vec3 delta);
+	void moveLocal(glm::vec3 delta);
 	void rotate(float angle, glm::vec3 axis);
 	void movea(glm::vec3 delta);
 	std::shared_ptr<Model> getModel();
@@ -113,7 +117,7 @@ protected:
 
 protected:
 	std::string _tag;
-
+	float _angle;
 };
 
 inline long Node::getId() const {

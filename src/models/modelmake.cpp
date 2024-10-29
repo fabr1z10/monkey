@@ -6,7 +6,7 @@
 
 #include "../shapes/compound.h"
 #include "../shapes/aabb.h"
-#include "../shapes/aabb3d.h"
+
 #include "../shapes/polygon.h"
 #include "../shapes/polyline.h"
 #include "../pyhelper.h"
@@ -19,21 +19,23 @@
 
 #include <cmath>
 
+using namespace shapes;
+
 ModelMaker::ModelMaker() : m_pointsPerCirle(20) {
-    _dss[std::type_index(typeid(Rect))] = &ModelMaker::makeConvexPoly;
-    _dss[std::type_index(typeid(Segment))] = &ModelMaker::makeConvexPoly;
-    _dss[std::type_index(typeid(Circle))] = &ModelMaker::makeCircle;
-    _dss[std::type_index(typeid(ConvexPoly))] = &ModelMaker::makeConvexPoly;
-    _dss[std::type_index(typeid(CompoundShape))] = &ModelMaker::makeCompoundShape;
-    _dss[std::type_index(typeid(AABB))] = &ModelMaker::makeAABB;
-    _dss[std::type_index(typeid(Point))] = &ModelMaker::makePoint;
+    _dss[std::type_index(typeid(shapes::Rect))] = &ModelMaker::makeConvexPoly;
+    _dss[std::type_index(typeid(shapes::Segment))] = &ModelMaker::makeConvexPoly;
+    _dss[std::type_index(typeid(shapes::Circle))] = &ModelMaker::makeCircle;
+    _dss[std::type_index(typeid(shapes::ConvexPoly))] = &ModelMaker::makeConvexPoly;
+    //_dss[std::type_index(typeid(CompoundShape))] = &ModelMaker::makeCompoundShape;
+    _dss[std::type_index(typeid(shapes::AABB))] = &ModelMaker::makeAABB;
+    //_dss[std::type_index(typeid(Point))] = &ModelMaker::makePoint;
 
-    _dss[std::type_index(typeid(AABB3D))] = &ModelMaker::makeAABB3D;
-	_dss[std::type_index(typeid(Polygon))] = &ModelMaker::makePoly;
-	_dss[std::type_index(typeid(PolyLine))] = &ModelMaker::makePolyLine;
 
-	_dssolid[std::type_index(typeid(Polygon))] = &ModelMaker::makePolySolid;
-	_dssolid[std::type_index(typeid(AABB))] = &ModelMaker::makeAABBSolid;
+	_dss[std::type_index(typeid(shapes::Polygon))] = &ModelMaker::makePoly;
+	_dss[std::type_index(typeid(shapes::PolyLine))] = &ModelMaker::makePolyLine;
+
+	//_dssolid[std::type_index(typeid(Polygon))] = &ModelMaker::makePolySolid;
+	//_dssolid[std::type_index(typeid(shapAABB))] = &ModelMaker::makeAABBSolid;
 
 	//
 //    m_builders[std::type_index(typeid(Rect))] = &ModelMaker::makeConvexPoly; // [&] (std::shared_ptr<Shape> s, glm::vec4 color, FillType ft) { return makeConvexPoly(s, color, ft); };
@@ -297,7 +299,7 @@ std::shared_ptr<Model> ModelMaker::makeCircle(const std::shared_ptr<Shape>& s, g
     std::vector<float> vertices;
     std::vector<unsigned> elements;
     unsigned u{0};
-    auto center = c->getOffset();
+    auto center = c->getCenter();
     auto radius = c->getRadius();
     float delta = 2.0f * pi / m_pointsPerCirle;
     float angle = 0.0f;

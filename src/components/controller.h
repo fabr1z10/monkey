@@ -38,8 +38,8 @@ public:
 	virtual bool isFalling(float) = 0;
 
 	void setSize(glm::vec3 size, glm::vec3 offset);
-	virtual void move(glm::vec3&, bool forced);
-	glm::vec3 getSize() const;
+	virtual void move(glm::vec2&, bool forced);
+	glm::vec2 getSize() const;
 	glm::ivec2 getMask() const;
 	void setMask(int, int);
 	using Base = Controller;
@@ -49,15 +49,15 @@ protected:
 	virtual std::shared_ptr<Model> getDebugModel() = 0;
 	Node* m_debugShape;
 	void computeCoordinates();
-	glm::vec3 m_size;
-	glm::vec3 m_center;
-	bool m_debug;
+	glm::vec2 m_size;
+	glm::vec2 m_center;
+
 	ICollisionEngine* m_collisionEngine;
-	glm::vec3 m_localTopFwd;
-	glm::vec3 m_localTopBack;
-	glm::vec3 m_localBottomFwd;
-	glm::vec3 m_localBottomBack;
-    std::string _batchId;
+	glm::vec2 m_localTopFwd;
+	glm::vec2 m_localTopBack;
+	glm::vec2 m_localBottomFwd;
+	glm::vec2 m_localBottomBack;
+    //std::string _batchId;
 	int m_maskUp;
 	int m_maskDown;
 	// bit 0 = below, 1 = above, 2 = right, 3 = left

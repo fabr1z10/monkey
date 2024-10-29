@@ -7,7 +7,7 @@
 class SpriteCollider : public Collider {
 public:
     SpriteCollider(int flag, int mask, int tag, const pybind11::kwargs& args);
-    std::shared_ptr<Shape> getShape() override;
+    std::shared_ptr<shapes::Shape> getShape() override;
     void setCollisionOverride(const std::string&, int, int, int);
     void start() override;
     void update(double) override;

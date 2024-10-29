@@ -69,57 +69,57 @@ void Platform::unregisterAll() {
 
 
 void Platform::move(Node* node) {
-	for (const auto& b : m_removeBuffer) {
-		m_characters.erase(b);
-	}
-	m_removeBuffer.clear();
-	glm::vec3 currentPosition = node->getWorldPosition();
-	glm::vec3 delta = currentPosition - m_lastPosition;
-	if (delta.x != 0.0f || delta.y != 0.0f) {
-
-		// check if I capture any new characters
-		Bounds b(currentPosition);
-		b.addPoint(currentPosition + glm::vec3(m_platformWidth, 0.f, 0.f) + delta);
-		auto location = m_collisionEngine->getLocation(b);
-		float ldelta = glm::length(delta);
-		for (auto i = location.first.x; i <= location.second.x; ++i) {
-			for (auto j = location.first.y; j <= location.second.y; ++j) {
-				const auto* cs = m_collisionEngine->getColliders(glm::ivec3(i, j, 0));
-				if (cs != nullptr) {
-					for (const auto &c : cs->colliders) {
-						if (c->getCollisionFlag() == 1) {
-							auto cpos1 = c->getNode()->getWorldPosition();
-							auto pos = cpos1 - m_lastPosition;
-							// the character is picked up by the platform if its position is contained
-							// in the parallelogram formed by (1, 0) and delta.
-							float lambda = 0, mu = 0;
-							if (solve2x2(m_platformWidth, delta.x, pos.x, 0.0f, delta.y, pos.y, lambda, mu) == 0 &&
-								lambda >= 0.f && lambda <= 1.f && mu >= 0.f && mu <= 1.f) {
-								auto *controller2D = dynamic_cast<Controller2D *>(c->getNode()->getComponent<Controller>());
-								if (controller2D != nullptr && m_characters.count(controller2D) == 0) {
-									registerComponent(controller2D);
-									//m_characters.insert(controller2D);
-									controller2D->setPlatform(this);
-								}
-							}
-						}
-					}
-				}
-
-			}
-		}
-
-
-
-		for (const auto& c : m_characters) {
-			// TODO Problem: What happens if moving the character send it to another platform?
-			// this would trigger the unregister and so the vector will change while iterating
-			if (c->getNode()->getFlipX()) {
-				delta.x *= -1.f;
-			}
-			c->move(delta, true);
-
-		}
-	}
-	m_lastPosition = currentPosition;
+//	for (const auto& b : m_removeBuffer) {
+//		m_characters.erase(b);
+//	}
+//	m_removeBuffer.clear();
+//	glm::vec3 currentPosition = node->getWorldPosition();
+//	glm::vec3 delta = currentPosition - m_lastPosition;
+//	if (delta.x != 0.0f || delta.y != 0.0f) {
+//
+//		// check if I capture any new characters
+//		Bounds b(currentPosition);
+//		b.addPoint(currentPosition + glm::vec3(m_platformWidth, 0.f, 0.f) + delta);
+//		auto location = m_collisionEngine->getLocation(b);
+//		float ldelta = glm::length(delta);
+//		for (auto i = location.first.x; i <= location.second.x; ++i) {
+//			for (auto j = location.first.y; j <= location.second.y; ++j) {
+//				const auto* cs = m_collisionEngine->getColliders(glm::ivec3(i, j, 0));
+//				if (cs != nullptr) {
+//					for (const auto &c : cs->colliders) {
+//						if (c->getCollisionFlag() == 1) {
+//							auto cpos1 = c->getNode()->getWorldPosition();
+//							auto pos = cpos1 - m_lastPosition;
+//							// the character is picked up by the platform if its position is contained
+//							// in the parallelogram formed by (1, 0) and delta.
+//							float lambda = 0, mu = 0;
+//							if (solve2x2(m_platformWidth, delta.x, pos.x, 0.0f, delta.y, pos.y, lambda, mu) == 0 &&
+//								lambda >= 0.f && lambda <= 1.f && mu >= 0.f && mu <= 1.f) {
+//								auto *controller2D = dynamic_cast<Controller2D *>(c->getNode()->getComponent<Controller>());
+//								if (controller2D != nullptr && m_characters.count(controller2D) == 0) {
+//									registerComponent(controller2D);
+//									//m_characters.insert(controller2D);
+//									controller2D->setPlatform(this);
+//								}
+//							}
+//						}
+//					}
+//				}
+//
+//			}
+//		}
+//
+//
+//
+//		for (const auto& c : m_characters) {
+//			// TODO Problem: What happens if moving the character send it to another platform?
+//			// this would trigger the unregister and so the vector will change while iterating
+//			if (c->getNode()->getFlipX()) {
+//				delta.x *= -1.f;
+//			}
+//			c->move(delta, true);
+//
+//		}
+//	}
+//	m_lastPosition = currentPosition;
 }

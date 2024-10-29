@@ -103,14 +103,23 @@
 #include "runners/mousemanager.h"
 #include "actions/walk.h"
 #include "actions/turn.h"
+
 #include "components/parallax.h"
 #include "components/nodeevent.h"
+
+#include "nodes/tileworld.h"
+#include "components/controllers/tilecontroller.h"
+#include "components/vehicle2d.h"
+#include "components/controller.h"
+#include "components/controller2d.h"
+
+
 //#include "nodes/textedit.h"
 //#include "components/controllers/walk3d.h"
 //#include "skeletal/skeletal_collider.h"
 
 using namespace pybind11::literals; // to bring in the `_a` literal
-
+using namespace shapes;
 
 namespace py = pybind11;
 
@@ -220,7 +229,9 @@ PYBIND11_MODULE(monkey, m) {
 //
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
         .def(py::init<>())
-        .def("set_position", &Node::setPosition)
+        .def("set_position", py::overload_cast<float, float, float>(&Node::setPosition))
+        .def("set_position", py::overload_cast<float, float>(&Node::setPosition))
+        .def("set_angle", &Node::setAngle)
         .def("add_component", &Node::addComponent)
         .def("set_model", &Node::setModel)
         .def("get_model", &Node::getModel)
@@ -262,7 +273,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<const std::string&, const std::string&, const std::string&, const std::string&, const pybind11::kwargs&>(),
 			 "batch"_a, "font"_a, "prompt"_a, "cursor"_a)
 		.def("setText", &TextEdit::setText);
-
+	py::class_<TileWorld, Node, std::shared_ptr<TileWorld>>(m, "TileWorld")
+		.def(py::init<int, int, int, const std::string&, const std::string&, const pybind11::kwargs&>(), "width"_a, "height"_a, "size"_a, "file"_a, "batch"_a);
 //        .def("get_camera", &Node::getCamera)
 //        .def("set_camera", &Node::setCamera)
 
@@ -349,26 +361,26 @@ PYBIND11_MODULE(monkey, m) {
     py::module_ ms = m.def_submodule("shapes");
 
     ms.def("check_los", &checkLOS);
-    py::class_<Shape, std::shared_ptr<Shape>>(ms, "Shape")
-        .def(py::init<>());
+    py::class_<Shape, std::shared_ptr<Shape>>(ms, "Shape");
+        //.def(py::init<>());
     py::class_<Segment, Shape, std::shared_ptr<Segment>>(ms, "Segment")
         .def(py::init<float, float, float, float>());
 
-    py::class_<Point, Shape, std::shared_ptr<Point>>(ms, "Point")
-        .def(py::init<>());
+//    py::class_<Point, Shape, std::shared_ptr<Point>>(ms, "Point")
+//        .def(py::init<>());
 
     py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(ms, "ConvexPoly")
-        .def(py::init<const py::array_t<float>&>());
+        .def(py::init<const std::vector<float>&>());
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
 		.def(py::init<const std::vector<float>&>());
     py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(ms, "Polygon")
         .def(py::init<const std::vector<float>&>());
-//
-//    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
-//        .def(py::init<float, float, const py::kwargs&>());
+
+    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
+        .def(py::init<float, float, glm::vec2>(), py::arg("width"), py::arg("height"), py::arg("anchor") = glm::vec2(0.f, 0.f));
 //
     py::class_<Circle, Shape, std::shared_ptr<Circle>>(ms, "Circle")
-        .def(py::init<float, const py::kwargs&>());
+        .def(py::init<float, glm::vec2>(), py::arg("radius"), py::arg("center") = glm::vec2(0.f, 0.f));
 //
 //
     py::class_<AABB, Shape, std::shared_ptr<AABB>>(ms, "AABB")
@@ -436,7 +448,7 @@ PYBIND11_MODULE(monkey, m) {
 //	/// --- runners ---
 	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
 	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
-	py::class_<CollisionEngine2D, ICollisionEngine, std::shared_ptr<CollisionEngine2D>>(m, "CollisionEngine2D")
+	py::class_<SpatialHashingCollisionEngine, ICollisionEngine, std::shared_ptr<SpatialHashingCollisionEngine>>(m, "CollisionEngine2D")
 		.def(py::init<float, float>(), "width"_a, "height"_a);
                 //.def("add_response", &CollisionEngine2D::addResponse);
 //    py::class_<CollisionEngine3D, ICollisionEngine, std::shared_ptr<CollisionEngine3D>>(m, "CollisionEngine3D")
@@ -540,7 +552,8 @@ PYBIND11_MODULE(monkey, m) {
 //			 "halign"_a, "valign"_a, py::kw_only());
 	py::class_<EnableSierraController, NodeAction, std::shared_ptr<EnableSierraController>>(ma, "SierraEnable")
 		.def(py::init<int, bool>(), "id"_a, "value"_a);
-//	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "SierraChangeAnim")
+
+	//	py::class_<ChangeSierraAnim, NodeAction, std::shared_ptr<ChangeSierraAnim>>(ma, "SierraChangeAnim")
 //		.def(py::init<int, const std::string&, const std::string&>(), "id"_a, "idle"_a, "walk"_a);
 //
 //
@@ -606,10 +619,16 @@ PYBIND11_MODULE(monkey, m) {
 		.def(py::init<std::shared_ptr<Shape>, int, int, const pybind11::kwargs&>())
 		.def("setShape", &MouseArea::setShape);
 
+    py::class_<VehicleController2D, Component, std::shared_ptr<VehicleController2D>>(mc, "VehicleController")
+        .def(py::init<float, float, float, float, glm::vec2, float, float, float, float, py::kwargs&>());
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>());
-//	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
+
+	py::class_<TileController, Component, std::shared_ptr<TileController>>(mc, "TileController")
+		.def(py::init<float, float, float, py::kwargs&>());
+
+	//	py::class_<MarioController, Controller, std::shared_ptr<MarioController>>(m, "MarioController")
 //		.def(py::init<py::kwargs&>());
     py::class_<Sierra2DController, Component, std::shared_ptr<Sierra2DController>>(mc, "SierraController")
         .def_property_readonly("direction", &Sierra2DController::getDirection)
@@ -627,23 +646,23 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<pybind11::function, float, float, py::kwargs&>())
         .def("setFunc", &NPCSierraFollow::setFunction);
 
-	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D")
-        .def_property("direction", &Walk2D::getDirection, &Walk2D::setDirection)
-        .def_property_readonly("grounded", &Walk2D::grounded)
-        .def_property("speed", &Walk2D::getSpeed, &Walk2D::setSpeed)
-
-        .def("jump", &Walk2D::jump);
-	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
-		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
-        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
-    py::class_<CustomWalk2D, Walk2D, std::shared_ptr<CustomWalk2D>>(mc, "CustomWalk2D")
-        .def(py::init<float, float, float, float, const pybind11::object, const pybind11::kwargs&>(), "max_speed"_a,
-             "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, "internal"_a,py::kw_only())
-        .def("isPressed", &CustomWalk2D::isPressed);
-
-    py::class_<FoeWalk2D, Walk2D, std::shared_ptr<FoeWalk2D>>(mc, "FoeWalk2D")
-        .def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
-        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
+//	py::class_<Walk2D, Component, std::shared_ptr<Walk2D>>(mc, "walk2D")
+//        .def_property("direction", &Walk2D::getDirection, &Walk2D::setDirection)
+//        .def_property_readonly("grounded", &Walk2D::grounded)
+//        .def_property("speed", &Walk2D::getSpeed, &Walk2D::setSpeed)
+//
+//        .def("jump", &Walk2D::jump);
+//	py::class_<PlayerWalk2D, Walk2D, std::shared_ptr<PlayerWalk2D>>(mc, "PlayerWalk2D")
+//		.def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
+//        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
+//    py::class_<CustomWalk2D, Walk2D, std::shared_ptr<CustomWalk2D>>(mc, "CustomWalk2D")
+//        .def(py::init<float, float, float, float, const pybind11::object, const pybind11::kwargs&>(), "max_speed"_a,
+//             "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, "internal"_a,py::kw_only())
+//        .def("isPressed", &CustomWalk2D::isPressed);
+//
+//    py::class_<FoeWalk2D, Walk2D, std::shared_ptr<FoeWalk2D>>(mc, "FoeWalk2D")
+//        .def(py::init<float, float, float, float, const pybind11::kwargs&>(), "max_speed"_a,
+//        "acceleration"_a, "jump_height"_a, "time_to_jump_apex"_a, py::kw_only());
 
 	py::class_<Baseline, Component, std::shared_ptr<Baseline>>(mc, "Baseline")
 		.def(py::init<std::shared_ptr<PolyLine>, const pybind11::kwargs&>());

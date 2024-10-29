@@ -2,7 +2,8 @@
 #include "../engine.h"
 #include "../runners/walkarea.h"
 
-Baseline::Baseline(std::shared_ptr<PolyLine> polyline, const pybind11::kwargs& args) : Component(args), _poly(polyline){
+
+Baseline::Baseline(std::shared_ptr<shapes::PolyLine> polyline, const pybind11::kwargs& args) : Component(args), _poly(polyline){
 
 }
 
@@ -21,7 +22,7 @@ Baseline::~Baseline() noexcept {
 	//_walkArea->recomputeBaselines();
 }
 
-PolyLine * Baseline::getPolyline() {
+shapes::PolyLine * Baseline::getPolyline() {
 	return _poly.get();
 }
 float Baseline::getZ() const {

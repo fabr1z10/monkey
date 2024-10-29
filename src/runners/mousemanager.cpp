@@ -1,9 +1,14 @@
 #include "mousemanager.h"
 #include "../engine.h"
-#include "../shape.h"
+
 #include "../pyhelper.h"
 #include "../models/modelmake.h"
 #include <iostream>
+
+
+using namespace shapes;
+
+
 
 MouseArea::MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, const pybind11::kwargs &args)  :
 	Component(args), _shape(shape), _priority(priority), _camera(camera), _debugNode(nullptr) {

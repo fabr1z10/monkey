@@ -9,6 +9,9 @@
 
 extern GLFWwindow* window;
 
+using namespace shapes;
+
+
 Sierra2DController::Sierra2DController(const pybind11::kwargs &args) : Component(args) {
 	_direction = py_get_dict<std::string>(args, "dir", "e");
 
@@ -144,7 +147,7 @@ void PlayerSierra2DController::update(double dt) {
 		// check horizontal
 		glm::vec3 rayOrigin(pos.x + (_lookingLeft ? -_halfWidth : _halfWidth), pos.y, 0.f);
 		float rayLength = dx * (_lookingLeft ? -1.f : 1.f);
-		RayCastHit hit = m_collisionEngine->rayCastX(rayOrigin, rayLength, 2, m_node);
+		RayCastHit hit = m_collisionEngine->rayCast(rayOrigin, Direction::X, rayLength, 2, m_node);
 		if (hit.collide) {
 			dx = hit.length - _skinWidth;
 		}
@@ -153,11 +156,11 @@ void PlayerSierra2DController::update(double dt) {
 	if (dy != 0.f) {
 		glm::vec3 rayOriginLeft(pos.x + dx * dir_x - _halfWidth, pos.y, 0.f);
 		glm::vec3 rayOriginRight(pos.x + dx * dir_x + _halfWidth, pos.y, 0.f);
-		auto hit_left = m_collisionEngine->rayCastY(rayOriginLeft, dy, 2, m_node);
+		auto hit_left = m_collisionEngine->rayCast(rayOriginLeft, Direction::Y, dy, 2, m_node);
 		if (hit_left.collide) {
 			dy = dir_y * (hit_left.length - _skinWidth);
 		}
-		auto hit_right = m_collisionEngine->rayCastY(rayOriginRight, dy, 2, m_node);
+		auto hit_right = m_collisionEngine->rayCast(rayOriginRight, Direction::Y,  dy, 2, m_node);
 		if (hit_right.collide) {
 			dy = dir_y * (hit_right.length - _skinWidth);
 		}

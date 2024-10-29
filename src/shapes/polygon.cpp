@@ -2,6 +2,9 @@
 #include "../util.h"
 #include "../util.h"
 
+using namespace shapes;
+
+
 Polygon::Polygon(const std::vector<float> &points) {
     m_bounds = Bounds(glm::vec3(points[0], points[1], 0.f));
 	for (size_t i = 0; i < points.size(); i+=2) {
@@ -11,6 +14,21 @@ Polygon::Polygon(const std::vector<float> &points) {
     addSegments(_points);
 	m_type = ShapeType::POLYGON;
 
+}
+
+RaycastResult Polygon::raycast(glm::vec2 P0, glm::vec2 P1) const {
+    const Seg* s = nullptr;
+    RaycastResult r;
+    for (const auto& seg : _segs) {
+        float u{0.f};
+        if (seg2seg(P0, P1, seg.P0, seg.P1, u) && (s == nullptr || u < r.length)) {
+            s = &seg;
+            r.length = u;
+            r.collide = true;
+            r.normal = s->n;
+        }
+    }
+    return r;
 }
 
 void Polygon::addSegments(const std::vector<glm::vec2> &p) {
@@ -31,7 +49,7 @@ void Polygon::addHole(const std::vector<float> &points) {
     addSegments(p);
 }
 
-bool Polygon::isInside(glm::vec3 P) const {
+bool Polygon::isInside(glm::vec2 P) const {
 	if (pnpoly(_points, P)) {
 		for (const auto& hole : _holes) {
 			if (pnpoly(hole, P)) {

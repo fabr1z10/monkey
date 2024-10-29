@@ -39,7 +39,7 @@ private:
 
     static std::vector<glm::vec2> vecCvt(const std::vector<float>& p) ;
     void processPoly(const int);
-    void processPolyline(const std::vector<Seg>& p, glm::vec2 origin);
+    void processPolyline(const std::vector<shapes::Seg>& p, glm::vec2 origin);
     int addNode(glm::vec2 P);
     bool intersectsGeometry(glm::vec2 A, glm::vec2 B);
     void updateClosestPoint(const PolygonInfo& poly, glm::vec2 P, float& bestSoFar, glm::vec2& closest, glm::vec2& normal);

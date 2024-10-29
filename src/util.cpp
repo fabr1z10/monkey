@@ -8,7 +8,7 @@ std::u32string getString32(const std::string& str) {
 }
 
 // returns the angle (in radians) between two vectors
-float angle(glm::vec3 v1, glm::vec3 v2) {
+float angle(glm::vec2 v1, glm::vec2 v2) {
     return std::acos(glm::dot(v1, v2));
 }
 

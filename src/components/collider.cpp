@@ -7,13 +7,12 @@
 #include "../models/modelmake.h"
 
 using namespace pybind11::literals; // to bring in the `_a` literal
+using namespace shapes;
 
-Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : Component(args), m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr),
-    m_flag(flag), m_mask(mask), m_tag(tag) {
-//	m_flag = py_get_dict<int>(args, "flag");
-//	m_mask = py_get_dict<int>(args, "mask");
-//	m_tag = py_get_dict<int>(args, "tag");
-	_batchId = py_get_dict<std::string>(args, "batch", "");
+
+Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : Component(args),
+    m_callbackHandle(-1), m_engine(nullptr), m_debugNode(nullptr), m_flag(flag), m_mask(mask), m_tag(tag) {
+
 }
 
 bool Collider::respondTo(Collider * other) {
@@ -56,7 +55,6 @@ void Collider::start() {
     m_engine = room->getRunner<ICollisionEngine>();
     //m_engine = Engine::get().GetRunner<ICollisionEngine>();
     if (m_engine == nullptr) {
-
         GLIB_FAIL("The room has a collider component but no collision engine is loaded.");
     } else {
         m_engine->add(this);
@@ -66,7 +64,7 @@ void Collider::start() {
 
     // register to move. When the object moves, we notify the collision engine
 
-    if (!_batchId.empty()) {
+    if (engine.drawColliderOutline()) {
         generateDebugMesh();
     }
 }
@@ -151,8 +149,9 @@ void SimpleCollider::generateDebugMesh() {
     if (m_debugNode != nullptr) {
         m_debugNode->remove();
     }
+    auto batchId = Engine::instance().getColliderOutlineBatch();
     auto& modelMaker = ModelMaker::instance();
-    auto model = modelMaker.make(_batchId, m_shape, glm::vec4(1.f), FillType::OUTLINE);
+    auto model = modelMaker.make(batchId, m_shape, glm::vec4(1.f), FillType::OUTLINE);
     auto node = std::make_shared<Node>();
     node->setModel(model);//pybind11::dict("batch"_a = _batchId));
     m_node->add(node);

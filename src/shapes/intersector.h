@@ -7,19 +7,21 @@
 #include <utility>
 #include "../hashpair.h"
 
+
 class Intersector {
 public:
-    Intersector() {}
-    CollisionReport intersect(const Shape*, const Shape*, const glm::mat4&, const glm::mat4&) ;
+    typedef CollisionReport(*methodPtr)(shapes::Shape*, shapes::Shape*, const glm::mat4&, const glm::mat4&);
 
-    template<typename T, typename S>
-    void add(std::function<CollisionReport(const Shape*, const Shape*, const glm::mat4&, const glm::mat4&)> f) {
-        m_functionMap[std::make_pair(std::type_index(typeid(T)), std::type_index(typeid(S)))] = std::move(f);
-    }
+    Intersector() = default;
+
+    void add(shapes::ShapeType t1, shapes::ShapeType t2, methodPtr ptr) ;
+
+    CollisionReport intersect(shapes::Shape * s1, shapes::Shape * s2, const glm::mat4 & t1, const glm::mat4 & t2);
+
 
 
 protected:
-    std::unordered_map<std::pair<std::type_index, std::type_index>, std::function<CollisionReport(const Shape*, const Shape*, const glm::mat4&, const glm::mat4&)>> m_functionMap;
+    std::unordered_map<std::pair<shapes::ShapeType, shapes::ShapeType>, methodPtr> _map;
 };
 
 

@@ -4,8 +4,8 @@
 #include "platform.h"
 
 struct RaycastOrigins {
-	glm::vec3 topFwd, topBack;
-	glm::vec3 bottomFwd, bottomBack;
+	glm::vec2 topFwd, topBack;
+	glm::vec2 bottomFwd, bottomBack;
 };
 
 
@@ -14,7 +14,10 @@ class Controller2D : public Controller {
 public:
 	Controller2D(const pybind11::kwargs&);
 	virtual ~Controller2D();
-	void move(glm::vec3&, bool forced) override;
+    void update(double) override;
+
+
+    void move(glm::vec2&, bool forced) override;
 	std::type_index getType() override;
 	void updateRaycastOrigins() override;
 	bool isFalling(float) override;
@@ -40,10 +43,10 @@ private:
 		void reset();
 	};
 
-	void climbSlope(glm::vec3& velocity, float slopeAngle);
-	void descendSlope(glm::vec3&);
-	void horizontalCollisions(glm::vec3& velocity);
-	void verticalCollisions(glm::vec3& velocity, bool);
+	void climbSlope(glm::vec2& velocity, float slopeAngle);
+	void descendSlope(glm::vec2&);
+	void horizontalCollisions(glm::vec2& velocity);
+	void verticalCollisions(glm::vec2& velocity, bool);
 
 	RaycastOrigins m_raycastOrigins;
 
@@ -68,20 +71,14 @@ private:
 	int _foeFlag;
 
 	int _platformFlag;
+	int _direction;
+
+    float _gravity;
+    float _acc;
+    float _maxSpeed;
+    glm::vec2 _velocity;
+    glm::vec2 _acceleration;
 };
 
-//inline bool Controller2D::grounded() const {
-//	return m_details.below;
-//}
-//
-//inline bool Controller2D::ceiling () const {
-//	return m_details.above;
-//}
-//
-//inline bool Controller2D::left () const {
-//	return m_details.left;
-//}
-//inline bool Controller2D::right () const {
-//	return m_details.right;
-//}
+
 

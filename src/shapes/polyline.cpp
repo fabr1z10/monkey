@@ -1,5 +1,10 @@
 #include "polyline.h"
 #include "../pyhelper.h"
+#include "../util.h"
+
+
+using namespace shapes;
+
 
 PolyLine::PolyLine(const std::vector<float>& pts) {
 
@@ -52,6 +57,23 @@ float PolyLine::getY(float x) const {
 	}
 	return _points[i-1].y + (_points[i].y - _points[i-1].y) * (x - _points[i-1].x) / (_points[i].x - _points[i-1].x);
 
+}
 
+bool PolyLine::isInside(glm::vec2) const {
+    return false;
+}
 
+RaycastResult PolyLine::raycast(glm::vec2 P0, glm::vec2 P1) const {
+    RaycastResult result;
+    for (const auto& s : _segs) {
+        float u;
+        if (seg2seg(P0, P1, s.P0, s.P1, u)) {
+            if (!result.collide || u < result.length) {
+                result.length = u;
+                result.normal = s.n;
+            }
+            result.collide = true;
+        }
+    }
+    return result;
 }

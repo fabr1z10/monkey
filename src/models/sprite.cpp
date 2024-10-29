@@ -16,6 +16,8 @@
 #include "../yamlexp.h"
 #include "../spritesheet.h"
 
+
+using namespace shapes;
 // construct from YAML
 Sprite::Sprite(SpriteSheet* sheet, const YAML::Node& node) : Model() {
 

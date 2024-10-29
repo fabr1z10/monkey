@@ -52,7 +52,7 @@ public:
 
     //const AnimInfo* getAnimInfo(const std::string& anim);
 //
-	std::shared_ptr<Shape> getShape (const std::string& anim, int frame) const;
+	std::shared_ptr<shapes::Shape> getShape (const std::string& anim, int frame) const;
 //	std::shared_ptr<Shape> getShapeCast (const std::string& anim, int frame) const;
 //	bool hasCollision(const std::string&) const;
 //	//const SpriteCollisionInfo& getCollisionInfo(const std::string& anim) const;
@@ -85,10 +85,10 @@ private:
     //std::string m_defaultAnimation;
 	//std::unordered_map<std::string, AnimInfo> m_animInfo;
 	//std::unordered_map<std::string, std::vector<FrameInfo>> m_frameInfo;
-	std::shared_ptr<Shape> getRect(int mode, int, int, int, int);
+	std::shared_ptr<shapes::Shape> getRect(int mode, int, int, int, int);
 	float m_halfThickness;
 	// collision shapes (if any)
-	std::vector<std::shared_ptr<Shape>> m_shapes;
+	std::vector<std::shared_ptr<shapes::Shape>> m_shapes;
 	std::unordered_map<std::pair<std::string, int>, int> m_frameToShape;
 	Bounds m_collisionBounds;
 	std::unordered_map<int, std::pair<int, int>> m_shapeInfo;

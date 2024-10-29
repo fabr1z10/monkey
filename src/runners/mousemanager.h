@@ -2,25 +2,26 @@
 
 #include "../mouselistener.h"
 #include "../runner.h"
+#include "../shape.h"
 #include "../component.h"
 #include <pybind11/pybind11.h>
 #include <glm/glm.hpp>
 
 
 class Room;
-class Shape;
+
 
 class MouseArea : public Component {
 public:
-	MouseArea(std::shared_ptr<Shape> shape, int priority, int camera, const pybind11::kwargs& args);
+	MouseArea(std::shared_ptr<shapes::Shape> shape, int priority, int camera, const pybind11::kwargs& args);
 	~MouseArea() override;
 	void start() override;
 	using Base = MouseArea;
 	std::type_index getType() final override;
-	void setShape(std::shared_ptr<Shape>);
+	void setShape(std::shared_ptr<shapes::Shape>);
 	[[nodiscard]] int getPriority() const;
 	[[nodiscard]] int getCamera() const;
-	[[nodiscard]] const std::shared_ptr<Shape> getShape() const;
+	[[nodiscard]] const std::shared_ptr<shapes::Shape> getShape() const;
 	void enter();
 	void leave();
 	void stay();
@@ -30,7 +31,7 @@ private:
 	pybind11::function _onLeave;
 	pybind11::function _onStay;
 	pybind11::function _onClick;
-	std::shared_ptr<Shape> _shape;
+	std::shared_ptr<shapes::Shape> _shape;
 	int _priority;
 	int _camera;
 	Node* _debugNode;
@@ -46,7 +47,7 @@ inline int MouseArea::getCamera() const {
 	return _camera;
 }
 
-inline const std::shared_ptr<Shape> MouseArea:: getShape() const {
+inline const std::shared_ptr<shapes::Shape> MouseArea:: getShape() const {
 	return _shape;
 }
 

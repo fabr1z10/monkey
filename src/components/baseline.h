@@ -9,14 +9,14 @@
 // - a baseline such that any character walking below it appears in front of the object.
 class Baseline : public Component {
 public:
-	Baseline(const std::shared_ptr<PolyLine> polyline, const pybind11::kwargs& args);
+	Baseline(const std::shared_ptr<shapes::PolyLine> polyline, const pybind11::kwargs& args);
 	~Baseline() override;
 	void start() override;
-	PolyLine* getPolyline();
+	shapes::PolyLine* getPolyline();
 	float getZ() const;
 	void setZ(float);
 private:
 	WalkManager* _walkArea;
-	std::shared_ptr<PolyLine> _poly;
+	std::shared_ptr<shapes::PolyLine> _poly;
 	float _z;
 };

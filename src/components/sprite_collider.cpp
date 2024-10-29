@@ -6,6 +6,7 @@
 #include "../models/sprite.h"
 #include <iostream>
 
+using namespace shapes;
 
 SpriteCollider::SpriteCollider(int flag, int mask, int tag, const pybind11::kwargs& args) :
     Collider(flag, mask, tag, args), m_sprite(nullptr), m_renderer(nullptr) {
@@ -54,22 +55,17 @@ std::shared_ptr<Shape> SpriteCollider::getShape() {
 }
 
 void SpriteCollider::generateDebugMesh() {
-    if (!_batchId.empty()) {
-        if (m_debugNode != nullptr) {
-            m_debugNode->remove();
-            m_node->removeChild(m_debugNode->getId());
-        }
-//	auto model = m_sprite->generateDebugModel();
-//
-        if (_batchId.empty()) {
-            return;
-        }
-        auto node = std::make_shared<Node>();
-        auto renderer = std::make_shared<SpriteColliderRenderer>(_batchId);
-        node->addComponent(renderer);
-        m_node->add(node);
-        m_debugNode = node.get();
+    auto batchId = Engine::instance().getColliderOutlineBatch();
+
+    if (m_debugNode != nullptr) {
+        m_debugNode->remove();
+        m_node->removeChild(m_debugNode->getId());
     }
+    auto node = std::make_shared<Node>();
+    auto renderer = std::make_shared<SpriteColliderRenderer>(batchId);
+    node->addComponent(renderer);
+    m_node->add(node);
+    m_debugNode = node.get();
 }
 
 

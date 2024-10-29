@@ -10,7 +10,7 @@
 
 Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), _state(NodeState::ACTIVE),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
-    m_model(nullptr), _scale(1.0f) {
+    m_model(nullptr), _scale(1.0f), _angle(0.f) {
 
     Engine::instance().addNode(this);
 }
@@ -209,6 +209,22 @@ Component * Node::getTaggedComponent(const std::string &tag) {
     }
     return nullptr;
 }
+
+void Node::setPosition(float x, float y) {
+    m_modelMatrix[3][0] = x;
+    m_modelMatrix[3][1] = y;
+    notifyMove();
+
+}
+
+void Node::setAngle(float angle) {
+    auto rot = glm::rotate(angle, glm::vec3(0.f, 0.f, 1.f));
+    m_modelMatrix[0] = rot[0];
+    m_modelMatrix[1] = rot[1];
+    m_modelMatrix[2] = rot[2];
+    notifyMove();
+}
+
 void Node::setPosition(float x, float y, float z) {
     m_modelMatrix[3][0] = x;
     m_modelMatrix[3][1] = y;
@@ -229,6 +245,11 @@ void Node::move(glm::vec3 delta) {
 	m_modelMatrix[3][1] += delta.y;
 	m_modelMatrix[3][2] += delta.z;
 	notifyMove();
+}
+
+void Node::moveLocal(glm::vec3 delta) {
+    m_modelMatrix *= glm::translate(delta);
+    notifyMove();
 }
 
 void Node::movea(glm::vec3 delta) {
@@ -366,7 +387,7 @@ float Node::getScale() const {
 
 
 void Node::rotate(float angle, glm::vec3 axis) {
-	m_modelMatrix *= glm::rotate(glm::radians(angle), axis);
+	m_modelMatrix *= glm::rotate(angle, axis);
 	notifyMove();
 
 }

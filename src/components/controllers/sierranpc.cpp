@@ -50,13 +50,13 @@ void NPCSierraController::check_los(glm::vec3 normal) {
         if (dist <= _fovRange) {
             // target is in FOV
             // check obstacles
-            auto raycastResult = m_collisionEngine->rayCast(pos, targetPos, 2, m_node);
-            if (!raycastResult.collide) {
-                _lookDirection = glm::normalize(targetPos - pos);
-                //_lookAngle = angleToTarget;
-                std::cout << "target in sight, direction: " << _lookDirection.x << ", " << _lookDirection.y << "\n";
+            //auto raycastResult = m_collisionEngine->rayCast(pos, targetPos, 2, m_node);
+            //if (!raycastResult.collide) {
+            //    _lookDirection = glm::normalize(targetPos - pos);
+            //    //_lookAngle = angleToTarget;
+            //    std::cout << "target in sight, direction: " << _lookDirection.x << ", " << _lookDirection.y << "\n";
 
-            }
+            //}
             // if no collision, walk to target pos!!!
 
         }
@@ -79,20 +79,20 @@ void NPCSierraController::check_los(glm::vec3 normal) {
 }
 
 void NPCSierraController::update(double dt) {
-    auto dtf = static_cast<float>(dt);
-    glm::vec2 delta = _lookDirection * dtf * _speed;
-
-    auto P0 = m_node->getWorldPosition();
-    auto P1 = P0 + glm::vec3(delta, 0.f);
-    auto rr = m_collisionEngine->rayCast(P0, P1, 2, m_node);
-    if (rr.collide) {
-        delta = _lookDirection * (rr.length - 0.015f);
-        check_los(rr.normal);
-    }
-    if (m_node->getFlipX()) {
-        delta.x = -delta.x;
-    }
-    m_node->move(glm::vec3(delta.x, delta.y, 0.f));
-    Sierra2DController::update(dt);
+//    auto dtf = static_cast<float>(dt);
+//    glm::vec2 delta = _lookDirection * dtf * _speed;
+//
+//    auto P0 = m_node->getWorldPosition();
+//    auto P1 = P0 + glm::vec3(delta, 0.f);
+//    auto rr = m_collisionEngine->rayCast(P0, P1, 2, m_node);
+//    if (rr.collide) {
+//        delta = _lookDirection * (rr.length - 0.015f);
+//        check_los(rr.normal);
+//    }
+//    if (m_node->getFlipX()) {
+//        delta.x = -delta.x;
+//    }
+//    m_node->move(glm::vec3(delta.x, delta.y, 0.f));
+//    Sierra2DController::update(dt);
 
 }

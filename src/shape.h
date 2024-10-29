@@ -4,94 +4,91 @@
 #include <typeindex>
 #include <vector>
 
-enum class ShapeType {
-    RECT, COMPOUND, AABB2D, POLYLINE, AABB3D, POLYGON
-};
 
-struct Seg {
-	glm::vec2 P0;
-	glm::vec2 P1;
-	glm::vec2 n;
-};
+namespace shapes {
 
-struct Face {
-	glm::vec3 A, B, C;
-	bool quad;
-};
+    enum class ShapeType {
+        AABB,
+        CONVEX_POLY,
+        CIRCLE,
+        POLYGON,
+        POLYLINE
 
 
+    };
 
-class Shape {
-public:
-    Shape() = default;
-    virtual std::type_index get_type_index( ) const
-    {
-        return std::type_index( typeid(*this) );
+    struct RaycastResult {
+        RaycastResult() : collide(false), length(0.f), normal(glm::vec2(0.f)) {}
+
+        RaycastResult(bool c, float length, glm::vec2 n) : collide(c), length(length), normal(n) {}
+        bool collide;
+        float length;
+        glm::vec2 normal;
+    };
+
+    struct Seg {
+        glm::vec2 P0;
+        glm::vec2 P1;
+        glm::vec2 n;
+    };
+
+    enum Direction { X, Y };
+
+
+    class Shape {
+    public:
+        Shape() = default;
+
+        virtual std::type_index get_type_index() const {
+            return std::type_index(typeid(*this));
+        }
+
+        //glm::vec2 getOffset() const;
+
+        //void setOffset(float x, float y);
+
+        Bounds getBounds() const;
+
+        ShapeType getShapeType() const;
+
+        virtual bool isInside(glm::vec2) const = 0;
+
+        // performs a raycast - P0 and P1 should be provided in local coordinates
+        virtual RaycastResult raycast(glm::vec2 P0, glm::vec2 P1) const = 0;
+
+        virtual const std::vector<Seg> *getSegments() const { return nullptr; }
+
+    protected:
+        bool rayOutsideBounds(glm::vec2 P0, glm::vec2 P1) const;
+
+        Bounds m_bounds;
+        //glm::vec2 m_offset;
+        ShapeType m_type;
+    };
+
+//    inline glm::vec2 Shape::getOffset() const {
+//        return m_offset;
+//    }
+//
+//    inline void Shape::setOffset(float x, float y) {
+//        m_offset = glm::vec2(x, y);
+//    }
+
+    inline ShapeType Shape::getShapeType() const {
+        return m_type;
     }
-    glm::vec3 getOffset() const;
-    void setOffset(float x, float y, float z);
-    Bounds getBounds() const;
-    ShapeType getShapeType() const;
-    virtual bool isInside(glm::vec3) const;
-protected:
-    Bounds m_bounds;
-    glm::vec3 m_offset;
-    ShapeType m_type;
-};
 
-inline bool Shape::isInside(glm::vec3) const {
-    return false;
+    inline Bounds Shape::getBounds() const {
+        return m_bounds;
+    }
+
+
+    class ConvexShape : public Shape {
+    public:
+        virtual glm::vec2 project(glm::vec2, const glm::mat4 &) const = 0;
+    };
+
+
 }
-
-
-inline glm::vec3 Shape::getOffset() const {
-    return m_offset;
-}
-
-inline void Shape::setOffset(float x, float y, float z) {
-    m_offset = glm::vec3(x, y, z);
-}
-
-inline ShapeType Shape::getShapeType() const {
-    return m_type;
-}
-
-inline Bounds Shape::getBounds() const {
-    return m_bounds;
-}
-
-class Point : public Shape {
-public:
-	Point() : Shape() {}
-
-
-};
-
-
-
-
-class Shape2D : public Shape {
-public:
-    // project shape onto axis
-    virtual const std::vector<Seg>* getSegments() const { return nullptr; }
-
-};
-
-
-
-class Shape3D : public Shape {
-public:
-	// project shape onto axis
-	virtual const std::vector<Face>* getFaces() { return nullptr; }
-};
-
-
-class ConvexShape : public Shape2D {
-public:
-	virtual glm::vec2 project(glm::vec2, const glm::mat4&) const = 0;
-};
-
-
-
 
 

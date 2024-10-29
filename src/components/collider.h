@@ -15,7 +15,7 @@ public:
     Bounds getStaticBounds() const;
     glm::vec4 bounds() const;
     std::type_index getType() final override;
-    virtual std::shared_ptr<Shape> getShape() = 0;
+    virtual std::shared_ptr<shapes::Shape> getShape() = 0;
     virtual int getCollisionTag() const;
     virtual int getCollisionFlag() const;
     virtual int getCollisionMask() const;
@@ -44,7 +44,7 @@ protected:
     int m_flag;
     int m_mask;
     int m_tag;
-	std::string _batchId;
+
 
 	//std::unordered_set<Collider*> _previous;
 	std::unordered_set<Collider*> _current;
@@ -67,15 +67,15 @@ inline int Collider::getCollisionMask() const {
 
 class SimpleCollider : public Collider {
 public:
-    SimpleCollider(int flag, int mask, int tag, std::shared_ptr<Shape> shape, const pybind11::kwargs&); //std::shared_ptr<Shape>, int flag, int mask, int tag);
-    std::shared_ptr<Shape> getShape() override;
+    SimpleCollider(int flag, int mask, int tag, std::shared_ptr<shapes::Shape> shape, const pybind11::kwargs&); //std::shared_ptr<Shape>, int flag, int mask, int tag);
+    std::shared_ptr<shapes::Shape> getShape() override;
 private:
     void generateDebugMesh() override;
-    std::shared_ptr<Shape> m_shape;
+    std::shared_ptr<shapes::Shape> m_shape;
 
 };
 
-inline std::shared_ptr<Shape> SimpleCollider::getShape() {
+inline std::shared_ptr<shapes::Shape> SimpleCollider::getShape() {
     return m_shape;
 }
 

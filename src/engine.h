@@ -66,6 +66,9 @@ public:
 	//IBatch* getBatch(int);
 
 	//pybind11::function getScript(const std::string& name) const;
+	bool drawColliderOutline() const;
+	std::string getColliderOutlineBatch() const;
+
 private:
 
 
@@ -123,6 +126,8 @@ private:
 	std::unordered_set<KeyboardListener*> m_keyboardListeners;
 	std::unordered_set<MouseListener*> m_mouseListeners;
 
+	std::string _colliderOutlineBatch;
+    bool _drawColliderOutline;
 
     std::unique_ptr<EngineDraw> _engineDraw;
 };
@@ -145,3 +150,9 @@ inline long Engine::getNextId() {
     return m_nextId++;
 }
 
+inline bool Engine::drawColliderOutline() const {
+    return _drawColliderOutline;
+}
+inline std::string Engine::getColliderOutlineBatch() const {
+    return _colliderOutlineBatch;
+}

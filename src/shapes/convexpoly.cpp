@@ -1,7 +1,15 @@
 #include "convexpoly.h"
+#include "../util.h"
 
+using namespace shapes;
 
-ConvexPoly::ConvexPoly(const py::array_t<float>& input) {
+ConvexPoly::ConvexPoly() {
+    m_type = ShapeType::CONVEX_POLY;
+}
+
+ConvexPoly::ConvexPoly(const std::vector<float>& input) {
+    m_type = ShapeType::CONVEX_POLY;
+
     glm::vec2 previous;
     m_bounds.min.x = input.at(0);
     m_bounds.max.x = m_bounds.min.x;
@@ -20,6 +28,35 @@ ConvexPoly::ConvexPoly(const py::array_t<float>& input) {
     closeLoop();
 	//addEdge(m_points.back(), m_points.front());
 }
+
+RaycastResult ConvexPoly::raycast(glm::vec2 P0, glm::vec2 P1) const {
+    const Seg* s = nullptr;
+    RaycastResult r;
+    for (const auto& seg : _segments) {
+        float u{0.f};
+        if (seg2seg(P0, P1, seg.P0, seg.P1, u) && (s == nullptr || u < r.length)) {
+            s = &seg;
+            r.length = u;
+            r.collide = true;
+            r.normal = s->n;
+        }
+    }
+    return r;
+}
+
+bool ConvexPoly::isInside(glm::vec2 P) const {
+    int pos = 0, neg = 0;
+    for (const auto& seg : _segments) {
+        auto p = cross2D(seg.P1 - seg.P0, glm::vec2(P) - seg.P0);
+        if (p > 0)
+            pos++;
+        else if (p < 0)
+            neg ++;
+        if (pos > 0 && neg > 0) return false;
+    }
+    return true;
+}
+
 
 void ConvexPoly::addPoint(glm::vec2 P) {
     if (m_points.empty()) {
@@ -63,26 +100,14 @@ glm::vec2 ConvexPoly::project(glm::vec2 axis, const glm::mat4 & t) const {
     return out;
 }
 
-Segment::Segment(float x0, float y0, float x1, float y1) {
-	addPoint(glm::vec2(x0, y0));
-	addPoint(glm::vec2(x1, y1));
-}
 
-Rect::Rect(float w, float h, const py::kwargs& kwargs) {
-    float ox{0.0f};
-    float oy{0.0f};
-    if (kwargs) {
-        if (kwargs.contains("ox")) {
-            ox = kwargs["ox"].cast<float>();
-        }
-        if (kwargs.contains("oy")) {
-            oy = kwargs["oy"].cast<float>();
-        }
-    }
-    addPoint(glm::vec2(ox, oy));
-	addPoint(glm::vec2(ox + w, oy));
-	addPoint(glm::vec2(ox + w, oy + h));
-	addPoint(glm::vec2(ox, oy + h));
+
+Rect::Rect(float w, float h, glm::vec2 anchor) : ConvexPoly() {
+    glm::vec2 tl = -anchor;
+    addPoint(tl);
+	addPoint(tl + glm::vec2(w, 0.f));
+	addPoint(tl + glm::vec2(w, h));
+	addPoint(tl + glm::vec2(0.f, h));
 
 }
 
@@ -92,4 +117,9 @@ const std::vector<glm::vec2> & ConvexPoly::getPoints() const {
 
 const std::vector<glm::vec2> & ConvexPoly::getUnitNormals() const {
     return m_normals;
+}
+
+Segment::Segment(float x0, float y0, float x1, float y1) : ConvexPoly() {
+    addPoint(glm::vec2(x0, y0));
+    addPoint(glm::vec2(x1, y1));
 }

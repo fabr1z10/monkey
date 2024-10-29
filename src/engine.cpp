@@ -13,7 +13,7 @@ GLFWwindow* window;
 namespace py = pybind11;
 namespace fs = std::filesystem;
 
-Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1) {
+Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1), _drawColliderOutline(false) {
 }
 
 void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
@@ -29,6 +29,12 @@ void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
 			std::cout << entry.path() << std::endl;
 		_deviceSize = py_get<glm::ivec2>(_main, "device_size");
 		_windowSize = py_get<glm::ivec2>(_main, "window_size", _deviceSize);
+
+		_colliderOutlineBatch = py_get<std::string>(_main, "DRAW_COLLIDER_OUTLINE", "");
+        if (!_colliderOutlineBatch.empty()) {
+            _drawColliderOutline = true;
+        }
+
 		assert(_deviceSize[1] > 0);
 		std::cout << " -- Device size: (" << _deviceSize.x << ", " << _deviceSize.y << ")\n";
 		std::cout << " -- Window size: (" << _windowSize.x << ", " << _windowSize.y << ")\n";
