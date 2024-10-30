@@ -4,16 +4,12 @@
 
 
 NodeAction::NodeAction(int id) : Action(), m_nodeId(id), m_node(nullptr) {
-	//m_node = nullptr;
-	//if (id >= 0) {
-//		m_nodeId = id;
-//} else {
-		// TAG
-		//_tag = tag;// py_get_dict<std::string>(args, "tag", "");
-		//if (_tag.empty()) {
-		//		m_node = py_get_dict<std::shared_ptr<Node>>(args, "node", nullptr).get();
-		//}
-	//}
+
+}
+
+void NodeAction::setNode(Node *node) {
+	m_node = node;
+	_id = node->getId();
 }
 
 void NodeAction::start() {

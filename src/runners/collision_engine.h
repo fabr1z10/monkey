@@ -43,8 +43,9 @@ public:
 
     // cast a ray parallel to one axis
     virtual RayCastHit rayCast(glm::vec2 origin, shapes::Direction d, float length, int mask, Node* node=nullptr) const = 0;
-    virtual std::vector<ShapeCastHit> shapeCast (shapes::Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false) = 0;
+    virtual std::vector<ShapeCastHit> shapeCast (shapes::Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false, Node* node = nullptr) = 0;
 
+    std::vector<ShapeCastHit> shapeCast (Collider*);
 };
 
 inline std::type_index ICollisionEngine::getType() {
@@ -64,7 +65,7 @@ public:
 
     RayCastHit rayCast(glm::vec2 origin, shapes::Direction d, float length, int mask, Node* node=nullptr) const override;
 
-    std::vector<ShapeCastHit> shapeCast (shapes::Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false) override;
+    std::vector<ShapeCastHit> shapeCast (shapes::Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false, Node* itself = nullptr) override;
 private:
     glm::ivec4 getLocation(const Bounds& b) const;
     glm::ivec4 getColliderPos(Collider* c);

@@ -93,7 +93,7 @@ RayCastHit SpatialHashingCollisionEngine::rayCast(glm::vec2 origin, Direction d,
         incx = length > 0 ? 1 : -1;
     } else {
         target.y += length;
-        iy1 = static_cast<int>(target.x / _width);
+        iy1 = static_cast<int>(target.y / _height);
         cellsToCheck = fabs(iy1 - iy0) + 1;
         b.min = glm::vec3(origin.x, length > 0 ? origin.y : target.y, 0.f);
         b.max = glm::vec3(origin.x, length > 0 ? target.y : origin.y, 0.f);
@@ -904,8 +904,18 @@ SpatialHashingCollisionEngine::SpatialHashingCollisionEngine(float width, float 
 //
 //}
 
+std::vector<ShapeCastHit> ICollisionEngine::shapeCast (Collider* collider) {
+
+	auto shape = collider->getShape();
+	auto transform = collider->getNode()->getWorldMatrix();
+	return shapeCast(shape.get(), transform, collider->getCollisionMask(), true, collider->getNode());
+
+}
+
+
 std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape, const glm::mat4 &transform, int mask,
-                                                                   bool onlyFirst) {
+	bool onlyFirst, Node* itself) {
+
     // first get the transformed aabb
     auto aabb = shape->getBounds();
     aabb.transform(transform);
@@ -917,6 +927,7 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
             auto iter = _colliders.find({ix, iy});
             if (iter != _colliders.end()) {
                 for (const auto& c : iter->second) {
+                	if (c->getNode() == itself) continue;
                     if (mask != 0 && c->getCollisionFlag() != mask) continue;
                     // test collision between the two shapes
                     // first do a rough bounding box check

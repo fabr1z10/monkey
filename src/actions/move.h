@@ -5,15 +5,15 @@
 
 class Move : public NodeAction {
 public:
-	explicit Move(int id, glm::vec3 pos, float speed);
+	explicit Move(int id, glm::vec2 pos, float speed);
 	int process(double) override;
 	void start() override;
-
+	void reset() override;
 private:
 	float _time;
 	float _speed;
-	glm::vec3 _targetPos;
-	glm::vec3 _dir;
+	glm::vec2 _targetPos;
+	glm::vec2 _dir;
 	float _length;
 	float _distanceTraversed;
 };
@@ -23,7 +23,7 @@ public:
 	explicit MoveBy(int id, glm::vec2 delta, float time, float speed);
 	int process(double) override;
 	void start() override;
-
+	void reset() override;
 private:
 	int m_id;
 	glm::vec3 m_endPoint;

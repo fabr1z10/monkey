@@ -2,6 +2,7 @@
 
 #include "controller.h"
 #include "platform.h"
+#include "mover.h"
 
 struct RaycastOrigins {
 	glm::vec2 topFwd, topBack;
@@ -31,7 +32,7 @@ public:
 	void resetDetails();
 	void resetCollisions() override;
 private:
-	std::shared_ptr<Model> getDebugModel() override;
+	//std::shared_ptr<Model> getDebugModel() override;
 
 	struct CollisionDetails {
 		bool above, below;
@@ -60,9 +61,9 @@ private:
 	int m_verticalRayCount;
 	float m_horizontalRaySpacing;
 	float m_verticalRaySpacing;
-
 	// platforms on which I registered
 	Platform* m_platforms;
+	Mover* _mover;
 
 	bool m_climbingSlope;
 	bool m_descendingSlope;
@@ -73,9 +74,12 @@ private:
 	int _platformFlag;
 	int _direction;
 
-    float _gravity;
     float _acc;
     float _maxSpeed;
+	float _jumpHeight;
+	float _timeToJumpApex;
+	float _gravity;
+	float _jumpVelocity;
     glm::vec2 _velocity;
     glm::vec2 _acceleration;
 };

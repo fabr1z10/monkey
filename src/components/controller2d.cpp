@@ -5,13 +5,14 @@
 #include "../node.h"
 #include "../util.h"
 #include "../engine.h"
+#include "mover.h"
 
 using namespace shapes;
 
 extern GLFWwindow * window;
 
 
-Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(0.f), _acceleration(0.f) {
+Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)), _acceleration(0.f) {
     // this cannot rotate!!!
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
@@ -21,9 +22,15 @@ Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs),
 	m_maskDown = py_get_dict<int>(kwargs, "mask_down", 2 | 32);
 	m_maskUp = py_get_dict<int>(kwargs, "mask_up", 2);
 	m_platforms = nullptr;
-	_gravity = py_get_dict<float>(kwargs, "gravity", 0.f);
+	//_gravity = py_get_dict<float>(kwargs, "gravity", 0.f);
 	_acc = py_get_dict<float>(kwargs, "acceleration", 1.f);
     _maxSpeed = py_get_dict<float>(kwargs, "speed", 10.f);
+    _jumpHeight = py_get_dict<float>(kwargs, "jump_height", 16.f);
+	_timeToJumpApex = py_get_dict<float>(kwargs, "time_to_jump_apex", 0.5);
+	// gravity and jump velocity are computed from jump height and time to jump apex
+	_gravity = (2.0f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex);
+	_jumpVelocity = (2.0f * _jumpHeight) / _timeToJumpApex;
+
 //	_maskUp = 2;
 //	_maskDown = 2 | 32;
 	_foeFlag = 1;
@@ -58,12 +65,9 @@ void Controller2D::update(double dt) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && grounded()) {
-        _velocity.y = 50.f;
+        _velocity.y = _jumpVelocity;
     }
 
-//    if (glfwGetKey(window, _jmpKey) == GLFW_PRESS && _controller->grounded()) {
-//        _v.y = _jumpVelocity;
-//    }
 
 
 
@@ -108,14 +112,14 @@ Controller2D::~Controller2D() {
 	}
 }
 
-std::shared_ptr<Model> Controller2D::getDebugModel() {
-	auto shape = std::make_shared<AABB>(-m_center.x, -m_center.x + m_size.x, -m_center.y, -m_center.y + m_size.y);
-	auto& m = ModelMaker::instance();
-    auto& engine = Engine::instance();
-
-    auto model = m.make(engine.getColliderOutlineBatch(), shape, glm::vec4(1.f, 0.f, 0.f, 1.f), FillType::OUTLINE);
-	return model;
-}
+//std::shared_ptr<Model> Controller2D::getDebugModel() {
+//	auto shape = std::make_shared<AABB>(-m_center.x, -m_center.x + m_size.x, -m_center.y, -m_center.y + m_size.y);
+//	auto& m = ModelMaker::instance();
+//    auto& engine = Engine::instance();
+//
+//    auto model = m.make(engine.getColliderOutlineBatch(), shape, glm::vec4(1.f, 0.f, 0.f, 1.f), FillType::OUTLINE);
+//	return model;
+//}
 
 void Controller2D::updateRaycastOrigins() {
     glm::vec2 pos = m_node->getWorldPosition();
@@ -307,26 +311,26 @@ void Controller2D::verticalCollisions(glm::vec2& velocity, bool forced) {
 
 	// register to new platforms -- needed for moving platforms+
 	if (obstacle != nullptr) {
-		auto* platformController = obstacle->getComponent<Platform>();
+		//auto* platformController = obstacle->getComponent<Platform>();
+		auto* mover = obstacle->getComponent<Mover>();
 
-		if (directionY < 0.f) {
-            if (platformController != m_platforms) {
-                if (platformController != nullptr) {
-                    platformController->registerComponent(this);
-                }
-                if (m_platforms != nullptr) {
-                    m_platforms->unregisterComponent(this);
-                }
-                m_platforms = platformController;
-            }
-        } else {
-		    // notify hit
-		    if (platformController != nullptr) platformController->hitFromBelow();
-		}
+		if (mover != nullptr && directionY < 0.f) {
+			mover->addLinkedNode(this->getNode());
+			_mover = mover;
+//            if (platformController != m_platforms) {
+//                if (platformController != nullptr) {
+//                    platformController->registerComponent(this);
+//                }
+//                if (m_platforms != nullptr) {
+//                    m_platforms->unregisterComponent(this);
+//                }
+//                m_platforms = platformController;
+//            }
+        }
 	} else {
-		if (m_platforms != nullptr && !forced) {
-			m_platforms->unregisterComponent(this);
-			m_platforms = nullptr;
+		if (_mover != nullptr) {
+			_mover->rmLinkedNode(this->getNode());
+			_mover = nullptr;
 		}
 	}
 

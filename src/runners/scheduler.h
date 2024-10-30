@@ -15,6 +15,9 @@ public:
 	Action();
 	// return 0 when completed
 	virtual void start();
+
+	virtual void reset() {}
+
 	int run(double);
 	// stop current action
 	virtual void stop();

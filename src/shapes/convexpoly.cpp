@@ -36,7 +36,7 @@ RaycastResult ConvexPoly::raycast(glm::vec2 P0, glm::vec2 P1) const {
         float u{0.f};
         if (seg2seg(P0, P1, seg.P0, seg.P1, u) && (s == nullptr || u < r.length)) {
             s = &seg;
-            r.length = u;
+            r.length = u * glm::length(P1-P0);
             r.collide = true;
             r.normal = s->n;
         }

@@ -45,14 +45,15 @@ public:
 	using Base = Controller;
 	virtual void resetCollisions();
 protected:
-	void setDebugShape();
-	virtual std::shared_ptr<Model> getDebugModel() = 0;
-	Node* m_debugShape;
+	//void setDebugShape();
+	//virtual std::shared_ptr<Model> getDebugModel() = 0;
+	//Node* m_debugShape;
 	void computeCoordinates();
-	glm::vec2 m_size;
-	glm::vec2 m_center;
+	glm::vec2 _size;
+	glm::vec2 _anchor;
 
 	ICollisionEngine* m_collisionEngine;
+	Collider* _collider;
 	glm::vec2 m_localTopFwd;
 	glm::vec2 m_localTopBack;
 	glm::vec2 m_localBottomFwd;

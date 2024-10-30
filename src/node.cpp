@@ -20,7 +20,7 @@ Node::Node(const Node& other) : _id(Engine::instance().getNextId()), m_parent(nu
 	_tag = other._tag;
 	_scale = other._scale;
 	for (const auto& child : other.m_children) {
-		add(child.second->clone());
+		add(child->clone());
 	}
 	for (const auto& component : other.m_components) {
 		// clone component
@@ -77,7 +77,10 @@ void Node::setParent(Node * node) {
 
 
 void Node::add(std::shared_ptr<Node> node) {
-    m_children.insert(std::make_pair(node->getId(), node));
+	auto it = m_children.insert(m_children.end(), node);
+	_cache[node->getId()] = it;
+
+	//#m_children.insert(std::make_pair(node->getId(), node));
     node->setParent(this);
 
     auto& engine = Engine::instance();
@@ -95,7 +98,7 @@ void Node::add(std::shared_ptr<Node> node) {
 
 // relocate a node in the node-tree
 void Node::moveTo(std::shared_ptr<Node> node) {
-    m_children.insert(std::make_pair(node->getId(), node));
+    m_children.push_back(node);
     node->getParent()->removeChild(node->getId());
     node->setParent(this);
 }
@@ -110,7 +113,7 @@ void Node::clearChildren() {
 
 
 void Node::removeChild(long id) {
-    m_children.erase(id);
+    m_children.erase(_cache.at(id));
 }
 
 void Node::start() {
@@ -127,7 +130,7 @@ void Node::start() {
 void Node::startRecursive() {
     Node::start();
     for (const auto& c : m_children) {
-        c.second->start();
+        c->start();
     }
 }
 
@@ -155,9 +158,9 @@ std::vector<Node *> Node::getNodes(bool recursive) {
         auto current = l.front();
         l.pop_front();
         for (const auto& child : current->m_children) {
-            result.push_back(child.second.get());
+            result.push_back(child.get());
             if (recursive) {
-                l.push_back(child.second.get());
+                l.push_back(child.get());
             }
         }
     }
@@ -171,7 +174,7 @@ void Node::setState(NodeState state) {
         comp.second->setState(state);
     }
     for (const auto& c : m_children) {
-    	c.second->setState(state);
+    	c->setState(state);
     }
 }
 
@@ -268,7 +271,7 @@ void Node::notifyMove() {
 
 	onMove.fire(this);
 	for (const auto& child : m_children) {
-		child.second->notifyMove();
+		child->notifyMove();
 	}
 }
 

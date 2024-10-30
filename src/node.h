@@ -8,7 +8,7 @@
 #include "component.h"
 #include "model.h"
 #include "event.h"
-
+#include <list>
 
 
 class Node {
@@ -34,7 +34,7 @@ public:
     void startRecursive();
     virtual void update(double) ;
     virtual void postProcess() {}
-    const std::unordered_map<long, std::shared_ptr<Node>>& getChildren() const;
+    const std::list<std::shared_ptr<Node>>& getChildren() const;
 
     std::vector<Node*> getNodes(bool recursive);
 
@@ -103,7 +103,9 @@ protected:
     long _id;
 	float _scale;
     Node* m_parent;
-    std::unordered_map<long, std::shared_ptr<Node>> m_children;
+    //std::unordered_map<long, std::shared_ptr<Node>> m_children;
+    std::list<std::shared_ptr<Node>> m_children;
+    std::unordered_map<long, std::list<std::shared_ptr<Node>>::iterator> _cache;
     std::unordered_map<std::type_index, std::shared_ptr<Component> > m_components;
     glm::mat4 m_modelMatrix;
     glm::mat4 m_worldMatrix;
@@ -129,7 +131,7 @@ inline Node* Node::getParent() {
 }
 
 
-inline const std::unordered_map<long, std::shared_ptr<Node>> & Node::getChildren() const {
+inline const std::list<std::shared_ptr<Node>> & Node::getChildren() const {
     return m_children;
 }
 

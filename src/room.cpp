@@ -65,7 +65,7 @@ void Room::iterate_dfs(std::function<void(Node*)> f) {
         li.pop_front();
         f(current);
         for (const auto& i : current->getChildren()) {
-            li.push_front(i.second.get());
+            li.push_front(i.get());
         }
     }
 }
@@ -124,8 +124,8 @@ void Room::update(double dt) {
         //if (currentBounds.intersect2D(b)) {
 		//if (true) {
 		current->update(dt);
-		for (auto const &[k, v] : current->getChildren()) {
-			li.push_front(v.get());
+		for (auto const &c : current->getChildren()) {
+			li.push_front(c.get());
 		}
 		//}
     }

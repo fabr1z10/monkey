@@ -112,6 +112,7 @@
 #include "components/vehicle2d.h"
 #include "components/controller.h"
 #include "components/controller2d.h"
+#include "components/mover.h"
 
 
 //#include "nodes/textedit.h"
@@ -371,12 +372,13 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<ConvexPoly, Shape, std::shared_ptr<ConvexPoly>>(ms, "ConvexPoly")
         .def(py::init<const std::vector<float>&>());
+
 	py::class_<PolyLine, Shape, std::shared_ptr<PolyLine>>(ms, "PolyLine")
 		.def(py::init<const std::vector<float>&>());
     py::class_<Polygon, Shape, std::shared_ptr<Polygon>>(ms, "Polygon")
         .def(py::init<const std::vector<float>&>());
 
-    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(m, "Rect")
+    py::class_<Rect, ConvexPoly, std::shared_ptr<Rect>>(ms, "Rect")
         .def(py::init<float, float, glm::vec2>(), py::arg("width"), py::arg("height"), py::arg("anchor") = glm::vec2(0.f, 0.f));
 //
     py::class_<Circle, Shape, std::shared_ptr<Circle>>(ms, "Circle")
@@ -503,7 +505,7 @@ PYBIND11_MODULE(monkey, m) {
 
     py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
-		.def(py::init<int, glm::vec3, float>(), "id"_a, "position"_a, "speed"_a);
+		.def(py::init<int, glm::vec2, float>(), "id"_a, "position"_a, "speed"_a);
 	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "MoveBy")
 		.def(py::init<int, glm::vec2, float, float>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
     py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "MoveAccelerated")
@@ -573,6 +575,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<IQuadsRenderer, BatchRenderer<QuadBatch>, std::shared_ptr<IQuadsRenderer>>(m, "iquadsrenderer");
 
 
+
 //
 //	py::class_<HotSpot, Component, std::shared_ptr<HotSpot>>(m, "_hotspot");
 //
@@ -586,6 +589,12 @@ PYBIND11_MODULE(monkey, m) {
 //		.def(py::init<pybind11::kwargs&>());
 //
 //
+	py::class_<Mover, Component, std::shared_ptr<Mover>>(mc, "Mover")
+		.def(py::init<const pybind11::kwargs&>())
+		.def("add", &Mover::addMove);
+
+
+
 	py::class_<Collider, Component, std::shared_ptr<Collider>>(mc, "icollider")
 		.def_property_readonly("bounds", &Collider::bounds)
 		.def("setMask", &Collider::setCollisionMask)

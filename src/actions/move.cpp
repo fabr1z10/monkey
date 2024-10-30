@@ -3,35 +3,37 @@
 #include "../node.h"
 #include <glm/gtx/transform.hpp>
 
-Move::Move(int id, glm::vec3 pos, float speed) : NodeAction(id), _targetPos(pos), _speed(speed) {
+Move::Move(int id, glm::vec2 pos, float speed) : NodeAction(id), _targetPos(pos), _speed(speed) {
 
 
 }
 
 void Move::start() {
 	NodeAction::start();
-	auto startPosition = m_node->getWorldPosition();
+	reset();
+}
+
+void Move::reset() {
+	auto startPosition = glm::vec2(m_node->getWorldPosition());
 	_dir = (_targetPos - startPosition);
 	if (_speed == 0.f) {
-		m_node->setPosition(_targetPos.x, _targetPos.y, _targetPos.z);
+		m_node->setPosition(_targetPos.x, _targetPos.y);
 		stop();
 	} else {
 		_length = glm::length(_dir);
 		_dir = glm::normalize(_dir);
 		_distanceTraversed = 0.f;
 	}
-
-
 }
 
 
 int Move::process(double dt) {
-	glm::vec3 delta = _speed * static_cast<float>(dt) * _dir;
-	m_node->move(delta);
+	glm::vec2 delta = _speed * static_cast<float>(dt) * _dir;
+	m_node->move(glm::vec3(delta, 0.f));
 	_distanceTraversed += glm::length(delta);
 
 	if (_distanceTraversed >= _length) {
-		m_node->setPosition(_targetPos.x, _targetPos.y, _targetPos.z);
+		m_node->setPosition(_targetPos.x, _targetPos.y);//, _targetPos.z);
 		return 0;
 
 	}
@@ -54,8 +56,12 @@ MoveBy::MoveBy(int id, glm::vec2 delta, float time, float speed) : NodeAction(id
 void MoveBy::start() {
 	NodeAction::start();
 
+}
+
+void MoveBy::reset() {
 	m_endPoint = m_node->getWorldPosition() + m_delta;
 	m_distanceTraveled = 0.f;
+
 }
 
 
