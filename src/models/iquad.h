@@ -5,7 +5,6 @@
 #include <iostream>
 #include "../batch/quadbatch.h"
 #include "../components/batchrenderer.h"
-//#include "../vec.h"
 
 
 // describe a single quad

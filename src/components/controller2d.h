@@ -15,7 +15,6 @@ class Controller2D : public Controller {
 public:
 	Controller2D(const pybind11::kwargs&);
 	virtual ~Controller2D();
-    void update(double) override;
 
 
     void move(glm::vec2&, bool forced) override;
@@ -31,7 +30,7 @@ public:
 	void resetPlatform();
 	void resetDetails();
 	void resetCollisions() override;
-private:
+protected:
 	//std::shared_ptr<Model> getDebugModel() override;
 
 	struct CollisionDetails {
@@ -85,4 +84,20 @@ private:
 };
 
 
+class PlayerController2D : public Controller2D {
+public:
+	PlayerController2D(const pybind11::kwargs& args) : Controller2D(args) {}
 
+	void update(double) override;
+
+};
+
+
+class CustomController2D : public Controller2D {
+public:
+	CustomController2D(const pybind11::function callback, const pybind11::kwargs& args) : Controller2D(args), _callback(callback) {}
+
+	void update(double) override;
+private:
+	pybind11::function _callback;
+};

@@ -4,8 +4,18 @@
 #include "../spritesheet.h"
 #include "../math/random.h"
 #include "../assetmanager.h"
+#include "../error.h"
+#include <regex>
+#include <algorithm>
 
 using namespace pybind11::literals;
+
+
+
+
+
+
+
 
 IQuads::IQuads(const std::string &batchId) : Model(), _batchId(batchId) {
 
@@ -17,6 +27,8 @@ IQuads::IQuads(const std::string &batchId) : Model(), _batchId(batchId) {
 	auto * tex = _sheet->getTex();
 	_texWidth = tex->getWidth();
 	_texHeight = tex->getHeight();
+
+
 
 
 }
@@ -32,108 +44,111 @@ std::string IQuads::ltrim(const std::string &s)
 }
 
 IQuads::IQuads(const std::string &batchId, const std::string &desc) : IQuads(batchId) {
-    std::cout << "a\n";
-    auto tileSize = AssetManager::instance().getSpritesheet(batchId)->getTileSize();
-    auto tex = AssetManager::instance().getSpritesheet(batchId)->getTex();
+
+    auto tileSize = _sheet->getTileSize();
+    auto tex = _sheet->getTex();
     float cellSizeX = tex->getWidth() / tileSize.x;
     float cellSizeY = tex->getHeight() / tileSize.y;
-    std::cout << tileSize.x << "\n";
+    std::cout << " -- loading tilemap; tilesize = (" << tileSize.x << ", " << tileSize.y << "), sheet_size = (" << tex->getWidth() << ", " << tex->getHeight() << ")\n";
 
+	//TileLanguageParser parser(this);
+	//parser.createModel(desc);
+	//addQuad( glm::vec4(0,0,16,16), py::dict("size"_a = glm::vec2(16, 16)));
     // stringstream class check1
-    std::stringstream check1(desc);
-    std::string intermediate;
-    std::vector<std::string> data;
-    // Tokenizing w.r.t. space ' '
-    while(getline(check1, intermediate, ','))
-    {
-        data.push_back(intermediate);
-    }
-
-    int x = 0;
-    int y = 0;
-    int i = 0;
-    int pal =0;
-    bool fliph = false;
-    bool flipv = false;
-
-    std::list<glm::ivec2> repeat;
-    const std::string WHITESPACE = " \n\r\t\f\v";
-    while (i < data.size()) {
-        auto cmd = ltrim(data[i]);
-        if (cmd == "jmp") {
-            x = std::stoi(data[i+1]) * tileSize.x;
-            y = std::stoi(data[i+2]) * tileSize.y;
-            i += 3;
-            continue;
-        }
-        if (cmd == "b") {
-            x = 0;
-            y += tileSize.y;
-            i +=1;
-            continue;
-        }
-        if (cmd == "rep") {
-            // repeat
-            int n = std::stoi(data[i+1]);
-            repeat.push_front(glm::ivec2(n, i+2));
-            i += 2;
-            continue;
-        }
-        if (cmd == "loop") {
-            if (repeat.empty()) {
-                throw;
-            }
-            repeat.front()[0]--;
-            if (repeat.front()[0] == 0) {
-                repeat.pop_front();
-                i += 1;
-            } else {
-                i = repeat.front()[1];
-            }
-            continue;
-        }
-        if (data[i] == "fh") {
-            fliph = true;
-            i++;
-            continue;
-        }
-        // flip next tile vertically
-        if (data[i] == "fv") {
-            flipv = true;
-            i++;
-            continue;
-        }
-        if (data[i] == "pal") {
-            pal = std::stoi(data[i+1]);
-            i+=2;
-            continue;
-        }
-
-        try {
-            int col = std::stoi(data[i]);
-            if (col == -1) {
-                i ++;
-            }
-            else {
-                int row = std::stoi(data[i + 1]);
-                float tx0 = col * tileSize.x;
-                float ty0 = row * tileSize.y;
-                auto textureCoordinates = glm::vec4(tx0, ty0, tileSize.x, tileSize.y);
-                addQuad(textureCoordinates,
-                        py::dict("pos"_a = glm::vec3(x, y, 0.f), "pal"_a = pal, "fliph"_a = fliph, "flipv"_a = flipv));
-                i += 2;
-            }
-            x += tileSize.x;
-
-        } catch (const std::invalid_argument& exc) {
-            std::cerr << " EROR!\n";
-            exit(1);
-        }
-        fliph = false;
-        flipv = false;
-
-
-    }
+//    std::stringstream check1(desc);
+//    std::string intermediate;
+//    std::vector<std::string> data;
+//    // Tokenizing w.r.t. space ' '
+//    while(getline(check1, intermediate, ','))
+//    {
+//        data.push_back(intermediate);
+//    }
+//
+//    int x = 0;
+//    int y = 0;
+//    int i = 0;
+//    int pal =0;
+//    bool fliph = false;
+//    bool flipv = false;
+//
+//    std::list<glm::ivec2> repeat;
+//    const std::string WHITESPACE = " \n\r\t\f\v";
+//    while (i < data.size()) {
+//        auto cmd = ltrim(data[i]);
+//        if (cmd == "jmp") {
+//            x = std::stoi(data[i+1]) * tileSize.x;
+//            y = std::stoi(data[i+2]) * tileSize.y;
+//            i += 3;
+//            continue;
+//        }
+//        if (cmd == "b") {
+//            x = 0;
+//            y += tileSize.y;
+//            i +=1;
+//            continue;
+//        }
+//        if (cmd == "rep") {
+//            // repeat
+//            int n = std::stoi(data[i+1]);
+//            repeat.push_front(glm::ivec2(n, i+2));
+//            i += 2;
+//            continue;
+//        }
+//        if (cmd == "loop") {
+//            if (repeat.empty()) {
+//                throw;
+//            }
+//            repeat.front()[0]--;
+//            if (repeat.front()[0] == 0) {
+//                repeat.pop_front();
+//                i += 1;
+//            } else {
+//                i = repeat.front()[1];
+//            }
+//            continue;
+//        }
+//        if (data[i] == "fh") {
+//            fliph = true;
+//            i++;
+//            continue;
+//        }
+//        // flip next tile vertically
+//        if (data[i] == "fv") {
+//            flipv = true;
+//            i++;
+//            continue;
+//        }
+//        if (data[i] == "pal") {
+//            pal = std::stoi(data[i+1]);
+//            i+=2;
+//            continue;
+//        }
+//
+//        try {
+//            int col = std::stoi(data[i]);
+//            if (col == -1) {
+//                i ++;
+//            }
+//            else {
+//                int row = std::stoi(data[i + 1]);
+//                float tx0 = col * tileSize.x;
+//                float ty0 = row * tileSize.y;
+//                auto textureCoordinates = glm::vec4(tx0, ty0, tileSize.x, tileSize.y);
+//                addQuad(textureCoordinates,
+//                        py::dict("pos"_a = glm::vec3(x, y, 0.f), "pal"_a = pal, "fliph"_a = fliph, "flipv"_a = flipv));
+//                i += 2;
+//            }
+//            x += tileSize.x;
+//
+//        } catch (const std::invalid_argument& exc) {
+//            std::cerr << " EROR!\n";
+//            exit(1);
+//        }
+//        fliph = false;
+//        flipv = false;
+//
+//
+//    }
 }
 
 void IQuads::addQuad(glm::vec4 texCoords, const pybind11::kwargs &kwargs) {

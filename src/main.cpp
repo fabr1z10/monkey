@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 //#include <pybind11/operators.h>
 #include <pybind11/stl.h>
+#include "tileparser.h"
 //#include "pyhelper.h"
 //#include "png.h"
 //#include "engine.h"
@@ -228,6 +229,10 @@ PYBIND11_MODULE(monkey, m) {
 //		.def("set_main_cam", &Room::setMainCam)
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 //
+	py::class_<TileLanguageParser, std::shared_ptr<TileLanguageParser>>(m, "TileParser")
+		.def(py::init<const std::string&>())
+		.def("parse", &TileLanguageParser::createModel);
+
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
         .def(py::init<>())
         .def("set_position", py::overload_cast<float, float, float>(&Node::setPosition))
@@ -632,7 +637,14 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<float, float, float, float, glm::vec2, float, float, float, float, py::kwargs&>());
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
+		.def(py::init<py::kwargs&>())
+		.def("move", &Controller2D::move);
+
+	py::class_<PlayerController2D, Controller2D, std::shared_ptr<PlayerController2D>>(mc, "PlayerController2D")
 		.def(py::init<py::kwargs&>());
+
+	py::class_<CustomController2D, Controller2D, std::shared_ptr<CustomController2D>>(mc, "CustomController2D")
+			.def(py::init<py::function, py::kwargs&>());
 
 	py::class_<TileController, Component, std::shared_ptr<TileController>>(mc, "TileController")
 		.def(py::init<float, float, float, py::kwargs&>());

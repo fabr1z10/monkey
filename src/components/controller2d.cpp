@@ -12,7 +12,7 @@ using namespace shapes;
 extern GLFWwindow * window;
 
 
-Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)), _acceleration(0.f) {
+Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)), _acceleration(0.f), _mover(nullptr) {
     // this cannot rotate!!!
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
@@ -36,8 +36,13 @@ Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs),
 	_foeFlag = 1;
 }
 
+void CustomController2D::update(double dt) {
 
-void Controller2D::update(double dt) {
+	_callback(dt);
+
+}
+
+void PlayerController2D::update(double dt) {
 
     auto dtf = static_cast<float>(dt);
 
