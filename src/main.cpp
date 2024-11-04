@@ -638,13 +638,15 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>())
+		.def("addCallback", &Controller2D::addCallback)
+		.def("setState", &Controller2D::setState)
+		.def("isFalling", &Controller2D::isFalling)
 		.def("move", &Controller2D::move);
 
 	py::class_<PlayerController2D, Controller2D, std::shared_ptr<PlayerController2D>>(mc, "PlayerController2D")
 		.def(py::init<py::kwargs&>());
 
-	py::class_<CustomController2D, Controller2D, std::shared_ptr<CustomController2D>>(mc, "CustomController2D")
-			.def(py::init<py::function, py::kwargs&>());
+
 
 	py::class_<TileController, Component, std::shared_ptr<TileController>>(mc, "TileController")
 		.def(py::init<float, float, float, py::kwargs&>());

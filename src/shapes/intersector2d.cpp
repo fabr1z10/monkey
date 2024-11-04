@@ -14,6 +14,7 @@ Intersector2D::Intersector2D() {
     add(ShapeType::CONVEX_POLY, ShapeType::CONVEX_POLY, geometry::SAT_convex);
     add(ShapeType::AABB, ShapeType::CONVEX_POLY, geometry::SAT_AABB_convex);
     add(ShapeType::CIRCLE, ShapeType::CONVEX_POLY, geometry::SAT_circle_convex);
+	add(ShapeType::AABB, ShapeType::AABB, geometry::SAT_AABB_convex);
 
 
 

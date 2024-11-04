@@ -484,7 +484,7 @@ void SpatialHashingCollisionEngine::remove(Collider * c) {
         glm::ivec4 pos = it->second;
         for (uint32_t i = pos[0]; i <= pos[1]; ++i) {
             for (uint32_t j = pos[2]; j <= pos[3]; ++j) {
-                _colliders[std::make_pair(i, j)].insert(c);
+                _colliders[std::make_pair(i, j)].erase(c);
             }
         }
     }
@@ -934,13 +934,21 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
                     auto otherBounds = c->getStaticBounds();
                     if (otherBounds.intersect2D(aabb)) {
                         // do a proper collision check
-                        auto collide = _intersector.intersect(shape, c->getShape().get(), transform, c->getNode()->getWorldMatrix());
-                        if (collide.collide) {
-                            ShapeCastHit hit;
-                            hit.entity = c;
-                            hit.report = collide;
-                            return {hit};
-                        }
+                        if (shape->getShapeType() == ShapeType::AABB && c->getShape()->getShapeType() == ShapeType::AABB) {
+							ShapeCastHit hit;
+							hit.entity = c;
+							hit.report.collide = true;
+							return {hit};
+                        } else {
+							auto collide = _intersector.intersect(shape, c->getShape().get(), transform,
+																  c->getNode()->getWorldMatrix());
+							if (collide.collide) {
+								ShapeCastHit hit;
+								hit.entity = c;
+								hit.report = collide;
+								return {hit};
+							}
+						}
                         //std::cout << "BROAD collision; CHECK = " << collide.collide << std::endl;
                     }
                 }

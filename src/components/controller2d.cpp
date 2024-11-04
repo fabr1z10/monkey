@@ -12,7 +12,8 @@ using namespace shapes;
 extern GLFWwindow * window;
 
 
-Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)), _acceleration(0.f), _mover(nullptr) {
+Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)),
+	_acceleration(0.f), _mover(nullptr), _state(0) {
     // this cannot rotate!!!
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
@@ -36,13 +37,24 @@ Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs),
 	_foeFlag = 1;
 }
 
-void CustomController2D::update(double dt) {
+int Controller2D::addCallback(pybind11::function f) {
+	auto id = _controllers.size();
+	_controllers.emplace_back([f] (double dt) { f(dt); });
+	return id;
+}
 
-	_callback(dt);
+void Controller2D::update(double dt) {
+	if (_state < 0) return;
+	_controllers[_state](dt);
+}
+
+
+PlayerController2D::PlayerController2D(const pybind11::kwargs &args) : Controller2D(args) {
+	_controllers.emplace_back([&] (double dt) { this->defaultController(dt); });
 
 }
 
-void PlayerController2D::update(double dt) {
+void PlayerController2D::defaultController(double dt) {
 
     auto dtf = static_cast<float>(dt);
 
@@ -167,6 +179,15 @@ void Controller2D::move(glm::vec2& delta, bool forced) {
 	//m_node->move(glm::translate(delta));
 	m_node->move(glm::vec3(delta, 0.f));
     //std::cout << "y = " << m_node->getWorldPosition().y << "\n";
+
+	// after movement, I check collisions
+	if (delta != glm::vec2(0.f) &&  _collider != nullptr) {
+		auto collisionReport = m_collisionEngine->shapeCast(_collider);
+		for (const auto& c : collisionReport) {
+			c.entity->startCollision(_collider);
+			//std::cout << "QUI\n";
+		}
+	}
 }
 
 
@@ -378,7 +399,7 @@ bool Controller2D::isFalling(float dir) {
 	auto rayOrigin = (dir > 0) ?
 	        m_raycastOrigins.bottomFwd :
 	        m_raycastOrigins.bottomBack;//(dir < 0.f ? m_raycastOrigins.bottomLeft : m_raycastOrigins.bottomRight);
-	rayOrigin.x += (dir<0 ? -1.f : 1.f) * 8.f;
+	//rayOrigin.x += (dir<0 ? -1.f : 1.f) * 8.f;
 	//glm::vec2 rayOrigin = (dir == -1) ? m_raycastOrigins.bottomLeft : m_raycastOrigins.bottomRight;
 	RayCastHit hit = m_collisionEngine->rayCast(rayOrigin, Direction::Y, -0.5f, m_maskDown, m_node);
 	if (!hit.collide) {

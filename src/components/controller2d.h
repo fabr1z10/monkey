@@ -15,6 +15,7 @@ class Controller2D : public Controller {
 public:
 	Controller2D(const pybind11::kwargs&);
 	virtual ~Controller2D();
+	void update(double) override;
 
 
     void move(glm::vec2&, bool forced) override;
@@ -30,6 +31,8 @@ public:
 	void resetPlatform();
 	void resetDetails();
 	void resetCollisions() override;
+	void setState(int);
+	int addCallback(pybind11::function f);
 protected:
 	//std::shared_ptr<Model> getDebugModel() override;
 
@@ -81,23 +84,21 @@ protected:
 	float _jumpVelocity;
     glm::vec2 _velocity;
     glm::vec2 _acceleration;
+
+    int _state;
+    std::vector<std::function<void(double)>> _controllers;
 };
 
+inline void Controller2D::setState(int state) {
+	_state = state;
+}
 
 class PlayerController2D : public Controller2D {
 public:
-	PlayerController2D(const pybind11::kwargs& args) : Controller2D(args) {}
+	PlayerController2D(const pybind11::kwargs& args);
 
-	void update(double) override;
+	void defaultController(double);
 
 };
 
 
-class CustomController2D : public Controller2D {
-public:
-	CustomController2D(const pybind11::function callback, const pybind11::kwargs& args) : Controller2D(args), _callback(callback) {}
-
-	void update(double) override;
-private:
-	pybind11::function _callback;
-};

@@ -104,6 +104,7 @@ void Node::moveTo(std::shared_ptr<Node> node) {
 }
 
 void Node::remove() {
+	setState(NodeState::INACTIVE);
     Engine::instance().scheduleForRemoval(this);
 }
 
@@ -113,7 +114,10 @@ void Node::clearChildren() {
 
 
 void Node::removeChild(long id) {
-    m_children.erase(_cache.at(id));
+	std::cout << " ciccio " << _cache.at(id)->use_count() << "\n";
+	m_children.erase(_cache.at(id));
+
+    _cache.erase(id);
 }
 
 void Node::start() {

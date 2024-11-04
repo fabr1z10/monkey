@@ -67,6 +67,12 @@ protected:
 	float _texHeight;
 };
 
+class AnimatedQuads : public Model {
+public:
+private:
+	std::shared_ptr<IQuads> _frames;
+};
+
 inline const QuadInfo & IQuads::getQuadInfo(int i) const {
 	return _quads[i];
 }
