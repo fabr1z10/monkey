@@ -16,7 +16,7 @@ public:
 	Controller2D(const pybind11::kwargs&);
 	virtual ~Controller2D();
 	void update(double) override;
-
+	void shutdown() override;
 
     void move(glm::vec2&, bool forced) override;
 	std::type_index getType() override;

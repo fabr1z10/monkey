@@ -37,6 +37,11 @@ Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs),
 	_foeFlag = 1;
 }
 
+void Controller2D::shutdown() {
+	_controllers.clear();
+}
+
+
 int Controller2D::addCallback(pybind11::function f) {
 	auto id = _controllers.size();
 	_controllers.emplace_back([f] (double dt) { f(dt); });
@@ -116,6 +121,18 @@ void PlayerController2D::defaultController(double dt) {
 
 	if (this->right() || this->left()) {
 		_velocity.x = 0.f;
+	}
+
+	if (grounded()) {
+		if (_velocity.x > 0) {
+			m_node->setAnimation("walk");
+		} else if (_velocity.x == 0.f) {
+			m_node->setAnimation("idle");
+		} else if (_velocity.x < 0) {
+			m_node->setAnimation("slide");
+		}
+	} else {
+		m_node->setAnimation("jump");
 	}
 
 }

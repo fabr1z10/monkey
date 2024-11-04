@@ -15,6 +15,10 @@ Collider::Collider(int flag, int mask, int tag, const pybind11::kwargs& args) : 
 
 }
 
+void Collider::shutdown() {
+	_response.clear();
+}
+
 bool Collider::respondTo(Collider * other) {
 	return (_response.count(other->getCollisionTag()) > 0);
 }

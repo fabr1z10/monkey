@@ -19,6 +19,7 @@ public:
     virtual std::type_index getType();
     virtual void start() {}
     virtual void update(double) {}
+    virtual void shutdown() {}
     virtual void setNode(Node*);
     Node* getNode();
     //virtual void sendMessage(const pybind11::kwargs& args) {}

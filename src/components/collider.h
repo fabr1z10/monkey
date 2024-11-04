@@ -12,6 +12,7 @@ class Collider : public Component {
 public:
     Collider(int, int, int, const pybind11::kwargs& args);
     virtual ~Collider();
+    void  shutdown() override;
     Bounds getStaticBounds() const;
     glm::vec4 bounds() const;
     std::type_index getType() final override;

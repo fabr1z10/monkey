@@ -49,7 +49,7 @@ void Node::setTag(const std::string& tag) {
 }
 
 Node::~Node() {
-
+	std::cout << " -- dtor " << _id << ", " << _tag << std::endl;
     onRemove.fire(this);
     m_components.clear();
     m_children.clear();
@@ -104,7 +104,12 @@ void Node::moveTo(std::shared_ptr<Node> node) {
 }
 
 void Node::remove() {
+	std::cout << " ciccio " << m_parent->_cache.at(_id)->use_count() << "\n";
+
 	setState(NodeState::INACTIVE);
+	for (auto& c : m_components) c.second->shutdown();
+	std::cout << " ciccio " << m_parent->_cache.at(_id)->use_count() << "\n";
+
     Engine::instance().scheduleForRemoval(this);
 }
 

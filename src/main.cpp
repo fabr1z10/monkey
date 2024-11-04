@@ -253,6 +253,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def("setPalette", &Node::setPalette)
         .def("sendMessage", &Node::sendMessage)
         .def("addMessage", &Node::addMessage)
+        .def("move", py::overload_cast<glm::vec3>(&Node::move))
         //.def("setBehavior", &Node::setBehavior)
         //.def("addBehavior", &Node::addBehavior)
         .def("getLabelledComponent", &Node::getTaggedComponent, py::return_value_policy::reference)
