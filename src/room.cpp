@@ -116,6 +116,10 @@ void Room::update(double dt) {
 	li.push_back(m_root.get());
 	//std::vector<std::pair<int, std::shared_ptr<Camera>>> camStack;
 	//_currentCamera.clear();
+	for (const auto& r : m_runners) {
+		r.second->initialUpdate();
+	}
+
     while (!li.empty()) {
         auto current = li.front();
 		li.pop_front();
@@ -267,6 +271,10 @@ void Room::setClearColor(int r, int g, int b) {
 }
 
 void Room::start() {
+	for (auto& b : _batches) {
+		b->init();
+	}
+
     glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
 	for (const auto& runner : m_runners) {
 		runner.second->start();

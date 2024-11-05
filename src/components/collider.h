@@ -28,7 +28,7 @@ public:
 	using Base = Collider;
 	void setResponse(int tag, const pybind11::kwargs& args);
 	bool respondTo(Collider*);
-	void startCollision(Collider*);
+	void startCollision(Collider*, glm::vec2);
 	void endCollision(Collider*);
 protected:
 	struct ColliderResponse {

@@ -8,6 +8,10 @@
 IBatch::IBatch(int verticesPerElement, const pybind11::kwargs& args) : _vertsPerElement(verticesPerElement), _nPrimitive(0) {
 	_maxElements = py_get_dict<int>(args, "max_elements");
 	_camId = py_get_dict<int>(args, "cam");
+
+}
+
+void IBatch::init() {
 	_cam = Engine::instance().getRoom()->getCamera(_camId);
 }
 

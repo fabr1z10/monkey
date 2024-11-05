@@ -2,7 +2,9 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include "../orderedPair.h"
 #include "collision.h"
+#include "collision_response.h"
 #include "../runner.h"
 #include "../components/collider.h"
 #include "../hashpair.h"
@@ -35,6 +37,7 @@ public:
     // a 2D collision engine.
     ICollisionEngine() = default;
 
+    void initialUpdate() override;
     virtual void add (Collider*) = 0;
     virtual void move (Collider*) = 0;
     virtual void remove (Collider*) = 0;
@@ -45,7 +48,14 @@ public:
     virtual RayCastHit rayCast(glm::vec2 origin, shapes::Direction d, float length, int mask, Node* node=nullptr) const = 0;
     virtual std::vector<ShapeCastHit> shapeCast (shapes::Shape*, const glm::mat4& transform, int mask, bool onlyFirst = false, Node* node = nullptr) = 0;
 
-    std::vector<ShapeCastHit> shapeCast (Collider*);
+    std::vector<ShapeCastHit> shapeCast (Collider*, glm::vec2 delta);
+
+    void addResponse(pybind11::object obj);
+protected:
+	std::vector<pybind11::object> _pythonObj;
+	CollisionResponse* getResponse(Collider*, Collider*);
+	std::unordered_map<OrderedPair<Collider>, int> _previouslyColliding;
+	std::unordered_map<std::pair<int, int>, std::shared_ptr<CollisionResponse>> _response;
 };
 
 inline std::type_index ICollisionEngine::getType() {

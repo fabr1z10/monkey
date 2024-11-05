@@ -73,25 +73,25 @@ void Collider::start() {
     }
 }
 
-void Collider::startCollision(Collider * c) {
-	if (_current.count(c) == 0) {
-		_current.insert(c);
+void Collider::startCollision(Collider * c, glm::vec2 delta) {
+	//if (_current.count(c) == 0) {
+	//	_current.insert(c);
 		auto it = _response.find(c->getCollisionTag());
 		if (it != _response.end() && it->second.onStart) {
-			it->second.onStart(getNode(), c->getNode());
+			it->second.onStart(getNode(), c->getNode(), delta);
 		}
-	}
+	//}
 }
 
 void Collider::endCollision(Collider * c) {
-	if (_current.count(c) > 0) {
-		_current.erase(c);
+	//if (_current.count(c) > 0) {
+	//	_current.erase(c);
 		auto it = _response.find(c->getCollisionTag());
 		if (it != _response.end() && it->second.onEnd) {
 			it->second.onEnd(getNode(), c->getNode());
 		}
 
-	}
+	//}
 }
 
 void Collider::update(double) {

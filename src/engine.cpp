@@ -223,12 +223,14 @@ void Engine::loadRoom() {
 //    // create a batch
 //    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
 //    //for (auto& batch : _batches) batch.clear();
-    _room = std::make_shared<Room>();
+
+    //_room = std::make_shared<Room>();
     auto roomBuilder = _main.attr("create_room");
     if (!roomBuilder) {
     	GLIB_FAIL("no function create_room found!");
     }
-    roomBuilder(_room);
+	_room = roomBuilder().cast<std::shared_ptr<Room>>();
+    //roomBuilder(_room);
 //    m_game.attr(_roomId.c_str())(m_room);
 	_engineDraw->init(_room.get());
 //
@@ -386,6 +388,10 @@ void Engine::scheduleForRemoval(Node * node) {
 
 std::shared_ptr<Room> Engine::getRoom() {
 	return _room;
+}
+
+void Engine::setCurrentRoom(std::shared_ptr<Room> room) {
+	_room=room;
 }
 
 void Engine::registerToKeyboardEvent(KeyboardListener * listener) {

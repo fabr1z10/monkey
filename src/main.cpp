@@ -213,7 +213,8 @@ PYBIND11_MODULE(monkey, m) {
         .def("start", &Engine::start)
         .def("run", &Engine::run)
         .def("getRoom", &Engine::getRoom)
-        .def("shutdown", &Engine::shutdown);
+		.def("setCurrentRoom", &Engine::setCurrentRoom)
+		.def("shutdown", &Engine::shutdown);
 
 	py::class_<Room, std::shared_ptr<Room>>(m, "Room")
         .def(py::init<>())
@@ -350,7 +351,14 @@ PYBIND11_MODULE(monkey, m) {
 //	py::class_<ProvaBatch, IBatch, std::shared_ptr<ProvaBatch>>(m, "prova_batch")
 //		.def(py::init<const pybind11::kwargs&>());
 //
-    py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
+
+	py::class_<CollisionResponse, PyCollisionResponse, std::shared_ptr<CollisionResponse>>(m, "CollisionResponse")
+		.def(py::init<int, int>())
+		.def("onStart", &CollisionResponse::onStart);
+		//.def("onEnd",&CollisionResponse::onEnd);
+
+
+	py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
         .def("set_position", &Camera::setPosition);
 
@@ -455,7 +463,8 @@ PYBIND11_MODULE(monkey, m) {
 //
 //	/// --- runners ---
 	py::class_<Runner, std::shared_ptr<Runner>>(m, "Runner");
-	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision");
+	py::class_<ICollisionEngine, Runner, std::shared_ptr<ICollisionEngine>>(m, "icollision")
+		.def("addResponse", &ICollisionEngine::addResponse);
 	py::class_<SpatialHashingCollisionEngine, ICollisionEngine, std::shared_ptr<SpatialHashingCollisionEngine>>(m, "CollisionEngine2D")
 		.def(py::init<float, float>(), "width"_a, "height"_a);
                 //.def("add_response", &CollisionEngine2D::addResponse);
@@ -639,6 +648,7 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>())
+		.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
 		.def("addCallback", &Controller2D::addCallback)
 		.def("setState", &Controller2D::setState)
 		.def("isFalling", &Controller2D::isFalling)

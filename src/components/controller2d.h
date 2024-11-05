@@ -33,6 +33,9 @@ public:
 	void resetCollisions() override;
 	void setState(int);
 	int addCallback(pybind11::function f);
+	glm::vec2 getVelocity() const;
+	void setVelocity(glm::vec2);
+
 protected:
 	//std::shared_ptr<Model> getDebugModel() override;
 
@@ -92,6 +95,15 @@ protected:
 inline void Controller2D::setState(int state) {
 	_state = state;
 }
+
+inline glm::vec2 Controller2D::getVelocity() const {
+	return _velocity;
+}
+
+inline void Controller2D::setVelocity(glm::vec2 velocity) {
+	_velocity = velocity;
+}
+
 
 class PlayerController2D : public Controller2D {
 public:

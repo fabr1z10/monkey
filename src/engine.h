@@ -47,6 +47,7 @@ public:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
     std::shared_ptr<Room> getRoom();
+    void setCurrentRoom(std::shared_ptr<Room>);
 
     // node handling
     Node* getNode(int);

@@ -9,6 +9,7 @@ public:
     virtual void start() {
 
     }
+    virtual void initialUpdate() {}
     virtual void update(double) = 0;
     virtual std::type_index getType();
 };

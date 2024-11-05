@@ -51,7 +51,7 @@ void Mover::update(double dt) {
 
 	// after movement, I check collisions
 	if (_collider != nullptr) {
-		auto collisionReport = _collisionEngine->shapeCast(_collider);
+		auto collisionReport = _collisionEngine->shapeCast(_collider, delta);
 		if (!collisionReport.empty()) {
 			std::cout << "COLLISION\n";
 			for (auto& c : collisionReport) {

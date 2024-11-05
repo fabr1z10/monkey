@@ -13,6 +13,7 @@ class Shader;
 class IBatch {
 public:
 	IBatch(int verticesPerElement, const pybind11::kwargs&);
+	void init();
 	virtual void setupUniforms(Shader* s);
 	virtual void draw(Shader* s) = 0;
 	virtual void cleanUp() = 0;

@@ -903,13 +903,73 @@ SpatialHashingCollisionEngine::SpatialHashingCollisionEngine(float width, float 
 //    return &it->second;
 //
 //}
+void ICollisionEngine::initialUpdate() {
+    //for (auto& p : _previouslyColliding) p.second = 0;
+}
 
-std::vector<ShapeCastHit> ICollisionEngine::shapeCast (Collider* collider) {
+CollisionResponse * ICollisionEngine::getResponse(Collider * a, Collider * b) {
+	auto ta = a->getCollisionTag();
+	auto tb = b->getCollisionTag();
+	auto it = _response.find({ta, tb});
+	if (it == _response.end()) {
+		it = _response.find({tb, ta});
+		if (it == _response.end()) {
+			return nullptr;
+		}
+	}
+	return it->second.get();
+
+
+}
+
+void ICollisionEngine::addResponse(pybind11::object obj) {
+	_pythonObj.push_back(obj);
+	auto response = obj.cast<std::shared_ptr<CollisionResponse>>();
+	_response.insert({std::make_pair(response->getTag1(), response->getTag2()), response});
+}
+
+std::vector<ShapeCastHit> ICollisionEngine::shapeCast (Collider* collider, glm::vec2 delta) {
 
 	auto shape = collider->getShape();
 	auto transform = collider->getNode()->getWorldMatrix();
-	return shapeCast(shape.get(), transform, collider->getCollisionMask(), true, collider->getNode());
+	auto collisionReport = shapeCast(shape.get(), transform, collider->getCollisionMask(), true, collider->getNode());
 
+ 	for (auto& c : _previouslyColliding) {
+ 		if (c.first.getFirst() == collider || c.first.getSecond() == collider) {
+ 			c.second = 0;
+ 		}
+ 	}
+    // now handle collisions
+    for (const auto& c : collisionReport) {
+    	// check if a response is available for this pair
+		auto* response = getResponse(collider, c.entity);
+		if (response == nullptr) {
+			// no need to do any check!
+			continue;
+		}
+
+        auto it = _previouslyColliding.find(OrderedPair<Collider>(collider, c.entity));
+        if (it == _previouslyColliding.end()) {
+			response->onStart(collider, c.entity, delta, 0);
+        }
+		_previouslyColliding[OrderedPair<Collider>(collider, c.entity)] = 1;
+    }
+
+    // now handle pairs that no longer collide
+	for (auto it = _previouslyColliding.begin(); it != _previouslyColliding.end(); ) {
+		auto c1 = it->first.getFirst();
+		auto c2 = it->first.getSecond();
+		if ((c1 == collider || c2 == collider) && it->second == 0) {
+			// Erase the element and get the next iterator
+			auto* response = getResponse(c1, c2);
+			response->onEnd(c1, c2);
+			it = _previouslyColliding.erase(it);
+		} else {
+			// Move to the next element
+			++it;
+		}
+	}
+	return collisionReport;
 }
 
 

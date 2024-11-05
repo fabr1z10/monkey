@@ -199,11 +199,7 @@ void Controller2D::move(glm::vec2& delta, bool forced) {
 
 	// after movement, I check collisions
 	if (delta != glm::vec2(0.f) &&  _collider != nullptr) {
-		auto collisionReport = m_collisionEngine->shapeCast(_collider);
-		for (const auto& c : collisionReport) {
-			c.entity->startCollision(_collider);
-			//std::cout << "QUI\n";
-		}
+		auto collisionReport = m_collisionEngine->shapeCast(_collider, delta);
 	}
 }
 
