@@ -489,6 +489,16 @@ void SpatialHashingCollisionEngine::remove(Collider * c) {
         }
     }
     _location.erase(c);
+    // remove from previous colliding
+	for (auto it = _previouslyColliding.begin(); it != _previouslyColliding.end(); ) {
+		if (it->first.getFirst() == c || it->first.getSecond() == c) {
+			// Erase the element and get the next iterator
+			it = _previouslyColliding.erase(it);
+		} else {
+			// Move to the next element
+			++it;
+		}
+	}
 }
 
 SpatialHashingCollisionEngine::SpatialHashingCollisionEngine(float width, float height) : ICollisionEngine(),

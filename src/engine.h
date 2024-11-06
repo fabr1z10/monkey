@@ -24,6 +24,8 @@ public:
         // Instantiated on first use.
         return instance;
     }
+    void storeRef(int, pybind11::object);
+    void rmRef(int);
     //Engine();
     long getNextId();
     void start(py::module&, const pybind11::kwargs& args);
@@ -120,6 +122,7 @@ private:
 
     // node management
     std::unordered_map<int, Node*> m_allNodes;
+    std::unordered_map<int, pybind11::object> _allPyObjects;
     std::unordered_map<std::string, std::unordered_set<Node*>> m_labeledNodes;
     std::vector<Node*> m_scheduledForRemoval;
 

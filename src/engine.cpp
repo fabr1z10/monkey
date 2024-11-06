@@ -184,6 +184,7 @@ void Engine::run() {
         while (m_run && !m_shutdown);
         _room->end();
         m_allNodes.clear();
+        _allPyObjects.clear();
         if (_room) {
             _room->cleanUp();
         }
@@ -353,6 +354,15 @@ void Engine::addNode(Node* node) {
     	}
     	m_labeledNodes.at(label).insert(node);
     }
+
+
+}
+
+void Engine::storeRef(int id, pybind11::object node) {
+	_allPyObjects[id] = (node);
+}
+void Engine::rmRef(int id) {
+	_allPyObjects.erase(id);
 }
 
 void Engine::rmNode(Node* node) {

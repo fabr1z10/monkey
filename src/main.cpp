@@ -213,6 +213,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("start", &Engine::start)
         .def("run", &Engine::run)
         .def("getRoom", &Engine::getRoom)
+        .def("storeRef",&Engine::storeRef)
 		.def("setCurrentRoom", &Engine::setCurrentRoom)
 		.def("shutdown", &Engine::shutdown);
 

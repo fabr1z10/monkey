@@ -12,6 +12,8 @@ Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), _state(
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
     m_model(nullptr), _scale(1.0f), _angle(0.f) {
 
+
+
     Engine::instance().addNode(this);
 }
 
@@ -92,6 +94,12 @@ void Node::add(std::shared_ptr<Node> node) {
 	if (_state != NodeState::ACTIVE) {
 		node->setState(_state);
 	}
+	try {
+		auto obj = py::cast(node.get());
+		engine.storeRef(node->getId(), obj);
+	} catch(py::cast_error& err) {
+
+	}
 
 
 }
@@ -121,6 +129,7 @@ void Node::clearChildren() {
 void Node::removeChild(long id) {
 	std::cout << " ciccio " << _cache.at(id)->use_count() << "\n";
 	m_children.erase(_cache.at(id));
+	Engine::instance().rmRef(id);
 
     _cache.erase(id);
 }
