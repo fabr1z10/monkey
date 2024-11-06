@@ -997,7 +997,7 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
             auto iter = _colliders.find({ix, iy});
             if (iter != _colliders.end()) {
                 for (const auto& c : iter->second) {
-                	if (c->getNode() == itself) continue;
+                	if (c->getNode() == itself || c->getState() != NodeState::ACTIVE) continue;
                     if (mask != 0 && c->getCollisionFlag() != mask) continue;
                     // test collision between the two shapes
                     // first do a rough bounding box check

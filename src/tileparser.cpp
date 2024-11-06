@@ -12,6 +12,7 @@ TileLanguageParser::TileLanguageParser(const std::string& batchId) : _batchId(ba
 	_tileSize = _sheet->getTileSize();
 
 	_funcs["q"] = &TileLanguageParser::quad;
+	_funcs["go"] = &TileLanguageParser::go;
 
 	for (const auto& f : _funcs){
 		_tokens.addToken(f.first);
@@ -22,8 +23,8 @@ std::shared_ptr<Model> TileLanguageParser::createModel(const std::string & desc)
 
 	auto tokens = tokenize(desc, ";\n");
 
-	int x{0};
-	int y{0};
+	_x = 0;
+	_y = 0;
 
 	_model = std::make_shared<IQuads>(_batchId);
 	for (auto& token : tokens) {
@@ -70,6 +71,15 @@ void TileLanguageParser::quad(const std::string &args) {
 
 	float totalWidth = rx * w;
 	float totalHeight = ry * h;
-	_model->addQuad( glm::vec4(x, y, w, h), py::dict("repeat"_a = glm::vec2(rx, ry), "size"_a = glm::vec2(totalWidth, totalHeight)));
+	_model->addQuad( glm::vec4(x, y, w, h), py::dict("pos"_a = glm::vec3(_x,_y, 0), "repeat"_a = glm::vec2(rx, ry), "size"_a = glm::vec2(totalWidth, totalHeight)));
+
+}
+
+void TileLanguageParser::go(const std::string &args) {
+	auto a = tokenize(args, ",");
+	_x = std::stoi(a[0]) * _tileSize[0];
+	_y = std::stoi(a[1]) * _tileSize[1];
+
+
 
 }

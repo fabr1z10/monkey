@@ -15,6 +15,8 @@ public:
 private:
 	std::vector<std::string> tokenize(const std::string& s, const std::string& delimiters);
 	void quad(const std::string& args);
+	void go(const std::string& args);
+	int _x, _y;
 	using FPtr = void (TileLanguageParser::*)(const std::string& args);
 	Trie _tokens;
 	std::unordered_map<std::string, FPtr> _funcs;
