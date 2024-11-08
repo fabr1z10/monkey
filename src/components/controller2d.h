@@ -110,7 +110,12 @@ public:
 	PlayerController2D(const pybind11::kwargs& args);
 
 	void defaultController(double);
-
+private:
+	std::string _walk;
+	std::string _idle;
+	std::string _jumpUp;
+	std::string _jumpDown;
+	std::string _slide;
 };
 
 

@@ -56,7 +56,11 @@ void Controller2D::update(double dt) {
 
 PlayerController2D::PlayerController2D(const pybind11::kwargs &args) : Controller2D(args) {
 	_controllers.emplace_back([&] (double dt) { this->defaultController(dt); });
-
+	_walk = py_get_dict<std::string>(args, "walk", "walk");
+	_idle = py_get_dict<std::string>(args, "idle", "idle");
+	_slide = py_get_dict<std::string>(args, "slide", "slide");
+	_jumpUp = py_get_dict<std::string>(args, "jumpUp", "jump");
+	_jumpDown = py_get_dict<std::string>(args, "jumpDown", "jump");
 }
 
 void PlayerController2D::defaultController(double dt) {
@@ -125,14 +129,19 @@ void PlayerController2D::defaultController(double dt) {
 
 	if (grounded()) {
 		if (_velocity.x > 0) {
-			m_node->setAnimation("walk");
+			m_node->setAnimation(_walk);
 		} else if (_velocity.x == 0.f) {
-			m_node->setAnimation("idle");
+			m_node->setAnimation(_idle);
 		} else if (_velocity.x < 0) {
-			m_node->setAnimation("slide");
+			m_node->setAnimation(_slide);
 		}
 	} else {
-		m_node->setAnimation("jump");
+		if (delta.y > 0) {
+			m_node->setAnimation(_jumpUp);
+		} else {
+			m_node->setAnimation(_jumpDown);
+		}
+
 	}
 
 }
