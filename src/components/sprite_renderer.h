@@ -51,7 +51,6 @@ private:
 	bool m_complete;
 	int _currentFrameTicks;
 	int _direction;
-
 };
 
 inline const Frame & SpriteRenderer::getFrameInfo() const {

@@ -1,4 +1,6 @@
 #include "controller2d.h"
+
+#include <utility>
 #include "../shapes/aabb.h"
 #include "../models/modelmake.h"
 #include "../pyhelper.h"
@@ -6,10 +8,14 @@
 #include "../util.h"
 #include "../engine.h"
 #include "mover.h"
+#include "../error.h"
+#include <GLFW/glfw3.h>
 
 using namespace shapes;
 
 extern GLFWwindow * window;
+
+using namespace pybind11::literals; // to bring in the `_a` literal
 
 
 Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)),
@@ -54,13 +60,13 @@ void Controller2D::update(double dt) {
 }
 
 
-PlayerController2D::PlayerController2D(const pybind11::kwargs &args) : Controller2D(args) {
+PlayerController2D::PlayerController2D(const std::string& batch, const pybind11::kwargs &args) : Controller2D(args), _currentModel(-1), _batch(batch) {
 	_controllers.emplace_back([&] (double dt) { this->defaultController(dt); });
-	_walk = py_get_dict<std::string>(args, "walk", "walk");
-	_idle = py_get_dict<std::string>(args, "idle", "idle");
-	_slide = py_get_dict<std::string>(args, "slide", "slide");
-	_jumpUp = py_get_dict<std::string>(args, "jumpUp", "jump");
-	_jumpDown = py_get_dict<std::string>(args, "jumpDown", "jump");
+//	_walk = py_get_dict<std::string>(args, "walk", "walk");
+//	_idle = py_get_dict<std::string>(args, "idle", "idle");
+//	_slide = py_get_dict<std::string>(args, "slide", "slide");
+//	_jumpUp = py_get_dict<std::string>(args, "jumpUp", "jump");
+//	_jumpDown = py_get_dict<std::string>(args, "jumpDown", "jump");
 }
 
 void PlayerController2D::defaultController(double dt) {
@@ -127,19 +133,21 @@ void PlayerController2D::defaultController(double dt) {
 		_velocity.x = 0.f;
 	}
 
+	// handle animation
+	const auto& mi = _models[_currentModel];
 	if (grounded()) {
 		if (_velocity.x > 0) {
-			m_node->setAnimation(_walk);
+			m_node->setAnimation(mi.walk);
 		} else if (_velocity.x == 0.f) {
-			m_node->setAnimation(_idle);
+			m_node->setAnimation(mi.idle);
 		} else if (_velocity.x < 0) {
-			m_node->setAnimation(_slide);
+			m_node->setAnimation(mi.slide);
 		}
 	} else {
 		if (delta.y > 0) {
-			m_node->setAnimation(_jumpUp);
+			m_node->setAnimation(mi.jumpUp);
 		} else {
-			m_node->setAnimation(_jumpDown);
+			m_node->setAnimation(mi.jumpDown);
 		}
 
 	}
@@ -432,4 +440,51 @@ bool Controller2D::isFalling(float dir) {
 
 void Controller2D::resetDetails() {
 	resetCollisions();
+}
+
+void PlayerController2D::start() {
+	Controller2D::start();
+
+}
+
+void PlayerController2D::setModel(int index) {
+	if (index != _currentModel) {
+		if (index >= _models.size()) {
+			GLIB_FAIL("PlayerController2D - don't have model " << index);
+		}
+		m_node->setModel(_models[index].model, py::dict("batch"_a = _batch));
+		_currentModel = index;
+	}
+}
+void PlayerController2D::addModel(std::shared_ptr<Model> model, const std::string &idleAnimation,
+								  const std::string &walkAnimation, const std::string &slideAnimation,
+								  const std::string &jumpUpAnimation, const std::string &jumpDownAnimation) {
+	ModelInfo mi;
+	mi.model = std::move(model);
+	mi.idle = idleAnimation;
+	mi.walk = walkAnimation;
+	mi.slide = slideAnimation;
+	mi.jumpUp = jumpUpAnimation;
+	mi.jumpDown = jumpDownAnimation;
+	_models.push_back(mi);
+
+}
+
+void PlayerController2D::addKeyCallback(int id, pybind11::function f) {
+	_callbacks[id] = 	f;
+}
+
+void PlayerController2D::setNode(Node * node) {
+	Controller2D::setNode(node);
+	setModel(0);
+}
+
+int PlayerController2D::keyCallback(GLFWwindow *, int key, int scancode, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		auto it = _callbacks.find(key);
+		if (it != _callbacks.end()) {
+			(*it->second)();
+		}
+
+	}
 }

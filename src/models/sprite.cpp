@@ -237,6 +237,17 @@ std::shared_ptr<Shape> Sprite::getRect(int mode, int x0, int x1, int y0, int y1)
 //	return m_frameToShape.count(std::make_pair(anim, 0)) > 0;
 //
 //}
+void Sprite::checkFrameCallback(const std::string &s, int frame) {
+	auto it = _callbacks.find(std::make_pair(s, frame));
+	if (it != _callbacks.end()) {
+		(*it->second)();
+	}
+
+}
+
+void Sprite::addFrameCallback(const std::string &s, int frame, pybind11::function f) {
+	_callbacks[std::make_pair(s, frame)] = f;
+}
 
 std::shared_ptr<Shape> Sprite::getShape (const std::string& anim, int frame) const {
     return m_shapes[_animations.at(anim).frames[frame].boxId];

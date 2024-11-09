@@ -3,6 +3,7 @@
 #include "controller.h"
 #include "platform.h"
 #include "mover.h"
+#include "../keylistener.h"
 
 struct RaycastOrigins {
 	glm::vec2 topFwd, topBack;
@@ -105,17 +106,35 @@ inline void Controller2D::setVelocity(glm::vec2 velocity) {
 }
 
 
-class PlayerController2D : public Controller2D {
+class PlayerController2D : public Controller2D, public KeyboardListener {
 public:
-	PlayerController2D(const pybind11::kwargs& args);
+	PlayerController2D(const std::string& batch, const pybind11::kwargs& args);
 
+	void start() override;
+
+	void setNode(Node*) override;
 	void defaultController(double);
+	void setModel(int index);
+	void addModel(std::shared_ptr<Model>, const std::string& idleAnimation, const std::string& walkAnimation,
+		const std::string& slideAnimation, const std::string& jumpUpAnimation, const std::string& jumpDownAnimation);
+	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
+	void addKeyCallback(int, pybind11::function);
 private:
-	std::string _walk;
-	std::string _idle;
-	std::string _jumpUp;
-	std::string _jumpDown;
-	std::string _slide;
+	int _currentModel;
+	std::string _batch;
+	struct ModelInfo {
+		std::shared_ptr<Model> model;
+		std::string walk;
+		std::string idle;
+		std::string jumpUp;
+		std::string jumpDown;
+		std::string slide;
+	};
+	std::unordered_map<int, pybind11::function> _callbacks;
+	std::vector<ModelInfo> _models;
+
+
+
 };
 
 

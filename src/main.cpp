@@ -244,6 +244,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("set_model", &Node::setModel)
         .def("get_model", &Node::getModel)
         .def("add", &Node::add)
+        .def_property_readonly("parent", &Node::getParent)
         .def("get_children", &Node::getChildren)
         .def("remove", &Node::remove)
         .def("clear", &Node::clearChildren)
@@ -423,7 +424,8 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<const std::string&, const std::string&>(), "batch"_a, "desc"_a)
         .def("prova", &IQuads::prova)
         .def("add", &IQuads::addQuad);
-    py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite");
+    py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite")
+    	.def("addFrameCallback", &Sprite::addFrameCallback);
     py::class_<MultiSprite, Model, std::shared_ptr<MultiSprite>>(mm, "MultiSprite")
         .def(py::init<>())
         .def("addSprite", &MultiSprite::addSprite);
@@ -656,7 +658,10 @@ PYBIND11_MODULE(monkey, m) {
 		.def("move", &Controller2D::move);
 
 	py::class_<PlayerController2D, Controller2D, std::shared_ptr<PlayerController2D>>(mc, "PlayerController2D")
-		.def(py::init<py::kwargs&>());
+		.def(py::init<const std::string&, py::kwargs&>())
+		.def("addKeyEvent", &PlayerController2D::addKeyCallback)
+		.def("setModel", &PlayerController2D::setModel)
+		.def("addModel", &PlayerController2D::addModel);
 
 
 

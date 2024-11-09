@@ -69,6 +69,8 @@ public:
 	Bounds getStaticBounds() const;
 	std::string getDefaultAnimation() const;
 	int getQuadCount() const;
+	void addFrameCallback(const std::string& s, int frame, pybind11::function f);
+	void checkFrameCallback(const std::string& s, int frame);
 
 private:
     //std::string _batchId;
@@ -101,6 +103,8 @@ private:
 
 	size_t _maxBoxes;
 	Bounds _staticBounds;
+	std::unordered_map<std::pair<std::string, int>, pybind11::function> _callbacks;
+
 };
 
 inline int Sprite::getQuadCount() const {
