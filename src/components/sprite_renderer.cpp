@@ -150,7 +150,7 @@ bool SpriteRenderer::updateTick(int tick) {
             m_frame = m_animInfo->loop == -1 ? 0 : m_animInfo->loop;
         }
         _currentFrameTicks = m_sprite->getFrameInfo(_fullAnimationId, m_frame).getTicks();
-		m_sprite->checkFrameCallback(_fullAnimationId, m_frame);
+		m_sprite->checkFrameCallback(_fullAnimationId, m_frame, m_node);
 
     }
     return false;
@@ -192,7 +192,7 @@ void SpriteRenderer::update(double dt) {
         }
         m_ticks = 0;
 		_currentFrameTicks = m_sprite->getFrameInfo(_fullAnimationId, m_frame).getTicks();
-		m_sprite->checkFrameCallback(_fullAnimationId, m_frame);
+		m_sprite->checkFrameCallback(_fullAnimationId, m_frame, m_node);
 
 	} else {
         // if it's not time to update frame, increment current frame length

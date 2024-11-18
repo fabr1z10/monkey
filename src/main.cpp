@@ -639,6 +639,8 @@ PYBIND11_MODULE(monkey, m) {
 //
 	py::class_<Controller, Component, std::shared_ptr<Controller>>(mc, "Controller")
 		.def_property_readonly("grounded", &Controller::grounded)
+        .def_property_readonly("left", &Controller::left)
+        .def_property_readonly("right", &Controller::right)
 		.def_property_readonly("size", &Controller::getSize)
 		.def("set_size", &Controller::setSize);
 

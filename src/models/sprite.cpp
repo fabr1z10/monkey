@@ -237,10 +237,10 @@ std::shared_ptr<Shape> Sprite::getRect(int mode, int x0, int x1, int y0, int y1)
 //	return m_frameToShape.count(std::make_pair(anim, 0)) > 0;
 //
 //}
-void Sprite::checkFrameCallback(const std::string &s, int frame) {
+void Sprite::checkFrameCallback(const std::string &s, int frame,Node* node) {
 	auto it = _callbacks.find(std::make_pair(s, frame));
 	if (it != _callbacks.end()) {
-		(*it->second)();
+		(*it->second)(node);
 	}
 
 }

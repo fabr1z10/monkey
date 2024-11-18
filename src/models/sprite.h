@@ -70,7 +70,7 @@ public:
 	std::string getDefaultAnimation() const;
 	int getQuadCount() const;
 	void addFrameCallback(const std::string& s, int frame, pybind11::function f);
-	void checkFrameCallback(const std::string& s, int frame);
+	void checkFrameCallback(const std::string& s, int frame, Node*);
 
 private:
     //std::string _batchId;

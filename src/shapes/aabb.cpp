@@ -31,6 +31,11 @@ bool AABB::isInside(glm::vec2 P) const {
 }
 
 RaycastResult AABB::raycast(glm::vec2 P0, glm::vec2 P1) const {
+	// if ray starts INSIDE the box --> no collision
+	if (P0.x >= _xMin && P0.x <= _xMax && P0.y >= _yMin && P0.y <= _yMax) {
+		return RaycastResult();
+	}
+
     // check if ray is horizontal or vertical
     if (P1.x - P0.x == 0.f) {
         // vertical ray
