@@ -990,6 +990,7 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
     auto aabb = shape->getBounds();
     aabb.transform(transform);
     //std::cout << aabb.getSize().x << ", " << aabb.getSize().y << "\n";
+	std::vector<ShapeCastHit> hits;
 
     auto loc = getLocation(aabb);
     for (int iy = loc[2]; iy <= loc[3]; iy++) {
@@ -997,8 +998,9 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
             auto iter = _colliders.find({ix, iy});
             if (iter != _colliders.end()) {
                 for (const auto& c : iter->second) {
+                	//std::cout << "check mask " << mask << " found " << c->getCollisionFlag() << "\n";
                 	if (c->getNode() == itself || c->getState() != NodeState::ACTIVE) continue;
-                    if (mask != 0 && c->getCollisionFlag() != mask) continue;
+                    if (mask != 0 && ((c->getCollisionFlag() | mask)== 0)) continue;
                     // test collision between the two shapes
                     // first do a rough bounding box check
                     auto otherBounds = c->getStaticBounds();
@@ -1008,7 +1010,7 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
 							ShapeCastHit hit;
 							hit.entity = c;
 							hit.report.collide = true;
-							return {hit};
+							hits.push_back(hit); //return {hit};
                         } else {
 							auto collide = _intersector.intersect(shape, c->getShape().get(), transform,
 																  c->getNode()->getWorldMatrix());
@@ -1016,7 +1018,8 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
 								ShapeCastHit hit;
 								hit.entity = c;
 								hit.report = collide;
-								return {hit};
+								hits.push_back(hit);
+								//return {hit};
 							}
 						}
                         //std::cout << "BROAD collision; CHECK = " << collide.collide << std::endl;
@@ -1027,7 +1030,7 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
     }
 
 
-    return {};
+    return hits;
 }
 //void CollisionEngine::processCollisions(const std::vector<ShapeCastHit> & e, Node* node, int tag) {
 //

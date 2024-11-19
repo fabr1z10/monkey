@@ -13,7 +13,7 @@
 void prova(glm::vec2 c);
 py::dict readDataFile(const std::string& path);
 Engine& getEngine();
-
+bool isKeyPressed(int key);
 std::shared_ptr<Model> getTiled(const std::string& id, const pybind11::kwargs&);
 std::shared_ptr<Node> getSprite(const std::string& id);
 std::shared_ptr<Model> getSpriteModel(const std::string& id);

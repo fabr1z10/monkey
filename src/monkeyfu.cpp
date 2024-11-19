@@ -5,6 +5,7 @@
 #include "runners/collision_engine.h"
 #include "util.h"
 
+extern GLFWwindow* window;
 
 py::dict readDataFile(const std::string& path) {
 	auto dir = AssetManager::instance().getDirectory();
@@ -14,6 +15,9 @@ py::dict readDataFile(const std::string& path) {
     return dict;
 }
 
+bool isKeyPressed(int key) {
+	return (glfwGetKey(window, key) == GLFW_PRESS);
+}
 
 Engine& getEngine() {
     auto& engine = Engine::instance();

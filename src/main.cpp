@@ -166,6 +166,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("from_hex", &fromHex, py::arg("color"));
     m.def("read_data_file", &readDataFile);
     m.def("prova", &prova);
+    m.def("isKeyPressed", &isKeyPressed);
 	m.def("get_sprite", &getSprite);
     m.def("get_tiled", &getTiled);
 //	m.def("get_polymesh", &getPolyMesh);
@@ -266,7 +267,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("z", &Node::getZ)
 		.def_property_readonly("collisionTag", &Node::getCollisionTag)
         .def("setAnimation", &Node::setAnimation)
-        .def_property_readonly("flip_x", &Node::getFlipX)
+        .def_property("flip_x", &Node::getFlipX, &Node::setFlipX)
         .def_property("tag", &Node::getTag, &Node::setTag)
         .def_property("state", &Node::getState, &Node::setState)
 		.def_property("user_data", &Node::getUserData, &Node::setUserData)
@@ -656,6 +657,8 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
 		.def("addCallback", &Controller2D::addCallback)
 		.def("setState", &Controller2D::setState)
+		.def_property_readonly("state", &Controller2D::getState)
+		.def_property_readonly("jumpVelocity", &Controller2D::getJumpVelocity)
 		.def("isFalling", &Controller2D::isFalling)
 		.def("move", &Controller2D::move);
 
