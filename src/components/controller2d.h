@@ -34,13 +34,17 @@ public:
 	void resetCollisions() override;
 	void setState(int);
 	int getState() const;
-	int addCallback(pybind11::function f);
+	float getGravity() const;
+	int addCallback(const pybind11::kwargs& args);
 	glm::vec2 getVelocity() const;
 	void setVelocity(glm::vec2);
 	float getJumpVelocity() const;
 protected:
 	//std::shared_ptr<Model> getDebugModel() override;
-
+	struct StateInfo {
+		std::function<void()> start;
+		std::function<void(double)> update;
+	};
 	struct CollisionDetails {
 		bool above, below;
 		bool left, right;
@@ -91,11 +95,21 @@ protected:
     glm::vec2 _acceleration;
 
     int _state;
-    std::vector<std::function<void(double)>> _controllers;
+	//std::vector<std::function<void(double)>> _controllers;
+    std::vector<StateInfo> _controllers;
 };
 
+inline  float Controller2D::getGravity() const {
+	return _gravity;
+}
+
 inline void Controller2D::setState(int state) {
-	_state = state;
+	if (_state != state) {
+		_state = state;
+		if (_controllers[_state].start) {
+			_controllers[_state].start();
+		}
+	}
 }
 
 inline int Controller2D::getState() const {

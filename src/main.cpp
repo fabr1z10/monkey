@@ -655,6 +655,7 @@ PYBIND11_MODULE(monkey, m) {
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>())
 		.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
+		.def_property_readonly("gravity", &Controller2D::getGravity)
 		.def("addCallback", &Controller2D::addCallback)
 		.def("setState", &Controller2D::setState)
 		.def_property_readonly("state", &Controller2D::getState)

@@ -19,7 +19,7 @@ using namespace pybind11::literals; // to bring in the `_a` literal
 
 
 Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)),
-	_acceleration(0.f), _mover(nullptr), _state(0) {
+	_acceleration(0.f), _mover(nullptr), _state(-1) {
     // this cannot rotate!!!
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
@@ -48,20 +48,35 @@ void Controller2D::shutdown() {
 }
 
 
-int Controller2D::addCallback(pybind11::function f) {
+int Controller2D::addCallback(const pybind11::kwargs& f) {
+	StateInfo info;
+	auto fStart = py_get_dict<pybind11::function>(f, "start", pybind11::function());
+	if (fStart) {
+		info.start = [fStart] () { fStart(); };
+	}
+	auto fUpdate = py_get_dict<pybind11::function>(f, "update", pybind11::function());
+	if (fUpdate) {
+		info.update = [fUpdate] (double dt) { fUpdate(dt); };
+	}
+
 	auto id = _controllers.size();
-	_controllers.emplace_back([f] (double dt) { f(dt); });
+	_controllers.emplace_back(info);
 	return id;
 }
 
 void Controller2D::update(double dt) {
 	if (_state < 0) return;
-	_controllers[_state](dt);
+
+	_controllers[_state].update(dt);
 }
 
 
 PlayerController2D::PlayerController2D(const std::string& batch, const pybind11::kwargs &args) : Controller2D(args), _currentModel(-1), _batch(batch) {
-	_controllers.emplace_back([&] (double dt) { this->defaultController(dt); });
+	StateInfo info;
+	info.update = [&] (double dt) { this->defaultController(dt); };
+	_controllers.emplace_back(info);
+
+	setState(0);
 //	_walk = py_get_dict<std::string>(args, "walk", "walk");
 //	_idle = py_get_dict<std::string>(args, "idle", "idle");
 //	_slide = py_get_dict<std::string>(args, "slide", "slide");
