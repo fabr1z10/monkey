@@ -114,6 +114,7 @@
 #include "components/controller.h"
 #include "components/controller2d.h"
 #include "components/mover.h"
+#include "components/controller_state.h"
 
 
 //#include "nodes/textedit.h"
@@ -360,6 +361,9 @@ PYBIND11_MODULE(monkey, m) {
 		.def("onStart", &CollisionResponse::onStart);
 		//.def("onEnd",&CollisionResponse::onEnd);
 
+	py::class_<ControllerState, PyControllerState, std::shared_ptr<ControllerState>>(m, "ControllerState")
+		.def(py::init<>())
+		.def_property_readonly("node", &ControllerState::getNode);
 
 	py::class_<Camera, std::shared_ptr<Camera>>(m, "camera")
         .def("set_bounds", &Camera::setBounds)
@@ -654,9 +658,9 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>())
-		.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
+		//.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
 		.def_property_readonly("gravity", &Controller2D::getGravity)
-		.def("addCallback", &Controller2D::addCallback)
+		.def("addState", &Controller2D::addState)
 		.def("setState", &Controller2D::setState)
 		.def_property_readonly("state", &Controller2D::getState)
 		.def_property_readonly("jumpVelocity", &Controller2D::getJumpVelocity)

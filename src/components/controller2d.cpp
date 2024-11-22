@@ -18,8 +18,7 @@ extern GLFWwindow * window;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 
-Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _velocity(glm::vec2(0.f)),
-	_acceleration(0.f), _mover(nullptr), _state(-1) {
+Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _mover(nullptr), _state(-1) {
     // this cannot rotate!!!
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
@@ -43,38 +42,41 @@ Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs),
 	_foeFlag = 1;
 }
 
+void Controller2D::start() {
+	Controller::start();
+	for (auto& m : _controllers) {
+		m->init(m_node);
+	}
+}
+
 void Controller2D::shutdown() {
 	_controllers.clear();
 }
 
 
-int Controller2D::addCallback(const pybind11::kwargs& f) {
-	StateInfo info;
-	auto fStart = py_get_dict<pybind11::function>(f, "start", pybind11::function());
-	if (fStart) {
-		info.start = [fStart] () { fStart(); };
-	}
-	auto fUpdate = py_get_dict<pybind11::function>(f, "update", pybind11::function());
-	if (fUpdate) {
-		info.update = [fUpdate] (double dt) { fUpdate(dt); };
-	}
-
+int Controller2D::addState(pybind11::object obj) {
+	_pythonObj.push_back(obj);
 	auto id = _controllers.size();
-	_controllers.emplace_back(info);
+	_controllers.emplace_back(obj.cast<std::shared_ptr<ControllerState>>());
+	//state->init(m_node);
 	return id;
 }
 
 void Controller2D::update(double dt) {
-	if (_state < 0) return;
+	if (_state < 0) {
+		return;
+	}
 
-	_controllers[_state].update(dt);
+	_controllers[_state]->update(dt);
 }
 
 
 PlayerController2D::PlayerController2D(const std::string& batch, const pybind11::kwargs &args) : Controller2D(args), _currentModel(-1), _batch(batch) {
-	StateInfo info;
-	info.update = [&] (double dt) { this->defaultController(dt); };
-	_controllers.emplace_back(info);
+
+	_controllers.push_back(std::make_shared<PlayerControllerState>());
+	//#StateInfo info;
+	//info.update = [&] (double dt) { this->defaultController(dt); };
+	//_controllers.emplace_back(info);
 
 	setState(0);
 //	_walk = py_get_dict<std::string>(args, "walk", "walk");
@@ -84,35 +86,41 @@ PlayerController2D::PlayerController2D(const std::string& batch, const pybind11:
 //	_jumpDown = py_get_dict<std::string>(args, "jumpDown", "jump");
 }
 
-void PlayerController2D::defaultController(double dt) {
+void PlayerControllerState::init(Node * node) {
+	ControllerState::init(node);
+	_controller = dynamic_cast<PlayerController2D*>(node->getComponent<Controller>());
+}
+
+void PlayerControllerState::update(double dt) {
 
     auto dtf = static_cast<float>(dt);
 
-    if (grounded()) {
+    if (_controller->grounded()) {
         _velocity.y = 0.f;
     }
-    _acceleration = glm::vec2(0.f, -_gravity);
+
+    glm::vec2 acceleration = glm::vec2(0.f, -_controller->getGravity());
 
     bool left = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
     bool right = glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS;
     if (!left && !right) {
         _direction = 0;
     } else if (left && !right) {
-    	if (!m_node->getFlipX()) {
+    	if (!_node->getFlipX()) {
     		_velocity.x *= -1.f;
     	}
         _direction = -1;
-        m_node->setFlipX(true);
+		_node->setFlipX(true);
     } else {
-		if (m_node->getFlipX()) {
+		if (_node->getFlipX()) {
 			_velocity.x *= -1.f;
 		}
         _direction = 1;
-        m_node->setFlipX(false);
+        _node->setFlipX(false);
     }
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && grounded()) {
-        _velocity.y = _jumpVelocity;
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && _controller->grounded()) {
+        _velocity.y = _controller->getJumpVelocity();
     }
 
 
@@ -121,48 +129,49 @@ void PlayerController2D::defaultController(double dt) {
 
 	if (_direction != 0) {
 	    // x-acceleration should be always positive unless when !fliph && dir==-1
-        _acceleration.x = _acc;
+        acceleration.x = _controller->getAcceleration();
 	} else {
 		// apply deceleration only if velocity above threshold
-		if (fabs(_velocity.x) > (_acc * dtf) + 0.1f) {
+		if (fabs(_velocity.x) > (_controller->getAcceleration() * dtf) + 0.1f) {
 		    // decel, acceleration should be opposite velocity
-            _acceleration.x = -signf(_velocity.x) * _acc;
+			acceleration.x = -signf(_velocity.x) * _controller->getAcceleration();
 		} else {
-            _acceleration.x = 0.0f;
+			acceleration.x = 0.0f;
             _velocity.x = 0.0f;
 		}
 	}
 
-    _velocity += _acceleration * dtf;
+    _velocity += acceleration * dtf;
 
-    if (fabs(_velocity.x) > _maxSpeed) {
-        _velocity.x = signf(_velocity.x) * _maxSpeed;
+	auto ms = _controller->getMaxSpeed();
+    if (fabs(_velocity.x) > ms) {
+        _velocity.x = signf(_velocity.x) * ms;
 	}
 
 
     glm::vec2 delta = _velocity * dtf;
 
-    move(delta, false);
+    _controller->move(delta, false);
 
-	if (this->right() || this->left()) {
+	if (_controller->right() || _controller->left()) {
 		_velocity.x = 0.f;
 	}
 
 	// handle animation
-	const auto& mi = _models[_currentModel];
-	if (grounded()) {
+	const auto& mi = _controller->getModelInfo();
+	if (_controller->grounded()) {
 		if (_velocity.x > 0) {
-			m_node->setAnimation(mi.walk);
+			_node->setAnimation(mi.walk);
 		} else if (_velocity.x == 0.f) {
-			m_node->setAnimation(mi.idle);
+			_node->setAnimation(mi.idle);
 		} else if (_velocity.x < 0) {
-			m_node->setAnimation(mi.slide);
+			_node->setAnimation(mi.slide);
 		}
 	} else {
 		if (delta.y > 0) {
-			m_node->setAnimation(mi.jumpUp);
+			_node->setAnimation(mi.jumpUp);
 		} else {
-			m_node->setAnimation(mi.jumpDown);
+			_node->setAnimation(mi.jumpDown);
 		}
 
 	}

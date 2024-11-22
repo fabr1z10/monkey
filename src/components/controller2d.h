@@ -4,6 +4,8 @@
 #include "platform.h"
 #include "mover.h"
 #include "../keylistener.h"
+#include "controller_state.h"
+
 
 struct RaycastOrigins {
 	glm::vec2 topFwd, topBack;
@@ -16,6 +18,7 @@ class Controller2D : public Controller {
 public:
 	Controller2D(const pybind11::kwargs&);
 	virtual ~Controller2D();
+	void start() override;
 	void update(double) override;
 	void shutdown() override;
 
@@ -35,16 +38,16 @@ public:
 	void setState(int);
 	int getState() const;
 	float getGravity() const;
-	int addCallback(const pybind11::kwargs& args);
-	glm::vec2 getVelocity() const;
-	void setVelocity(glm::vec2);
+
+	int addState(pybind11::object obj);
+	float getAcceleration() const;
+	float getMaxSpeed() const;
+	//glm::vec2 getVelocity() const;
+	//void setVelocity(glm::vec2);
 	float getJumpVelocity() const;
 protected:
 	//std::shared_ptr<Model> getDebugModel() override;
-	struct StateInfo {
-		std::function<void()> start;
-		std::function<void(double)> update;
-	};
+	std::vector<pybind11::object> _pythonObj;
 	struct CollisionDetails {
 		bool above, below;
 		bool left, right;
@@ -83,7 +86,6 @@ protected:
 	int _foeFlag;
 
 	int _platformFlag;
-	int _direction;
 
     float _acc;
     float _maxSpeed;
@@ -91,13 +93,21 @@ protected:
 	float _timeToJumpApex;
 	float _gravity;
 	float _jumpVelocity;
-    glm::vec2 _velocity;
-    glm::vec2 _acceleration;
+    //glm::vec2 _velocity;
+    //glm::vec2 _acceleration;
 
     int _state;
 	//std::vector<std::function<void(double)>> _controllers;
-    std::vector<StateInfo> _controllers;
+    std::vector<std::shared_ptr<ControllerState>> _controllers;
 };
+
+inline float Controller2D::getMaxSpeed() const {
+	return _maxSpeed;
+}
+
+inline float Controller2D::getAcceleration() const {
+	return _acc;
+}
 
 inline  float Controller2D::getGravity() const {
 	return _gravity;
@@ -106,26 +116,27 @@ inline  float Controller2D::getGravity() const {
 inline void Controller2D::setState(int state) {
 	if (_state != state) {
 		_state = state;
-		if (_controllers[_state].start) {
-			_controllers[_state].start();
-		}
+		_controllers[_state]->start();
 	}
 }
 
 inline int Controller2D::getState() const {
 	return _state;
 }
-inline glm::vec2 Controller2D::getVelocity() const {
-	return _velocity;
-}
 
-inline void Controller2D::setVelocity(glm::vec2 velocity) {
-	_velocity = velocity;
-}
+//inline glm::vec2 Controller2D::getVelocity() const {
+//	return _velocity;
+//}
+//
+//inline void Controller2D::setVelocity(glm::vec2 velocity) {
+//	_velocity = velocity;
+//}
 
 inline float Controller2D::getJumpVelocity() const {
 	return _jumpVelocity;
 }
+
+
 
 class PlayerController2D : public Controller2D, public KeyboardListener {
 public:
@@ -140,7 +151,10 @@ public:
 		const std::string& slideAnimation, const std::string& jumpUpAnimation, const std::string& jumpDownAnimation);
 	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	void addKeyCallback(int, pybind11::function);
+
 private:
+
+
 	int _currentModel;
 	std::string _batch;
 	struct ModelInfo {
@@ -154,8 +168,23 @@ private:
 	std::unordered_map<int, pybind11::function> _callbacks;
 	std::vector<ModelInfo> _models;
 
-
+public:
+	const ModelInfo& getModelInfo() const;
 
 };
 
+inline const PlayerController2D::ModelInfo & PlayerController2D::getModelInfo() const {
+	return _models[_currentModel];
+}
 
+class PlayerControllerState : public ControllerState {
+public:
+	void init(Node*) override;
+
+	void update(double) override;
+private:
+	PlayerController2D* _controller;
+	glm::vec2 _velocity;
+	int _direction;
+
+};
