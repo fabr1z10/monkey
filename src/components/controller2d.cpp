@@ -18,7 +18,7 @@ extern GLFWwindow * window;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 
-Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _mover(nullptr), _state(-1) {
+Controller2D::Controller2D(const pybind11::kwargs& kwargs) : Controller(kwargs), _mover(nullptr), _state(-1), _initialized(false) {
     // this cannot rotate!!!
 	m_maxClimbAngle = glm::radians(py_get_dict<float>(kwargs, "max_climb_angle", 80.0f));
 	m_maxDescendAngle = glm::radians(py_get_dict<float>(kwargs, "max_descend_angle", 80.0f));
@@ -46,6 +46,10 @@ void Controller2D::start() {
 	Controller::start();
 	for (auto& m : _controllers) {
 		m->init(m_node);
+	}
+	_initialized = true;
+	if (_state != -1) {
+		_controllers[_state]->start();
 	}
 }
 
@@ -91,12 +95,14 @@ void PlayerControllerState::init(Node * node) {
 	_controller = dynamic_cast<PlayerController2D*>(node->getComponent<Controller>());
 }
 
+
+
 void PlayerControllerState::update(double dt) {
 
     auto dtf = static_cast<float>(dt);
 
     if (_controller->grounded()) {
-        _velocity.y = 0.f;
+    	_controller->setVy(0.f);
     }
 
     glm::vec2 acceleration = glm::vec2(0.f, -_controller->getGravity());
@@ -107,20 +113,20 @@ void PlayerControllerState::update(double dt) {
         _direction = 0;
     } else if (left && !right) {
     	if (!_node->getFlipX()) {
-    		_velocity.x *= -1.f;
+    		_controller->flipVx();
     	}
         _direction = -1;
 		_node->setFlipX(true);
     } else {
 		if (_node->getFlipX()) {
-			_velocity.x *= -1.f;
+			_controller->flipVx();
 		}
         _direction = 1;
         _node->setFlipX(false);
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && _controller->grounded()) {
-        _velocity.y = _controller->getJumpVelocity();
+    	_controller->setVy(_controller->getJumpVelocity());
     }
 
 
@@ -132,39 +138,42 @@ void PlayerControllerState::update(double dt) {
         acceleration.x = _controller->getAcceleration();
 	} else {
 		// apply deceleration only if velocity above threshold
-		if (fabs(_velocity.x) > (_controller->getAcceleration() * dtf) + 0.1f) {
+		float vx = _controller->getVx();
+		if (fabs(vx) > (_controller->getAcceleration() * dtf) + 0.1f) {
 		    // decel, acceleration should be opposite velocity
-			acceleration.x = -signf(_velocity.x) * _controller->getAcceleration();
+			acceleration.x = -signf(vx) * _controller->getAcceleration();
 		} else {
 			acceleration.x = 0.0f;
-            _velocity.x = 0.0f;
+            _controller->setVx(0.f);
 		}
 	}
 
-    _velocity += acceleration * dtf;
+	std::cout << "acc = "<< acceleration.y << "\n";
+    _controller->setVelocity(_controller->getVelocity() + acceleration * dtf);
 
 	auto ms = _controller->getMaxSpeed();
-    if (fabs(_velocity.x) > ms) {
-        _velocity.x = signf(_velocity.x) * ms;
+	auto vx = _controller->getVx();
+    if (fabs(vx) > ms) {
+        _controller->setVx(signf(vx) * ms);
 	}
 
-
-    glm::vec2 delta = _velocity * dtf;
+    glm::vec2 delta = _controller->getVelocity() * dtf;
 
     _controller->move(delta, false);
 
 	if (_controller->right() || _controller->left()) {
-		_velocity.x = 0.f;
+		_controller->setVx(0.f);
 	}
 
 	// handle animation
 	const auto& mi = _controller->getModelInfo();
 	if (_controller->grounded()) {
-		if (_velocity.x > 0) {
+		float vx = _controller->getVx();
+		if (vx > 0) {
 			_node->setAnimation(mi.walk);
-		} else if (_velocity.x == 0.f) {
+		} else if (vx == 0.f) {
 			_node->setAnimation(mi.idle);
-		} else if (_velocity.x < 0) {
+		} else if (vx < 0) {
 			_node->setAnimation(mi.slide);
 		}
 	} else {

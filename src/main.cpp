@@ -658,7 +658,9 @@ PYBIND11_MODULE(monkey, m) {
 
 	py::class_<Controller2D, Controller, std::shared_ptr<Controller2D>>(mc, "Controller2D")
 		.def(py::init<py::kwargs&>())
-		//.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
+		.def_property("velocity", &Controller2D::getVelocity, &Controller2D::setVelocity)
+		.def_property("vx", &Controller2D::getVx, &Controller2D::setVx)
+		.def_property("vy", &Controller2D::getVy, &Controller2D::setVy)
 		.def_property_readonly("gravity", &Controller2D::getGravity)
 		.def("addState", &Controller2D::addState)
 		.def("setState", &Controller2D::setState)

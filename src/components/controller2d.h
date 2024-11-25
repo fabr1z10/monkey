@@ -42,8 +42,13 @@ public:
 	int addState(pybind11::object obj);
 	float getAcceleration() const;
 	float getMaxSpeed() const;
-	//glm::vec2 getVelocity() const;
-	//void setVelocity(glm::vec2);
+	glm::vec2 getVelocity() const;
+	void setVelocity(glm::vec2);
+	void setVy(float);
+	void setVx(float);
+	float getVx() const;
+	float getVy() const;
+	void flipVx();
 	float getJumpVelocity() const;
 protected:
 	//std::shared_ptr<Model> getDebugModel() override;
@@ -86,14 +91,14 @@ protected:
 	int _foeFlag;
 
 	int _platformFlag;
-
+	bool _initialized;
     float _acc;
     float _maxSpeed;
 	float _jumpHeight;
 	float _timeToJumpApex;
 	float _gravity;
 	float _jumpVelocity;
-    //glm::vec2 _velocity;
+    glm::vec2 _velocity;
     //glm::vec2 _acceleration;
 
     int _state;
@@ -116,7 +121,9 @@ inline  float Controller2D::getGravity() const {
 inline void Controller2D::setState(int state) {
 	if (_state != state) {
 		_state = state;
-		_controllers[_state]->start();
+		if (_initialized) {
+			_controllers[_state]->start();
+		}
 	}
 }
 
@@ -124,19 +131,38 @@ inline int Controller2D::getState() const {
 	return _state;
 }
 
-//inline glm::vec2 Controller2D::getVelocity() const {
-//	return _velocity;
-//}
-//
-//inline void Controller2D::setVelocity(glm::vec2 velocity) {
-//	_velocity = velocity;
-//}
+inline glm::vec2 Controller2D::getVelocity() const {
+	return _velocity;
+}
+
+inline void Controller2D::setVelocity(glm::vec2 velocity) {
+	_velocity = velocity;
+}
 
 inline float Controller2D::getJumpVelocity() const {
 	return _jumpVelocity;
 }
 
+inline  void Controller2D::setVy(float value) {
+	_velocity.y = value;
+}
 
+inline  void Controller2D::setVx(float value) {
+	_velocity.x = value;
+}
+
+inline float Controller2D::getVx() const {
+	return _velocity.x;
+
+}
+inline float Controller2D::getVy() const {
+	return _velocity.y;
+
+}
+
+inline void Controller2D::flipVx() {
+	_velocity.x *= 1.f;
+}
 
 class PlayerController2D : public Controller2D, public KeyboardListener {
 public:
@@ -151,6 +177,8 @@ public:
 		const std::string& slideAnimation, const std::string& jumpUpAnimation, const std::string& jumpDownAnimation);
 	int keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) override;
 	void addKeyCallback(int, pybind11::function);
+
+
 
 private:
 
@@ -182,9 +210,10 @@ public:
 	void init(Node*) override;
 
 	void update(double) override;
+
 private:
 	PlayerController2D* _controller;
-	glm::vec2 _velocity;
+
 	int _direction;
 
 };
