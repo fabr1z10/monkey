@@ -16,17 +16,21 @@ Text::Text(const std::string &batchId, const std::string& font, const std::strin
 	_font = batch->getSheet()->getFont(font).get();
 
 	_lineHeight = _font->getLineHeight();
-	_width = py_get_dict<float>(args, "width", std::numeric_limits<float>::infinity());
+	_width = py_get_dict<float>(args, "width", 0.f);
 	_palId = py_get_dict<std::string>(args, "pal", "default");
     _paletteIndex = batch->getPalette(_palId);
 	//buildQuads();
 	if (_width != std::numeric_limits<float>::infinity()) {
-		_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
 	}
+	_hAlign = static_cast<HAlign>(py_get_dict<int>(args, "halign", static_cast<int>(HAlign::LEFT)));
+
 	auto aa = py_get_dict<int>(args, "anchor", 0);
 	_anchor = static_cast<Anchor>(aa);
 
 	updateText(text);
+
+	auto pos = py_get_dict<glm::vec3>(args, "pos", glm::vec3(0.f));
+	m_modelMatrix[3] = glm::vec4(pos, 1.f);
     //getComponent<Renderer>()->setPalette(_palId);
 
 
@@ -73,7 +77,7 @@ void Text::updateText(const std::string & text) {
 				if (cws == -1) cws = i;
 				crl += charInfo.advance;
 				cwl += charInfo.advance;
-				if (crl > _width) {
+				if (_width > 0 && crl > _width) {
 					rows.back().indexEnd = eol;
 					rows.back().length = cel;
 					rows.emplace_back(TextRow(cws));

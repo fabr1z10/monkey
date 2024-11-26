@@ -1,4 +1,6 @@
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "renderer.h"
 #include "../node.h"
 #include "../assetmanager.h"
@@ -56,6 +58,14 @@ void Renderer::setCount(int count) {
 
 void Renderer::setOffset(int offset) {
     m_offset = offset;
+}
+
+void Renderer::setAngle(float angle) {
+	auto rot = glm::rotate(angle, glm::vec3(0.f, 0.f, 1.f));
+	m_rendererTransform[0] = rot[0];
+	m_rendererTransform[1] = rot[1];
+	m_rendererTransform[2] = rot[2];
+
 }
 
 

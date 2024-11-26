@@ -205,16 +205,18 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::ve
 
 }
 
-void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
-						int palette, bool fliph, bool flipv, float zLayer, glm::vec2 texOffset)
+void QuadBatch::setQuad(int index, glm::vec3 bottomBack, const glm::mat4& transform, glm::vec2 size, glm::vec4 textureBounds, glm::vec2 textureRepeat,
+						int palette, /*bool fliph, bool flipv*/ float zLayer, glm::vec2 texOffset)
 {
+	glm::vec3 u(transform[0]);
+	glm::vec3 v(transform[1]);
 
-	float dx = fliph ? -size.x : size.x;
+	//float dx = fliph ? -size.x : size.x;
 
 	float txl = texOffset.x; //fliph ? textureRepeat.x : 0.f;
 	float txr = texOffset.x + textureRepeat.x; //fliph ? 0.f : textureRepeat.x;
-	float tyb = texOffset.y + (flipv ? 0.f : textureRepeat.y);
-	float tyt = texOffset.y + (flipv ? textureRepeat.y : 0.f);
+	float tyb = texOffset.y;
+	float tyt = texOffset.y - textureRepeat.y;
 	float palY = _invPaletteCount * (0.5f + palette);
 	int offset = index * _vertsPerElement;
 
@@ -225,19 +227,19 @@ void QuadBatch::setQuad(int index, glm::vec3 bottomBack, glm::vec2 size, glm::ve
 	_data[offset].textureCoords = glm::vec2(txl, tyb);
 
 
-	_data[offset+1].position = bottomBack + glm::vec3(dx, 0.f, 0.f);
+	_data[offset+1].position = bottomBack + u * size.x;
 	_data[offset+1].textureBounds = textureBounds;
 	_data[offset+1].palette = palY;
     _data[offset+1].invalid = 0.0f;
 	_data[offset+1].textureCoords = glm::vec2(txr, tyb);
 
-	_data[offset+2].position = bottomBack + glm::vec3(dx, size.y, 0.f);
+	_data[offset+2].position = bottomBack + u * size.x + v * size.y;
 	_data[offset+2].textureBounds = textureBounds;
 	_data[offset+2].palette = palY;
     _data[offset+2].invalid = 0.0f;
 	_data[offset+2].textureCoords = glm::vec2(txr, tyt);
 
-	_data[offset+3].position = bottomBack + glm::vec3(0.f, size.y, 0.f);
+	_data[offset+3].position = bottomBack + v * size.y;
 	_data[offset+3].textureBounds = textureBounds;
 	_data[offset+3].palette = palY;
     _data[offset+3].invalid = 0.0f;

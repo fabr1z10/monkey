@@ -105,14 +105,17 @@ void SpriteRenderer::updateBatch() {
 	//glm::vec3 ciao=pos;
 
 
-    auto worldTransform = m_rendererTransform * m_node->getWorldMatrix();
+    auto worldTransform = m_node->getWorldMatrix() * m_rendererTransform;
     //glm::vec3 pos = worldTransform * glm::vec4(a.anchor_point, 0.f, 1.f);
 
     // draw all quads in the frame
     int qid = 0;
 
     for (const auto& quad : a.quads) {
-        auto flipx = m_node->getFlipX();
+//        auto flipx = m_node->getFlipX();
+//		if (flipx) {
+//			worldTransform[0] *= -1.0f;
+//		}
 
         auto bottomLeft = worldTransform * glm::vec4( quad.location.x, quad.location.y, quad.location.z, 1.f) ;
         //glm::vec2 delta = scale * (flipx ? (glm::vec2(quad.size.x, 0.f) - quad.anchorPoint) : quad.anchorPoint);
@@ -122,15 +125,18 @@ void SpriteRenderer::updateBatch() {
 //		}
         auto size = quad.size * scale;
 
+        // pass the wt!
+
         _batch->setQuad(_primitiveIds[qid++],
-                              bottomLeft,
-                              size,
-                              quad.textureCoordinates,
-                              quad.repeat,
-                              _paletteId == 0 ? quad.palette : _paletteId,
-                              flipx,
-                              quad.flipv,
-                              _zLayer);
+			bottomLeft,
+            worldTransform,
+            size,
+            quad.textureCoordinates,
+            quad.repeat,
+            _paletteId == 0 ? quad.palette : _paletteId,
+            //flipx,
+            //quad.flipv,
+            _zLayer);
     }
 }
 

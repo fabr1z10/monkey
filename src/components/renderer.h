@@ -12,7 +12,7 @@ public:
     //virtual int setup(Shader*);
     virtual void draw(Shader*) {}
 
-
+	void setAngle(float);
     //std::shared_ptr<Model> getModel();
     virtual void setModel(std::shared_ptr<Model>, const pybind11::kwargs& args) {}
     //void setMultColor(glm::vec4);

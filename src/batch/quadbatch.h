@@ -34,12 +34,13 @@ public:
 	void setQuad (
 	        int index,
 	        glm::vec3 bottomLeft,
+	        const glm::mat4& transform,
 	        glm::vec2 size,
 	        glm::vec4 textureBounds,
 	        glm::vec2 textureRepeat,
 			int palette,
-			bool fliph,
-			bool flipv,
+			//bool fliph,
+			//bool flipv,
 			float zLayer,
 			glm::vec2 offsetTex = glm::vec2(0.f));
 

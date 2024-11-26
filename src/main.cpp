@@ -590,7 +590,10 @@ PYBIND11_MODULE(monkey, m) {
 	    .def_property_readonly("node", &Component::getNode, py::return_value_policy::reference)
 	    .def("setState", &Component::setState);
 
-	py::class_<Renderer, Component, std::shared_ptr<Renderer>>(m, "renderer");
+	py::class_<Renderer, Component, std::shared_ptr<Renderer>>(m, "renderer")
+		.def("setAngle", &Renderer::setAngle);
+
+
 	py::class_<BatchRenderer<QuadBatch>, Renderer, std::shared_ptr<BatchRenderer<QuadBatch>>>(m, "batchRendererQuad")
 	    .def("setQuadPalette", py::overload_cast<int, const std::string&>(&BatchRenderer<QuadBatch>::setPrimitivePalette))
         .def("setQuadPalette", py::overload_cast<int, int>(&BatchRenderer<QuadBatch>::setPrimitivePalette))
