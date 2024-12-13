@@ -79,7 +79,7 @@ public:
 private:
     glm::ivec4 getLocation(const Bounds& b) const;
     glm::ivec4 getColliderPos(Collider* c);
-    std::unordered_map<std::pair<uint32_t, uint32_t>, std::unordered_set<Collider*> > _colliders;
+    std::unordered_map<std::pair<int, int>, std::unordered_set<Collider*> > _colliders;
     std::unordered_map<Collider*, glm::ivec4> _location;
     float _width;
     float _height;

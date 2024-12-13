@@ -453,10 +453,10 @@ void SpatialHashingCollisionEngine::move(Collider * c) {
 
 glm::ivec4 SpatialHashingCollisionEngine::getLocation(const Bounds &b) const {
     glm::ivec4 p;
-    p[0] = static_cast<uint32_t>(b.min.x / _width);
-    p[1] = static_cast<uint32_t>(b.max.x / _width);
-    p[2] = static_cast<uint32_t>(b.min.y / _height);
-    p[3] = static_cast<uint32_t>(b.max.y / _height);
+    p[0] = static_cast<int>(std::floor(b.min.x / _width));//  static_cast<uint32_t>(b.min.x / _width);
+    p[1] = static_cast<int>(std::floor(b.max.x / _width));
+    p[2] = static_cast<int>(std::floor(b.min.y / _height));
+    p[3] = static_cast<int>(std::floor(b.max.y / _height));
     return p;
 
 }
@@ -470,8 +470,8 @@ void SpatialHashingCollisionEngine::add(Collider * c) {
     // this is called when a new collider starts. It registers with the engine
     // get the shape bounding box, transform it, map it
     auto pos = getColliderPos(c);
-    for (uint32_t i = pos[0]; i <= pos[1]; ++i) {
-        for (uint32_t j = pos[2]; j <= pos[3]; ++j) {
+    for (int i = pos[0]; i <= pos[1]; ++i) {
+        for (int j = pos[2]; j <= pos[3]; ++j) {
             _colliders[std::make_pair(i, j)].insert(c);
         }
     }
@@ -482,8 +482,8 @@ void SpatialHashingCollisionEngine::remove(Collider * c) {
     auto it = _location.find(c);
     if (it != _location.end()) {
         glm::ivec4 pos = it->second;
-        for (uint32_t i = pos[0]; i <= pos[1]; ++i) {
-            for (uint32_t j = pos[2]; j <= pos[3]; ++j) {
+        for (int i = pos[0]; i <= pos[1]; ++i) {
+            for (int j = pos[2]; j <= pos[3]; ++j) {
                 _colliders[std::make_pair(i, j)].erase(c);
             }
         }
