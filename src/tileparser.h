@@ -7,13 +7,15 @@
 
 class TileLanguageParser {
 public:
-	TileLanguageParser(const std::string& batchId);
+    static std::shared_ptr<TileLanguageParser> getTileParser(const std::string& sheetId);
 
 	std::shared_ptr<Model> createModel(const std::string&);
 
 	void import(const std::string& filename);
 
 private:
+    TileLanguageParser(const std::string& batchId);
+
     std::unordered_map<std::string, std::shared_ptr<Model>> _modelCache;
     struct MachineState {
         MachineState() : i(0), x(0), y(0) {}

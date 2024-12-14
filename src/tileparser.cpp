@@ -5,6 +5,16 @@
 
 using namespace pybind11::literals;
 
+std::shared_ptr<TileLanguageParser> TileLanguageParser::getTileParser(const std::string &sheetId) {
+	static std::unordered_map<std::string, std::shared_ptr<TileLanguageParser>> parsers;
+	auto id = parsers.find(sheetId);
+	if (id == parsers.end()) {
+		parsers[sheetId] = std::shared_ptr<TileLanguageParser>(new TileLanguageParser(sheetId));
+		return parsers.at(sheetId);
+	}
+	return id->second;
+}
+
 TileLanguageParser::TileLanguageParser(const std::string& batchId) : _batchId(batchId) {
 
 	auto* batch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
@@ -59,6 +69,7 @@ std::shared_ptr<Model> TileLanguageParser::createModel(const std::string & desc)
 		auto args = tokenize(current.substr(t.size()), ",");
 		(this->*_funcs[t])(args, state);
 	}
+	_modelCache[desc] = _model;
 	return _model;
 }
 

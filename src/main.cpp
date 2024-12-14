@@ -170,6 +170,7 @@ PYBIND11_MODULE(monkey, m) {
     m.def("isKeyPressed", &isKeyPressed);
 	m.def("get_sprite", &getSprite);
     m.def("get_tiled", &getTiled);
+    m.def("getTileParser", &TileLanguageParser::getTileParser);
 //	m.def("get_polymesh", &getPolyMesh);
 //	m.def("get_multi", &getMulti);
 	m.def("get_node", &getNode, py::return_value_policy::reference);
@@ -234,7 +235,7 @@ PYBIND11_MODULE(monkey, m) {
         .def("root", &Room::getRoot, py::return_value_policy::reference);
 //
 	py::class_<TileLanguageParser, std::shared_ptr<TileLanguageParser>>(m, "TileParser")
-		.def(py::init<const std::string&>())
+	    //#.def(py::init<const std::string&>())
 		.def("parse", &TileLanguageParser::createModel);
 
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
