@@ -18,7 +18,7 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<Model>> _modelCache;
     struct MachineState {
-        MachineState() : i(0), x(0), y(0) {}
+        MachineState() : i(0), x(0), y(0), pal(0) {}
         // current instruction
         int i;
         // cursor position in tile coordinates

@@ -12,6 +12,7 @@ class Mover : public Component {
 public:
 	Mover(const pybind11::kwargs&);
 	void addMove(std::shared_ptr<NodeAction>);
+	void clear();
 	void start() override;
 	void update(double) override;
 	void addLinkedNode(Node*);
@@ -19,7 +20,7 @@ public:
 	using Base = Mover;
 private:
 	int _currentAction;
-	std::vector<std::shared_ptr<NodeAction>> _movements;
+	std::list<std::shared_ptr<NodeAction>> _movements;
 	Collider* _collider;
 	ICollisionEngine* _collisionEngine;
 	// these nodes get moved along with the mover

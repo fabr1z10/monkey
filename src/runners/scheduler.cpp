@@ -5,7 +5,7 @@
 
 
 
-Action::Action() : _status(0), _id(-1), _forcedStop(false) {
+Action::Action() : _status(0), _id(-1), _forcedStop(false), _repeat(false) {
 	//_onEnd = py_get_dict<pybind11::function>(args, "on_end", pybind11::function());
 }
 

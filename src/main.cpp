@@ -115,6 +115,7 @@
 #include "components/controller2d.h"
 #include "components/mover.h"
 #include "components/controller_state.h"
+#include "models/tilemodel.h"
 
 
 //#include "nodes/textedit.h"
@@ -430,6 +431,10 @@ PYBIND11_MODULE(monkey, m) {
         .def(py::init<const std::string&, const std::string&>(), "batch"_a, "desc"_a)
         .def("prova", &IQuads::prova)
         .def("add", &IQuads::addQuad);
+    py::class_<TileModel, Model, std::shared_ptr<TileModel>>(mm, "TileModel")
+        .def(py::init<const std::string&, int, int, int, int, int>())
+        .def("addTile", &TileModel::addTile)
+        .def("setTile", &TileModel::setTile);
     py::class_<Sprite, Model, std::shared_ptr<Sprite>>(mm, "Sprite")
     	.def("addFrameCallback", &Sprite::addFrameCallback);
     py::class_<MultiSprite, Model, std::shared_ptr<MultiSprite>>(mm, "MultiSprite")
@@ -618,6 +623,7 @@ PYBIND11_MODULE(monkey, m) {
 //
 	py::class_<Mover, Component, std::shared_ptr<Mover>>(mc, "Mover")
 		.def(py::init<const pybind11::kwargs&>())
+		.def("clear", &Mover::clear)
 		.def("add", &Mover::addMove);
 
 

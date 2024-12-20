@@ -28,7 +28,7 @@ public:
     void rmRef(int);
     //Engine();
     long getNextId();
-    void start(py::module&, const pybind11::kwargs& args);
+    void start(const pybind11::kwargs& args);
     void run();
     void closeRoom();
     //void load(pybind11::object obj);
@@ -87,8 +87,9 @@ private:
     void loadRoom();
     void loadShaders();
     //pybind11::object m_game;
-    //pybind11::module _factory;
-    //pybind11::object m_settings;
+    pybind11::module_ _mainModule;
+    pybind11::module_ _source;
+    pybind11::module_ _settings;
 	pybind11::object _main;
     //pybind11::object m_scripts;
     std::string _title;
@@ -114,7 +115,7 @@ private:
     bool m_shutdown;
     long m_nextId;
     bool _enableMouse;
-
+    std::string _cwd;
     // frambuffer stuff
     //GLuint _fb, _color, _depth;
     //unsigned int quadVAO, quadVBO;

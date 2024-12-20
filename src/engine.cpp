@@ -16,42 +16,52 @@ namespace fs = std::filesystem;
 Engine::Engine() : m_nextId(0), m_pixelScaleFactor(1), _drawColliderOutline(false) {
 }
 
-void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
+void Engine::start(const pybind11::kwargs& args) {
 
     try {
-		_main = mainModule;
-    	fs::path fl = mainModule.attr("__file__").cast<std::string>();
-		auto assetPath = fl.parent_path().parent_path();
-		assetPath /= "assets";
-		assert(fs::exists(assetPath) && fs::is_directory(assetPath));
-		AssetManager::instance().addDirectory(assetPath.string());
-		for (const auto & entry : fs::directory_iterator(assetPath))
-			std::cout << entry.path() << std::endl;
-		_deviceSize = py_get<glm::ivec2>(_main, "device_size");
-		_windowSize = py_get<glm::ivec2>(_main, "window_size", _deviceSize);
+        _settings = py::module_::import("settings");
+        _mainModule = py::module_::import("__main__");
+        _source = py::module_::import("src");
 
-		_colliderOutlineBatch = py_get<std::string>(_main, "DRAW_COLLIDER_OUTLINE", "");
+        _deviceSize = py_get<glm::ivec2>(_settings, "device_size");
+        _windowSize = py_get<glm::ivec2>(_settings, "window_size", _deviceSize);
+
+        std::cout << " -- device size: " << _deviceSize.x << ", " << _deviceSize.y << "\n";
+        std::cout << " -- window size: " << _windowSize.x << ", " << _windowSize.y << "\n";
+        fs::path fl = _mainModule.attr("__file__").cast<std::string>();
+
+        _cwd = fl.parent_path();
+        // auto pippo = py::module_::import("__main__").attr("__file__").cast<std::string>();
+        std::cout << " -- cwd: " << _cwd << "\n";
+        // _main = mainModule;
+    	//
+		auto assetPath = fl.parent_path()/ "assets";
+		assert(fs::exists(assetPath) && fs::is_directory(assetPath));
+        //exit(1);
+		AssetManager::instance().addDirectory(assetPath.string());
+//		for (const auto & entry : fs::directory_iterator(assetPath))
+//			std::cout << entry.path() << std::endl;
+//
+		_colliderOutlineBatch = py_get<std::string>(_settings, "DRAW_COLLIDER_OUTLINE", "");
         if (!_colliderOutlineBatch.empty()) {
             _drawColliderOutline = true;
         }
-
-		assert(_deviceSize[1] > 0);
-		std::cout << " -- Device size: (" << _deviceSize.x << ", " << _deviceSize.y << ")\n";
-		std::cout << " -- Window size: (" << _windowSize.x << ", " << _windowSize.y << ")\n";
-
+//
+//
 		_deviceAspectRatio = static_cast<double>(_deviceSize[0]) / _deviceSize[1];
-		//_roomId = py_get<std::string>(_main, "room");
+//		//_roomId = py_get<std::string>(_main, "room");
 		_frameTime = 1.0 / 60.0;
-		_timeLastUpdate = 0.0;
-		_enableMouse = py_get<bool>(_main, "enable_mouse", false);
-		_title = py_get<std::string>(_main, "title", "Unknown");
-		if (pybind11::hasattr(_main, "init")) {
-			_main.attr("init")();
+//		_timeLastUpdate = 0.0;
+		_enableMouse = py_get<bool>(_settings, "enable_mouse", false);
+		_title = py_get<std::string>(_settings, "title", "Unknown");
+		if (pybind11::hasattr(_source, "init")) {
+            _source.attr("init")();
 		}
-		auto onStart = py_get_dict<std::string>(args, "on_start", "");
-		if (!onStart.empty()) {
-			_main.attr(onStart.c_str())();
-		}
+
+		//		auto onStart = py_get_dict<std::string>(args, "on_start", "");
+//		if (!onStart.empty()) {
+//			_main.attr(onStart.c_str())();
+//		}
 
 //
 		//auto assetDirs = py_get<std::vector<std::string>>(_main, "asset_directories", std::vector<std::string>());
@@ -123,7 +133,7 @@ void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
     // Dark blue background
     //loadShaders();
 
-    auto shaders = py_get<std::vector<int>>(_main, "shaders");
+    auto shaders = py_get<std::vector<int>>(_settings, "shaders");
 
     for (const auto& shader : shaders) {
 		_engineDraw->addShader(shader);
@@ -135,6 +145,7 @@ void Engine::start(py::module& mainModule, const pybind11::kwargs& args) {
 
 
 void Engine::run() {
+
 	std::cout << " -- engine starts running..\n";
     m_shutdown = false;
     // main loop
@@ -217,16 +228,12 @@ void Engine::closeRoom() {
 }
 
 void Engine::loadRoom() {
-//    // generate current room
-//    std::cout << "sucalo\n";
-//
-//
 //    // create a batch
 //    // _batches.push_back(std::make_shared<SpriteBatch>(100, "smb1.png"));
 //    //for (auto& batch : _batches) batch.clear();
 
     //_room = std::make_shared<Room>();
-    auto roomBuilder = _main.attr("create_room");
+    auto roomBuilder = _source.attr("create_room");
     if (!roomBuilder) {
     	GLIB_FAIL("no function create_room found!");
     }

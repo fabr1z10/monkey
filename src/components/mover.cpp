@@ -9,6 +9,9 @@ Mover::Mover(const pybind11::kwargs& args) : Component(args), _currentAction(0),
 }
 
 void Mover::addMove(std::shared_ptr<NodeAction> action) {
+    if (m_node != nullptr) {
+        action->setNode(m_node);
+    }
 	_movements.push_back(action);
 }
 
@@ -34,7 +37,13 @@ void Mover::start() {
 	}
 	_currentAction = 0;
 	for (auto& m : _movements) m->setNode(m_node);
-	_movements[_currentAction]->reset();
+	if (!_movements.empty()) {
+        _movements.front()->reset();
+    }
+}
+
+void Mover::clear() {
+    _movements.clear();
 }
 
 void Mover::update(double dt) {
@@ -42,7 +51,7 @@ void Mover::update(double dt) {
 		return;
 	}
 	auto initialPos = m_node->getWorldPosition();
-	int exitValue = _movements[_currentAction]->run(dt);
+	int exitValue = _movements.front()->run(dt);
 	auto endPos = m_node->getWorldPosition();
 	auto delta = endPos - initialPos;
 	for (const auto& l : _linkedNodes) {
@@ -64,11 +73,11 @@ void Mover::update(double dt) {
 		}
 	}
 
+
 	if (exitValue == 0) {
-		_currentAction ++;
-		if (_currentAction >= _movements.size()) {
-			_currentAction = 0;
-		}
-		_movements[_currentAction]->reset();
+	    _movements.pop_front();
+	    if (!_movements.empty()) {
+	        _movements.front()->reset();
+	    }
 	}
 }

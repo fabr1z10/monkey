@@ -67,8 +67,10 @@ protected:
 	float _texHeight;
 };
 
-class AnimatedQuads : public Model {
+class AnimatedQuads : public IQuads {
 public:
+    std::shared_ptr<Renderer> getRenderer(const pybind11::kwargs&) override;
+
 private:
 	std::shared_ptr<IQuads> _frames;
 };
@@ -103,6 +105,14 @@ private:
 	unsigned _camId;
 	IQuads* _model;
 	float _fade;
+
+};
+
+class AnimatedIQuadsRenderer : public IQuadsRenderer {
+public:
+    // here switch on and off quads as required
+    void update(double) override ;
+
 
 };
 

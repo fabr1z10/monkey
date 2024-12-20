@@ -206,12 +206,6 @@ void IQuadsRenderer::update(double) {
 	const auto& q = _model->getQuads();
 	for (size_t i = 0; i < q.size(); ++i) {
 		glm::vec3 bottomLeft = worldTransform * glm::vec4(q[i].location.x, q[i].location.y, q[i].location.z,1.f);
-		// TODO THis calculation shouldbe done in addQuad!!
-		//float tx0 = q[i].textureCoordinates[0] / tw;
-		//float tx1 = (q[i].textureCoordinates[0] + q[i].textureCoordinates[2]) / tw;
-		//float ty0 = q[i].textureCoordinates[1] / th;
-		//float ty1 = (q[i].textureCoordinates[1] + q[i].textureCoordinates[3]) / th;
-
 		_batch->setQuad(_primitiveIds[i],
 						bottomLeft,
 						q[i].size,

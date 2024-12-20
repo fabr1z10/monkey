@@ -148,7 +148,7 @@ void PlayerControllerState::update(double dt) {
 		}
 	}
 
-	std::cout << "acc = "<< acceleration.y << "\n";
+	//std::cout << "acc = "<< acceleration.y << "\n";
     _controller->setVelocity(_controller->getVelocity() + acceleration * dtf);
 
 	auto ms = _controller->getMaxSpeed();
@@ -163,6 +163,9 @@ void PlayerControllerState::update(double dt) {
 
 	if (_controller->right() || _controller->left()) {
 		_controller->setVx(0.f);
+	}
+	if (_controller->ceiling()) {
+	    _controller->setVy(0.f);//-_controller->getVy());
 	}
 
 	// handle animation
@@ -251,6 +254,7 @@ void Controller2D::move(glm::vec2& delta, bool forced) {
 	if (delta != glm::vec2(0.f) &&  _collider != nullptr) {
 		auto collisionReport = m_collisionEngine->shapeCast(_collider, delta);
 	}
+
 }
 
 
@@ -384,6 +388,7 @@ void Controller2D::verticalCollisions(glm::vec2& velocity, bool forced) {
 				setGrounded(true);
 			} else {
 				setCeiling();
+				//velocity.y *= -1.f;
 			}
 //			m_details.below = directionY == -1;
 //			m_details.above = directionY == 1;

@@ -38,6 +38,7 @@ protected:
 	int _status; // 0 not started, 1 running, 2 done
 	long _id;
 	bool _forcedStop;
+	bool _repeat;
 
 };
 
