@@ -991,7 +991,9 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
     aabb.transform(transform);
     //std::cout << aabb.getSize().x << ", " << aabb.getSize().y << "\n";
 	std::vector<ShapeCastHit> hits;
-
+	if (mask == 0) {
+        return hits;
+    }
     auto loc = getLocation(aabb);
     for (int iy = loc[2]; iy <= loc[3]; iy++) {
         for (int ix = loc[0]; ix <= loc[1]; ix++) {
@@ -1000,7 +1002,7 @@ std::vector<ShapeCastHit> SpatialHashingCollisionEngine::shapeCast(Shape * shape
                 for (const auto& c : iter->second) {
                 	//std::cout << "check mask " << mask << " found " << c->getCollisionFlag() << "\n";
                 	if (c->getNode() == itself || c->getState() != NodeState::ACTIVE) continue;
-                    if (mask != 0 && ((c->getCollisionFlag() | mask)== 0)) continue;
+                    if ((c->getCollisionFlag() | mask) == 0) continue;
                     // test collision between the two shapes
                     // first do a rough bounding box check
                     auto otherBounds = c->getStaticBounds();
