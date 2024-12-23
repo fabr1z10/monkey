@@ -2,7 +2,7 @@
 #include "../spritesheet.h"
 
 TileModel::TileModel(const std::string& batchId, int width, int height, int frames, int ticksPerFrame, int scale) :
-    _batchId(batchId), _quadCount(width * height), _tickPerFrames(ticksPerFrame), _frames(frames), _scale(scale) {
+    _batchId(batchId), _width(width), _height(height), _quadCount(width * height), _tickPerFrames(ticksPerFrame), _frames(frames), _scale(scale) {
     auto* batch = dynamic_cast<QuadBatch*>(Engine::instance().getRoom()->getBatch(batchId));
     auto sheet = batch->getSheet();
 
@@ -15,7 +15,7 @@ TileModel::TileModel(const std::string& batchId, int width, int height, int fram
 }
 
 void TileModel::setTile(int pos, int tick, int tileId) {
-    _frameInfo[pos*tick + tick] = tileId;
+    _frameInfo[_quadCount*tick + pos] = tileId;
 }
 
 int TileModel::addTile(int tileNumber, int pal, bool fliph, bool flipv) {
@@ -32,7 +32,7 @@ int TileModel::addTile(int tileNumber, int pal, bool fliph, bool flipv) {
 
 const TileInfo* TileModel::getTile(int pos, int tick) {
 
-    int c = _frameInfo[pos * _frames + tick];
+    int c = _frameInfo[_quadCount * tick + pos];
     if (c == -1) {
         return nullptr;
     }
@@ -50,7 +50,7 @@ std::type_index TileModelRenderer::getType() {
 
 
 TileModelRenderer::TileModelRenderer(const std::string& batchId, float scale) :
-    BatchRenderer<QuadBatch>(batchId, pybind11::kwargs()), _tick(0), _frame(0){
+    BatchRenderer<QuadBatch>(batchId, pybind11::kwargs()), _tick(0), _frame(0) {
     _tileSize = _batch->getSheet()->getTileSize();
     _tileSize *= scale;
 }
@@ -64,6 +64,7 @@ void TileModelRenderer::setModel(std::shared_ptr<Model> model, const pybind11::k
     }
     _frames = _model->getFrames();
     _ticksPerFrame = _model->getTicksPerFrame();
+    _width = _model->getWidth();
 }
 
 void TileModelRenderer::update(double) {

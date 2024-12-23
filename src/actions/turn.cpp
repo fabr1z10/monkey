@@ -2,7 +2,7 @@
 #include "../components/renderer.h"
 #include "../node.h"
 
-Turn::Turn(int id, const std::string& dir) : NodeAction(id), _direction(dir) {
+Turn::Turn(int id, const std::string& dir) : NodeAction(id, pybind11::dict()), _direction(dir) {
 }
 
 

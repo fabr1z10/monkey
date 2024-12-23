@@ -4,11 +4,12 @@
 
 class NodeAction : public Action {
 public:
-	explicit NodeAction(int id);
+	explicit NodeAction(int id, const pybind11::kwargs& args);
 	void start() override;
 	void setNode(Node* node);
+	void onEnd() override;
 protected:
 	Node* m_node;
 	int m_nodeId;
-	//std::string _tag;
+
 };

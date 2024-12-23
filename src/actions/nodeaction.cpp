@@ -3,7 +3,7 @@
 #include "../pyhelper.h"
 
 
-NodeAction::NodeAction(int id) : Action(), m_nodeId(id), m_node(nullptr) {
+NodeAction::NodeAction(int id, const pybind11::kwargs& args) : Action(args), m_nodeId(id), m_node(nullptr) {
 
 }
 
@@ -24,5 +24,11 @@ void NodeAction::start() {
 		//} else {
 		//		m_node = (*Engine::instance().getNodes(_tag).begin());
 		//}
+	}
+}
+
+void NodeAction::onEnd() {
+	if (_onEnd) {
+		_onEnd(m_node);
 	}
 }

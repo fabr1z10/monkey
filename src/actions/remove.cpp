@@ -2,7 +2,7 @@
 #include "../node.h"
 
 
-RemoveNode::RemoveNode(int id) : NodeAction(id) {
+RemoveNode::RemoveNode(int id, const pybind11::kwargs& args) : NodeAction(id, args) {
 
 }
 

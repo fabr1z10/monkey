@@ -5,7 +5,7 @@
 
 class Animate : public NodeAction {
 public:
-	Animate(int id, const std::string& animation, bool sync, bool backwards);
+	Animate(int id, const std::string& animation, bool sync, bool backwards, const pybind11::kwargs& args);
 	void start() override;
 	int process(double) override;
 private:

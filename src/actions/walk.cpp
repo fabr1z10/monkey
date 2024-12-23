@@ -1,10 +1,10 @@
 #include "walk.h"
 #include "../node.h"
 
-Walk::Walk(int id, glm::vec2 target) : NodeAction(id), _target(target) {
+Walk::Walk(int id, glm::vec2 target, const pybind11::kwargs& args) : NodeAction(id, args), _target(target) {
 }
 
-WalkDynamic::WalkDynamic(int id, pybind11::function f) : NodeAction(id), _func(f) {
+WalkDynamic::WalkDynamic(int id, pybind11::function f, const pybind11::kwargs& args) : NodeAction(id, args), _func(f) {
 }
 
 

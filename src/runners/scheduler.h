@@ -11,9 +11,10 @@ class Node;
 
 class Action {
 public:
-	//Action() : _status(0), _id(-1), _forcedStop(false) {}
-	Action();
-	// return 0 when completed
+	Action() = default;
+
+	Action(const pybind11::kwargs& args);
+
 	virtual void start();
 
 	virtual void reset() {}
@@ -23,12 +24,18 @@ public:
 	virtual void stop();
 	//void init(Node*);
 	// virtual stuff
+
+	/**
+	 * The core action algorithm
+	 * @param dt the time interval
+	 * @return 0 if completed, 1 if not
+	 */
 	virtual int process(double) = 0;
 
 	// wrap up code goes here
-	virtual void onEnd() {}
+	virtual void onEnd();
 
-	void setOnEnd(pybind11::function f);
+	//void setOnEnd(pybind11::function f);
 
 	long getId() const;
 	void setId(long);

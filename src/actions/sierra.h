@@ -13,7 +13,7 @@ private:
 
 class ChangeSierraAnim : public NodeAction {
 public:
-	ChangeSierraAnim(int id, const std::string& idle, const std::string& walk);
+	ChangeSierraAnim(int id, const std::string& idle, const std::string& walk, const pybind11::kwargs& args);
 	void start() override;
 	int process(double) override {return 0;}
 private:

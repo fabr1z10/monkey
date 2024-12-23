@@ -529,34 +529,35 @@ PYBIND11_MODULE(monkey, m) {
 //
 //	/// --- actions ---
     py::module_ ma = m.def_submodule("actions");
-    py::class_<Action, std::shared_ptr<Action>>(ma, "Action")
-        .def("set_on_end", &Action::setOnEnd, "function"_a);
+    py::class_<Action, std::shared_ptr<Action>>(ma, "Action");
+    	//.def(py::init<const pybind11::kwargs&>());
+        //.def("set_on_end", &Action::setOnEnd, "function"_a);
 
     py::class_<NodeAction, Action, std::shared_ptr<NodeAction>>(ma, "NodeAction");
 	py::class_<Move, NodeAction, std::shared_ptr<Move>>(ma, "Move")
-		.def(py::init<int, glm::vec2, float>(), "id"_a, "position"_a, "speed"_a);
+		.def(py::init<int, glm::vec2, float, const pybind11::kwargs&>(), "id"_a, "position"_a, "speed"_a);
 	py::class_<MoveBy, NodeAction, std::shared_ptr<MoveBy>>(ma, "MoveBy")
-		.def(py::init<int, glm::vec2, float, float>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
+		.def(py::init<int, glm::vec2, float, float, const pybind11::kwargs&>(), "id"_a, "delta"_a, "time"_a = 0.f, "speed"_a = 0.f);
     py::class_<MoveAccelerated, NodeAction, std::shared_ptr<MoveAccelerated>>(ma, "MoveAccelerated")
         .def(py::init<int, glm::vec3, glm::vec3, const pybind11::kwargs&>(), "id"_a, "initial_velocity"_a, "acceleration"_a);
 	py::class_<Delay, Action, std::shared_ptr<Delay>>(ma, "Delay")
 		.def(py::init<float>(), "time"_a);
     py::class_<Animate, NodeAction, std::shared_ptr<Animate>>(ma, "Animate")
-        .def(py::init<int, const std::string&, bool, bool>(), "id"_a, "anim"_a, "sync"_a=false, "backwards"_a=false);
+        .def(py::init<int, const std::string&, bool, bool, const pybind11::kwargs&>(), "id"_a, "anim"_a, "sync"_a=false, "backwards"_a=false);
 //	py::class_<Blink, NodeAction, std::shared_ptr<Blink>>(ma, "Blink")
 //		.def(py::init<int, float, float>(), "id"_a, "duration"_a, "period"_a);
 	py::class_<CallFunc, Action, std::shared_ptr<CallFunc>>(ma, "CallFunc")
 		.def(py::init<pybind11::function>(), "function"_a);
 	py::class_<AddNode, NodeAction, std::shared_ptr<AddNode>>(ma, "Add")
-		.def(py::init<int, std::shared_ptr<Node>>(), "id"_a, "node"_a);
+		.def(py::init<int, std::shared_ptr<Node>, const pybind11::kwargs&>(), "id"_a, "node"_a);
 	py::class_<RemoveNode, NodeAction, std::shared_ptr<RemoveNode>>(ma, "Remove")
-		.def(py::init<int>(), "id"_a);
+		.def(py::init<int, const pybind11::kwargs&>(), "id"_a);
     py::class_<Walk, NodeAction, std::shared_ptr<Walk>>(ma, "Walk")
-        .def(py::init<int, glm::vec2>(), "id"_a, "target"_a);
+        .def(py::init<int, glm::vec2, const pybind11::kwargs&>(), "id"_a, "target"_a);
     py::class_<Turn, NodeAction, std::shared_ptr<Turn>>(ma, "Turn")
         .def(py::init<int, const std::string&>(), "id"_a, "dir"_a);
     py::class_<WalkDynamic, NodeAction, std::shared_ptr<WalkDynamic>>(ma, "WalkDynamic")
-        .def(py::init<int, pybind11::function>(), "id"_a, "func"_a);
+        .def(py::init<int, pybind11::function, const pybind11::kwargs&>(), "id"_a, "func"_a);
 	py::class_<WaitForKey, Action, std::shared_ptr<WaitForKey>>(ma, "WaitForKey")
 		.def(py::init<>())
 		.def("add", &WaitForKey::add);

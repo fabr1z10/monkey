@@ -2,8 +2,8 @@
 #include "../pyhelper.h"
 #include "../node.h"
 
-Animate::Animate(int id, const std::string& animation, bool sync, bool backwards) : NodeAction(id),
-	m_animation(animation), m_sync(sync), _back(backwards){
+Animate::Animate(int id, const std::string& animation, bool sync, bool backwards, const pybind11::kwargs& args) :
+	NodeAction(id, args), m_animation(animation), m_sync(sync), _back(backwards){
 
 
 

@@ -6,7 +6,7 @@
 
 class Walk : public NodeAction {
 public:
-    Walk(int id, glm::vec2 target);
+    Walk(int id, glm::vec2 target, const pybind11::kwargs& args);
     void start() override;
     int process(double);
 private:
@@ -16,7 +16,7 @@ private:
 
 class WalkDynamic : public NodeAction {
 public:
-    WalkDynamic(int id, pybind11::function f);
+    WalkDynamic(int id, pybind11::function f, const pybind11::kwargs& args);
     void start() override;
     int process(double);
 private:

@@ -3,7 +3,7 @@
 #include <utility>
 
 
-AddNode::AddNode(int id, std::shared_ptr<Node> node) : NodeAction(id), _nodeToAdd(std::move(node)) {
+AddNode::AddNode(int id, std::shared_ptr<Node> node, const pybind11::kwargs& args) : NodeAction(id, args), _nodeToAdd(std::move(node)) {
 
 }
 

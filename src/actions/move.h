@@ -5,7 +5,7 @@
 
 class Move : public NodeAction {
 public:
-	explicit Move(int id, glm::vec2 pos, float speed);
+	explicit Move(int id, glm::vec2 pos, float speed, const pybind11::kwargs& args);
 	int process(double) override;
 	void start() override;
 	void reset() override;
@@ -20,7 +20,7 @@ private:
 
 class MoveBy : public NodeAction {
 public:
-	explicit MoveBy(int id, glm::vec2 delta, float time, float speed);
+	explicit MoveBy(int id, glm::vec2 delta, float time, float speed, const pybind11::kwargs& args);
 	int process(double) override;
 	void start() override;
 	void reset() override;

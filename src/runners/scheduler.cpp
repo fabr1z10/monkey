@@ -5,13 +5,13 @@
 
 
 
-Action::Action() : _status(0), _id(-1), _forcedStop(false), _repeat(false) {
-	//_onEnd = py_get_dict<pybind11::function>(args, "on_end", pybind11::function());
+Action::Action(const pybind11::kwargs& args) : _status(0), _id(-1), _forcedStop(false), _repeat(false) {
+	_onEnd = py_get_dict<pybind11::function>(args, "on_end", pybind11::function());
 }
 
-void Action::setOnEnd(pybind11::function f) {
-	_onEnd = f;
-}
+//void Action::setOnEnd(pybind11::function f) {
+//	_onEnd = f;
+//}
 
 long Action::getId() const {
 	return _id;
@@ -26,8 +26,18 @@ int Action::run(double dt) {
 	if (_status == 2) {
 		return 0;
 	}
-	return process(dt);
+	auto retval = process(dt);
+	if (retval == 0) {
+		onEnd();
+	}
 }
+
+void Action::onEnd() {
+	if (_onEnd) {
+		_onEnd();
+	}
+}
+
 
 
 //

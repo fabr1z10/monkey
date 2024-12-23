@@ -3,7 +3,7 @@
 #include "../node.h"
 #include <glm/gtx/transform.hpp>
 
-Move::Move(int id, glm::vec2 pos, float speed) : NodeAction(id), _targetPos(pos), _speed(speed) {
+Move::Move(int id, glm::vec2 pos, float speed, const pybind11::kwargs& args) : NodeAction(id, args), _targetPos(pos), _speed(speed) {
 
 
 }
@@ -40,7 +40,7 @@ int Move::process(double dt) {
 	return 1;
 }
 
-MoveBy::MoveBy(int id, glm::vec2 delta, float time, float speed) : NodeAction(id) {
+MoveBy::MoveBy(int id, glm::vec2 delta, float time, float speed, const pybind11::kwargs& args) : NodeAction(id, args) {
 
 	m_distance = glm::length(delta);
 	m_delta = glm::vec3(delta, 0.f);
@@ -79,8 +79,8 @@ int MoveBy::process(double dt) {
 	return 1;
 }
 
-MoveAccelerated::MoveAccelerated(int id, glm::vec3 initialVelocity, glm::vec3 acceleration, const pybind11::kwargs& args) : NodeAction(id),
-	_velocity(initialVelocity), _acceleration(acceleration) {
+MoveAccelerated::MoveAccelerated(int id, glm::vec3 initialVelocity, glm::vec3 acceleration, const pybind11::kwargs& args) :
+	NodeAction(id, args), _velocity(initialVelocity), _acceleration(acceleration) {
 	_yMin = py_get_dict<float>(args, "y_min", -std::numeric_limits<float>::max());
 }
 

@@ -3,7 +3,7 @@
 #include "../components/controllers/sierra2d.h"
 #include "../pyhelper.h"
 
-EnableSierraController::EnableSierraController(int id, bool value) : NodeAction(id), _value(value) {
+EnableSierraController::EnableSierraController(int id, bool value) : NodeAction(id, pybind11::dict()), _value(value) {
 
 }
 
@@ -13,7 +13,8 @@ void EnableSierraController::start() {
 	m_node->getComponent<Collider>()->setState(_value ? NodeState::ACTIVE : NodeState::PAUSED);
 }
 
-ChangeSierraAnim::ChangeSierraAnim(int id, const std::string& idle, const std::string& walk) : NodeAction(id) {
+ChangeSierraAnim::ChangeSierraAnim(int id, const std::string& idle, const std::string& walk, const pybind11::kwargs& args) :
+	NodeAction(id, args) {
 	_idle = idle;
 	_walk = walk;
 
