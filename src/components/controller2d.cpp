@@ -159,7 +159,7 @@ void PlayerControllerState::update(double dt) {
 
     glm::vec2 delta = _controller->getVelocity() * dtf;
 
-    _controller->move(delta, false);
+
 
 	if (_controller->right() || _controller->left()) {
 		_controller->setVx(0.f);
@@ -187,7 +187,7 @@ void PlayerControllerState::update(double dt) {
 		}
 
 	}
-
+    _controller->move(delta, false);
 }
 
 
