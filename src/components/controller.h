@@ -39,18 +39,18 @@ public:
 
 	void setSize(glm::vec3 size, glm::vec3 offset);
 	virtual void move(glm::vec2&, bool forced);
-	glm::vec2 getSize() const;
+	//glm::vec2 getSize() const;
 	glm::ivec2 getMask() const;
 	void setMask(int, int);
 	using Base = Controller;
 	virtual void resetCollisions();
 protected:
-	//void setDebugShape();
+	void setDebugShape();
 	//virtual std::shared_ptr<Model> getDebugModel() = 0;
-	//Node* m_debugShape;
+	Node* m_debugShape;
 	void computeCoordinates();
-	glm::vec2 _size;
-	glm::vec2 _anchor;
+	glm::vec4 _bounds;
+	//glm::vec2 _anchor;
 
 	ICollisionEngine* m_collisionEngine;
 	Collider* _collider;

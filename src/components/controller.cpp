@@ -7,13 +7,15 @@
 #include "../shapes/aabb.h"
 #include "platform.h"
 #include "../error.h"
+#include "../models/modelmake.h"
 #include <glm/gtx/transform.hpp>
 //#include "../shapes/shapemodel.h"
 using namespace pybind11::literals; // to bring in the `_a` literal
 
 
-Controller::Controller(const pybind11::kwargs& args) : Component(args), _collider(nullptr), m_collisionStatus(0) {
-	//_size = py_get_dict<glm::vec2>(args, "size", glm::vec2(0.f));
+Controller::Controller(const pybind11::kwargs& args) : Component(args),
+	_collider(nullptr), m_collisionStatus(0), m_debugShape(nullptr) {
+	_bounds = py_get_dict<glm::vec4>(args, "bounds");
 	//_anchor = py_get_dict<glm::vec2>(args, "anchor", glm::vec2(_size.x * 0.5f, 0.f));
 
 
@@ -36,26 +38,32 @@ void Controller::start() {
 	auto room = engine.getRoom();
 	m_collisionEngine = room->getRunner<ICollisionEngine>();
 
-	//setDebugShape();
+	setDebugShape();
 }
-//
-//void Controller::setDebugShape() {
-//	auto& engine = Engine::instance();
-//	//auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
-//	if (engine.drawColliderOutline()) {
-//        auto batchId = Engine::instance().getColliderOutlineBatch();
-//
-//        if (m_debugShape != nullptr) {
-//			m_debugShape->remove();
-//		}
-//		auto node = std::make_shared<Node>();
-//		auto model = getDebugModel();
-//		//node->setModel(model);
-//        node->setModel(model, pybind11::dict("batch"_a = batchId));
-//        m_node->add(node);
-//		m_debugShape = node.get();
-//	}
-//}
+
+void Controller::setDebugShape() {
+	auto& engine = Engine::instance();
+	//auto collDebug = py_get<bool>(engine.getConfig(), "debug_collision", false);
+	if (engine.drawColliderOutline()) {
+        auto batchId = Engine::instance().getColliderOutlineBatch();
+
+        if (m_debugShape != nullptr) {
+			m_debugShape->remove();
+		}
+		auto node = std::make_shared<Node>();
+		auto shape = std::make_shared<shapes::AABB>(
+				_bounds[0], _bounds[1], _bounds[2], _bounds[3]);
+		auto& m = ModelMaker::instance();
+
+
+		auto model = m.make(engine.getColliderOutlineBatch(), shape, glm::vec4(1.f, 0.f, 0.f, 1.f), FillType::OUTLINE);
+
+		node->setModel(model);
+        node->setModel(model, pybind11::dict("batch"_a = batchId));
+        m_node->add(node);
+		m_debugShape = node.get();
+	}
+}
 
 
 void Controller::setSize(glm::vec3 size, glm::vec3 center) {
@@ -68,12 +76,13 @@ void Controller::setSize(glm::vec3 size, glm::vec3 center) {
 
 void Controller::computeCoordinates() {
 	// raycast origins in local coordinates. This won't change until shape is changed
-	auto b = _collider->getShape()->getBounds();
-	m_localTopFwd = glm::vec2(b.max.x, b.max.y);
-	m_localTopBack = glm::vec2(b.min.x, b.max.y);
-	m_localBottomFwd = glm::vec2(b.max.x, b.min.y);
-	m_localBottomBack = glm::vec2(b.min.x, b.min.y);
-	_size = glm::vec2(b.max.x - b.min.x, b.max.y - b.min.y);
+	//auto b = _collider->getShape()->getBounds();
+	float f = m_node->getFlipX() ? -1.f : 1.f;
+	m_localTopFwd = glm::vec2(f * _bounds[1], _bounds[3]);
+	m_localTopBack = glm::vec2(f * _bounds[0], _bounds[3]);
+	m_localBottomFwd = glm::vec2(f * _bounds[1], _bounds[2]);
+	m_localBottomBack = glm::vec2(f * _bounds[0], _bounds[2]);
+	//_size = glm::vec2(b.max.x - b.min.x, b.max.y - b.min.y);
 }
 
 
@@ -93,9 +102,9 @@ void Controller::move(glm::vec2 & delta, bool) {
 	m_node->move(glm::translate(glm::vec3(delta, 0.f)));
 }
 
-glm::vec2 Controller::getSize() const {
-	return _size;
-}
+//glm::vec2 Controller::getSize() const {
+//	return _size;
+//}
 
 void Controller::resetCollisions() {
 	m_collisionStatus = 0u;

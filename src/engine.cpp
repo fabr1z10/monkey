@@ -206,6 +206,9 @@ void Engine::run() {
 //			}
 //        }
     }
+	_settings.release();
+	_source.release();
+	_mainModule.release();
 	//m_settings.attr("on_close")();
 
     //_batches.clear();

@@ -175,7 +175,7 @@ void PlayerControllerState::update(double dt) {
 		if (vx > 0) {
 			_node->setAnimation(mi.walk);
 		} else if (vx == 0.f) {
-			_node->setAnimation(mi.idle);
+			_node->setAnimation((left || right) ? mi.walk : mi.idle);
 		} else if (vx < 0) {
 			_node->setAnimation(mi.slide);
 		}

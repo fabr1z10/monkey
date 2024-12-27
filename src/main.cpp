@@ -657,7 +657,7 @@ PYBIND11_MODULE(monkey, m) {
 		.def_property_readonly("grounded", &Controller::grounded)
         .def_property_readonly("left", &Controller::left)
         .def_property_readonly("right", &Controller::right)
-		.def_property_readonly("size", &Controller::getSize)
+		//.def_property_readonly("size", &Controller::getSize)
 		.def("set_size", &Controller::setSize);
 
 	py::class_<MouseArea, Component, std::shared_ptr<MouseArea>>(mc, "MouseArea")
