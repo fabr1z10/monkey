@@ -10,7 +10,7 @@
 
 Node::Node() : _id(Engine::instance().getNextId()), m_modelMatrix(1.0f), _state(NodeState::ACTIVE),
     m_parent(nullptr), m_worldMatrix(1.0f), m_started(false), m_userData(pybind11::dict()), m_scaleMatrix(glm::mat4(1.f)),
-    m_model(nullptr), _scale(1.0f), _angle(0.f) {
+    m_model(nullptr), _scale(1.0f), _angle(0.f), _renderer(nullptr) {
 
 
 
@@ -70,7 +70,7 @@ void Node::setPalette(const std::string& id) const {
 //}
 //
 void Node::setAnimation(const std::string& animId) {
-	getComponent<Renderer>()->setAnimation(animId);
+	_renderer->setAnimation(animId);
 }
 
 void Node::setParent(Node * node) {
@@ -143,6 +143,8 @@ void Node::start() {
 	for (auto& c : m_components){
 		c.second->start();
 	}
+	if (_renderer != nullptr)
+		_renderer->start();
 }
 
 void Node::startRecursive() {
@@ -163,10 +165,16 @@ void Node::update(double dt) {
             iter.second->update(dt);
         }
     }
+
     // update world matrix
     if (m_parent != nullptr) {
         m_worldMatrix = m_parent->getWorldMatrix() * m_modelMatrix;
     }
+
+	if (_renderer != nullptr && _renderer->getState() == NodeState::ACTIVE) {
+		_renderer->update(dt);
+	}
+
 }
 
 std::vector<Node *> Node::getNodes(bool recursive) {
@@ -316,7 +324,8 @@ void Node::setModel(std::shared_ptr<Model> model, const pybind11::kwargs& args) 
 	} else {
 		m_model = model;
 		auto renderer = model->getRenderer(args);
-		this->addComponent(renderer);
+		//this->addComponent(renderer);
+		setRenderer(renderer);
 		renderer->setModel(model, args);
 		if (Engine::instance().isRunning()) {
 			this->start();
@@ -426,4 +435,9 @@ void Node::sendMessage(const std::string& id, const pybind11::kwargs& args) {
 void Node::addMessage(const std::string& id, pybind11::function f) {
     _messages[id] = f;
 
+}
+
+void Node::setRenderer(std::shared_ptr<Renderer> r) {
+	_renderer = r;
+	r->setNode(this);
 }

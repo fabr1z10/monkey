@@ -98,6 +98,8 @@ public:
 	void sendMessage(const std::string& id, const pybind11::kwargs& args);
 	void addMessage(const std::string& id, pybind11::function f);
 	Component* getTaggedComponent(const std::string& id);
+	void setRenderer(std::shared_ptr<Renderer>);
+	Renderer* getRenderer();
 protected:
 	void notifyMove();
     long _id;
@@ -107,6 +109,11 @@ protected:
     std::list<std::shared_ptr<Node>> m_children;
     std::unordered_map<long, std::list<std::shared_ptr<Node>>::iterator> _cache;
     std::unordered_map<std::type_index, std::shared_ptr<Component> > m_components;
+    // we want the renderer to be a special component, stored
+    // separatelly from the others and executed at the end of the others
+    // this to make sure node is displayed at the correct position (which
+    // is typically modified by the previous components)
+    std::shared_ptr<Renderer> _renderer;
     glm::mat4 m_modelMatrix;
     glm::mat4 m_worldMatrix;
     glm::mat4 m_scaleMatrix;
@@ -129,6 +136,11 @@ inline long Node::getId() const {
 inline Node* Node::getParent() {
     return m_parent;
 }
+
+inline Renderer * Node::getRenderer() {
+	return _renderer.get();
+}
+
 
 
 inline const std::list<std::shared_ptr<Node>> & Node::getChildren() const {
