@@ -152,7 +152,7 @@ void Text::updateText(const std::string & text) {
 	        break;
 	}
 
-	getComponent<Renderer>()->setTransform(glm::translate(_offset));
+	_renderer->setTransform(glm::translate(_offset));
     //getComponent<Renderer>()->setPalette(_palId);
 
     //Node::move(glm::vec3(_offset.x, _offset.y, _offset.z));
