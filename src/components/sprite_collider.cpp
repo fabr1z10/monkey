@@ -16,7 +16,7 @@ SpriteCollider::SpriteCollider(int flag, int mask, int tag, const pybind11::kwar
 
 void SpriteCollider::start() {
     // a node that has a spritecollider needs to have a sprite model (and a sprite renderer)
-    m_renderer = dynamic_cast<SpriteRenderer*>(m_node->getComponent<Renderer>());
+    m_renderer = dynamic_cast<SpriteRenderer*>(m_node->getRenderer());
     assert(m_renderer != nullptr);
 
     m_sprite = m_renderer->getSprite();
@@ -150,7 +150,7 @@ std::type_index SpriteColliderRenderer::getType() {
 
 void SpriteColliderRenderer::start() {
     BatchRenderer<LineBatch>::start();
-    m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getComponent<Renderer>());
+    m_reference = dynamic_cast<SpriteRenderer*>(m_node->getParent()->getRenderer());
     m_sprite = m_reference->getSprite(); //m_reference->getModel().get());
     auto mboxes = m_sprite->getMaxBoxes();
     for (auto i=0; i< mboxes*4; i++) {
