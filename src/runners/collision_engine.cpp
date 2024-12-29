@@ -941,6 +941,9 @@ void ICollisionEngine::addResponse(pybind11::object obj) {
 std::vector<ShapeCastHit> ICollisionEngine::shapeCast (Collider* collider, glm::vec2 delta) {
 
 	auto shape = collider->getShape();
+	if (shape == nullptr) {
+		return {};
+	}
 	auto transform = collider->getNode()->getWorldMatrix();
 	auto collisionReport = shapeCast(shape.get(), transform, collider->getCollisionMask(), true, collider->getNode());
 

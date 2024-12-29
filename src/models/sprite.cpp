@@ -250,7 +250,11 @@ void Sprite::addFrameCallback(const std::string &s, int frame, pybind11::functio
 }
 
 std::shared_ptr<Shape> Sprite::getShape (const std::string& anim, int frame) const {
-    return m_shapes[_animations.at(anim).frames[frame].boxId];
+	auto boxId = _animations.at(anim).frames[frame].boxId;
+	if (boxId == -1) {
+		return nullptr;
+	}
+    return m_shapes[boxId];
 }
 //	auto it = m_frameToShape.find(std::make_pair(anim, frame));
 //	if (it == m_frameToShape.end())
